@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <style>
   :root {
     --cream: #F9F5F0;
@@ -430,13 +429,6 @@
 
   .btn-submit:hover { background: var(--gold2); border-color: var(--gold2); }
   .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-
-  /* ── RECAPTCHA ── */
-  .recaptcha-wrap {
-    display: flex;
-    justify-content: center;
-    margin: 36px 0 28px;
-  }
 
   /* ── THANK YOU ── */
   #thank-you {
@@ -980,10 +972,6 @@
       <span class="consent-err" id="consent-err">Vink alle bovenstaande vakjes aan om verder te gaan.</span>
     </div>
 
-    <div class="recaptcha-wrap">
-      <div class="g-recaptcha" data-sitekey="6Le-xwctAAAAAfb8e9grFqBrAkyCZMzuH3BvSFi5" data-theme="light"></div>
-    </div>
-
     <button class="btn btn-submit" id="submit-btn" onclick="submitForm()">
       Mijn Blueprint aanmaken &rarr;
     </button>
@@ -1017,7 +1005,7 @@
 <!-- FOOTER -->
 <footer class="footer">
   <div style="margin-bottom:20px;">
-    <img src="https://szinn.ai/assets/logo.png" 
+    <img src="https://szinn.ai/assets/szinn-logo.png" 
          alt="SZINN logo" 
          style="width:52px;height:52px;display:block;margin:0 auto;opacity:0.75;"
          onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
@@ -1125,15 +1113,12 @@ function submitForm() {
   }
   errEl.classList.remove('show');
 
-  const rc = typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : 'dev';
-  if (!rc) { alert('Bevestig dat je geen robot bent.'); return; }
-
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
   btn.textContent = 'Versturen...';
 
   const data = collect();
-  data.recaptcha = rc;
+  data.recaptcha = 'skipped';
   data.consent_verwerking = true;
   data.consent_disclaimer = true;
   data.consent_leeftijd = true;
