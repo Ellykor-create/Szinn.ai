@@ -39,7 +39,7 @@ body { background: var(--warm); color: var(--ink); font-family: 'Jost', sans-ser
 .strip { background: var(--deep); padding: 16px 0; overflow: hidden; }
 .strip-track { display: flex; gap: 64px; animation: ticker 25s linear infinite; width: max-content; }
 .strip-item { font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--gold); white-space: nowrap; }
-.strip-item::after { content: ' C6'; margin-left: 32px; font-size: 6px; vertical-align: middle; }
+.strip-item::after { content: ' ✦'; margin-left: 32px; font-size: 6px; vertical-align: middle; }
 @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
 
 /* STORY */
@@ -109,8 +109,8 @@ body { background: var(--warm); color: var(--ink); font-family: 'Jost', sans-ser
 
 /* FOOTER */
 .footer { background: #0D0A07; padding: 44px 80px; display: flex; justify-content: space-between; align-items: center; }
-.footer-brand { font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: #7A6550; }
-.footer-legal { font-size: 11px; color: #7A6550; font-style: italic; font-family: 'Cormorant Garamond', serif; max-width: 420px; text-align: right; line-height: 1.6; }
+.footer-brand { font-size: 10px; letter-spacing: 5px; text-transform: uppercase; color: var(--muted); }
+.footer-legal { font-size: 11px; color: var(--muted); font-style: italic; font-family: 'Cormorant Garamond', serif; max-width: 420px; text-align: right; line-height: 1.6; }
 
 @media (max-width: 860px) {
   .hero { grid-template-columns: 1fr; min-height: auto; }
