@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SZINN Alignment Blueprint — Intake</title>
+<title>SZINN Alignment Blueprint · Intake</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -994,7 +994,7 @@
     </p>
 
     <div class="nav" style="border-top: none; padding-top: 0; margin-top: 24px; justify-content: center;">
-      <button class="btn btn-back" onclick="prevSection(7)">← Terug naar vorige stap</button>
+      <button class="btn btn-back" id="back-last-btn" onclick="prevSection(7)">← Terug naar vorige stap</button>
     </div>
   </section>
 
@@ -1082,7 +1082,7 @@ function updateProgress(i) {
     if (idx < i) s.classList.add('done');
     if (idx === i) s.classList.add('active');
   });
-  const lbl = `Stap ${i + 1} van 8`;
+  const lbl = lang === 'en' ? `Step ${i + 1} of 8` : `Stap ${i + 1} van 8`;
   document.getElementById('progress-label').textContent = lbl;
 }
 
@@ -1119,7 +1119,7 @@ function collect() {
   const v = id => { const el = document.getElementById(id); return el ? el.value.trim() : ''; };
   return {
     timestamp: new Date().toISOString(),
-    language: 'nl',
+    language: lang,
     voornaam: v('voornaam'), achternaam: v('achternaam'), email: v('email'),
     geboortedatum: v('geboortedatum'), geboortetijd: v('geboortetijd'),
     geboorteland: v('geboorteland'), geboorteplaats: v('geboorteplaats'),
@@ -1158,14 +1158,14 @@ function submitForm() {
 
   const rc = typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : 'dev';
   if (!rc) {
-    const msg = 'Bevestig dat je geen robot bent.';
+    const msg = lang === 'en' ? 'Please confirm you are not a robot.' : 'Bevestig dat je geen robot bent.';
     alert(msg);
     return;
   }
 
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
-  btn.textContent = 'Versturen...';
+  btn.textContent = lang === 'en' ? 'Sending...' : 'Versturen...';
 
   const data = collect();
   data.recaptcha = rc;
@@ -1181,9 +1181,9 @@ function submitForm() {
   }).then(showThankYou).catch(showThankYou);
 }
 
-// Init
-lang = 'nl';
-updateProgress(0);
+// Init — taal automatisch NL
+setLang('nl');
+show(0);
 </script>
 </body>
 </html>

@@ -1,3 +1,7 @@
 # Netlify redirects
-/en    /en/index.html    200
-/en/   /en/index.html    200
+/en           /en/index.html         200
+/en/          /en/index.html         200
+/intake       /intake/index.html     200
+/intake/      /intake/index.html     200
+/intake-en    /intake-en/index.html  200
+/intake-en/   /intake-en/index.html  200
