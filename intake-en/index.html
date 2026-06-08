@@ -527,75 +527,75 @@
 
     <div class="grid-2">
       <div class="field" id="field-voornaam">
-        <label class="field-label" data-nl="Voornaam" data-en="First name">Voornaam</label>
+        <label class="field-label" data-nl="Voornaam" data-en="First name">First name</label>
         <input type="text" id="voornaam" 
                data-placeholder-nl="Jouw voornaam" data-placeholder-en="Your first name"
-               placeholder="Jouw voornaam" autocomplete="given-name">
-        <span class="err-msg">Vul je voornaam in</span>
+               placeholder="Your first name" autocomplete="given-name">
+        <span class="err-msg">Please enter your first name</span>
       </div>
       <div class="field" id="field-achternaam">
-        <label class="field-label" data-nl="Achternaam" data-en="Last name">Achternaam</label>
+        <label class="field-label" data-nl="Achternaam" data-en="Last name">Last name</label>
         <input type="text" id="achternaam" 
                data-placeholder-nl="Jouw achternaam" data-placeholder-en="Your last name"
-               placeholder="Jouw achternaam" autocomplete="family-name">
-        <span class="err-msg">Vul je achternaam in</span>
+               placeholder="Your last name" autocomplete="family-name">
+        <span class="err-msg">Please enter your last name</span>
       </div>
     </div>
 
     <div class="field" id="field-email">
-      <label class="field-label" data-nl="E-mailadres" data-en="Email address">E-mailadres</label>
+      <label class="field-label" data-nl="E-mailadres" data-en="Email address">Email address</label>
       <input type="email" id="email" 
              data-placeholder-nl="jouw@email.nl" data-placeholder-en="your@email.com"
-             placeholder="jouw@email.nl" autocomplete="email">
-      <span class="err-msg">Vul een geldig e-mailadres in</span>
+             placeholder="your@email.com" autocomplete="email">
+      <span class="err-msg">Please enter a valid email address</span>
     </div>
 
     <hr class="rule">
 
     <div class="grid-3">
       <div class="field" id="field-geboortedatum">
-        <label class="field-label" data-nl="Geboortedatum" data-en="Date of birth">Geboortedatum</label>
+        <label class="field-label" data-nl="Geboortedatum" data-en="Date of birth">Date of birth</label>
         <input type="date" id="geboortedatum">
-        <span class="err-msg">Vul je geboortedatum in</span>
+        <span class="err-msg">Please enter your date of birth</span>
       </div>
       <div class="field" id="field-geboortetijd">
         <label class="field-label">
           <span>Geboortetijd</span>
-          <span class="opt">(zo exact mogelijk)</span>
+          <span class="opt">(as exact as possible)</span>
         </label>
         <input type="time" id="geboortetijd">
-        <span class="err-msg">Vul je geboortetijd in</span>
+        <span class="err-msg">Please enter your time of birth</span>
       </div>
       <div class="field" id="field-geboorteland">
-        <label class="field-label" data-nl="Geboorteland" data-en="Country of birth">Geboorteland</label>
+        <label class="field-label" data-nl="Geboorteland" data-en="Country of birth">Country of birth</label>
         <select id="geboorteland">
-          <option value="" data-nl="— Selecteer —" data-en="— Select —">— Selecteer —</option>
-          <option>Nederland</option>
-          <option>België</option>
-          <option>Duitsland</option>
-          <option>Frankrijk</option>
-          <option>Verenigd Koninkrijk</option>
-          <option>Spanje</option>
-          <option>Italië</option>
-          <option>Zwitserland</option>
-          <option>Oostenrijk</option>
+          <option value="" data-nl="— Selecteer —" data-en="— Select —">— Select —</option>
+          <option>Netherlands</option>
+          <option>Belgium</option>
+          <option>Germany</option>
+          <option>France</option>
+          <option>United Kingdom</option>
+          <option>Spain</option>
+          <option>Italy</option>
+          <option>Switzerland</option>
+          <option>Austria</option>
           <option>Verenigde Staten</option>
           <option>Canada</option>
           <option>Australië</option>
           <option>Zuid-Afrika</option>
-          <option data-nl="Anders" data-en="Other">Anders</option>
+          <option data-nl="Anders" data-en="Other">Other</option>
         </select>
-        <span class="err-msg">Selecteer je geboorteland</span>
+        <span class="err-msg">Please select your country of birth</span>
       </div>
     </div>
 
     <div class="field" id="field-geboorteplaats">
-      <label class="field-label" data-nl="Geboorteplaats" data-en="City of birth">Geboorteplaats</label>
+      <label class="field-label" data-nl="Geboorteplaats" data-en="City of birth">Place of birth</label>
       <input type="text" id="geboorteplaats" 
              data-placeholder-nl="Stad of gemeente waar je geboren bent"
              data-placeholder-en="City or town where you were born"
-             placeholder="Stad of gemeente waar je geboren bent">
-      <span class="err-msg">Vul je geboorteplaats in</span>
+             placeholder="City or town where you were born">
+      <span class="err-msg">Please enter your place of birth</span>
     </div>
 
 
@@ -937,7 +937,7 @@
 
     <!-- DISCLAIMER -->
     <details class="disclaimer-box">
-      <summary data-nl="Wat dit document wel en niet is" data-en="What this document is and is not">Wat dit document wel en niet is</summary>
+      <summary data-nl="What this document is and is not" data-en="What this document is and is not">What this document is and is not</summary>
       <div class="disclaimer-text">
         <p class="nl-text"><strong>Dit document is bedoeld voor zelfinzicht en persoonlijke reflectie.</strong> Het is samengesteld op basis van astrologische en numerologische interpretaties, aangevuld met de inzichten die jij zelf deelt via dit formulier.</p>
         <p class="en-text" style="display:none;" style="display:none"><strong>This document is intended for self-insight and personal reflection.</strong> It is compiled based on astrological and numerological interpretations, supplemented by the insights you share through this form.</p>
@@ -1053,9 +1053,11 @@ function setLang(l) {
   lang = l;
   document.documentElement.lang = l;
 
-  // Toggle button states
-  document.getElementById('btn-nl').classList.toggle('active', l === 'nl');
-  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  // Toggle button states (safe — buttons may not exist on this page)
+  const btnNl = document.getElementById('btn-nl');
+  const btnEn = document.getElementById('btn-en');
+  if (btnNl) btnNl.classList.toggle('active', l === 'nl');
+  if (btnEn) btnEn.classList.toggle('active', l === 'en');
 
   // Show/hide language-specific elements
   document.querySelectorAll('.nl-text').forEach(el => {
