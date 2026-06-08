@@ -32,6 +32,7 @@
     font-weight: 300;
     line-height: 1.75;
     min-height: 100vh;
+  overflow-x: hidden;
   }
 
     .lang-btn.active { color: var(--gold); }
@@ -470,6 +471,17 @@
   .disclaimer-box[open] summary::before { content: '− '; }
   .disclaimer-text p { font-size: 13px; color: var(--ink2); line-height: 1.75; margin-top: 14px; }
   .disclaimer-text a { color: var(--gold); }
+
+/* ── MOBILE ── */
+@media (max-width:480px) {
+  .header-hero{min-height:320px;}
+  .header h1{font-size:clamp(28px,8vw,42px);}
+  .main{padding:48px 16px 80px;}
+  .progress-wrap{padding:16px;}
+  .btn{padding:12px 20px;font-size:10px;}
+  .btn-submit{padding:14px 24px;}
+  .section-title{font-size:clamp(24px,7vw,36px);}
+}
 </style>
 </head>
 <body>
@@ -1031,7 +1043,7 @@
 </footer>
 
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpFfnCpX1YLA-rHdklg2fBahXI8UyQ2-EyUY7cvxq5Tkp_JOsaFLjwOKWzPBbUISxkSw/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyJQOISSqzLg2YESTrymmd13MtdoXdL0PEIUFQEtX0cW0PurffQ0pvlNJtoOFP5GmThSQ/exec';
 
 let current = 0;
 let lang = 'en';
