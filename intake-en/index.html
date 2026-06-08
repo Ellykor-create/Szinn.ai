@@ -7,7 +7,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 <style>
   :root {
     --cream: #F9F5F0;
@@ -366,8 +365,6 @@
   .btn-submit:hover { background: var(--gold2); border-color: var(--gold2); }
   .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; }
 
-  /* ── RECAPTCHA ── */
-  .recaptcha-wrap { display: flex; justify-content: center; margin: 36px 0 28px; }
 
   /* ── THANK YOU ── */
   #thank-you {
@@ -973,9 +970,6 @@
       </span>
     </div>
 
-    <div class="recaptcha-wrap">
-      <div class="g-recaptcha" data-sitekey="6LehtQctAAAAACkbRjP7BAxXWfxzlLkCCe9EBUIp" data-theme="light"></div>
-    </div>
 
     <button class="btn btn-submit" id="submit-btn" onclick="submitForm()">
       <span class="nl-text">Mijn Blueprint aanmaken &rarr;</span>
@@ -1156,19 +1150,11 @@ function submitForm() {
   }
   errEl.classList.remove('show');
 
-  const rc = typeof grecaptcha !== 'undefined' ? grecaptcha.getResponse() : 'dev';
-  if (!rc) {
-    const msg = lang === 'en' ? 'Please confirm you are not a robot.' : 'Bevestig dat je geen robot bent.';
-    alert(msg);
-    return;
-  }
-
   const btn = document.getElementById('submit-btn');
   btn.disabled = true;
   btn.textContent = lang === 'en' ? 'Sending...' : 'Versturen...';
 
   const data = collect();
-  data.recaptcha = rc;
   data.consent_verwerking = true;
   data.consent_disclaimer = true;
   data.consent_leeftijd = true;
