@@ -1040,7 +1040,7 @@
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzpFfnCpX1YLA-rHdklg2fBahXI8UyQ2-EyUY7cvxq5Tkp_JOsaFLjwOKWzPBbUISxkSw/exec';
 
 let current = 0;
-let lang = 'nl';
+let lang = 'en';
 
 // ── LANGUAGE SYSTEM ──
 function setLang(l) {
@@ -1182,8 +1182,10 @@ function submitForm() {
 }
 
 // Init — language automatically EN
-setLang('en');
-show(0);
+document.addEventListener('DOMContentLoaded', function() {
+  setLang('en');
+  show(0);
+});
 </script>
 </body>
 </html>

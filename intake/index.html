@@ -1182,8 +1182,10 @@ function submitForm() {
 }
 
 // Init — taal automatisch NL
-setLang('nl');
-show(0);
+document.addEventListener('DOMContentLoaded', function() {
+  setLang('nl');
+  show(0);
+});
 </script>
 </body>
 </html>
