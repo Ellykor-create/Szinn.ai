@@ -10,6 +10,8 @@
 <link rel="canonical" href="https://szinn.ai/">
 <link rel="alternate" hreflang="nl" href="https://szinn.ai/">
 <link rel="alternate" hreflang="en" href="https://szinn.ai/en/">
+<link rel="alternate" hreflang="x-default" href="https://szinn.ai/en/">
+<link rel="sitemap" type="application/xml" href="https://szinn.ai/sitemap.xml">
 
 <!-- Open Graph -->
 <meta property="og:type" content="website">
@@ -41,6 +43,17 @@
 <meta name="language" content="nl">
 <meta name="geo.region" content="NL">
 
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no,date=no,address=no,email=no">
+<meta name="rating" content="general">
+<meta name="revisit-after" content="7 days">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="dns-prefetch" href="https://player.vimeo.com">
+<link rel="dns-prefetch" href="https://110lifeandbusiness.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -384,7 +397,7 @@ p.center{text-align:center;}
 }
 </style>
 
-<!-- JSON-LD Structured Data -->
+<!-- JSON-LD Structured Data (worldwide SEO) -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -395,43 +408,71 @@ p.center{text-align:center;}
       "url": "https://szinn.ai/",
       "name": "SZINN",
       "description": "SZINN Alignment Blueprint — gepersonaliseerd navigatiedocument met astrologie, numerologie en Kabbalah Tikkun",
+      "inLanguage": "nl-NL",
       "author": {
         "@type": "Person",
+        "@id": "https://szinn.ai/#elly",
         "name": "Elly Elizabeth Korving",
         "url": "https://szinn.ai",
-        "jobTitle": "Ondernemer, Business Coach, Spiritual Guide",
-        "sameAs": ["https://www.ellykorving.com"]
+        "jobTitle": "Ondernemer, Business Coach, Spiritual Guide & Life Coach",
+        "sameAs": [
+          "https://www.ellykorving.com",
+          "https://szinn.ai"
+        ]
       },
-      "inLanguage": "nl-NL"
+      "potentialAction": {
+        "@type": "ReadAction",
+        "target": ["https://szinn.ai/"]
+      }
+    },
+    {
+      "@type": "WebPage",
+      "@id": "https://szinn.ai/#webpage",
+      "url": "https://szinn.ai/",
+      "name": "SZINN Alignment Blueprint™ — Dit is je kompas | Astrologie, Numerologie & Kabbalah",
+      "description": "Het SZINN Alignment Blueprint is jouw persoonlijk navigatiedocument: geboortekaartanalyse, numerologie levenspad en Kabbalah Tikkun zielscorrectie. PDF + interactieve HTML, binnen 48 uur. €39,90.",
+      "inLanguage": "nl-NL",
+      "isPartOf": { "@id": "https://szinn.ai/#website" },
+      "about": { "@id": "https://szinn.ai/#product" },
+      "speakable": {
+        "@type": "SpeakableSpecification",
+        "cssSelector": ["h1", "h2", ".hero-szinn-naam", ".lead"]
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://szinn.ai/"
+          }
+        ]
+      }
     },
     {
       "@type": "Product",
       "@id": "https://szinn.ai/#product",
       "name": "SZINN Alignment Blueprint™",
       "description": "Een volledig persoonlijk navigatiedocument op basis van je geboortedatum, geboortetijd en geboorteplaats. Synthetiseert astrologie (Placidus / Swiss Ephemeris), numerologie (Pythagoras) en Kabbalah Tikkun tot één instrument voor zelfherkenning en richting.",
-      "brand": {
-        "@type": "Brand",
-        "name": "SZINN"
-      },
+      "brand": { "@type": "Brand", "name": "SZINN" },
       "image": "https://szinn.ai/assets/og-image.jpg",
       "sku": "SZINN-AB-001",
+      "category": "Personal Development / Astrology Report",
       "offers": {
         "@type": "Offer",
         "price": "39.90",
         "priceCurrency": "EUR",
         "availability": "https://schema.org/InStock",
         "url": "https://110lifeandbusiness.com/checkout/szinn-alignment-blueprint",
+        "priceValidUntil": "2026-12-31",
         "deliveryLeadTime": {
           "@type": "QuantitativeValue",
           "maxValue": 2,
           "unitCode": "DAY"
         }
       },
-      "provider": {
-        "@type": "Person",
-        "name": "Elly Elizabeth Korving",
-        "url": "https://szinn.ai"
-      }
+      "provider": { "@id": "https://szinn.ai/#elly" }
     },
     {
       "@type": "Organization",
@@ -439,15 +480,64 @@ p.center{text-align:center;}
       "name": "SZINN / 110 Life & Business Awareness",
       "url": "https://szinn.ai",
       "legalName": "Alterego BV",
-      "founder": {
-        "@type": "Person",
-        "name": "Elly Elizabeth Korving"
-      },
+      "logo": "https://szinn.ai/assets/og-image.jpg",
+      "founder": { "@id": "https://szinn.ai/#elly" },
       "contactPoint": {
         "@type": "ContactPoint",
         "email": "info@szinn.ai",
-        "contactType": "customer service"
-      }
+        "contactType": "customer service",
+        "availableLanguage": ["Dutch", "English"]
+      },
+      "sameAs": [
+        "https://szinn.ai",
+        "https://www.ellykorving.com"
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://szinn.ai/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Wat is het SZINN Alignment Blueprint?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Het SZINN Alignment Blueprint is een volledig persoonlijk navigatiedocument gebaseerd op je geboortedatum, geboortetijd en geboorteplaats. Het combineert astrologie (geboortekaartanalyse via Placidus / Swiss Ephemeris), numerologie (levenspad, Pythagoras-systeem) en Kabbalah Tikkun (zielscorrectie) tot één instrument voor zelfherkenning en richting."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Wat zit er in het SZINN Alignment Blueprint?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Het blueprint bevat: een volledige geboortekaartanalyse, numerologie levenspad rapport, Kabbalah Tikkun zielscorrectie, Sacred Geometry persoonlijk advies, een persoonlijke mandala en een maandkalender voor het lopende jaar. Je ontvangt zowel een PDF als een interactieve HTML-link."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Hoe snel ontvang ik mijn blueprint?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Je ontvangt je SZINN Alignment Blueprint binnen 48 uur na betaling, als PDF én interactieve HTML-link."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Wat kost het SZINN Alignment Blueprint?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Het SZINN Alignment Blueprint kost €39,90. Dit is een eenmalige betaling — geen abonnement."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Wat heb ik nodig om een blueprint te bestellen?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Je hebt je exacte geboortedatum, geboortetijd en geboorteplaats nodig. Na betaling vul je een kort intakeformulier in. Op basis van die gegevens wordt jouw persoonlijke blueprint opgesteld."
+          }
+        }
+      ]
     }
   ]
 }
@@ -591,11 +681,11 @@ p.center{text-align:center;}
   <div class="inner">
     <div class="tag">Over de maker</div>
     <h2>Elly <em>Elizabeth</em></h2>
-    <p class="lead">"Ik neem je mee, niet als gids, maar als spiegel."</p>
+    <p class="lead">"SZINN is het systeem dat ik heb gebouwd en samengebracht. Mijn rol is het te faciliteren en met zorg aan jou door te geven."</p>
     <p>Elly Elizabeth Korving is ondernemer, business coach, spiritual guide en life coach. Ze werkt vanuit de overtuiging dat bewustzijn niet iets is wat je toevoegt aan je leven, maar iets wat je terugvindt in jezelf.</p>
-    <p>Het SZINN Alignment Blueprint is geboren uit haar eigen zoektocht. Uit jarenlang werken met mensen die voelden dat er meer was, maar niet wisten waar te kijken.</p>
-    <div class="qb"><p>Niet zoeken naar meer. Maar ontdekken wat er al is.</p></div>
-    <p>Ze combineert westerse en oosterse systemen, Sacred Geometry, numerologie, astrologie en haar eigen SZINN Alignment Methode™ tot een geheel dat <strong>resoneert op het niveau van de ziel.</strong></p>
+    <p>SZINN is het systeem dat ze heeft gebouwd en samengebracht. Het synthetiseert astrologie, numerologie en Kabbalah, en doet alle berekeningen zelf. Haar rol is om het te faciliteren en het met zorg aan jou door te geven.</p>
+    <div class="qb"><p>Wat je ontvangt is jouw eigen blauwdruk, door deze systemen teruggekaatst naar jou.</p></div>
+    <p>Het Blueprint is geboren uit haar eigen zoektocht. Uit jarenlang werken met mensen die voelden dat er meer was, maar niet wisten waar te kijken. Niet zoeken naar meer. Maar ontdekken wat er al is.</p>
     <span style="font-family:'Cormorant Garamond',serif;font-size:30px;font-style:italic;color:var(--gold);display:block;margin-top:20px;">Elly Elizabeth..</span>
   </div>
 </section>
