@@ -246,6 +246,14 @@
     margin-left: 4px;
   }
 
+  .field-hint {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--muted);
+    font-weight: 300;
+    margin: -2px 0 9px;
+  }
+
   .field input, .field select, .field textarea {
     width: 100%;
     background: #fff;
@@ -547,6 +555,18 @@
                placeholder="Your last name" autocomplete="family-name">
         <span class="err-msg">Please enter your last name</span>
       </div>
+    </div>
+
+    <div class="field" id="field-geboortenaam">
+      <label class="field-label" data-nl="Volledige geboortenaam" data-en="Full birth name">Full birth name</label>
+      <p class="field-hint"
+         data-nl="Zoals je volledige naam op je geboorteakte staat, met al je voornamen. SZINN gebruikt deze naam voor je numerologie. Wijkt hij af van de naam hierboven (bijvoorbeeld een meisjesnaam of extra voornamen)? Vul hem dan hier volledig in."
+         data-en="As your full name appears on your birth certificate, including all your given names. SZINN uses this name for your numerology. Does it differ from the name above (for example a maiden name or additional given names)? Then enter it in full here.">As your full name appears on your birth certificate, including all your given names. SZINN uses this name for your numerology. Does it differ from the name above (for example a maiden name or additional given names)? Then enter it in full here.</p>
+      <input type="text" id="geboortenaam"
+             data-placeholder-nl="Bijv. Anna Maria van der Berg"
+             data-placeholder-en="E.g. Anna Maria van der Berg"
+             placeholder="E.g. Anna Maria van der Berg" autocomplete="off">
+      <span class="err-msg" data-nl="Vul je volledige geboortenaam in" data-en="Please enter your full birth name">Please enter your full birth name</span>
     </div>
 
     <div class="field" id="field-email">
@@ -1136,7 +1156,7 @@ function show(i) {
 function validate(i) {
   if (i !== 0) return true;
   let ok = true;
-  ['voornaam','achternaam','email','geboortedatum','geboortetijd','geboorteland','geboorteplaats'].forEach(id => {
+  ['voornaam','achternaam','geboortenaam','email','geboortedatum','geboortetijd','geboorteland','geboorteplaats'].forEach(id => {
     const el = document.getElementById(id);
     const fd = document.getElementById('field-' + id);
     if (!el || !el.value.trim()) { fd && fd.classList.add('has-error'); ok = false; }
@@ -1158,7 +1178,7 @@ function collect() {
   return {
     timestamp: new Date().toISOString(),
     language: lang,
-    voornaam: v('voornaam'), achternaam: v('achternaam'), email: v('email'),
+    voornaam: v('voornaam'), achternaam: v('achternaam'), geboortenaam: v('geboortenaam'), email: v('email'),
     geboortedatum: v('geboortedatum'), geboortetijd: v('geboortetijd'),
     geboorteland: v('geboorteland'), geboorteplaats: v('geboorteplaats'),
     blueprint_taal: v('blueprint-taal'),
