@@ -254,6 +254,44 @@
     margin: -2px 0 9px;
   }
 
+  /* ── Geboorteplaats: stadzoeker met coördinaten ── */
+  .ac-wrap { position: relative; }
+  .ac-list {
+    display: none;
+    position: absolute; top: calc(100% + 2px); left: 0; right: 0; z-index: 40;
+    background: #fff; border: 1px solid var(--border);
+    border-radius: 3px; max-height: 256px; overflow-y: auto;
+    box-shadow: 0 10px 30px rgba(13,10,7,0.10);
+  }
+  .ac-list.open { display: block; }
+  .ac-item, .ac-msg { padding: 11px 16px; font-size: 14px; line-height: 1.4; }
+  .ac-item {
+    cursor: pointer; display: flex; justify-content: space-between;
+    gap: 14px; align-items: baseline; border-bottom: 1px solid var(--border-light);
+  }
+  .ac-item:last-child { border-bottom: none; }
+  .ac-item:hover, .ac-item.active { background: var(--gold-light); }
+  .ac-name { color: var(--ink); font-weight: 400; }
+  .ac-sub { color: var(--muted); font-size: 12px; }
+  .ac-coord { color: var(--gold2); font-size: 11.5px; white-space: nowrap; letter-spacing: .02em; }
+  .ac-msg { color: var(--muted); font-size: 13px; }
+  .coord-readout {
+    margin-top: 9px; font-size: 13.5px; color: var(--gold2);
+    display: flex; align-items: center; gap: 9px; letter-spacing: .02em;
+  }
+  .coord-pin { color: var(--gold); }
+  .coord-clear, .manual-toggle {
+    background: none; border: none; padding: 0; cursor: pointer;
+    font-family: 'Jost', sans-serif; font-weight: 300; color: var(--muted);
+    font-size: 12px; text-decoration: underline; text-underline-offset: 2px;
+  }
+  .coord-clear:hover, .manual-toggle:hover { color: var(--gold2); }
+  .manual-toggle { display: block; margin-top: 10px; }
+  .manual-coords {
+    margin-top: 12px; padding: 14px 16px;
+    background: var(--gold-light); border-radius: 3px;
+  }
+
   .field input, .field select, .field textarea {
     width: 100%;
     background: #fff;
@@ -618,11 +656,56 @@
 
     <div class="field" id="field-geboorteplaats">
       <label class="field-label" data-nl="Geboorteplaats" data-en="City of birth">Geboorteplaats</label>
-      <input type="text" id="geboorteplaats" 
-             data-placeholder-nl="Stad of gemeente waar je geboren bent"
-             data-placeholder-en="City or town where you were born"
-             placeholder="Stad of gemeente waar je geboren bent">
-      <span class="err-msg">Vul je geboorteplaats in</span>
+      <p class="field-hint"
+         data-nl="Typ je geboortestad en kies de juiste plaats uit de lijst. SZINN vult dan automatisch de exacte coördinaten en tijdzone in, net zoals astro.com dat doet."
+         data-en="Type your city of birth and choose the right place from the list. SZINN then fills in the exact coordinates and time zone automatically, just like astro.com does.">Typ je geboortestad en kies de juiste plaats uit de lijst. SZINN vult dan automatisch de exacte coördinaten en tijdzone in, net zoals astro.com dat doet.</p>
+      <div class="ac-wrap">
+        <input type="text" id="geboorteplaats" autocomplete="off"
+               data-placeholder-nl="Begin te typen, bijv. Amsterdam"
+               data-placeholder-en="Start typing, e.g. Amsterdam"
+               placeholder="Begin te typen, bijv. Amsterdam">
+        <div class="ac-list" id="ac-list" role="listbox"></div>
+      </div>
+
+      <div class="coord-readout" id="coord-readout" hidden>
+        <span class="coord-pin">◇</span>
+        <span id="coord-display"></span>
+        <button type="button" class="coord-clear" id="coord-clear"
+                data-nl="wijzigen" data-en="change">wijzigen</button>
+      </div>
+
+      <button type="button" class="manual-toggle" id="manual-toggle"
+              data-nl="Plaats niet gevonden? Coördinaten handmatig invullen"
+              data-en="Can’t find your place? Enter coordinates manually">Plaats niet gevonden? Coördinaten handmatig invullen</button>
+
+      <div class="manual-coords" id="manual-coords" hidden>
+        <div class="grid-2">
+          <div class="field" style="margin:0">
+            <label class="field-label" data-nl="Breedtegraad" data-en="Latitude">Breedtegraad</label>
+            <input type="number" step="any" id="manual-lat"
+                   data-placeholder-nl="bijv. 52.3676 (N positief, Z negatief)"
+                   data-placeholder-en="e.g. 52.3676 (N positive, S negative)"
+                   placeholder="bijv. 52.3676 (N positief, Z negatief)">
+          </div>
+          <div class="field" style="margin:0">
+            <label class="field-label" data-nl="Lengtegraad" data-en="Longitude">Lengtegraad</label>
+            <input type="number" step="any" id="manual-lng"
+                   data-placeholder-nl="bijv. 4.9041 (O positief, W negatief)"
+                   data-placeholder-en="e.g. 4.9041 (E positive, W negative)"
+                   placeholder="bijv. 4.9041 (O positief, W negatief)">
+          </div>
+        </div>
+        <p class="field-hint" style="margin:8px 0 0"
+           data-nl="Je vindt deze op astro.com onder je geboortegegevens. SZINN controleert de tijdzone bij het maken van je Blueprint."
+           data-en="You can find these on astro.com under your birth data. SZINN verifies the time zone when creating your Blueprint.">Je vindt deze op astro.com onder je geboortegegevens. SZINN controleert de tijdzone bij het maken van je Blueprint.</p>
+      </div>
+
+      <input type="hidden" id="geboorte_lat">
+      <input type="hidden" id="geboorte_lng">
+      <input type="hidden" id="geboorte_tz">
+      <input type="hidden" id="geboorteplaats_volledig">
+
+      <span class="err-msg" data-nl="Kies je geboorteplaats uit de lijst (of vul de coördinaten handmatig in)" data-en="Choose your place of birth from the list (or enter the coordinates manually)">Kies je geboorteplaats uit de lijst (of vul de coördinaten handmatig in)</span>
     </div>
 
 
@@ -1142,6 +1225,13 @@ function validate(i) {
   if (em && em.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value)) {
     ef && ef.classList.add('has-error'); ok = false;
   }
+  // Geboorteplaats moet opgeloste coördinaten hebben (uit de lijst of handmatig)
+  const latH = document.getElementById('geboorte_lat');
+  const lngH = document.getElementById('geboorte_lng');
+  const fp = document.getElementById('field-geboorteplaats');
+  if (!latH || !latH.value || !lngH || !lngH.value) {
+    fp && fp.classList.add('has-error'); ok = false;
+  }
   return ok;
 }
 
@@ -1156,6 +1246,11 @@ function collect() {
     voornaam: v('voornaam'), achternaam: v('achternaam'), geboortenaam: v('geboortenaam'), email: v('email'),
     geboortedatum: v('geboortedatum'), geboortetijd: v('geboortetijd'),
     geboorteland: v('geboorteland'), geboorteplaats: v('geboorteplaats'),
+    geboorteplaats_volledig: v('geboorteplaats_volledig'),
+    geboorte_lat: v('geboorte_lat'), geboorte_lng: v('geboorte_lng'),
+    geboorte_tz: v('geboorte_tz'),
+    geboorteplaats_coords: (v('geboorte_lat') && v('geboorte_lng'))
+      ? (fmtDMS(v('geboorte_lat'), true) + ' ' + fmtDMS(v('geboorte_lng'), false)) : '',
     blueprint_taal: v('blueprint-taal'),
     p1_bezig: v('p1'), p2_verlangen: v('p2'), p3_energie: v('p3'),
     p4_veranderen: v('p4'), p5_tevredenheid: v('p5'),
@@ -1168,6 +1263,143 @@ function collect() {
     b1_ondergaan_creeren: v('b1'), b2_irritatie_bewondering: v('b2'),
     b3_controle_vertrouwen: v('b3'), b4_angst_loslaten: v('b4')
   };
+}
+
+/* ── Geboorteplaats: stadzoeker met coördinaten (Open-Meteo geocoding) ── */
+function fmtDMS(dec, isLat) {
+  if (dec === '' || dec === null || dec === undefined || isNaN(dec)) return '';
+  dec = Number(dec);
+  const hemi = isLat ? (dec >= 0 ? 'N' : 'S') : (dec >= 0 ? 'E' : 'W');
+  let a = Math.abs(dec);
+  let d = Math.floor(a);
+  let m = Math.round((a - d) * 60);
+  if (m === 60) { d += 1; m = 0; }
+  return d + '\u00B0' + String(m).padStart(2, '0') + '\u2032' + hemi;
+}
+
+function setupBirthplace() {
+  const input = document.getElementById('geboorteplaats');
+  const list = document.getElementById('ac-list');
+  if (!input || !list) return;
+  const latH = document.getElementById('geboorte_lat');
+  const lngH = document.getElementById('geboorte_lng');
+  const tzH = document.getElementById('geboorte_tz');
+  const fullH = document.getElementById('geboorteplaats_volledig');
+  const readout = document.getElementById('coord-readout');
+  const display = document.getElementById('coord-display');
+  const clearBtn = document.getElementById('coord-clear');
+  const fieldWrap = document.getElementById('field-geboorteplaats');
+  const manualToggle = document.getElementById('manual-toggle');
+  const manualBox = document.getElementById('manual-coords');
+  const manualLat = document.getElementById('manual-lat');
+  const manualLng = document.getElementById('manual-lng');
+  let timer = null, items = [], active = -1;
+
+  function clearCoords() {
+    latH.value = ''; lngH.value = ''; tzH.value = ''; fullH.value = '';
+    readout.hidden = true; display.textContent = '';
+  }
+  function setCoords(lat, lng, tz, label) {
+    latH.value = lat; lngH.value = lng; tzH.value = tz || ''; fullH.value = label || '';
+    const parts = [fmtDMS(lat, true) + ' \u00B7 ' + fmtDMS(lng, false)];
+    if (tz) parts.push(tz);
+    display.textContent = parts.join(' \u00B7 ');
+    readout.hidden = false;
+    fieldWrap && fieldWrap.classList.remove('has-error');
+  }
+  function closeList() { list.classList.remove('open'); list.innerHTML = ''; items = []; active = -1; }
+
+  function render(results) {
+    if (!results || !results.length) {
+      list.innerHTML = '<div class="ac-msg">' +
+        (lang === 'en' ? 'No places found \u2014 try another spelling or enter coordinates manually.'
+                       : 'Geen plaatsen gevonden \u2014 probeer een andere spelling of vul de co\u00F6rdinaten handmatig in.') +
+        '</div>';
+      list.classList.add('open'); items = []; active = -1; return;
+    }
+    items = results;
+    list.innerHTML = results.map(function (r, i) {
+      const sub = [r.admin1, r.country].filter(Boolean).join(', ');
+      const coord = fmtDMS(r.latitude, true) + ' ' + fmtDMS(r.longitude, false);
+      return '<div class="ac-item" data-i="' + i + '" role="option">' +
+               '<span><span class="ac-name">' + r.name + '</span>' +
+               (sub ? ' <span class="ac-sub">' + sub + '</span>' : '') + '</span>' +
+               '<span class="ac-coord">' + coord + '</span></div>';
+    }).join('');
+    list.classList.add('open'); active = -1;
+    list.querySelectorAll('.ac-item').forEach(function (el) {
+      el.addEventListener('mousedown', function (e) {
+        e.preventDefault();
+        choose(results[Number(el.getAttribute('data-i'))]);
+      });
+    });
+  }
+
+  function choose(r) {
+    const label = [r.name, r.admin1, r.country].filter(Boolean).join(', ');
+    input.value = r.name + (r.country ? ', ' + r.country : '');
+    setCoords(r.latitude, r.longitude, r.timezone, label);
+    closeList();
+  }
+
+  function search(q) {
+    const url = 'https://geocoding-api.open-meteo.com/v1/search?name=' +
+      encodeURIComponent(q) + '&count=6&language=' + (lang === 'en' ? 'en' : 'nl') + '&format=json';
+    list.innerHTML = '<div class="ac-msg">' + (lang === 'en' ? 'Searching\u2026' : 'Zoeken\u2026') + '</div>';
+    list.classList.add('open');
+    fetch(url).then(function (r) { return r.json(); }).then(function (d) {
+      if (input.value.trim() !== q) return;
+      render(d.results || []);
+    }).catch(function () {
+      list.innerHTML = '<div class="ac-msg">' +
+        (lang === 'en' ? 'Search unavailable \u2014 please enter coordinates manually.'
+                       : 'Zoeken lukt nu niet \u2014 vul de co\u00F6rdinaten handmatig in.') + '</div>';
+      list.classList.add('open');
+    });
+  }
+
+  input.addEventListener('input', function () {
+    clearCoords();
+    const q = input.value.trim();
+    clearTimeout(timer);
+    if (q.length < 2) { closeList(); return; }
+    timer = setTimeout(function () { search(q); }, 280);
+  });
+
+  input.addEventListener('keydown', function (e) {
+    if (!list.classList.contains('open') || !items.length) return;
+    const els = list.querySelectorAll('.ac-item');
+    if (e.key === 'ArrowDown') { e.preventDefault(); active = Math.min(active + 1, items.length - 1); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); active = Math.max(active - 1, 0); }
+    else if (e.key === 'Enter') { if (active >= 0) { e.preventDefault(); choose(items[active]); } return; }
+    else if (e.key === 'Escape') { closeList(); return; }
+    else return;
+    els.forEach(function (el, i) { el.classList.toggle('active', i === active); });
+    if (els[active]) els[active].scrollIntoView({ block: 'nearest' });
+  });
+
+  document.addEventListener('click', function (e) {
+    if (fieldWrap && !fieldWrap.contains(e.target)) closeList();
+  });
+
+  clearBtn && clearBtn.addEventListener('click', function () {
+    clearCoords(); input.value = ''; input.focus();
+  });
+  manualToggle && manualToggle.addEventListener('click', function () {
+    manualBox.hidden = !manualBox.hidden;
+    if (!manualBox.hidden) manualLat.focus();
+  });
+
+  function applyManual() {
+    const la = parseFloat(manualLat.value), lo = parseFloat(manualLng.value);
+    if (!isNaN(la) && !isNaN(lo) && la >= -90 && la <= 90 && lo >= -180 && lo <= 180) {
+      setCoords(la, lo, '', input.value.trim());
+    } else {
+      clearCoords();
+    }
+  }
+  manualLat && manualLat.addEventListener('input', applyManual);
+  manualLng && manualLng.addEventListener('input', applyManual);
 }
 
 function showThankYou() {
@@ -1209,6 +1441,7 @@ function submitForm() {
 // Init — taal automatisch NL
 document.addEventListener('DOMContentLoaded', function() {
   setLang('nl');
+  setupBirthplace();
   show(0);
 });
 </script>
