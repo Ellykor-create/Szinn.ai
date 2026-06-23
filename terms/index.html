@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Terms and Conditions · SZINN</title>
+<meta name="description" content="SZINN Terms and Conditions. SZINN is a trading name of Alterego B.V.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F2EA; --surface:#FFFFFF; --ink:#1E1B16; --ink-soft:#4A453C;
+  --navy:#10141E; --navy-soft:#1C2230; --gold:#C9A96E; --gold-deep:#A8884A;
+  --line:rgba(30,27,22,.12); --line-soft:rgba(30,27,22,.07);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:'Jost',system-ui,sans-serif; font-weight:300;
+  font-size:16px; line-height:1.75; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:760px; margin:0 auto; padding:0 24px}
+
+/* HEADER */
+header.masthead{
+  background:var(--navy); color:#EDE7DA; padding:54px 0 46px; text-align:center;
+  border-bottom:2px solid var(--gold);
+}
+.brand{display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:30px}
+.brand .mark{width:34px; height:34px; opacity:.92}
+.brand .word{
+  font-family:'Cormorant Garamond',serif; font-weight:500; font-size:25px;
+  letter-spacing:.18em; color:#F1EADA;
+}
+header.masthead h1{
+  font-family:'Cormorant Garamond',serif; font-weight:500;
+  font-size:clamp(30px,6vw,44px); line-height:1.08; margin:0 0 14px; letter-spacing:.01em;
+}
+header.masthead .ver{
+  font-size:12px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--gold); font-weight:400;
+}
+
+/* ENTITY META */
+.meta{
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:6px; padding:24px 28px; margin:40px 0 14px;
+  font-size:14px; color:var(--ink-soft); line-height:1.85;
+}
+.meta strong{color:var(--ink); font-weight:500}
+.meta .lead{margin:0 0 14px; color:var(--ink)}
+.meta a{color:var(--gold-deep); text-decoration:none}
+.meta a:hover{text-decoration:underline}
+
+/* TOC */
+nav.toc{margin:30px 0 8px}
+nav.toc .toc-label{
+  font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+  color:var(--gold-deep); font-weight:400; margin-bottom:14px;
+}
+nav.toc ol{list-style:none; margin:0; padding:0; columns:2; column-gap:34px}
+nav.toc li{margin:0 0 9px; break-inside:avoid; font-size:14px}
+nav.toc a{
+  color:var(--ink-soft); text-decoration:none; display:flex; gap:10px; align-items:baseline;
+}
+nav.toc a:hover{color:var(--gold-deep)}
+nav.toc .n{color:var(--gold-deep); font-variant-numeric:tabular-nums; min-width:20px}
+
+hr.rule{border:0; border-top:1px solid var(--line); margin:46px 0}
+
+/* ARTICLES */
+article.art{margin:46px 0; scroll-margin-top:24px}
+article.art h2{
+  font-family:'Cormorant Garamond',serif; font-weight:500;
+  font-size:27px; line-height:1.15; margin:0 0 4px; color:var(--ink);
+}
+article.art .art-eyebrow{
+  font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--gold-deep); font-weight:400; margin-bottom:10px;
+}
+article.art h2 .hash{
+  font-size:18px; color:var(--gold); font-family:'Jost',sans-serif; font-weight:300;
+  margin-right:10px; vertical-align:.06em;
+}
+article.art p{margin:0 0 14px}
+article.art ol,article.art ul{margin:0 0 14px; padding-left:22px}
+article.art li{margin:0 0 8px}
+article.art ol.sub{list-style:lower-alpha; margin-top:6px}
+article.art .nested{list-style:circle; margin:6px 0 6px 4px; padding-left:20px}
+
+/* highlight key article */
+article.art.key{
+  background:var(--surface); border:1px solid var(--line);
+  border-left:3px solid var(--gold); border-radius:6px; padding:30px 30px 18px;
+}
+article.art.key h2{color:var(--ink)}
+
+/* FOOTER */
+footer.foot{
+  background:var(--navy); color:#C9C3B6; margin-top:60px;
+  padding:42px 0; text-align:center; font-size:13px; line-height:1.9;
+  border-top:2px solid var(--gold);
+}
+footer.foot .sig{
+  font-family:'Cormorant Garamond',serif; font-size:18px; letter-spacing:.14em;
+  color:#F1EADA; margin-bottom:10px;
+}
+footer.foot a{color:var(--gold); text-decoration:none}
+footer.foot .copyright{margin-top:14px; color:#8C8678; font-size:12px}
+
+@media (max-width:560px){
+  nav.toc ol{columns:1}
+  .meta{padding:20px}
+  article.art.key{padding:24px 20px 12px}
+}
+@media print{
+  body{background:#fff}
+  header.masthead,footer.foot{background:#fff;color:#1E1B16;border-color:var(--gold-deep)}
+  header.masthead .word,header.masthead h1,footer.foot .sig{color:#1E1B16}
+  article.art.key{background:#fff}
+  nav.toc{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <!-- Vervang de inline mark + wordmark door het officiele SZINN-logo (img src) wanneer gewenst -->
+  <div class="brand"><svg class="mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="20" cy="20" r="18" stroke="#C9A96E" stroke-width="1.1"/><circle cx="20" cy="13.5" r="6.5" stroke="#C9A96E" stroke-width="1.1"/><circle cx="14.3" cy="23.5" r="6.5" stroke="#C9A96E" stroke-width="1.1"/><circle cx="25.7" cy="23.5" r="6.5" stroke="#C9A96E" stroke-width="1.1"/><circle cx="20" cy="20" r="2.1" fill="#C9A96E"/></svg><span class="word">szinn.ai</span></div>
+  <h1>Terms and Conditions</h1>
+  <div class="ver">Version 1.0 — June 2026</div>
+</header>
+
+<div class="wrap">
+
+  <div class="meta">
+    <p class="lead">SZINN is a trading name of Alterego B.V. All agreements, invoicing, payments, and legal liability are conducted through Alterego B.V.</p>
+    <strong>Alterego B.V.</strong><br>
+    Chamber of Commerce (KvK): 27252605<br>
+    VAT Number: NL810917051B01<br>
+    Registered Address: Molendijk 10, 2641 NV Pijnacker, The Netherlands<br>
+    Email: <a href="mailto:info@szinn.ai">info@szinn.ai</a><br>
+    Website: <a href="https://www.szinn.ai">www.szinn.ai</a>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-label">Contents</div>
+    <ol><li><a href="#art1"><span class="n">01</span>Definitions</a></li><li><a href="#art2"><span class="n">02</span>Applicability</a></li><li><a href="#art3"><span class="n">03</span>Formation of the Agreement</a></li><li><a href="#art4"><span class="n">04</span>Delivery of Digital Products</a></li><li><a href="#art5"><span class="n">05</span>Personalized and Custom-Made Products</a></li><li><a href="#art6"><span class="n">06</span>Right of Withdrawal</a></li><li><a href="#art7"><span class="n">07</span>Pricing and Payment</a></li><li><a href="#art8"><span class="n">08</span>Memberships and Subscriptions</a></li><li><a href="#art9"><span class="n">09</span>Use of Artificial Intelligence (AI)</a></li><li><a href="#art10"><span class="n">10</span>Intellectual Property</a></li><li><a href="#art11"><span class="n">11</span>Online Platform Usage</a></li><li><a href="#art12"><span class="n">12</span>Disclaimer</a></li><li><a href="#art13"><span class="n">13</span>Limitation of Liability</a></li><li><a href="#art14"><span class="n">14</span>Privacy and Data Processing</a></li><li><a href="#art15"><span class="n">15</span>Force Majeure</a></li><li><a href="#art16"><span class="n">16</span>Complaints</a></li><li><a href="#art17"><span class="n">17</span>Governing Law and Disputes</a></li></ol>
+  </nav>
+
+  <hr class="rule">
+
+  <article class="art" id="art1"><div class="art-eyebrow">Article 1</div><h2><span class="hash">01</span>Definitions</h2>
+  <p>For the purposes of these Terms and Conditions:</p>
+  <ul>
+   <li><strong>SZINN</strong> means the trading name of Alterego B.V., registered with the Dutch Chamber of Commerce under number 27252605.</li>
+   <li><strong>Customer</strong> means any natural person or legal entity entering into an agreement with SZINN.</li>
+   <li><strong>Digital Products</strong> means all digital products and services offered by SZINN, including but not limited to: Personal Blueprints; Frequency Blueprints; Awareness Reports; AI-generated analyses; online courses and training programs; memberships; communities; workbooks; e-books; downloadable content; audio recordings; video modules; coaching materials; assessments; and other digital content.</li>
+   <li><strong>Agreement</strong> means any agreement between SZINN and the Customer.</li>
+   <li><strong>Personalized Product</strong> means a product that is wholly or partly created based on information provided by the Customer.</li>
+  </ul></article><article class="art" id="art2"><div class="art-eyebrow">Article 2</div><h2><span class="hash">02</span>Applicability</h2>
+  <ol>
+   <li>These Terms and Conditions apply to all offers, agreements, products, and services provided by SZINN.</li>
+   <li>By purchasing a product or service, the Customer agrees to these Terms and Conditions.</li>
+   <li>Deviations from these Terms and Conditions are valid only if agreed upon in writing.</li>
+   <li>If any provision is found to be invalid or unenforceable, the remaining provisions shall remain in full force and effect.</li>
+  </ol></article><article class="art" id="art3"><div class="art-eyebrow">Article 3</div><h2><span class="hash">03</span>Formation of the Agreement</h2>
+  <ol>
+   <li>An Agreement is formed when:
+     <ul class="nested"><li>an order is placed;</li><li>payment is received;</li><li>a subscription is activated;</li><li>access is granted to an online environment;</li><li>an assignment is confirmed in writing.</li></ul></li>
+   <li>SZINN reserves the right to refuse any order or request without providing a reason.</li>
+  </ol></article><article class="art" id="art4"><div class="art-eyebrow">Article 4</div><h2><span class="hash">04</span>Delivery of Digital Products</h2>
+  <ol>
+   <li>Digital products may be delivered through:
+     <ul class="nested"><li>email;</li><li>download links;</li><li>online learning platforms;</li><li>community platforms;</li><li>personalized reports;</li><li>other digital channels.</li></ul></li>
+   <li>The Customer is responsible for providing accurate contact information.</li>
+   <li>Delivery times are estimates unless explicitly agreed otherwise.</li>
+   <li>Delays in delivery do not entitle the Customer to compensation.</li>
+  </ol></article><article class="art key" id="art5"><div class="art-eyebrow">Article 5</div><h2><span class="hash">05</span>Personalized and Custom-Made Products</h2>
+  <ol>
+   <li>Products created based on information supplied by the Customer are considered personalized products.</li>
+   <li>This includes, but is not limited to:
+     <ul class="nested"><li>SZINN Blueprints;</li><li>Frequency Blueprints;</li><li>Awareness Reports;</li><li>AI-assisted analyses;</li><li>personalized assessments;</li><li>coaching documents.</li></ul></li>
+   <li>Once production has commenced, personalized products cannot be cancelled.</li>
+   <li>Any work already performed remains payable in full.</li>
+  </ol></article><article class="art key" id="art6"><div class="art-eyebrow">Article 6</div><h2><span class="hash">06</span>Right of Withdrawal</h2>
+  <ol>
+   <li>Consumers are entitled to statutory withdrawal rights where applicable under relevant consumer protection laws.</li>
+   <li>By purchasing a digital product, the Customer expressly agrees that delivery may begin immediately.</li>
+   <li>Where the Customer has expressly consented to immediate delivery and acknowledged the loss of the right of withdrawal, the right of withdrawal shall terminate once:
+     <ul class="nested"><li>access to an online platform has been granted;</li><li>a download has been made available;</li><li>a report has been delivered;</li><li>production of a personalized product has commenced.</li></ul></li>
+   <li>Personalized products created specifically for the Customer are exempt from the right of withdrawal to the extent permitted by law.</li>
+  </ol></article><article class="art" id="art7"><div class="art-eyebrow">Article 7</div><h2><span class="hash">07</span>Pricing and Payment</h2>
+  <ol>
+   <li>All prices are stated in Euros.</li>
+   <li>Prices are inclusive or exclusive of VAT as indicated on the sales or checkout page.</li>
+   <li>Payment must be made through the available payment methods.</li>
+   <li>SZINN may suspend access to products, memberships, or services in the event of non-payment.</li>
+   <li>Collection costs, legal fees, and statutory interest arising from late payment shall be borne by the Customer.</li>
+  </ol></article><article class="art" id="art8"><div class="art-eyebrow">Article 8</div><h2><span class="hash">08</span>Memberships and Subscriptions</h2>
+  <ol>
+   <li>Memberships and subscriptions are provided for the duration specified at the time of purchase.</li>
+   <li>Subscriptions may renew automatically unless otherwise stated.</li>
+   <li>Cancellation must be made in accordance with the terms specified on the sales page or in the Agreement.</li>
+   <li>Payments already made are non-refundable unless required by law.</li>
+   <li>SZINN reserves the right to modify, update, expand, or improve membership content, community platforms, and educational programs.</li>
+  </ol></article><article class="art key" id="art9"><div class="art-eyebrow">Article 9</div><h2><span class="hash">09</span>Use of Artificial Intelligence (AI)</h2>
+  <ol>
+   <li>SZINN may use artificial intelligence, automation technologies, and digital tools in the creation and delivery of products and services.</li>
+   <li>AI is used as a supportive tool in research, analysis, development, and content creation processes.</li>
+   <li>While SZINN strives for accuracy and quality, no guarantee is made regarding the completeness, accuracy, or suitability of AI-assisted outputs.</li>
+   <li>The Customer remains solely responsible for interpreting and applying any information provided.</li>
+  </ol></article><article class="art" id="art10"><div class="art-eyebrow">Article 10</div><h2><span class="hash">10</span>Intellectual Property</h2>
+  <ol>
+   <li>All intellectual property rights relating to materials, reports, methodologies, frameworks, texts, audio recordings, videos, training materials, visuals, and other content remain the exclusive property of Alterego B.V.</li>
+   <li>Without prior written permission, the Customer may not:
+     <ul class="nested"><li>reproduce;</li><li>distribute;</li><li>publish;</li><li>sell;</li><li>commercially exploit any materials.</li></ul></li>
+   <li>Access to Digital Products grants only a personal, non-transferable, non-exclusive license for personal use.</li>
+  </ol></article><article class="art" id="art11"><div class="art-eyebrow">Article 11</div><h2><span class="hash">11</span>Online Platform Usage</h2>
+  <ol>
+   <li>Access to online programs, communities, and learning platforms is personal and may not be shared.</li>
+   <li>Login credentials must be kept confidential.</li>
+   <li>SZINN may suspend or terminate access in cases of misuse, fraud, or violation of these Terms and Conditions.</li>
+   <li>Content from online platforms may not be copied, recorded, distributed, or publicly shared without written permission.</li>
+  </ol></article><article class="art" id="art12"><div class="art-eyebrow">Article 12</div><h2><span class="hash">12</span>Disclaimer</h2>
+  <ol>
+   <li>All products, reports, programs, exercises, and content provided by SZINN are intended solely for:
+     <ul class="nested"><li>education;</li><li>personal development;</li><li>self-awareness;</li><li>self-reflection.</li></ul></li>
+   <li>No information provided by SZINN constitutes:
+     <ul class="nested"><li>medical advice;</li><li>psychological advice;</li><li>therapeutic advice;</li><li>legal advice;</li><li>financial advice;</li><li>investment advice.</li></ul></li>
+   <li>Customers remain fully responsible for their own decisions, actions, and outcomes.</li>
+  </ol></article><article class="art" id="art13"><div class="art-eyebrow">Article 13</div><h2><span class="hash">13</span>Limitation of Liability</h2>
+  <ol>
+   <li>Participation in programs and use of products is entirely at the Customer's own risk.</li>
+   <li>The total liability of SZINN shall be limited to the amount paid by the Customer for the relevant product or service.</li>
+   <li>SZINN shall not be liable for:
+     <ul class="nested"><li>indirect damages;</li><li>consequential damages;</li><li>loss of profits;</li><li>loss of revenue;</li><li>missed opportunities;</li><li>decisions made based on provided information.</li></ul></li>
+   <li>Any claim against SZINN must be brought within twelve (12) months of the event giving rise to the claim.</li>
+  </ol></article><article class="art" id="art14"><div class="art-eyebrow">Article 14</div><h2><span class="hash">14</span>Privacy and Data Processing</h2>
+  <ol>
+   <li>Personal data is processed in accordance with applicable privacy laws and regulations.</li>
+   <li>Customer data may be processed through digital systems and AI technologies for the purpose of creating personalized products and services.</li>
+   <li>Further details regarding data processing are outlined in the Privacy Policy of Alterego B.V.</li>
+  </ol></article><article class="art" id="art15"><div class="art-eyebrow">Article 15</div><h2><span class="hash">15</span>Force Majeure</h2>
+  <ol>
+   <li>SZINN shall not be liable for any failure to perform its obligations where such failure results from circumstances beyond its reasonable control.</li>
+   <li>Force majeure includes, but is not limited to:
+     <ul class="nested"><li>software failures;</li><li>internet outages;</li><li>cyberattacks;</li><li>technical disruptions;</li><li>illness;</li><li>governmental actions;</li><li>natural disasters.</li></ul></li>
+  </ol></article><article class="art" id="art16"><div class="art-eyebrow">Article 16</div><h2><span class="hash">16</span>Complaints</h2>
+  <ol>
+   <li>Complaints must be submitted in writing within fourteen (14) days of discovery via info@szinn.ai.</li>
+   <li>SZINN will make reasonable efforts to address complaints within a reasonable timeframe.</li>
+   <li>Submitting a complaint does not suspend any payment obligations.</li>
+  </ol></article><article class="art" id="art17"><div class="art-eyebrow">Article 17</div><h2><span class="hash">17</span>Governing Law and Disputes</h2>
+  <ol>
+   <li>These Terms and Conditions and all Agreements shall be governed exclusively by the laws of the Netherlands.</li>
+   <li>Any disputes shall be submitted to the competent court in the Netherlands.</li>
+   <li>Before initiating legal proceedings, the parties shall make reasonable efforts to resolve disputes amicably.</li>
+  </ol></article>
+
+  <hr class="rule">
+
+  <article class="art">
+    <div class="art-eyebrow">Final Provision</div>
+    <h2>Final Provision</h2>
+    <p>These Terms and Conditions have been established by Alterego B.V. and apply to all products and services offered under the trading name SZINN.</p>
+    <p style="color:var(--ink-soft);font-size:14px">Version 1.0 — June 2026</p>
+  </article>
+
+</div>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="sig">SZINN</div>
+    Elly Elizabeth Korving · SZINN · 110 Life &amp; Business Awareness<br>
+    <a href="https://www.szinn.ai">szinn.ai</a> &nbsp;·&nbsp; <a href="mailto:info@szinn.ai">info@szinn.ai</a>
+    <div class="copyright">© 2026 Elly Elizabeth Korving · Alterego B.V. · All rights reserved · szinn.ai</div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Algemene Voorwaarden · SZINN</title>
+<meta name="description" content="SZINN Algemene Voorwaarden. SZINN is een handelsnaam van Alterego B.V.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F2EA; --surface:#FFFFFF; --ink:#1E1B16; --ink-soft:#4A453C;
+  --navy:#10141E; --navy-soft:#1C2230; --gold:#C9A96E; --gold-deep:#A8884A;
+  --line:rgba(30,27,22,.12); --line-soft:rgba(30,27,22,.07);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:'Jost',system-ui,sans-serif; font-weight:300;
+  font-size:16px; line-height:1.75; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:760px; margin:0 auto; padding:0 24px}
+
+/* HEADER */
+header.masthead{
+  background:var(--navy); color:#EDE7DA; padding:54px 0 46px; text-align:center;
+  border-bottom:2px solid var(--gold);
+}
+.brand{display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:30px}
+.brand .mark{width:34px; height:34px; opacity:.92}
+.brand .word{
+  font-family:'Cormorant Garamond',serif; font-weight:500; font-size:25px;
+  letter-spacing:.18em; color:#F1EADA;
+}
+header.masthead h1{
+  font-family:'Cormorant Garamond',serif; font-weight:500;
+  font-size:clamp(30px,6vw,44px); line-height:1.08; margin:0 0 14px; letter-spacing:.01em;
+}
+header.masthead .ver{
+  font-size:12px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--gold); font-weight:400;
+}
+
+/* ENTITY META */
+.meta{
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:6px; padding:24px 28px; margin:40px 0 14px;
+  font-size:14px; color:var(--ink-soft); line-height:1.85;
+}
+.meta strong{color:var(--ink); font-weight:500}
+.meta .lead{margin:0 0 14px; color:var(--ink)}
+.meta a{color:var(--gold-deep); text-decoration:none}
+.meta a:hover{text-decoration:underline}
+
+/* TOC */
+nav.toc{margin:30px 0 8px}
+nav.toc .toc-label{
+  font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+  color:var(--gold-deep); font-weight:400; margin-bottom:14px;
+}
+nav.toc ol{list-style:none; margin:0; padding:0; columns:2; column-gap:34px}
+nav.toc li{margin:0 0 9px; break-inside:avoid; font-size:14px}
+nav.toc a{
+  color:var(--ink-soft); text-decoration:none; display:flex; gap:10px; align-items:baseline;
+}
+nav.toc a:hover{color:var(--gold-deep)}
+nav.toc .n{color:var(--gold-deep); font-variant-numeric:tabular-nums; min-width:20px}
+
+hr.rule{border:0; border-top:1px solid var(--line); margin:46px 0}
+
+/* ARTICLES */
+article.art{margin:46px 0; scroll-margin-top:24px}
+article.art h2{
+  font-family:'Cormorant Garamond',serif; font-weight:500;
+  font-size:27px; line-height:1.15; margin:0 0 4px; color:var(--ink);
+}
+article.art .art-eyebrow{
+  font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--gold-deep); font-weight:400; margin-bottom:10px;
+}
+article.art h2 .hash{
+  font-size:18px; color:var(--gold); font-family:'Jost',sans-serif; font-weight:300;
+  margin-right:10px; vertical-align:.06em;
+}
+article.art p{margin:0 0 14px}
+article.art ol,article.art ul{margin:0 0 14px; padding-left:22px}
+article.art li{margin:0 0 8px}
+article.art ol.sub{list-style:lower-alpha; margin-top:6px}
+article.art .nested{list-style:circle; margin:6px 0 6px 4px; padding-left:20px}
+
+/* highlight key article */
+article.art.key{
+  background:var(--surface); border:1px solid var(--line);
+  border-left:3px solid var(--gold); border-radius:6px; padding:30px 30px 18px;
+}
+article.art.key h2{color:var(--ink)}
+
+/* FOOTER */
+footer.foot{
+  background:var(--navy); color:#C9C3B6; margin-top:60px;
+  padding:42px 0; text-align:center; font-size:13px; line-height:1.9;
+  border-top:2px solid var(--gold);
+}
+footer.foot .sig{
+  font-family:'Cormorant Garamond',serif; font-size:18px; letter-spacing:.14em;
+  color:#F1EADA; margin-bottom:10px;
+}
+footer.foot a{color:var(--gold); text-decoration:none}
+footer.foot .copyright{margin-top:14px; color:#8C8678; font-size:12px}
+
+@media (max-width:560px){
+  nav.toc ol{columns:1}
+  .meta{padding:20px}
+  article.art.key{padding:24px 20px 12px}
+}
+@media print{
+  body{background:#fff}
+  header.masthead,footer.foot{background:#fff;color:#1E1B16;border-color:var(--gold-deep)}
+  header.masthead .word,header.masthead h1,footer.foot .sig{color:#1E1B16}
+  article.art.key{background:#fff}
+  nav.toc{display:none}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <!-- Vervang de inline mark + wordmark door het officiele SZINN-logo (img src) wanneer gewenst -->
+  <div class="brand"><svg class="mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="20" cy="20" r="18" stroke="#C9A96E" stroke-width="1.1"/><circle cx="20" cy="13.5" r="6.5" stroke="#C9A96E" stroke-width="1.1"/><circle cx="14.3" cy="23.5" r="6.5" stroke="#C9A96E" stroke-width="1.1"/><circle cx="25.7" cy="23.5" r="6.5" stroke="#C9A96E" stroke-width="1.1"/><circle cx="20" cy="20" r="2.1" fill="#C9A96E"/></svg><span class="word">szinn.ai</span></div>
+  <h1>Algemene Voorwaarden</h1>
+  <div class="ver">Versie 1.0 — juni 2026</div>
+</header>
+
+<div class="wrap">
+
+  <div class="meta">
+    <p class="lead">SZINN is een handelsnaam van Alterego B.V. Alle overeenkomsten, facturering, betalingen en juridische aansprakelijkheid verlopen via Alterego B.V.</p>
+    <strong>Alterego B.V.</strong><br>
+    Kamer van Koophandel (KvK): 27252605<br>
+    Btw-nummer: NL810917051B01<br>
+    Vestigingsadres: Molendijk 10, 2641 NV Pijnacker, Nederland<br>
+    E-mail: <a href="mailto:info@szinn.ai">info@szinn.ai</a><br>
+    Website: <a href="https://www.szinn.ai">www.szinn.ai</a>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-label">Inhoud</div>
+    <ol><li><a href="#art1"><span class="n">01</span>Definities</a></li><li><a href="#art2"><span class="n">02</span>Toepasselijkheid</a></li><li><a href="#art3"><span class="n">03</span>Totstandkoming van de overeenkomst</a></li><li><a href="#art4"><span class="n">04</span>Levering van digitale producten</a></li><li><a href="#art5"><span class="n">05</span>Gepersonaliseerde en op maat gemaakte producten</a></li><li><a href="#art6"><span class="n">06</span>Herroepingsrecht</a></li><li><a href="#art7"><span class="n">07</span>Prijzen en betaling</a></li><li><a href="#art8"><span class="n">08</span>Lidmaatschappen en abonnementen</a></li><li><a href="#art9"><span class="n">09</span>Gebruik van kunstmatige intelligentie (AI)</a></li><li><a href="#art10"><span class="n">10</span>Intellectueel eigendom</a></li><li><a href="#art11"><span class="n">11</span>Gebruik van onlineplatforms</a></li><li><a href="#art12"><span class="n">12</span>Disclaimer</a></li><li><a href="#art13"><span class="n">13</span>Beperking van aansprakelijkheid</a></li><li><a href="#art14"><span class="n">14</span>Privacy en gegevensverwerking</a></li><li><a href="#art15"><span class="n">15</span>Overmacht</a></li><li><a href="#art16"><span class="n">16</span>Klachten</a></li><li><a href="#art17"><span class="n">17</span>Toepasselijk recht en geschillen</a></li></ol>
+  </nav>
+
+  <hr class="rule">
+
+  <article class="art" id="art1"><div class="art-eyebrow">Artikel 1</div><h2><span class="hash">01</span>Definities</h2>
+  <p>Voor de toepassing van deze algemene voorwaarden:</p>
+  <ul>
+   <li><strong>SZINN</strong> betekent de handelsnaam van Alterego B.V., ingeschreven bij de Nederlandse Kamer van Koophandel onder nummer 27252605.</li>
+   <li><strong>Klant</strong> betekent iedere natuurlijke persoon of rechtspersoon die een overeenkomst aangaat met SZINN.</li>
+   <li><strong>Digitale producten</strong> betekent alle digitale producten en diensten die SZINN aanbiedt, met inbegrip van maar niet beperkt tot: Persoonlijke Blueprints; Frequency Blueprints; Awareness Reports; AI-gegenereerde analyses; online cursussen en trainingsprogramma's; lidmaatschappen; communities; werkboeken; e-books; downloadbare content; audio-opnamen; videomodules; coachingmateriaal; assessments; en overige digitale content.</li>
+   <li><strong>Overeenkomst</strong> betekent iedere overeenkomst tussen SZINN en de klant.</li>
+   <li><strong>Gepersonaliseerd product</strong> betekent een product dat geheel of gedeeltelijk tot stand komt op basis van door de klant verstrekte informatie.</li>
+  </ul></article><article class="art" id="art2"><div class="art-eyebrow">Artikel 2</div><h2><span class="hash">02</span>Toepasselijkheid</h2>
+  <ol>
+   <li>Deze algemene voorwaarden zijn van toepassing op alle aanbiedingen, overeenkomsten, producten en diensten van SZINN.</li>
+   <li>Door een product of dienst aan te schaffen gaat de klant akkoord met deze algemene voorwaarden.</li>
+   <li>Afwijkingen van deze voorwaarden zijn uitsluitend geldig indien schriftelijk overeengekomen.</li>
+   <li>Indien een bepaling nietig of niet-afdwingbaar blijkt, blijven de overige bepalingen volledig van kracht.</li>
+  </ol></article><article class="art" id="art3"><div class="art-eyebrow">Artikel 3</div><h2><span class="hash">03</span>Totstandkoming van de overeenkomst</h2>
+  <ol>
+   <li>Een overeenkomst komt tot stand wanneer:
+     <ul class="nested"><li>een bestelling wordt geplaatst;</li><li>betaling wordt ontvangen;</li><li>een abonnement wordt geactiveerd;</li><li>toegang tot een online omgeving wordt verleend;</li><li>een opdracht schriftelijk wordt bevestigd.</li></ul></li>
+   <li>SZINN behoudt zich het recht voor om een bestelling of verzoek zonder opgaaf van reden te weigeren.</li>
+  </ol></article><article class="art" id="art4"><div class="art-eyebrow">Artikel 4</div><h2><span class="hash">04</span>Levering van digitale producten</h2>
+  <ol>
+   <li>Digitale producten kunnen worden geleverd via:
+     <ul class="nested"><li>e-mail;</li><li>downloadlinks;</li><li>online leerplatforms;</li><li>communityplatforms;</li><li>gepersonaliseerde rapporten;</li><li>andere digitale kanalen.</li></ul></li>
+   <li>De klant is verantwoordelijk voor het verstrekken van juiste contactgegevens.</li>
+   <li>Levertijden zijn schattingen, tenzij uitdrukkelijk anders overeengekomen.</li>
+   <li>Vertraging in de levering geeft de klant geen recht op schadevergoeding.</li>
+  </ol></article><article class="art key" id="art5"><div class="art-eyebrow">Artikel 5</div><h2><span class="hash">05</span>Gepersonaliseerde en op maat gemaakte producten</h2>
+  <ol>
+   <li>Producten die tot stand komen op basis van door de klant verstrekte informatie worden aangemerkt als gepersonaliseerde producten.</li>
+   <li>Hieronder vallen, maar niet beperkt tot:
+     <ul class="nested"><li>SZINN Blueprints;</li><li>Frequency Blueprints;</li><li>Awareness Reports;</li><li>AI-ondersteunde analyses;</li><li>gepersonaliseerde assessments;</li><li>coachingdocumenten.</li></ul></li>
+   <li>Zodra de productie is gestart, kunnen gepersonaliseerde producten niet meer worden geannuleerd.</li>
+   <li>Reeds verricht werk blijft volledig verschuldigd.</li>
+  </ol></article><article class="art key" id="art6"><div class="art-eyebrow">Artikel 6</div><h2><span class="hash">06</span>Herroepingsrecht</h2>
+  <ol>
+   <li>Consumenten hebben wettelijke herroepingsrechten voor zover van toepassing onder de geldende consumentenwetgeving.</li>
+   <li>Door een digitaal product aan te schaffen, stemt de klant er uitdrukkelijk mee in dat de levering onmiddellijk kan beginnen.</li>
+   <li>Wanneer de klant uitdrukkelijk heeft ingestemd met onmiddellijke levering en het verlies van het herroepingsrecht heeft erkend, vervalt het herroepingsrecht zodra:
+     <ul class="nested"><li>toegang tot een online platform is verleend;</li><li>een download beschikbaar is gesteld;</li><li>een rapport is geleverd;</li><li>de productie van een gepersonaliseerd product is gestart.</li></ul></li>
+   <li>Gepersonaliseerde producten die specifiek voor de klant zijn gemaakt, zijn uitgesloten van het herroepingsrecht voor zover de wet dit toelaat.</li>
+  </ol></article><article class="art" id="art7"><div class="art-eyebrow">Artikel 7</div><h2><span class="hash">07</span>Prijzen en betaling</h2>
+  <ol>
+   <li>Alle prijzen zijn vermeld in euro's.</li>
+   <li>Prijzen zijn inclusief of exclusief btw, zoals aangegeven op de verkoop- of afrekenpagina.</li>
+   <li>Betaling dient te geschieden via de beschikbare betaalmethoden.</li>
+   <li>SZINN kan de toegang tot producten, lidmaatschappen of diensten opschorten bij niet-betaling.</li>
+   <li>Incassokosten, juridische kosten en wettelijke rente die voortvloeien uit te late betaling komen voor rekening van de klant.</li>
+  </ol></article><article class="art" id="art8"><div class="art-eyebrow">Artikel 8</div><h2><span class="hash">08</span>Lidmaatschappen en abonnementen</h2>
+  <ol>
+   <li>Lidmaatschappen en abonnementen worden verstrekt voor de bij aankoop aangegeven duur.</li>
+   <li>Abonnementen kunnen automatisch verlengen, tenzij anders aangegeven.</li>
+   <li>Opzegging dient te geschieden conform de voorwaarden zoals vermeld op de verkooppagina of in de overeenkomst.</li>
+   <li>Reeds gedane betalingen zijn niet-restitueerbaar, tenzij de wet anders bepaalt.</li>
+   <li>SZINN behoudt zich het recht voor om de inhoud van lidmaatschappen, communityplatforms en educatieve programma's te wijzigen, bij te werken, uit te breiden of te verbeteren.</li>
+  </ol></article><article class="art key" id="art9"><div class="art-eyebrow">Artikel 9</div><h2><span class="hash">09</span>Gebruik van kunstmatige intelligentie (AI)</h2>
+  <ol>
+   <li>SZINN kan kunstmatige intelligentie, automatiseringstechnologieën en digitale hulpmiddelen inzetten bij het creëren en leveren van producten en diensten.</li>
+   <li>AI wordt gebruikt als ondersteunend instrument bij onderzoek, analyse, ontwikkeling en het creëren van content.</li>
+   <li>Hoewel SZINN streeft naar nauwkeurigheid en kwaliteit, wordt geen garantie gegeven met betrekking tot de volledigheid, juistheid of geschiktheid van AI-ondersteunde output.</li>
+   <li>De klant blijft als enige verantwoordelijk voor het interpreteren en toepassen van de verstrekte informatie.</li>
+  </ol></article><article class="art" id="art10"><div class="art-eyebrow">Artikel 10</div><h2><span class="hash">10</span>Intellectueel eigendom</h2>
+  <ol>
+   <li>Alle intellectuele eigendomsrechten met betrekking tot materialen, rapporten, methodologieën, frameworks, teksten, audio-opnamen, video's, trainingsmateriaal, visuals en overige content blijven het exclusieve eigendom van Alterego B.V.</li>
+   <li>Zonder voorafgaande schriftelijke toestemming mag de klant de materialen niet:
+     <ul class="nested"><li>verveelvoudigen;</li><li>verspreiden;</li><li>publiceren;</li><li>verkopen;</li><li>commercieel exploiteren.</li></ul></li>
+   <li>Toegang tot digitale producten verleent uitsluitend een persoonlijke, niet-overdraagbare, niet-exclusieve licentie voor persoonlijk gebruik.</li>
+  </ol></article><article class="art" id="art11"><div class="art-eyebrow">Artikel 11</div><h2><span class="hash">11</span>Gebruik van onlineplatforms</h2>
+  <ol>
+   <li>Toegang tot online programma's, communities en leerplatforms is persoonlijk en mag niet worden gedeeld.</li>
+   <li>Inloggegevens dienen vertrouwelijk te worden gehouden.</li>
+   <li>SZINN kan de toegang opschorten of beëindigen in geval van misbruik, fraude of schending van deze voorwaarden.</li>
+   <li>Content van onlineplatforms mag niet worden gekopieerd, opgenomen, verspreid of openbaar gedeeld zonder schriftelijke toestemming.</li>
+  </ol></article><article class="art" id="art12"><div class="art-eyebrow">Artikel 12</div><h2><span class="hash">12</span>Disclaimer</h2>
+  <ol>
+   <li>Alle producten, rapporten, programma's, oefeningen en content van SZINN zijn uitsluitend bedoeld voor:
+     <ul class="nested"><li>educatie;</li><li>persoonlijke ontwikkeling;</li><li>zelfbewustzijn;</li><li>zelfreflectie.</li></ul></li>
+   <li>Geen enkele door SZINN verstrekte informatie vormt:
+     <ul class="nested"><li>medisch advies;</li><li>psychologisch advies;</li><li>therapeutisch advies;</li><li>juridisch advies;</li><li>financieel advies;</li><li>beleggingsadvies.</li></ul></li>
+   <li>De klant blijft volledig verantwoordelijk voor de eigen beslissingen, handelingen en uitkomsten.</li>
+  </ol></article><article class="art" id="art13"><div class="art-eyebrow">Artikel 13</div><h2><span class="hash">13</span>Beperking van aansprakelijkheid</h2>
+  <ol>
+   <li>Deelname aan programma's en gebruik van producten geschiedt geheel op eigen risico van de klant.</li>
+   <li>De totale aansprakelijkheid van SZINN is beperkt tot het bedrag dat de klant voor het betreffende product of de betreffende dienst heeft betaald.</li>
+   <li>SZINN is niet aansprakelijk voor:
+     <ul class="nested"><li>indirecte schade;</li><li>gevolgschade;</li><li>gederfde winst;</li><li>gederfde omzet;</li><li>gemiste kansen;</li><li>beslissingen genomen op basis van verstrekte informatie.</li></ul></li>
+   <li>Iedere vordering jegens SZINN dient te worden ingesteld binnen twaalf (12) maanden na de gebeurtenis die aanleiding gaf tot de vordering.</li>
+  </ol></article><article class="art" id="art14"><div class="art-eyebrow">Artikel 14</div><h2><span class="hash">14</span>Privacy en gegevensverwerking</h2>
+  <ol>
+   <li>Persoonsgegevens worden verwerkt in overeenstemming met de geldende privacywetgeving en -regelgeving.</li>
+   <li>Klantgegevens kunnen worden verwerkt via digitale systemen en AI-technologieën met als doel het creëren van gepersonaliseerde producten en diensten.</li>
+   <li>Nadere details over de gegevensverwerking zijn opgenomen in de Privacyverklaring van Alterego B.V.</li>
+  </ol></article><article class="art" id="art15"><div class="art-eyebrow">Artikel 15</div><h2><span class="hash">15</span>Overmacht</h2>
+  <ol>
+   <li>SZINN is niet aansprakelijk voor het niet of niet tijdig nakomen van haar verplichtingen indien dit het gevolg is van omstandigheden buiten haar redelijke controle.</li>
+   <li>Onder overmacht wordt onder meer verstaan, maar niet beperkt tot:
+     <ul class="nested"><li>softwarestoringen;</li><li>internetstoringen;</li><li>cyberaanvallen;</li><li>technische verstoringen;</li><li>ziekte;</li><li>overheidsmaatregelen;</li><li>natuurrampen.</li></ul></li>
+  </ol></article><article class="art" id="art16"><div class="art-eyebrow">Artikel 16</div><h2><span class="hash">16</span>Klachten</h2>
+  <ol>
+   <li>Klachten dienen binnen veertien (14) dagen na ontdekking schriftelijk te worden ingediend via info@szinn.ai.</li>
+   <li>SZINN spant zich in om klachten binnen een redelijke termijn te behandelen.</li>
+   <li>Het indienen van een klacht schort de betalingsverplichtingen niet op.</li>
+  </ol></article><article class="art" id="art17"><div class="art-eyebrow">Artikel 17</div><h2><span class="hash">17</span>Toepasselijk recht en geschillen</h2>
+  <ol>
+   <li>Op deze algemene voorwaarden en alle overeenkomsten is uitsluitend Nederlands recht van toepassing.</li>
+   <li>Geschillen worden voorgelegd aan de bevoegde rechter in Nederland.</li>
+   <li>Voordat een gerechtelijke procedure wordt gestart, spannen partijen zich in om geschillen in der minne op te lossen.</li>
+  </ol></article>
+
+  <hr class="rule">
+
+  <article class="art">
+    <div class="art-eyebrow">Slotbepaling</div>
+    <h2>Slotbepaling</h2>
+    <p>Deze algemene voorwaarden zijn opgesteld door Alterego B.V. en zijn van toepassing op alle producten en diensten die worden aangeboden onder de handelsnaam SZINN.</p>
+    <p style="color:var(--ink-soft);font-size:14px">Versie 1.0 — juni 2026</p>
+  </article>
+
+</div>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="sig">SZINN</div>
+    Elly Elizabeth Korving · SZINN · 110 Life &amp; Business Awareness<br>
+    <a href="https://www.szinn.ai">szinn.ai</a> &nbsp;·&nbsp; <a href="mailto:info@szinn.ai">info@szinn.ai</a>
+    <div class="copyright">© 2026 Elly Elizabeth Korving · Alterego B.V. · Alle rechten voorbehouden · szinn.ai</div>
+  </div>
+</footer>
+
+</body>
+</html>
