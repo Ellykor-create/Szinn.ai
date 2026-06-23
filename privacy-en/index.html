@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Statement · SZINN</title>
+<meta name="description" content="Privacy Statement of SZINN. SZINN is a trading name of Alterego B.V.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F2EA; --surface:#FFFFFF; --ink:#1E1B16; --ink-soft:#4A453C;
+  --navy:#10141E; --navy-soft:#1C2230; --gold:#C9A96E; --gold-deep:#A8884A;
+  --line:rgba(30,27,22,.12); --line-soft:rgba(30,27,22,.07);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:'Jost',system-ui,sans-serif; font-weight:300;
+  font-size:16px; line-height:1.75; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:760px; margin:0 auto; padding:0 24px}
+
+/* HEADER */
+header.masthead{
+  background:var(--navy); color:#EDE7DA; padding:54px 0 46px; text-align:center;
+  border-bottom:2px solid var(--gold);
+}
+.brand{display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:30px}
+.brand .mark{width:34px; height:34px; opacity:.92}
+.brand .word{
+  font-family:'Cormorant Garamond',serif; font-weight:500; font-size:25px;
+  letter-spacing:.18em; color:#F1EADA;
+}
+header.masthead h1{
+  font-family:'Cormorant Garamond',serif; font-weight:500;
+  font-size:clamp(30px,6vw,44px); line-height:1.08; margin:0 0 14px; letter-spacing:.01em;
+}
+header.masthead .ver{
+  font-size:12px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--gold); font-weight:400;
+}
+
+/* ENTITY META */
+.meta{
+  background:var(--surface); border:1px solid var(--line);
+  border-radius:6px; padding:24px 28px; margin:40px 0 14px;
+  font-size:14px; color:var(--ink-soft); line-height:1.85;
+}
+.meta strong{color:var(--ink); font-weight:500}
+.meta .lead{margin:0 0 14px; color:var(--ink)}
+.meta a{color:var(--gold-deep); text-decoration:none}
+.meta a:hover{text-decoration:underline}
+
+/* TOC */
+nav.toc{margin:30px 0 8px}
+nav.toc .toc-label{
+  font-size:11px; letter-spacing:.24em; text-transform:uppercase;
+  color:var(--gold-deep); font-weight:400; margin-bottom:14px;
+}
+nav.toc ol{list-style:none; margin:0; padding:0; columns:2; column-gap:34px}
+nav.toc li{margin:0 0 9px; break-inside:avoid; font-size:14px}
+nav.toc a{
+  color:var(--ink-soft); text-decoration:none; display:flex; gap:10px; align-items:baseline;
+}
+nav.toc a:hover{color:var(--gold-deep)}
+nav.toc .n{color:var(--gold-deep); font-variant-numeric:tabular-nums; min-width:20px}
+
+hr.rule{border:0; border-top:1px solid var(--line); margin:46px 0}
+
+/* ARTICLES */
+article.art{margin:46px 0; scroll-margin-top:24px}
+article.art h2{
+  font-family:'Cormorant Garamond',serif; font-weight:500;
+  font-size:27px; line-height:1.15; margin:0 0 4px; color:var(--ink);
+}
+article.art .art-eyebrow{
+  font-size:11px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--gold-deep); font-weight:400; margin-bottom:10px;
+}
+article.art h2 .hash{
+  font-size:18px; color:var(--gold); font-family:'Jost',sans-serif; font-weight:300;
+  margin-right:10px; vertical-align:.06em;
+}
+article.art p{margin:0 0 14px}
+article.art ol,article.art ul{margin:0 0 14px; padding-left:22px}
+article.art li{margin:0 0 8px}
+article.art ol.sub{list-style:lower-alpha; margin-top:6px}
+article.art .nested{list-style:circle; margin:6px 0 6px 4px; padding-left:20px}
+
+/* highlight key article */
+article.art.key{
+  background:var(--surface); border:1px solid var(--line);
+  border-left:3px solid var(--gold); border-radius:6px; padding:30px 30px 18px;
+}
+article.art.key h2{color:var(--ink)}
+
+/* FOOTER */
+footer.foot{
+  background:var(--navy); color:#C9C3B6; margin-top:60px;
+  padding:42px 0; text-align:center; font-size:13px; line-height:1.9;
+  border-top:2px solid var(--gold);
+}
+footer.foot .sig{
+  font-family:'Cormorant Garamond',serif; font-size:18px; letter-spacing:.14em;
+  color:#F1EADA; margin-bottom:10px;
+}
+footer.foot a{color:var(--gold); text-decoration:none}
+footer.foot .copyright{margin-top:14px; color:#8C8678; font-size:12px}
+
+@media (max-width:560px){
+  nav.toc ol{columns:1}
+  .meta{padding:20px}
+  article.art.key{padding:24px 20px 12px}
+}
+@media print{
+  body{background:#fff}
+  header.masthead,footer.foot{background:#fff;color:#1E1B16;border-color:var(--gold-deep)}
+  header.masthead .word,header.masthead h1,footer.foot .sig{color:#1E1B16}
+  article.art.key{background:#fff}
+  nav.toc{display:none}
+}
+
+.section-list{list-style:none;margin:10px 0 4px;padding:0}
+.section-list li{
+  padding:11px 0; border-bottom:1px solid var(--line-soft);
+  font-size:15px; color:var(--ink-soft);
+}
+.section-list li:last-child{border-bottom:0}
+.section-list .who{color:var(--ink); font-weight:500}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="brand"><svg class="mark" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><circle cx="20" cy="20" r="18" stroke="#C9A96E" stroke-width="1.1"/><circle cx="20" cy="13.5" r="6.5" stroke="#C9A96E" stroke-width="1.1"/><circle cx="14.3" cy="23.5" r="6.5" stroke="#C9A96E" stroke-width="1.1"/><circle cx="25.7" cy="23.5" r="6.5" stroke="#C9A96E" stroke-width="1.1"/><circle cx="20" cy="20" r="2.1" fill="#C9A96E"/></svg><span class="word">szinn.ai</span></div>
+  <h1>Privacy Statement</h1>
+  <div class="ver">Last updated — June 2026</div>
+</header>
+
+<div class="wrap">
+
+  <div class="meta">
+    <p class="lead">SZINN is a trading name of Alterego B.V. This privacy statement explains which personal data we process when you request a SZINN Alignment Blueprint, why, and what rights you have.</p>
+    <strong>Alterego B.V.</strong> &middot; Chamber of Commerce 27252605 &middot; VAT NL810917051B01<br>
+    Email: <a href="mailto:info@szinn.ai">info@szinn.ai</a> &middot;
+    Website: <a href="https://www.szinn.ai">szinn.ai</a>
+  </div>
+
+  <nav class="toc">
+    <div class="toc-label">Contents</div>
+    <ol><li><a href="#controller"><span class="n">01</span>Data Controller</a></li><li><a href="#data"><span class="n">02</span>What data we process</a></li><li><a href="#purposes"><span class="n">03</span>Purposes and legal basis</a></li><li><a href="#ai"><span class="n">04</span>Use of Artificial Intelligence (AI)</a></li><li><a href="#processors"><span class="n">05</span>Who we share data with</a></li><li><a href="#transfers"><span class="n">06</span>Transfers outside the EEA</a></li><li><a href="#retention"><span class="n">07</span>Retention period</a></li><li><a href="#security"><span class="n">08</span>Security</a></li><li><a href="#cookies"><span class="n">09</span>Cookies and local storage</a></li><li><a href="#rights"><span class="n">10</span>Your rights</a></li><li><a href="#contact"><span class="n">11</span>Contact and changes</a></li></ol>
+  </nav>
+
+  <hr class="rule">
+
+  <article class="art" id="controller"><div class="art-eyebrow">01</div><h2>Data Controller</h2>
+  <p>Alterego B.V., registered with the Dutch Chamber of Commerce under number 27252605, is the data controller for the personal data processed through SZINN (szinn.ai). If you have questions about this privacy statement or about your data, email <a href="mailto:info@szinn.ai">info@szinn.ai</a>.</p></article><article class="art" id="data"><div class="art-eyebrow">02</div><h2>What data we process</h2>
+  <p>When you request a SZINN Alignment Blueprint and complete the intake form, we process your name, your email address, your date of birth, your time of birth, your place and country of birth, and the answers you provide in the intake form.</p>
+  <p>When you make a payment, our payment provider also processes your payment details. We do not receive full card or account numbers. We also record whether and when you agreed to the Terms and Conditions and this privacy statement.</p></article><article class="art" id="purposes"><div class="art-eyebrow">03</div><h2>Purposes and legal basis</h2>
+  <p>We use your data solely to create and deliver your personal SZINN Alignment Blueprint, to communicate with you about your order, and to meet legal obligations such as our administrative and retention duties.</p>
+  <p>The legal basis for this is the performance of the agreement you enter into with us and the consent you give when completing the intake form. Your birth data and intake answers serve as input for the calculations and the text of your Blueprint.</p></article><article class="art" id="ai"><div class="art-eyebrow">04</div><h2>Use of Artificial Intelligence (AI)</h2>
+  <p>Your Blueprint is compiled with the help of artificial intelligence. Your birth data and intake answers are processed by an AI service to generate the text of your personal document. AI is used solely as a supporting tool; you remain responsible for interpreting and applying the insights.</p>
+  <p>The Blueprint is intended for self-insight and reflection and is not a substitute for medical, psychological, legal, or financial advice.</p></article><article class="art" id="processors"><div class="art-eyebrow">05</div><h2>Who we share data with</h2>
+  <p>We never sell your data and do not share it with third parties for commercial purposes. To create and deliver the Blueprint, we do rely on a number of technical service providers (processors) who process data on our behalf:</p>
+  <ul class="section-list">
+   <li><span class="who">Stripe</span> — payment processing.</li>
+   <li><span class="who">Google</span> — storage and processing of intake data (Apps Script, Sheets, and Drive).</li>
+   <li><span class="who">Make.com</span> — automated processing and transfer between systems.</li>
+   <li><span class="who">Enormail</span> — sending of emails.</li>
+   <li><span class="who">Netlify</span> — hosting of the website and forms.</li>
+   <li><span class="who">tiiny.host</span> — hosting and delivery of your Blueprint link.</li>
+   <li><span class="who">Anthropic (Claude)</span> — AI generation of the text of your Blueprint.</li>
+  </ul>
+  <p>Where required, we have entered into data processing agreements with these parties.</p></article><article class="art" id="transfers"><div class="art-eyebrow">06</div><h2>Transfers outside the EEA</h2>
+  <p>Some of these service providers may process data outside the European Economic Area, for example in the United States. In such cases we ensure appropriate safeguards, such as the European Commission's Standard Contractual Clauses or a valid adequacy decision.</p></article><article class="art" id="retention"><div class="art-eyebrow">07</div><h2>Retention period</h2>
+  <p>We retain your data for a maximum of two years after the last contact, unless you request earlier deletion or unless we are legally required to keep data longer, for example for tax administration.</p></article><article class="art" id="security"><div class="art-eyebrow">08</div><h2>Security</h2>
+  <p>We take appropriate technical and organizational measures to protect your data. Data is transmitted over secure connections (HTTPS) and access is limited to authorized persons.</p></article><article class="art" id="cookies"><div class="art-eyebrow">09</div><h2>Cookies and local storage</h2>
+  <p>The SZINN website uses only functional and necessary techniques required to make the site and forms work. We do not place tracking or advertising cookies.</p>
+  <p>For fonts, the site uses Google Fonts, in which case your IP address may be processed by Google to load the font. If we use analytics or marketing cookies in the future, we will ask for your consent in advance and update this statement.</p></article><article class="art" id="rights"><div class="art-eyebrow">10</div><h2>Your rights</h2>
+  <p>You have the right to access, correct, or delete your data, to withdraw your consent, to object to certain processing, and to have your data transferred. Send your request to <a href="mailto:info@szinn.ai">info@szinn.ai</a>; we will respond within the legal timeframe.</p>
+  <p>If you disagree with how we handle your data, you have the right to lodge a complaint with the Dutch Data Protection Authority (<a href="https://autoriteitpersoonsgegevens.nl" target="_blank" rel="noopener">autoriteitpersoonsgegevens.nl</a>).</p></article><article class="art" id="contact"><div class="art-eyebrow">11</div><h2>Contact and changes</h2>
+  <p>Alterego B.V. · <a href="mailto:info@szinn.ai">info@szinn.ai</a> · <a href="https://www.szinn.ai">szinn.ai</a>.</p>
+  <p>This privacy statement may be updated. The most current version is always available at szinn.ai/privacy-en.</p></article>
+
+</div>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="sig">SZINN</div>
+    Elly Elizabeth Korving · SZINN · 110 Life &amp; Business Awareness<br>
+    <a href="https://www.szinn.ai">szinn.ai</a> &nbsp;·&nbsp; <a href="mailto:info@szinn.ai">info@szinn.ai</a>
+    <div class="copyright">© 2026 Elly Elizabeth Korving · Alterego B.V. · All rights reserved · szinn.ai</div>
+  </div>
+</footer>
+
+</body>
+</html>
