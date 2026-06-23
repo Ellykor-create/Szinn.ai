@@ -1086,6 +1086,13 @@
           <span class="en-text" style="display:none;" style="display:none">I am <strong>18 years of age or older</strong>.</span>
         </label>
       </div>
+      <div class="consent-item">
+        <input type="checkbox" id="consent-voorwaarden" name="consent_voorwaarden">
+        <label class="consent-label" for="consent-voorwaarden">
+          <span class="nl-text">Ik heb de <a href="/voorwaarden" target="_blank">algemene voorwaarden</a> gelezen en ga akkoord. Ik begrijp dat mijn Blueprint een <strong>persoonlijk, op maat gemaakt product</strong> is dat <strong>direct na het versturen van dit formulier in productie gaat</strong>. Daarmee doe ik uitdrukkelijk afstand van mijn herroepingsrecht: zodra de productie is gestart kan de Blueprint <strong>niet meer worden geannuleerd, geruild of terugbetaald</strong>.</span>
+          <span class="en-text" style="display:none;" style="display:none">I have read and agree to the <a href="/terms" target="_blank">Terms and Conditions</a>. I understand that my Blueprint is a <strong>personal, custom-made product</strong> that <strong>goes into production immediately after I submit this form</strong>. I therefore expressly waive my right of withdrawal: once production has started, the Blueprint <strong>cannot be cancelled, exchanged, or refunded</strong>.</span>
+        </label>
+      </div>
       <span class="consent-err" id="consent-err">
         <span class="nl-text">Vink alle bovenstaande vakjes aan om verder te gaan.</span>
         <span class="en-text" style="display:none;" style="display:none">Please check all boxes above to continue.</span>
@@ -1413,8 +1420,9 @@ function submitForm() {
   const c1 = document.getElementById('consent-verwerking').checked;
   const c2 = document.getElementById('consent-disclaimer').checked;
   const c3 = document.getElementById('consent-leeftijd').checked;
+  const c4 = document.getElementById('consent-voorwaarden').checked;
   const errEl = document.getElementById('consent-err');
-  if (!c1 || !c2 || !c3) {
+  if (!c1 || !c2 || !c3 || !c4) {
     errEl.classList.add('show');
     errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
     return;
@@ -1429,6 +1437,7 @@ function submitForm() {
   data.consent_verwerking = true;
   data.consent_disclaimer = true;
   data.consent_leeftijd = true;
+  data.consent_voorwaarden = true;
   data.consent_timestamp = new Date().toISOString();
 
   fetch(APPS_SCRIPT_URL, {
