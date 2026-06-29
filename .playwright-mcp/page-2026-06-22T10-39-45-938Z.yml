@@ -1,0 +1,23 @@
+- generic [ref=e3]:
+  - generic [ref=e4]:
+    - img "SZINN" [ref=e5]
+    - heading "SZINN" [level=1] [ref=e7]
+    - paragraph [ref=e8]: Jouw persoonlijke Alignment Blueprint portaal
+  - generic [ref=e9]:
+    - generic [ref=e10]:
+      - generic [ref=e11]:
+        - generic [ref=e12]: E-mailadres
+        - textbox "E-mailadres" [ref=e13]:
+          - /placeholder: naam@voorbeeld.nl
+      - generic [ref=e14]:
+        - generic [ref=e15]: Wachtwoord
+        - textbox "Wachtwoord" [ref=e16]:
+          - /placeholder: ••••••••
+      - button "Inloggen" [ref=e17] [cursor=pointer]:
+        - generic [ref=e18]: Inloggen
+    - generic [ref=e19]: of
+    - paragraph [ref=e20]:
+      - text: Nog geen account? Na je bestelling op
+      - link "szinn.ai" [ref=e21] [cursor=pointer]:
+        - /url: https://szinn.ai
+      - text: ontvang je automatisch toegang.

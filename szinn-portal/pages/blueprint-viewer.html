@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SZINN — Alignment Blueprint</title>
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/nav.css">
+  <style>
+    .viewer-page {
+      padding: 3vh 0 6vh;
+    }
+
+    .viewer-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 3vh;
+      padding-bottom: 2vh;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .viewer-back {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.06em;
+    }
+    .viewer-back:hover { color: var(--gold); }
+
+    .viewer-info {
+      text-align: center;
+    }
+    .viewer-info h2 {
+      font-size: 18px;
+      font-weight: 400;
+    }
+    .viewer-info .eyebrow { margin-bottom: 4px; }
+
+    .viewer-actions {
+      display: flex;
+      gap: 10px;
+    }
+
+    /* Blueprint iframe container */
+    .blueprint-frame-wrapper {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      min-height: 80vh;
+      position: relative;
+    }
+
+    .blueprint-frame {
+      width: 100%;
+      min-height: 80vh;
+      border: none;
+      display: block;
+    }
+
+    /* Loading state */
+    .viewer-loading {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 80px 20px;
+      text-align: center;
+      color: var(--muted);
+      gap: 16px;
+    }
+
+    .viewer-loading .spinner-lg {
+      width: 32px;
+      height: 32px;
+      border: 2px solid var(--border);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Error state */
+    .viewer-error {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+    }
+    .viewer-error.visible { display: block; }
+    .viewer-error h3 { margin-bottom: 8px; }
+    .viewer-error p { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
+
+    /* PDF download button icon */
+    .icon-download::before { content: '↓'; margin-right: 4px; }
+    .icon-print::before { content: '⎙'; margin-right: 4px; }
+
+    @media (max-width: 600px) {
+      .viewer-toolbar { flex-direction: column; text-align: center; }
+      .viewer-actions { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <div id="szinn-nav"></div>
+
+  <main class="container">
+    <div class="viewer-page fade-up">
+      <div class="viewer-toolbar">
+        <a href="dashboard.html" class="viewer-back">← Terug naar dashboard</a>
+
+        <div class="viewer-info" id="viewer-info">
+          <span class="eyebrow">Alignment Blueprint</span>
+          <h2 id="viewer-name">Laden…</h2>
+        </div>
+
+        <div class="viewer-actions">
+          <button class="btn" onclick="printBlueprint()" title="Printen">
+            <span class="icon-print"></span>Print
+          </button>
+          <button class="btn btn-primary" onclick="downloadPDF()" title="Download PDF">
+            <span class="icon-download"></span>PDF
+          </button>
+        </div>
+      </div>
+
+      <div class="blueprint-frame-wrapper" id="frame-wrapper">
+        <div class="viewer-loading" id="viewer-loading">
+          <div class="spinner-lg"></div>
+          <p>Blueprint laden…</p>
+        </div>
+
+        <iframe class="blueprint-frame"
+                id="blueprint-frame"
+                style="display: none;"
+                sandbox="allow-same-origin allow-scripts"
+                title="Alignment Blueprint">
+        </iframe>
+      </div>
+
+      <div class="viewer-error" id="viewer-error">
+        <h3>Blueprint niet gevonden</h3>
+        <p>Deze Blueprint is nog niet beschikbaar of het adres is onjuist.</p>
+        <a href="dashboard.html" class="btn btn-primary">Terug naar dashboard</a>
+      </div>
+    </div>
+  </main>
+
+  <div id="szinn-footer"></div>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/nav.js"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const orderId = params.get('id');
+
+    SzinnAuth.requireAuth().then(ok => {
+      if (!ok) return;
+      SzinnNav.updateUserInfo();
+      loadBlueprint();
+    });
+
+    async function loadBlueprint() {
+      if (!orderId) return showError();
+
+      try {
+        const order = await SzinnAPI.getOrder(orderId);
+
+        if (!order || order.status !== 'completed' || !order.blueprintUrl) {
+          return showError();
+        }
+
+        document.getElementById('viewer-name').textContent = order.clientName;
+        document.title = `SZINN — ${order.clientName} Blueprint`;
+
+        const frame = document.getElementById('blueprint-frame');
+        frame.src = order.blueprintUrl;
+
+        frame.addEventListener('load', () => {
+          document.getElementById('viewer-loading').style.display = 'none';
+          frame.style.display = 'block';
+
+          // Auto-resize iframe to content height
+          try {
+            const contentHeight = frame.contentDocument.body.scrollHeight;
+            frame.style.minHeight = contentHeight + 'px';
+          } catch (e) {
+            // Cross-origin fallback
+            frame.style.minHeight = '200vh';
+          }
+        });
+
+        frame.addEventListener('error', showError);
+
+      } catch (err) {
+        showError();
+      }
+    }
+
+    function showError() {
+      document.getElementById('viewer-loading').style.display = 'none';
+      document.getElementById('viewer-error').classList.add('visible');
+    }
+
+    function printBlueprint() {
+      const frame = document.getElementById('blueprint-frame');
+      try {
+        frame.contentWindow.print();
+      } catch (e) {
+        window.print();
+      }
+    }
+
+    function downloadPDF() {
+      // TODO: Connect to your PDF generation endpoint
+      // Example: window.open(`/api/blueprints/${orderId}/pdf`, '_blank');
+      alert('PDF download wordt binnenkort beschikbaar. Gebruik in de tussentijd de printfunctie om als PDF op te slaan.');
+    }
+  </script>
+</body>
+</html>

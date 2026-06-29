@@ -1,0 +1,78 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e3]:
+    - generic [ref=e4]:
+      - link "SZINN SZINN" [ref=e5] [cursor=pointer]:
+        - /url: /szinn-portal/pages/dashboard.html
+        - img "SZINN" [ref=e6]
+        - generic [ref=e7]: SZINN
+      - list [ref=e8]:
+        - listitem [ref=e9]:
+          - link "Dashboard" [ref=e10] [cursor=pointer]:
+            - /url: /szinn-portal/pages/dashboard.html
+        - listitem [ref=e11]:
+          - link "Vragenlijst" [ref=e12] [cursor=pointer]:
+            - /url: /szinn-portal/pages/questionnaire.html
+        - listitem [ref=e13]:
+          - link "Uitloggen" [ref=e14] [cursor=pointer]:
+            - /url: "#"
+      - generic [ref=e15]:
+        - generic [ref=e16]: Demo gebruiker
+        - generic [ref=e17]: DE
+  - main [ref=e19]:
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - heading "Goedemiddag, Demo gebruiker" [level=1] [ref=e22]
+        - paragraph [ref=e23]: Jouw persoonlijke SZINN ruimte. Bekijk je Blueprint, stel vragen aan je AI Companion of geef een Blueprint cadeau aan iemand die je wil inspireren.
+        - generic [ref=e24]:
+          - button "AI Companion" [ref=e25] [cursor=pointer]:
+            - img [ref=e26]
+            - text: AI Companion
+          - button "Cadeau geven" [ref=e29] [cursor=pointer]:
+            - img [ref=e30]
+            - text: Cadeau geven
+          - button "Fysiek boek" [ref=e35] [cursor=pointer]:
+            - img [ref=e36]
+            - text: Fysiek boek
+      - generic [ref=e40]:
+        - generic [ref=e41]: Overall Alignment
+        - generic [ref=e42]:
+          - img [ref=e43]
+          - generic [ref=e46]:
+            - generic [ref=e47]: —
+            - generic [ref=e48]: Alignment
+    - heading "Mijn aanvragen" [level=2] [ref=e51]
+  - generic:
+    - generic:
+      - generic:
+        - generic: SZINN AI Companion
+        - button "×"
+      - generic: Stel een vraag over jouw Blueprint of over de SZINN-methode.
+      - generic:
+        - generic:
+          - generic: Welkom bij je persoonlijke SZINN AI Companion. Wat wil je weten over je Blueprint?
+      - generic:
+        - textbox "Stel een vraag…"
+        - button "→"
+  - generic:
+    - generic:
+      - generic:
+        - heading "Blueprint cadeau geven" [level=2]
+        - button "×"
+      - paragraph: Deel een persoonlijke code met iemand die je wil inspireren. Met die code ontvangen zij gratis een volledig Alignment Blueprint.
+      - button "+ Genereer nieuwe code"
+  - generic:
+    - generic:
+      - generic:
+        - heading "Fysiek boek bestellen" [level=2]
+        - button "×"
+      - generic: € 29,95
+      - generic: Inclusief BTW · Verzending gratis boven €45
+      - generic: → Hardcover A4 druk van jouw persoonlijke Blueprint
+      - generic: → Hoogwaardig papier, gebonden uitvoering
+      - generic: → Levering binnen 5–7 werkdagen
+      - generic: → Optioneel met persoonlijke inscriptie
+      - button "Naar bestelpagina →"
+      - paragraph: Alleen beschikbaar voor voltooide Blueprints
+  - contentinfo [ref=e53]:
+    - generic [ref=e54]: SZINN
+    - paragraph [ref=e55]: © 2026 SZINN · Alterego BV · Alle rechten voorbehouden

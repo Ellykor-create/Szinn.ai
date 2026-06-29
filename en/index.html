@@ -391,9 +391,20 @@ p.center{text-align:center;}
   transition:background .2s,color .2s;white-space:nowrap;
 }
 .btn-nav:hover{background:var(--gold2);color:#fff;}
+.btn-login{
+  display:inline-block;
+  font-family:var(--sans);font-size:10px;font-weight:400;
+  letter-spacing:.16em;text-transform:uppercase;
+  padding:8px 16px;
+  color:var(--gold);border:1px solid rgba(184,150,90,.4);
+  text-decoration:none;margin-right:10px;
+  transition:border-color .2s,color .2s;white-space:nowrap;
+}
+.btn-login:hover{border-color:var(--gold);color:var(--gold2);}
 @media (max-width:480px){
   .nav-cta{margin-left:10px;}
   .btn-nav{padding:8px 14px;font-size:9px;letter-spacing:.14em;}
+  .btn-login{display:none;}
 }
 </style>
 
@@ -572,9 +583,18 @@ p.center{text-align:center;}
     <a href="#order">Order</a>
   </div>
   <div class="nav-cta">
+    <a href="/szinn-portal/pages/login.html" class="btn-login" id="nav-portal-link">My portal</a>
     <a href="https://110lifeandbusiness.com/checkout/szinn-alignment-blueprint-cashout" class="btn-nav">Order now →</a>
   </div>
 </nav>
+<script>
+  fetch('/api/auth/me', {credentials:'same-origin'}).then(r => {
+    if (r.ok) {
+      const el = document.getElementById('nav-portal-link');
+      if (el) { el.textContent = 'Dashboard'; el.href = '/szinn-portal/pages/dashboard.html'; }
+    }
+  }).catch(() => {});
+</script>
 
 <!-- HERO -->
 <section class="hero" style="background:none;background-color:#0A0805;">

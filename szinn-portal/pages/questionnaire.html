@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SZINN — Vragenlijst</title>
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/nav.css">
+  <style>
+    .questionnaire-page {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 5vh 5vw 8vh;
+    }
+
+    .q-header {
+      margin-bottom: 4vh;
+    }
+
+    .q-header h1 {
+      margin-bottom: 10px;
+    }
+
+    .q-header p {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 520px;
+    }
+
+    .q-progress {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 4vh;
+    }
+    .q-progress-step {
+      flex: 1;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      transition: background 0.4s var(--ease);
+    }
+    .q-progress-step.active {
+      background: var(--gold);
+    }
+
+    .q-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 32px;
+      margin-bottom: 20px;
+      animation: fadeUp 0.4s var(--ease) both;
+    }
+
+    .q-number {
+      font-size: 9px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 10px;
+      font-weight: 400;
+    }
+
+    .q-question {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--ink);
+      margin-bottom: 6px;
+      line-height: 1.3;
+    }
+
+    .q-hint {
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .q-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 3vh;
+    }
+
+    .q-step-label {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+
+    /* Success state */
+    .q-success {
+      display: none;
+      text-align: center;
+      padding: 60px 20px;
+      animation: fadeUp 0.5s var(--ease) both;
+    }
+    .q-success.visible { display: block; }
+
+    .q-success-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(46, 125, 50, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 24px;
+      color: var(--green);
+    }
+
+    .q-success h2 {
+      margin-bottom: 10px;
+    }
+
+    .q-success p {
+      color: var(--muted);
+      font-size: 14px;
+      max-width: 400px;
+      margin: 0 auto 24px;
+      line-height: 1.7;
+    }
+
+    /* Hide/show questions */
+    .q-card.hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div id="szinn-nav"></div>
+
+  <div class="questionnaire-page">
+    <div class="q-header fade-up" id="q-header">
+      <span class="eyebrow">Reflectievragen</span>
+      <h1>Jouw persoonlijke input</h1>
+      <p>
+        Deze vragen helpen ons je Alignment Blueprint nog persoonlijker te maken.
+        Er zijn geen goede of foute antwoorden — schrijf wat je het eerste te binnen schiet.
+      </p>
+    </div>
+
+    <div class="q-progress" id="q-progress"></div>
+
+    <form id="questionnaire-form">
+      <div id="questions-container"></div>
+
+      <div class="q-nav" id="q-nav">
+        <button type="button" class="btn" id="btn-prev" style="visibility: hidden;">Vorige</button>
+        <span class="q-step-label" id="step-label">Vraag 1 van 5</span>
+        <button type="button" class="btn btn-primary" id="btn-next">Volgende</button>
+      </div>
+    </form>
+
+    <div class="q-success" id="q-success">
+      <div class="q-success-icon">✓</div>
+      <h2>Bedankt voor je antwoorden</h2>
+      <p>
+        Je Blueprint wordt nu gegenereerd. Dit duurt ongeveer 2-3 minuten.
+        Je ontvangt een e-mail zodra je persoonlijke wegwijzer klaar is.
+      </p>
+      <a href="dashboard.html" class="btn btn-primary">Terug naar dashboard</a>
+    </div>
+  </div>
+
+  <div id="szinn-footer"></div>
+
+  <script src="../js/auth.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/nav.js"></script>
+  <script>
+    if (!SzinnAuth.requireAuth()) throw new Error('Not authenticated');
+
+    // Questions — these map to the 5-7 reflective questions from the technical brief
+    const questions = [
+      {
+        id: 'q1',
+        question: 'Wat is het eerste woord dat in je opkomt als je aan "richting" denkt?',
+        hint: 'Denk niet te lang na, schrijf je eerste impuls op.',
+        type: 'text'
+      },
+      {
+        id: 'q2',
+        question: 'Welk thema of patroon zie je steeds terugkomen in je leven?',
+        hint: 'Dit kan iets positiefs of uitdagends zijn — een terugkerend thema in relaties, werk, of persoonlijke groei.',
+        type: 'textarea'
+      },
+      {
+        id: 'q3',
+        question: 'Waar voel je op dit moment de meeste wrijving of onrust?',
+        hint: 'Beschrijf kort het gebied in je leven waar je het meeste spanning ervaart.',
+        type: 'textarea'
+      },
+      {
+        id: 'q4',
+        question: 'Wat zou je willen dat er over 6 maanden anders is?',
+        hint: 'Wees zo concreet of abstract als je wilt.',
+        type: 'textarea'
+      },
+      {
+        id: 'q5',
+        question: 'Is er iets wat je al lang wilt doen maar steeds uitstelt?',
+        hint: 'Er is geen oordeel — dit helpt ons patronen in je Blueprint te verdiepen.',
+        type: 'textarea'
+      }
+    ];
+
+    let currentStep = 0;
+    const answers = {};
+
+    // Render
+    const container = document.getElementById('questions-container');
+    const progress = document.getElementById('q-progress');
+
+    questions.forEach((q, i) => {
+      // Progress dots
+      const dot = document.createElement('div');
+      dot.className = 'q-progress-step' + (i === 0 ? ' active' : '');
+      progress.appendChild(dot);
+
+      // Question card
+      const card = document.createElement('div');
+      card.className = 'q-card' + (i > 0 ? ' hidden' : '');
+      card.id = `card-${i}`;
+      card.innerHTML = `
+        <div class="q-number">Vraag ${i + 1}</div>
+        <div class="q-question">${q.question}</div>
+        <div class="q-hint">${q.hint}</div>
+        ${q.type === 'textarea'
+          ? `<textarea class="form-input" id="input-${q.id}" rows="4" placeholder="Typ hier je antwoord…"></textarea>`
+          : `<input type="text" class="form-input" id="input-${q.id}" placeholder="Typ hier je antwoord…">`
+        }
+      `;
+      container.appendChild(card);
+    });
+
+    // Navigation
+    const btnPrev = document.getElementById('btn-prev');
+    const btnNext = document.getElementById('btn-next');
+    const stepLabel = document.getElementById('step-label');
+
+    function showStep(step) {
+      currentStep = step;
+
+      document.querySelectorAll('.q-card').forEach((c, i) => {
+        c.classList.toggle('hidden', i !== step);
+      });
+
+      document.querySelectorAll('.q-progress-step').forEach((d, i) => {
+        d.classList.toggle('active', i <= step);
+      });
+
+      btnPrev.style.visibility = step === 0 ? 'hidden' : 'visible';
+      btnNext.textContent = step === questions.length - 1 ? 'Versturen' : 'Volgende';
+      stepLabel.textContent = `Vraag ${step + 1} van ${questions.length}`;
+
+      // Focus input
+      const input = document.querySelector(`#card-${step} .form-input`);
+      if (input) setTimeout(() => input.focus(), 200);
+    }
+
+    btnPrev.addEventListener('click', () => {
+      if (currentStep > 0) showStep(currentStep - 1);
+    });
+
+    btnNext.addEventListener('click', async () => {
+      // Save current answer
+      const q = questions[currentStep];
+      const input = document.getElementById(`input-${q.id}`);
+      answers[q.id] = input ? input.value.trim() : '';
+
+      if (currentStep < questions.length - 1) {
+        showStep(currentStep + 1);
+      } else {
+        // Submit
+        btnNext.textContent = 'Versturen…';
+        btnNext.disabled = true;
+
+        const params = new URLSearchParams(window.location.search);
+        const orderId = params.get('id') || 'unknown';
+
+        try {
+          await SzinnAPI.submitQuestionnaire(orderId, answers);
+          document.getElementById('q-header').style.display = 'none';
+          document.getElementById('q-progress').style.display = 'none';
+          document.getElementById('questionnaire-form').style.display = 'none';
+          document.getElementById('q-nav').style.display = 'none';
+          document.getElementById('q-success').classList.add('visible');
+        } catch (err) {
+          alert('Er ging iets mis. Probeer het opnieuw.');
+          btnNext.textContent = 'Versturen';
+          btnNext.disabled = false;
+        }
+      }
+    });
+
+    showStep(0);
+  </script>
+</body>
+</html>

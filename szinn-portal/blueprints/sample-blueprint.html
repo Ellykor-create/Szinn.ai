@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SZINN · Master Document v3</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #FAFAF8;
+    --bg2: #F4F2EE;
+    --bg3: #EDEAE4;
+    --gold: #B8934A;
+    --gold-light: rgba(184,147,74,0.18);
+    --gold-dim: rgba(184,147,74,0.09);
+    --accent: #8B6A3E;
+    --ink: #1A1610;
+    --ink2: #3D3326;
+    --muted: #8A7D6E;
+    --border: rgba(184,147,74,0.22);
+    --border2: rgba(26,22,16,0.08);
+    --green: #2E7D32;
+    --green-bg: #E8F5E9;
+    --green-border: #A5D6A7;
+    --red: #C62828;
+    --red-bg: #FFEBEE;
+    --red-border: #EF9A9A;
+    --blue: #1565C0;
+    --blue-bg: #E3F2FD;
+    --blue-border: #90CAF9;
+    --orange: #E65100;
+    --orange-bg: #FFF3E0;
+    --orange-border: #FFCC80;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Jost', sans-serif;
+    font-weight: 300;
+    line-height: 1.8;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  nav {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(250,250,248,0.96);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border2);
+    padding: 12px 48px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .nav-brand { font-family: 'Cormorant Garamond', serif; font-size: 15px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); white-space: nowrap; flex-shrink: 0; }
+  .nav-links { display: flex; gap: 14px; flex-wrap: wrap; justify-content: flex-end; }
+  .nav-links a { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.2s; white-space: nowrap; }
+  .nav-links a:hover { color: var(--gold); }
+
+  .page { max-width: 960px; margin: 0 auto; padding: 0 48px 120px; }
+
+  .hero { padding: 80px 0 56px; border-bottom: 1px solid var(--border2); }
+  .hero-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; }
+  .hero h1 { font-family: 'Cormorant Garamond', serif; font-size: clamp(38px, 5vw, 64px); font-weight: 300; line-height: 1.1; color: var(--ink); margin-bottom: 20px; }
+  .hero h1 em { font-style: italic; color: var(--gold); }
+  .hero-sub { font-size: 15px; color: var(--muted); max-width: 580px; line-height: 1.9; margin-bottom: 28px; }
+  .hero-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+  .pill { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); border: 1px solid var(--border); padding: 4px 12px; border-radius: 2px; background: var(--gold-dim); }
+
+  section { padding: 64px 0 0; }
+
+  .section-label { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 24px; display: flex; align-items: center; gap: 20px; }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border2); }
+
+  h2 { font-family: 'Cormorant Garamond', serif; font-size: clamp(24px, 3.2vw, 38px); font-weight: 300; line-height: 1.2; color: var(--ink); margin-bottom: 24px; }
+  h2 em { font-style: italic; color: var(--gold); }
+  h3 { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 400; color: var(--accent); margin: 36px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--border2); }
+
+  p { font-size: 15px; color: var(--ink2); line-height: 1.9; margin-bottom: 12px; max-width: 720px; }
+  code { font-family: 'Courier New', monospace; font-size: 12px; background: var(--bg3); padding: 2px 7px; border-radius: 3px; color: var(--accent); }
+
+  .grid-2 { display: grid; grid-template-columns: repeat(2,1fr); gap: 1px; background: var(--border2); border: 1px solid var(--border2); margin: 24px 0; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3,1fr); gap: 1px; background: var(--border2); border: 1px solid var(--border2); margin: 24px 0; }
+
+  .card { background: var(--bg); padding: 24px 20px; }
+  .card-num { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .card-title { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 500; color: var(--ink); margin-bottom: 8px; line-height: 1.3; }
+  .card-body { font-size: 13px; color: var(--muted); line-height: 1.75; }
+  .card-price { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--gold); margin: 8px 0 4px; }
+
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13px; }
+  thead tr { border-bottom: 1px solid var(--border); }
+  th { text-align: left; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); padding: 8px 14px 10px 0; font-weight: 400; }
+  td { padding: 11px 14px 11px 0; border-bottom: 1px solid var(--border2); color: var(--ink2); vertical-align: top; line-height: 1.6; }
+  td:first-child { color: var(--accent); font-size: 13px; min-width: 140px; }
+  tr.subtotal td { border-top: 1px solid var(--border); font-weight: 500; color: var(--ink); background: var(--bg2); padding: 10px 14px 10px 0; }
+  tr.total td { border-top: 2px solid var(--gold-light); font-weight: 500; color: var(--green); font-size: 14px; background: var(--green-bg); padding: 12px 14px 12px 0; }
+  tr.loss td { border-top: 2px solid var(--red-border); font-weight: 500; color: var(--red); background: var(--red-bg); padding: 12px 14px 12px 0; }
+
+  .rule-block { border-left: 3px solid var(--gold); padding: 16px 22px; background: var(--gold-dim); margin: 16px 0; }
+  .rule-block p { margin: 0; font-size: 14px; color: var(--accent); max-width: none; }
+
+  .warn-block { border-left: 3px solid var(--orange); padding: 16px 22px; background: var(--orange-bg); margin: 16px 0; }
+  .warn-block p { margin: 0; font-size: 14px; color: var(--orange); max-width: none; }
+
+  .checklist { display: flex; flex-direction: column; gap: 8px; margin: 12px 0; }
+  .check-item { display: flex; gap: 12px; align-items: flex-start; font-size: 14px; color: var(--ink2); line-height: 1.7; }
+  .ci-done { color: var(--green); font-size: 13px; margin-top: 3px; flex-shrink: 0; }
+  .ci-todo { color: var(--muted); font-size: 13px; margin-top: 3px; flex-shrink: 0; }
+  .ci-warn { color: var(--orange); font-size: 13px; margin-top: 3px; flex-shrink: 0; }
+  .todo-text { color: var(--muted); }
+
+  .badge { display: inline-block; font-size: 9px; letter-spacing: 2px; text-transform: uppercase; padding: 3px 8px; border-radius: 2px; margin-bottom: 8px; }
+  .badge-live { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+  .badge-concept { background: var(--orange-bg); color: var(--orange); border: 1px solid var(--orange-border); }
+  .badge-q3 { background: #FFF8E1; color: #F57F17; border: 1px solid #FFE082; }
+  .badge-q4 { background: #EDE7F6; color: #4527A0; border: 1px solid #B39DDB; }
+  .badge-later { background: #F3F3F3; color: #616161; border: 1px solid #BDBDBD; }
+  .badge-review { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+
+  /* ── SCENARIO TABLE ── */
+  .scenario-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 13px; }
+  .scenario-table th { background: var(--bg3); font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--accent); padding: 10px 14px; text-align: right; border: 1px solid var(--border2); font-weight: 500; }
+  .scenario-table th:first-child { text-align: left; }
+  .scenario-table td { padding: 10px 14px; border: 1px solid var(--border2); text-align: right; color: var(--ink2); vertical-align: middle; }
+  .scenario-table td:first-child { text-align: left; color: var(--accent); font-weight: 400; background: var(--bg2); }
+  .scenario-table tr.scenario-total td { background: var(--green-bg); color: var(--green); font-weight: 500; border-top: 2px solid var(--green-border); }
+  .scenario-table tr.scenario-total td:first-child { background: var(--green-bg); }
+  .scenario-table tr.scenario-loss td { background: var(--red-bg); color: var(--red); font-weight: 500; }
+  .scenario-table tr.scenario-loss td:first-child { background: var(--red-bg); }
+  .scenario-table tr.scenario-header td { background: var(--gold-dim); color: var(--accent); font-weight: 500; font-size: 12px; letter-spacing: 1px; text-align: center; border-top: 2px solid var(--border); }
+
+  /* ── SWOT ── */
+  .swot { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--border2); border: 1px solid var(--border2); margin: 24px 0; }
+  .swot-cell { padding: 24px 22px; }
+  .swot-cell:nth-child(1) { background: var(--green-bg); }
+  .swot-cell:nth-child(2) { background: var(--red-bg); }
+  .swot-cell:nth-child(3) { background: var(--blue-bg); }
+  .swot-cell:nth-child(4) { background: var(--orange-bg); }
+  .swot-title { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; font-weight: 500; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,0.08); }
+  .swot-cell:nth-child(1) .swot-title { color: var(--green); }
+  .swot-cell:nth-child(2) .swot-title { color: var(--red); }
+  .swot-cell:nth-child(3) .swot-title { color: var(--blue); }
+  .swot-cell:nth-child(4) .swot-title { color: var(--orange); }
+  .swot-item { font-size: 13px; color: var(--ink2); line-height: 1.7; margin-bottom: 7px; padding-left: 14px; position: relative; }
+  .swot-item::before { content: '—'; position: absolute; left: 0; color: var(--muted); font-size: 11px; }
+
+  /* ── PIPELINE ── */
+  .pipeline { display: flex; align-items: stretch; gap: 0; margin: 20px 0; overflow-x: auto; border: 1px solid var(--border2); }
+  .pipe-step { flex: 1; min-width: 85px; text-align: center; padding: 16px 10px; background: var(--bg); border-right: 1px solid var(--border2); position: relative; }
+  .pipe-step:last-child { border-right: none; }
+  .pipe-step::after { content: '→'; position: absolute; right: -10px; top: 50%; transform: translateY(-50%); color: var(--gold); font-size: 12px; z-index: 1; background: var(--bg); padding: 0 2px; }
+  .pipe-step:last-child::after { display: none; }
+  .pipe-name { font-size: 12px; font-weight: 500; color: var(--ink); display: block; margin-bottom: 3px; }
+  .pipe-sub { font-size: 10px; color: var(--muted); display: block; line-height: 1.4; }
+
+  .sections-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; margin: 20px 0; }
+  .section-item { font-size: 12px; color: var(--ink2); padding: 9px 12px; border-left: 2px solid var(--gold-light); background: var(--bg2); line-height: 1.4; }
+  .section-item span { font-size: 9px; color: var(--gold); display: block; margin-bottom: 2px; letter-spacing: 1px; }
+
+  .mandala-layers { margin: 20px 0; border: 1px solid var(--border2); }
+  .mandala-layer { display: grid; grid-template-columns: 44px 1fr 1fr; border-bottom: 1px solid var(--border2); align-items: start; }
+  .mandala-layer:last-child { border-bottom: none; }
+  .layer-num { font-family: 'Cormorant Garamond', serif; font-size: 20px; color: var(--gold); padding: 18px 0 18px 18px; font-weight: 300; }
+  .layer-content { padding: 18px 18px 18px 14px; border-right: 1px solid var(--border2); }
+  .layer-title { font-size: 13px; font-weight: 500; color: var(--ink); margin-bottom: 4px; }
+  .layer-desc { font-size: 12px; color: var(--muted); line-height: 1.7; }
+  .layer-spec { padding: 18px; background: var(--bg2); }
+  .layer-spec-title { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); margin-bottom: 5px; }
+  .layer-spec-body { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  .merkaba-box { background: var(--bg2); border: 1px solid var(--border); padding: 24px 28px; margin: 16px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; }
+  .merkaba-title { font-family: 'Cormorant Garamond', serif; font-size: 15px; font-weight: 500; color: var(--ink); margin-bottom: 8px; }
+  .merkaba-body { font-size: 13px; color: var(--muted); line-height: 1.7; }
+  .gold-text { color: #B8934A; font-weight: 500; }
+  .purple-text { color: #7B68C8; font-weight: 500; }
+
+  .income-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 1px; background: var(--border2); border: 1px solid var(--border2); margin: 20px 0; }
+  .income-card { background: var(--bg); padding: 24px 20px; position: relative; }
+  .income-num { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 300; color: var(--gold-light); position: absolute; top: 14px; right: 16px; line-height: 1; }
+  .income-label { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: var(--gold); margin-bottom: 8px; }
+  .income-title { font-family: 'Cormorant Garamond', serif; font-size: 19px; font-weight: 400; color: var(--ink); margin-bottom: 8px; line-height: 1.3; }
+  .income-price { font-family: 'Cormorant Garamond', serif; font-size: 22px; color: var(--gold); margin-bottom: 8px; }
+  .income-body { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+  .divider { display: flex; align-items: center; gap: 16px; margin: 56px 0 0; }
+  .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border2); }
+  .divider-mark { width: 5px; height: 5px; border: 1px solid var(--gold); transform: rotate(45deg); }
+
+  footer { margin-top: 80px; padding: 36px 0; border-top: 1px solid var(--border2); text-align: center; }
+  .footer-brand { font-family: 'Cormorant Garamond', serif; font-size: 18px; letter-spacing: 4px; color: var(--gold); margin-bottom: 6px; }
+  .footer-sub { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+
+  @media (max-width: 720px) {
+    .page { padding: 0 18px 80px; }
+    nav { padding: 12px 18px; }
+    .grid-2, .grid-3, .sections-grid, .income-grid, .swot { grid-template-columns: 1fr; }
+    .merkaba-box { grid-template-columns: 1fr; gap: 16px; }
+    .mandala-layer { grid-template-columns: 36px 1fr; }
+    .layer-spec { display: none; }
+    .pipeline { flex-direction: column; }
+  }
+  @media print { nav { display: none; } .page { padding: 0 16px; } }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">SZINN</div>
+  <div class="nav-links">
+    <a href="#wat">Wat is SZINN</a>
+    <a href="#systemen">Systemen</a>
+    <a href="#mandala">Mandala</a>
+    <a href="#pipeline">Pipeline</a>
+    <a href="#blueprint">Blueprint</a>
+    <a href="#calculatie">Calculatie</a>
+    <a href="#scenario">Scenario's</a>
+    <a href="#kwaliteit">Kwaliteit</a>
+    <a href="#producten">Producten</a>
+    <a href="#verdienmodel">Verdienmodel</a>
+    <a href="#doelgroep">Doelgroep</a>
+    <a href="#status">Status</a>
+    <a href="#regels">Regels</a>
+    <a href="#team">Team</a>
+  </div>
+</nav>
+
+<div class="page">
+
+  <div class="hero" id="wat">
+    <div class="hero-label">Master Document · versie 3.0 · Vertrouwelijk</div>
+    <h1>SZINN<br><em>Alignment Blueprint</em><br>systeem</h1>
+    <p class="hero-sub">Een schaalbaar, geautomatiseerd platform voor gepersonaliseerde navigatiedocumenten. Geen spirituele content. Een praktisch instrument voor zelfherkenning en richting.</p>
+    <div class="hero-pills">
+      <span class="pill">szinn.ai</span>
+      <span class="pill">Remember who you are</span>
+      <span class="pill">NL · EN</span>
+      <span class="pill">Fase 1 in aanbouw</span>
+    </div>
+  </div>
+
+  <div class="divider"><div class="divider-mark"></div></div>
+
+  <!-- ── WAT IS SZINN ── -->
+  <section>
+    <div class="section-label">Wat is SZINN</div>
+    <h2>Geen horoscoop.<br>Geen voorspelling.<br><em>Jouw spiegel.</em></h2>
+    <p>SZINN maakt gepersonaliseerde Alignment Blueprints: HTML-documenten die astrologie, numerologie en Kabbalah/Tikkun synthetiseren tot een individueel navigatie-instrument. Volledig gepersonaliseerd op exacte geboortedata. Geleverd binnen 24 uur. Niet spiritueel of vaag — een praktisch, universeel navigatiemiddel.</p>
+    <div class="rule-block"><p>"Dit document is geen waarheid. Het is een spiegel. Wat resoneert — neem het mee. Wat niet klopt — laat het los. Jij bent altijd de enige expert op jezelf."</p></div>
+  </section>
+
+  <div class="divider"><div class="divider-mark"></div></div>
+
+  <!-- ── SYSTEMEN ── -->
+  <section id="systemen">
+    <div class="section-label">De drie kernsystemen</div>
+    <h2>De lenzen van<br><em>het systeem</em></h2>
+    <p>Human Design en Gene Keys zijn expliciet uitgesloten van het Blueprint — alleen optionele verdiepingsrichtingen in sectie 13.</p>
+    <div class="grid-3">
+      <div class="card">
+        <div class="card-num">Systeem 01</div>
+        <div class="card-title">Astrologie</div>
+        <div class="card-body">Placidus huissysteem. Python + Swiss Ephemeris. Verificatie via astro.com.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">Systeem 02</div>
+        <div class="card-title">Numerologie</div>
+        <div class="card-body">Levenspad = som geboortedatumcijfers → enkel cijfer of meestergetal. Persoonlijk Jaar = Levenspad + Universeel Jaar. Altijd Python-geverifieerd.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">Systeem 03</div>
+        <div class="card-title">Kabbalah · Tikkun</div>
+        <div class="card-body">De zielscorrectie. Schaduwkanten en groeistukken. Kern van secties 07 en 12.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><div class="divider-mark"></div></div>
+
+  <!-- ── MANDALA ── -->
+  <section id="mandala">
+    <div class="section-label">Mandala specificatie</div>
+    <h2>De geometrische<br><em>vingerafdruk van de ziel</em></h2>
+    <p>Vier lagen — twee universeel, twee uniek per persoon. Geanimeerde SVG gegenereerd op basis van exacte geboortedata. De mandala werkt via herkenning, niet via het verstand.</p>
+
+    <div class="mandala-layers">
+      <div class="mandala-layer">
+        <div class="layer-num">1</div>
+        <div class="layer-content">
+          <div class="layer-title">Bloem van het Leven</div>
+          <div class="layer-desc">Universeel. Het oudste geometrische patroon dat de mens kent. Meer dan 6.000 jaar oud. Gevonden in Egypte, India, China. Werkt via herkenning.</div>
+        </div>
+        <div class="layer-spec">
+          <div class="layer-spec-title">Technisch</div>
+          <div class="layer-spec-body">Langzaam roterend. 120 seconden per rotatie. Basis van de gehele mandala.</div>
+        </div>
+      </div>
+      <div class="mandala-layer">
+        <div class="layer-num">2</div>
+        <div class="layer-content">
+          <div class="layer-title">Metatron's Cube</div>
+          <div class="layer-desc">Universeel. Lijnen die alle 13 middelpunten verbinden. Alle vijf Platonische lichamen verborgen. Brug tussen spiritueel en materieel.</div>
+        </div>
+        <div class="layer-spec">
+          <div class="layer-spec-title">Technisch</div>
+          <div class="layer-spec-body">Contraroterend t.o.v. laag 1. 200 seconden per rotatie.</div>
+        </div>
+      </div>
+      <div class="mandala-layer">
+        <div class="layer-num">3</div>
+        <div class="layer-content">
+          <div class="layer-title">Persoonlijke Merkaba</div>
+          <div class="layer-desc">Uniek per persoon. Twee interlockende driehoeken georiënteerd op de Knopen-as. Toont in één oogopslag de groeirichting van de ziel.</div>
+        </div>
+        <div class="layer-spec">
+          <div class="layer-spec-title">Technisch</div>
+          <div class="layer-spec-body">Rotatie = graad Noordknoop. Pulserende glow 6s cyclus. Zie Merkaba spec.</div>
+        </div>
+      </div>
+      <div class="mandala-layer">
+        <div class="layer-num">4</div>
+        <div class="layer-content">
+          <div class="layer-title">Planetenring</div>
+          <div class="layer-desc">Uniek per persoon. Alle planeten op exacte ecliptica-graad op moment van geboorte. Aspectlijnen ertussen. Zoals astro.com maar als circulaire ring.</div>
+        </div>
+        <div class="layer-spec">
+          <div class="layer-spec-title">Technisch</div>
+          <div class="layer-spec-body">x = r × sin(deg_rad) · y = −r × cos(deg_rad). Contraroterend 200s.</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Merkaba oriëntatie: de groeirichting van de ziel</h3>
+    <div class="merkaba-box">
+      <div>
+        <div class="merkaba-title"><span class="gold-text">▲ Gouden driehoek — punt omhoog</span></div>
+        <div class="merkaba-body">Wijst naar de <strong>Noordknoop</strong> — groeirichting, expansie, het nieuwe. Zon-energie: vuur, actie, richting. De punt is geroteerd naar de exacte graad van de Noordknoop in de geboortekaart.</div>
+      </div>
+      <div>
+        <div class="merkaba-title"><span class="purple-text">▼ Paarse driehoek — punt omlaag</span></div>
+        <div class="merkaba-body">Wijst naar de <strong>Zuidknoop</strong> — thuisbasis, het gekende, vertrekpunt. Maan-energie: gevoel, ontvangen, verankeren. Staat altijd exact tegenover de Noordknoop (180°).</div>
+      </div>
+    </div>
+    <div class="rule-block"><p>Rotatie Merkaba = exacte graad Noordknoop. Animatie: pulserende glow 6 seconden (parasympatisch ritme). Coordinaten: x = r × sin(deg_rad), y = −r × cos(deg_rad).</p></div>
+  </section>
+
+  <div class="divider"><div class="divider-mark"></div></div>
+
+  <!-- ── PIPELINE ── -->
+  <section id="pipeline">
+    <div class="section-label">Technische architectuur</div>
+    <h2>Pipeline &amp;<br><em>AI Companion</em></h2>
+
+    <div class="warn-block"><p>De CrewAI multi-agent architectuur is in kaart gebracht maar nog niet gebouwd. De volledige technische flow staat open voor herziening, herinrichting of een andere aanpak — inclusief een eventuele app-gebaseerde architectuur. De nieuwe technische bouwer neemt dit mee als open vraagstuk.</p></div>
+
+    <h3>Beoogde pipeline (Fase 1)</h3>
+    <div class="pipeline">
+      <div class="pipe-step"><span class="pipe-name">Tally</span><span class="pipe-sub">Intake</span></div>
+      <div class="pipe-step"><span class="pipe-name">Make.com</span><span class="pipe-sub">Orchestratie</span></div>
+      <div class="pipe-step"><span class="pipe-name">Python</span><span class="pipe-sub">Swiss Ephemeris</span></div>
+      <div class="pipe-step"><span class="pipe-name">Claude API</span><span class="pipe-sub">Content gen.</span></div>
+      <div class="pipe-step"><span class="pipe-name">HTML</span><span class="pipe-sub">tiiny.host</span></div>
+      <div class="pipe-step"><span class="pipe-name">Enormail</span><span class="pipe-sub">Levering</span></div>
+    </div>
+
+    <h3>Betaling — onder evaluatie</h3>
+    <p>Huidig: Plug&Pay (€125/maand) + Mollie (per transactie). Onder evaluatie: Stripe voor betere internationale schaalbaarheid. Beslissing te nemen door nieuwe technische bouwer samen met Elly.</p>
+
+    <h3>SZINN AI Companion — vijf agents (in kaart gebracht)</h3>
+    <div class="grid-3">
+      <div class="card"><div class="card-num">Agent 01</div><div class="card-title">Astro Agent</div><div class="card-body">Interpreteert geboortekaart, planeetposities, huizen en aspecten vanuit Placidus berekeningen.</div></div>
+      <div class="card"><div class="card-num">Agent 02</div><div class="card-title">Numerologie Agent</div><div class="card-body">Verwerkt Levenspad, Persoonlijk Jaar en numerologische patronen op basis van Python-output.</div></div>
+      <div class="card"><div class="card-num">Agent 03</div><div class="card-title">Frequentie Agent</div><div class="card-body">Cousto methode. Zon-frequentie altijd 136.10 Hz. Actief in Fase 2.</div></div>
+      <div class="card"><div class="card-num">Agent 04</div><div class="card-title">Synthese Agent</div><div class="card-body">Verbindt de drie systemen tot een coherent persoonlijk profiel. Schaduwkanten en groeipunten.</div></div>
+      <div class="card"><div class="card-num">Agent 05</div><div class="card-title">Narratief Agent</div><div class="card-body">Schrijft persoonlijke tekst in SZINN-toon. Uitnodigend, niet urgent. Geen new-age clichés.</div></div>
+      <div class="card"><div class="card-num">Architectuur</div><div class="card-title">Prompt structuur</div><div class="card-body">Vier lagen: System Prompt → Data Layer → Section Prompts → Quality Rules. Open voor herinrichting.</div></div>
+    </div>
+  </section>
+
+  <div class="divider"><div class="divider-mark"></div></div>
+
+  <!-- ── BLUEPRINT ── -->
+  <section id="blueprint">
+    <div class="section-label">Het product</div>
+    <h2>Blueprint structuur:<br><em>13 secties</em></h2>
+    <p>Zelfstandig HTML-bestand. Geanimeerde SVG-mandala, sticky navigatie, share en print. Levering via tiiny.host. White-label configuratieblok bovenaan.</p>
+    <div class="sections-grid">
+      <div class="section-item"><span>01</span>Visie &amp; Missie</div>
+      <div class="section-item"><span>02</span>Introductie + Sacred Geometry sub</div>
+      <div class="section-item"><span>03</span>Leven vanuit flow</div>
+      <div class="section-item"><span>04</span>Astrologie</div>
+      <div class="section-item"><span>05</span>Noord- &amp; Zuidknoop</div>
+      <div class="section-item"><span>06</span>Numerologie</div>
+      <div class="section-item"><span>07</span>Kabbalah / Tikkun</div>
+      <div class="section-item"><span>08</span>Sacred Geometry — De Mandala</div>
+      <div class="section-item"><span>09</span>Overzicht &amp; Samenvatting</div>
+      <div class="section-item"><span>10</span>Reflectievragen</div>
+      <div class="section-item"><span>11</span>Werken met de energie</div>
+      <div class="section-item"><span>12</span>Integratie (schaduwkanten + ankers)</div>
+      <div class="section-item"><span>13</span>Verdieping</div>
+    </div>
+  </section>
+
+  <div class="divider"><div class="divider-mark"></div></div>
+
+  <!-- ── CALCULATIE ── -->
+  <section id="calculatie">
+    <div class="section-label">Financiële calculatie</div>
+    <h2>Kostprijs per<br><em>verkochte Blueprint</em></h2>
+    <p>Verkoopprijs: <strong>€47,00 incl. 21% BTW</strong> = €38,84 excl. BTW. Hieronder de volledige kostprijsopbouw per verkochte Blueprint.</p>
+
+    <h3>Vaste maandkosten (omgerekend per Blueprint)</h3>
+    <p style="font-size:13px;color:var(--muted)">De vaste kosten worden omgerekend naar de maandelijkse verkoopvolumes in de scenario-tabel. Hieronder de absolute maandlasten.</p>
+
+    <table>
+      <thead><tr><th>Post</th><th>Kosten / maand</th><th>Noot</th></tr></thead>
+      <tbody>
+        <tr><td>Enormail</td><td>€35,00</td><td>E-mail platform, alle volumes</td></tr>
+        <tr><td>Plug&Pay</td><td>€125,00</td><td>Onder evaluatie — mogelijk vervangen door Stripe</td></tr>
+        <tr><td>Make.com Core</td><td>~€11,00</td><td>Tot ~300k credits/maand. Schalen naar Pro (~€19) bij groei</td></tr>
+        <tr><td>tiiny.host Pro</td><td>~€31,00</td><td>Onbeperkt actieve sites, 100MB. Pro plan aanbevolen bij schaal</td></tr>
+        <tr class="subtotal"><td>Totaal vaste lasten</td><td>~€202,00 / maand</td><td>Excl. BTW</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Variabele kosten per transactie</h3>
+    <table>
+      <thead><tr><th>Post</th><th>Kosten per Blueprint</th><th>Berekening</th></tr></thead>
+      <tbody>
+        <tr><td>BTW afdracht (21%)</td><td>€8,16</td><td>€47 × 21/121 = €8,16</td></tr>
+        <tr><td>Mollie — iDEAL</td><td>€0,32</td><td>Vaste fee per succesvolle transactie</td></tr>
+        <tr><td>Mollie — creditcard</td><td>~€0,95</td><td>1,8% + €0,25 over €38,84 excl. BTW</td></tr>
+        <tr><td>Claude API</td><td>~€0,40</td><td>Schatting: ~15k tokens per Blueprint @ Sonnet-4 prijzen</td></tr>
+        <tr><td>Technische bouwer</td><td>n.t.b.</td><td>Percentage per Blueprint — vast te stellen bij onboarding</td></tr>
+        <tr><td>Affiliate (SZINN Guide)</td><td>€11,75</td><td>25% van €47 — alleen wanneer via doorverwijzing</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Netto opbrengst per Blueprint — geen affiliate</h3>
+    <table>
+      <thead><tr><th>Post</th><th>Bedrag</th></tr></thead>
+      <tbody>
+        <tr><td>Verkoopprijs</td><td>+ €47,00</td></tr>
+        <tr><td>Af: BTW afdracht</td><td>− €8,16</td></tr>
+        <tr><td>Af: Mollie iDEAL</td><td>− €0,32</td></tr>
+        <tr><td>Af: Claude API</td><td>− €0,40</td></tr>
+        <tr><td>Af: technische bouwer %</td><td>− n.t.b.</td></tr>
+        <tr class="total"><td>Netto excl. vaste lasten</td><td>~€38,12</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Netto opbrengst per Blueprint — via affiliate (25%)</h3>
+    <table>
+      <thead><tr><th>Post</th><th>Bedrag</th></tr></thead>
+      <tbody>
+        <tr><td>Verkoopprijs</td><td>+ €47,00</td></tr>
+        <tr><td>Af: BTW afdracht</td><td>− €8,16</td></tr>
+        <tr><td>Af: Mollie iDEAL</td><td>− €0,32</td></tr>
+        <tr><td>Af: Claude API</td><td>− €0,40</td></tr>
+        <tr><td>Af: affiliate commissie (25%)</td><td>− €11,75</td></tr>
+        <tr><td>Af: technische bouwer %</td><td>− n.t.b.</td></tr>
+        <tr class="total"><td>Netto excl. vaste lasten</td><td>~€26,37</td></tr>
+      </tbody>
+    </table>
+
+    <div class="rule-block"><p>De technische bouwer ontvangt een percentage per verkochte Blueprint. Dit percentage is nog niet vastgesteld en moet worden bepaald bij onboarding. Het heeft directe impact op alle onderstaande scenario-berekeningen — vul dit in zodra afgesproken.</p></div>
+  </section>
+
+  <div class="divider"><div class="divider-mark"></div></div>
+
+  <!-- ── SCENARIO TABEL ── -->
+  <section id="scenario">
+    <div class="section-label">Scenario analyse</div>
+    <h2>Opbrengst bij<br><em>1 · 10 · 100 · 1000 Blueprints / maand</em></h2>
+    <p>Berekening op basis van de bekende kosten. Technisch bouwer % is nog niet vastgesteld en is daarom niet meegenomen. Mix aanname: 70% directe verkoop, 30% via affiliate.</p>
+
+    <table class="scenario-table">
+      <thead>
+        <tr>
+          <th>Post</th>
+          <th>1 / maand</th>
+          <th>10 / maand</th>
+          <th>100 / maand</th>
+          <th>1.000 / maand</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="scenario-header">
+          <td colspan="5">Omzet</td>
+        </tr>
+        <tr>
+          <td>Bruto omzet</td>
+          <td>€47</td>
+          <td>€470</td>
+          <td>€4.700</td>
+          <td>€47.000</td>
+        </tr>
+        <tr>
+          <td>Af: BTW (21%)</td>
+          <td>− €8</td>
+          <td>− €82</td>
+          <td>− €816</td>
+          <td>− €8.165</td>
+        </tr>
+        <tr>
+          <td>Netto omzet excl. BTW</td>
+          <td>€39</td>
+          <td>€388</td>
+          <td>€3.884</td>
+          <td>€38.835</td>
+        </tr>
+        <tr class="scenario-header">
+          <td colspan="5">Variabele kosten</td>
+        </tr>
+        <tr>
+          <td>Betaalkosten (Mollie gem.)</td>
+          <td>− €0,50</td>
+          <td>− €5</td>
+          <td>− €50</td>
+          <td>− €500</td>
+        </tr>
+        <tr>
+          <td>Claude API (~€0,40/stuk)</td>
+          <td>− €0,40</td>
+          <td>− €4</td>
+          <td>− €40</td>
+          <td>− €400</td>
+        </tr>
+        <tr>
+          <td>Affiliate 25% (30% mix)</td>
+          <td>− €4</td>
+          <td>− €42</td>
+          <td>− €423</td>
+          <td>− €4.235</td>
+        </tr>
+        <tr class="scenario-header">
+          <td colspan="5">Vaste maandkosten</td>
+        </tr>
+        <tr>
+          <td>Enormail</td>
+          <td>− €35</td>
+          <td>− €35</td>
+          <td>− €35</td>
+          <td>− €35</td>
+        </tr>
+        <tr>
+          <td>Plug&Pay</td>
+          <td>− €125</td>
+          <td>− €125</td>
+          <td>− €125</td>
+          <td>− €125</td>
+        </tr>
+        <tr>
+          <td>Make.com</td>
+          <td>− €11</td>
+          <td>− €11</td>
+          <td>− €11</td>
+          <td>− €19</td>
+        </tr>
+        <tr>
+          <td>tiiny.host</td>
+          <td>− €31</td>
+          <td>− €31</td>
+          <td>− €31</td>
+          <td>− €31</td>
+        </tr>
+        <tr class="scenario-header">
+          <td colspan="5">Resultaat (excl. technische bouwer %)</td>
+        </tr>
+        <tr class="scenario-loss">
+          <td>Netto resultaat</td>
+          <td>− €168</td>
+          <td>+ €135</td>
+          <td>+ €3.169</td>
+          <td>+ €33.490</td>
+        </tr>
+        <tr>
+          <td style="font-size:11px;color:var(--muted)">Break-even (geen affiliate)</td>
+          <td colspan="4" style="font-size:12px;color:var(--muted)">± 6 Blueprints per maand bij huidige vaste lasten van ~€202</td>
+        </tr>
+        <tr>
+          <td style="font-size:11px;color:var(--muted)">Break-even (30% affiliate mix)</td>
+          <td colspan="4" style="font-size:12px;color:var(--muted)">± 7 Blueprints per maand</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="warn-block"><p>Bij 1 Blueprint per maand is er een verlies van ~€168 door de vaste lasten (met name Plug&Pay €125). Overweging: Plug&Pay vervangen door Stripe (geen vaste maandkosten, ~1,5% + €0,25 per transactie) verlaagt het break-even punt naar 4–5 Blueprints per maand.</p></div>
+
+    <h3>Vergelijking Plug&Pay + Mollie vs. Stripe</h3>
+    <table>
+      <thead><tr><th>Situatie</th><th>Maandkosten vast</th><th>Per transactie</th><th>Break-even</th></tr></thead>
+      <tbody>
+        <tr><td>Plug&Pay + Mollie (nu)</td><td>€125 + €35 + €42 = €202</td><td>€0,32 (iDEAL)</td><td>±6–7 stuks/maand</td></tr>
+        <tr><td>Stripe only</td><td>€35 + €42 = €77</td><td>1,5% + €0,25 = ~€0,83</td><td>±3–4 stuks/maand</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="divider"><div class="divider-mark"></div></div>
+
+  <!-- ── KWALITEITSBORGING ── -->
+  <section id="kwaliteit">
+    <div class="section-label">Kwaliteitsborging</div>
+    <h2>AI-gegenereerd naar<br><em>nulpunt in kwaliteitsverlies</em></h2>
+    <p>De vraag of AI-gegenereerde Blueprints kwalitatief goed genoeg zijn, is de verkeerde vraag. De juiste vraag is: hoe bouw je het systeem zo dat kwaliteitsverlies structureel onmogelijk is? Het antwoord zit in de architectuur.</p>
+
+    <p>De AI werkt niet vrij. Hij werkt binnen een strak, gelaagd kader van regels, verificaties en tooninstructies dat samen met de methodologie is opgebouwd. Elke generatie is reproduceerbaar en controleerbaar. Wat er uitkomt is niet een vrije interpretatie maar een precisie-instrument.</p>
+
+    <h3>Vier lagen die kwaliteitsverlies voorkomen</h3>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-num">Laag 01</div>
+        <div class="card-title">System Prompt</div>
+        <div class="card-body">De AI kent de volledige SZINN-methodologie, positionering, toon en alle niet-onderhandelbare regels voordat hij één woord schrijft. Dit is de basis van elke generatie.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">Laag 02</div>
+        <div class="card-title">Data Layer — Python geverifieerd</div>
+        <div class="card-body">Alle berekeningen — planeetposities, huizen, Levenspad, Persoonlijk Jaar, Merkaba-rotatie — worden door Python gedaan en geverifieerd vóór ze de AI ingaan. De AI berekent nooit zelfstandig.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">Laag 03</div>
+        <div class="card-title">Section Prompts</div>
+        <div class="card-body">Elke sectie heeft een specifieke prompt die de inhoud, structuur en diepgang van precies dat onderdeel stuurt. Geen generieke instructie maar een op maat gesneden kader per sectie.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">Laag 04</div>
+        <div class="card-title">Quality Rules</div>
+        <div class="card-body">Vaste kwaliteitsregels die bij elke generatie meegaan: geen em-dashes, geen bulletpoints, jij/jouw doorheen, vaste teksten verbatim, intake letterlijk verweven. Geautomatiseerde controle op output.</div>
+      </div>
+    </div>
+
+    <h3>Wat dit in de praktijk betekent</h3>
+    <div class="rule-block">
+      <p>Een Blueprint die door dit systeem wordt gegenereerd is niet minder persoonlijk of minder nauwkeurig dan een handmatig opgesteld document. Het is het omgekeerde: het systeem is consistent waar een mens vermoeid raakt, precies waar een mens snel is en schaalbaar waar een mens gelimiteerd is. De kwaliteit zit niet in het handmatige werk — die zit in de regels en de architectuur die de AI stuurt. Die regels zijn door Elly en het systeem samen opgebouwd en continu aangescherpt op basis van echte client Blueprints.</p>
+    </div>
+
+    <h3>Reële aandachtspunten</h3>
+    <div class="checklist">
+      <div class="check-item"><div class="ci-warn">!</div><div>Quality Rules moeten worden onderhouden als de methodologie evolueert — dit is een procesverantwoordelijkheid, geen AI-beperking</div></div>
+      <div class="check-item"><div class="ci-warn">!</div><div>Bij iedere nieuwe taal (EN, later andere) moeten de prompts opnieuw worden gekalibreerd op toon en woordkeuze</div></div>
+      <div class="check-item"><div class="ci-warn">!</div><div>Afhankelijkheid van Claude API — prijswijzigingen of beleidswijzigingen zijn een reëel aandachtspunt voor de lange termijn</div></div>
+      <div class="check-item"><div class="ci-warn">!</div><div>Juridische bescherming van de methodologie is prioriteit — het systeem is kopieerbaar zonder die bescherming</div></div>
+    </div>
+  </section>
+
+  <div class="divider"><div class="divider-mark"></div></div>
+
+  <!-- ── PRODUCTEN ── -->
+  <section id="producten">
+    <div class="section-label">Producten &amp; roadmap</div>
+    <h2>Vier fases,<br><em>één platform</em></h2>
+
+    <div class="income-grid">
+      <div class="income-card">
+        <div class="income-num">1</div>
+        <span class="badge badge-live">Live</span>
+        <div class="income-label">Fase 1 · Nu</div>
+        <div class="income-title">Alignment Blueprint</div>
+        <div class="income-price">€47 <span style="font-size:13px;color:var(--muted)">incl. BTW</span></div>
+        <div class="income-body">Bij elke aankoop ontvangt de koper automatisch één persoonlijke giftcode — waarmee zij één iemand naar keuze een gratis Blueprint kunnen geven. De code is eenmalig, uniek per transactie en heeft geen vervaldatum. Levering binnen 24 uur. NL + EN.<br><br>
+        Add-ons: 1-op-1 guidance sessie en fysiek drukken.<br><br>
+        <span style="font-size:11px;color:var(--gold)">→ Zie aparte pagina: SZINN_Gift_Blueprint.html</span></div>
+      </div>
+      <div class="income-card">
+        <div class="income-num">2</div>
+        <span class="badge badge-concept">In kaart</span>
+        <div class="income-label">Fase 1 · Aanvullend</div>
+        <div class="income-title">Guidance sessie + fysiek drukken</div>
+        <div class="income-body">1-op-1 begeleiding bij Blueprint door Elly of SZINN Guide. Fysiek gedrukte versie als premium add-on. Prijs en format nog vast te stellen.</div>
+      </div>
+      <div class="income-card">
+        <div class="income-num">3</div>
+        <span class="badge badge-q3">Q3 2026</span>
+        <div class="income-label">Fase 2</div>
+        <div class="income-title">Frequency Blueprint</div>
+        <div class="income-body">Cousto Cosmic Octave frequenties. Zon altijd 136.10 Hz. Frequentie-content exclusief voor dit product — niet in het Alignment Blueprint.</div>
+      </div>
+      <div class="income-card">
+        <div class="income-num">4</div>
+        <span class="badge badge-q4">Q4 2026</span>
+        <div class="income-label">Fase 3</div>
+        <div class="income-title">SZINN Guide netwerk</div>
+        <div class="income-body">Affiliate voor mensen die anderen begeleiden vanuit harmonisatie. Geen certificering. 25% commissie per Blueprint via doorverwijzing.</div>
+      </div>
+      <div class="income-card">
+        <div class="income-num">5</div>
+        <span class="badge badge-later">Later</span>
+        <div class="income-label">Fase 4</div>
+        <div class="income-title">SZINN Companion — app</div>
+        <div class="income-price">€22,22 <span style="font-size:13px;color:var(--muted)">/maand</span></div>
+        <div class="income-body">Token-gebaseerd abonnement. Drie functies: Blueprint Q&A, transits/persoonlijk jaar begeleiding, dagelijkse AI-coach. Gefaseerd, app-based.</div>
+      </div>
+      <div class="income-card">
+        <div class="income-num">6</div>
+        <span class="badge badge-later">Later</span>
+        <div class="income-label">Fase 4+</div>
+        <div class="income-title">White-label</div>
+        <div class="income-body">Hogere licentie + per Blueprint fee voor externe partners. Noord-Amerika als prioritaire markt. Taal- en brandconfiguratie via WL-blok in HTML.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><div class="divider-mark"></div></div>
+
+  <!-- ── VERDIENMODEL ── -->
+  <section id="verdienmodel">
+    <div class="section-label">Business model</div>
+    <h2>Vier<br><em>inkomstenstromen</em></h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-num">Stroom 01</div>
+        <div class="card-title">Direct B2C + add-ons</div>
+        <div class="card-body">€47 per Blueprint. Klant krijgt automatisch een cadeau-exemplaar. Add-ons: guidance sessie en fysiek drukken. Volledig schaalbaar via automation.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">Stroom 02</div>
+        <div class="card-title">SZINN Guide affiliate</div>
+        <div class="card-body">25% commissie voor doorverwijzers. Geen certificering vereist. Mensen die anderen begeleiden vanuit harmonisatie kunnen direct deelnemen.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">Stroom 03</div>
+        <div class="card-title">SZINN Companion abonnement</div>
+        <div class="card-body">€22,22/maand. Token-gebaseerd. App-based, gefaseerd. Drie functies: Q&A Blueprint, transits-begeleiding, dagelijkse AI-coach.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">Stroom 04</div>
+        <div class="card-title">White-label licenties</div>
+        <div class="card-body">Hogere licentie + per Blueprint fee voor externe partners. Noord-Amerika prioriteit. WL-configuratieblok al ingebouwd in HTML.</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><div class="divider-mark"></div></div>
+
+  <!-- ── DOELGROEP ── -->
+  <section id="doelgroep">
+    <div class="section-label">Doelgroep</div>
+    <h2>Voor wie is<br><em>SZINN</em></h2>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-num">Primair</div>
+        <div class="card-title">Bewust zoekende volwassenen</div>
+        <div class="card-body">Mensen die zichzelf willen herkennen, patronen willen doorbreken en richting willen vinden. Open voor zelfinzicht. Missen een persoonlijk kader.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">Secundair</div>
+        <div class="card-title">Begeleiders &amp; partners</div>
+        <div class="card-body">Coaches, therapeuten, begeleiders (SZINN Guides). Bedrijven voor white-label. Noord-Amerika als groeimarkt voor EN-versie.</div>
+      </div>
+    </div>
+    <table>
+      <thead><tr><th>Taal</th><th>Markt</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>Nederlands</td><td>Nederland &amp; België — primaire markt</td><td>Actief</td></tr>
+        <tr><td>Engels</td><td>Noord-Amerika — groeimarkt</td><td>In voorbereiding</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <div class="divider"><div class="divider-mark"></div></div>
+
+  <!-- ── STATUS ── -->
+  <section id="status">
+    <div class="section-label">Huidige status</div>
+    <h2>Wat klaar is &amp;<br><em>wat nog moet</em></h2>
+
+    <h3>Voltooide Blueprints (handmatig)</h3>
+    <div class="checklist">
+      <div class="check-item"><div class="ci-done">✓</div><div>Olaf, Linda, Mariëlle, Jo, Danillo, Barry/Albert Veentjer, Maudy, Yuri — meerdere volledige client Blueprints</div></div>
+    </div>
+
+    <h3>Documenten &amp; assets</h3>
+    <div class="checklist">
+      <div class="check-item"><div class="ci-done">✓</div><div>Basisdocument DEF — canonieke referentie vaste teksten (Google Drive ID: 1xkQNuOEVnpS1PabC6Sb1ycJtJ5iejagLDB-F09bW1d8)</div></div>
+      <div class="check-item"><div class="ci-done">✓</div><div>Pitch deck 13 slides EN (Google Drive ID: 1rvYA6ZOckt7FiXC9dQwzgAhNA30fkZ9E6croC0EarGI)</div></div>
+      <div class="check-item"><div class="ci-done">✓</div><div>Sales page szinn_en_v4.html · Introductiedocument NL+EN · HTML Blueprint template</div></div>
+    </div>
+
+    <h3>Systemen</h3>
+    <div class="checklist">
+      <div class="check-item"><div class="ci-done">✓</div><div>Tally intake formulier — live</div></div>
+      <div class="check-item"><div class="ci-done">✓</div><div>Betaalsysteem: Plug&Pay + Mollie</div></div>
+      <div class="check-item"><div class="ci-done">✓</div><div>Enormail e-mailsequenties</div></div>
+      <div class="check-item"><div class="ci-done">✓</div><div>CrewAI 5-agent architectuur in kaart gebracht</div></div>
+      <div class="check-item"><div class="ci-warn">!</div><div class="todo-text">Make.com automation pipeline — in aanbouw, open voor herziening</div></div>
+      <div class="check-item"><div class="ci-warn">!</div><div class="todo-text">Betaalsysteem: evaluatie Stripe vs. Plug&Pay + Mollie loopt</div></div>
+    </div>
+
+    <h3>Juridische bescherming</h3>
+    <div class="checklist">
+      <div class="check-item"><div class="ci-todo">◦</div><div class="todo-text">Methodologie document</div></div>
+      <div class="check-item"><div class="ci-todo">◦</div><div class="todo-text">Notarieel depot (~€100)</div></div>
+      <div class="check-item"><div class="ci-todo">◦</div><div class="todo-text">BBIE trademark filing (~€250, klassen 41 en 42)</div></div>
+      <div class="check-item"><div class="ci-todo">◦</div><div class="todo-text">Work-for-hire / NDA voor technische samenwerkingen</div></div>
+    </div>
+  </section>
+
+  <div class="divider"><div class="divider-mark"></div></div>
+
+  <!-- ── CONTENT REGELS ── -->
+  <section id="regels">
+    <div class="section-label">Content regels — niet onderhandelbaar</div>
+    <h2>Kwaliteitsregels<br><em>voor de bouwer</em></h2>
+
+    <table>
+      <thead><tr><th>Regel</th><th>Toelichting</th></tr></thead>
+      <tbody>
+        <tr><td>Vaste tekst verbatim</td><td>Tekst uit basisdocument DEF altijd letterlijk overnemen — nooit samenvatten</td></tr>
+        <tr><td>Geen em-dashes</td><td>In lopende tekst geen —. Gebruik dubbele punt of herstructureer de zin</td></tr>
+        <tr><td>Geen bulletpoints</td><td>Nooit in lopende tekst. Lijsten als proza schrijven</td></tr>
+        <tr><td>Jij/jouw</td><td>Tweede persoon enkelvoud doorheen het volledige document (NL)</td></tr>
+        <tr><td>Intake verweven</td><td>Letterlijke intake-antwoorden van de klant doorheen persoonlijke secties gevlochten</td></tr>
+        <tr><td>Geen Hz in Blueprint</td><td>Frequentie-content uitsluitend in het Frequency Blueprint (Fase 2)</td></tr>
+        <tr><td>Numerologie via Python</td><td>Claude berekent nooit zelfstandig — altijd Python-geverifieerd. Foutcorrectie door het volledige document</td></tr>
+        <tr><td>Astrologie Placidus</td><td>Huizen altijd verifiëren op absolute ecliptica-graadranges per cusp. Veelgemaakte fout: planeet vlak vóór cusp in verkeerd huis plaatsen</td></tr>
+        <tr><td>Zon-frequentie</td><td>Altijd 136.10 Hz (Cousto) — nooit 126.22 Hz</td></tr>
+        <tr><td>Merkaba rotatie</td><td>Rotatie = graad Noordknoop. Gouden driehoek omhoog naar Noordknoop. Paarse driehoek omlaag naar Zuidknoop</td></tr>
+      </tbody>
+    </table>
+
+    <div class="rule-block"><p>Mind framework (Bob Proctor): bewust en onderbewust verstand altijd onderscheiden. Bewust: instrument van keuze, verwerkt fractie van input. Onderbewust: stuurt ~96–98% van gedrag. Nooit als één entiteit behandelen. Verwerken in alle relevante secties.</p></div>
+  </section>
+
+  <div class="divider"><div class="divider-mark"></div></div>
+
+  <!-- ── TEAM ── -->
+  <section id="team">
+    <div class="section-label">Team</div>
+    <h2>Wie er<br><em>bij betrokken is</em></h2>
+
+    <table>
+      <thead><tr><th>Rol</th><th>Bijdrage</th><th>Vergoeding</th></tr></thead>
+      <tbody>
+        <tr><td>Elly Elizabeth Korving — oprichter</td><td>Business coach, spiritual guide, life coach. Inhoudelijk eigenaar van methodologie, positionering en alle Blueprint content.</td><td>—</td></tr>
+        <tr><td>Yuri — design</td><td>Visuele identiteit en design assets</td><td>Eenmalige fee + uurtarief</td></tr>
+        <tr><td>Technische bouwer (nieuw)</td><td>Automation pipeline, Python berekeningen, Claude API integratie, levering via tiiny.host. Open voor volledige herinrichting van de technische architectuur inclusief eventuele app-aanpak. Jaymie was eerder deze rol — vervangen.</td><td>% per Blueprint — vast te stellen</td></tr>
+      </tbody>
+    </table>
+
+    <div class="rule-block"><p>Vereist: work-for-hire contract + NDA / vertrouwelijkheidsclausule voor alle technische samenwerkingen. Client-NDAs worden niet aanbevolen.</p></div>
+
+    <h3>Onboarding nieuwe bouwer</h3>
+    <div class="checklist">
+      <div class="check-item"><div class="ci-todo">◦</div><div class="todo-text">Dit document als briefing meegeven</div></div>
+      <div class="check-item"><div class="ci-todo">◦</div><div class="todo-text">Percentage per Blueprint afspreken</div></div>
+      <div class="check-item"><div class="ci-todo">◦</div><div class="todo-text">Technische architectuur samen doornemen en al dan niet herzien</div></div>
+      <div class="check-item"><div class="ci-todo">◦</div><div class="todo-text">Work-for-hire + NDA tekenen voor start</div></div>
+      <div class="check-item"><div class="ci-todo">◦</div><div class="todo-text">Betaalsysteem beslissing nemen: Stripe of Plug&Pay + Mollie</div></div>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <div class="footer-brand">SZINN</div>
+  <div class="footer-sub">szinn.ai · Master Document v3.0 · Vertrouwelijk · Niet openbaar te delen</div>
+</footer>
+
+</body>
+</html>

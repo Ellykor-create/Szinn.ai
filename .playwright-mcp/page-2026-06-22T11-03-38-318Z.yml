@@ -1,0 +1,133 @@
+- generic [ref=e1]:
+  - navigation [ref=e3]:
+    - generic [ref=e4]:
+      - link "SZINN SZINN" [ref=e5] [cursor=pointer]:
+        - /url: /szinn-portal/pages/dashboard.html
+        - img "SZINN" [ref=e6]
+        - generic [ref=e7]: SZINN
+      - list [ref=e8]:
+        - listitem [ref=e9]:
+          - link "Dashboard" [ref=e10] [cursor=pointer]:
+            - /url: /szinn-portal/pages/dashboard.html
+        - listitem [ref=e11]:
+          - link "Vragenlijst" [ref=e12] [cursor=pointer]:
+            - /url: /szinn-portal/pages/questionnaire.html
+        - listitem [ref=e13]:
+          - link "Uitloggen" [ref=e14] [cursor=pointer]:
+            - /url: "#"
+      - generic [ref=e15]:
+        - generic [ref=e16]: Demo gebruiker
+        - generic [ref=e17]: DE
+  - main [ref=e19]:
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - heading "Goedemiddag, Demo gebruiker" [level=1] [ref=e22]
+        - paragraph [ref=e23]: Jouw persoonlijke SZINN ruimte. Bekijk je Blueprint, stel vragen aan je AI Companion of geef een Blueprint cadeau aan iemand die je wil inspireren.
+        - generic [ref=e24]:
+          - button "AI Companion" [ref=e25] [cursor=pointer]:
+            - img [ref=e26]
+            - text: AI Companion
+          - button "Cadeau geven" [active] [ref=e29] [cursor=pointer]:
+            - img [ref=e30]
+            - text: Cadeau geven
+          - button "Fysiek boek" [ref=e35] [cursor=pointer]:
+            - img [ref=e36]
+            - text: Fysiek boek
+      - generic [ref=e40]:
+        - generic [ref=e41]: Overall Alignment
+        - generic [ref=e42]:
+          - img [ref=e43]
+          - generic [ref=e46]:
+            - generic [ref=e47]: 74%
+            - generic [ref=e48]: Alignment
+    - generic [ref=e49]:
+      - generic [ref=e50]:
+        - generic [ref=e51]: ☽
+        - generic [ref=e52]: Astrologie
+        - generic [ref=e53]: 78%
+        - generic [ref=e54]: Je grafenergie is actief en bewust ingezet.
+      - generic [ref=e55]:
+        - generic [ref=e56]: ∞
+        - generic [ref=e57]: Numerologie
+        - generic [ref=e58]: 82%
+        - generic [ref=e59]: Je beweegt in de flow van je jaarcyclus.
+      - generic [ref=e60]:
+        - generic [ref=e61]: ↑
+        - generic [ref=e62]: Soul Direction
+        - generic [ref=e63]: 65%
+        - generic [ref=e64]: Beweging gaande. Zuidknoop trekt nog.
+        - generic [ref=e65]: Grootste kans
+      - generic [ref=e66]:
+        - generic [ref=e67]: ◎
+        - generic [ref=e68]: Personal Year
+        - generic [ref=e69]: 72%
+        - generic [ref=e70]: Enige afstemming met je jaaritme mogelijk.
+    - generic [ref=e71]:
+      - heading "Mijn aanvragen" [level=2] [ref=e73]
+      - generic [ref=e74]:
+        - generic [ref=e75]:
+          - generic [ref=e76]:
+            - generic [ref=e77]: Lisa Jansen
+            - generic [ref=e78]:
+              - generic [ref=e79]: ORD-2026-003
+              - generic [ref=e80]: Vragenlijst
+              - generic [ref=e81]: 22 jun 2026
+              - generic [ref=e82]: Persoonlijk
+          - link "Vragenlijst invullen" [ref=e84] [cursor=pointer]:
+            - /url: questionnaire.html?id=ORD-2026-003
+        - generic [ref=e85]:
+          - generic [ref=e86]:
+            - generic [ref=e87]: Marc de Vries
+            - generic [ref=e88]:
+              - generic [ref=e89]: ORD-2026-002
+              - generic [ref=e90]: In verwerking
+              - generic [ref=e91]: 20 jun 2026
+              - generic [ref=e92]: Cadeau
+          - generic [ref=e94]: Wordt gegenereerd…
+        - generic [ref=e95]:
+          - generic [ref=e96]:
+            - generic [ref=e97]: Sara Emily Thomas
+            - generic [ref=e98]:
+              - generic [ref=e99]: ORD-2026-001
+              - generic [ref=e100]: Voltooid
+              - generic [ref=e101]: 15 jun 2026
+              - generic [ref=e102]: Persoonlijk
+          - link "Blueprint bekijken" [ref=e104] [cursor=pointer]:
+            - /url: blueprint-viewer.html?id=ORD-2026-001
+  - generic:
+    - generic:
+      - generic:
+        - generic: SZINN AI Companion
+        - button "×"
+      - generic: Stel een vraag over jouw Blueprint of over de SZINN-methode.
+      - generic:
+        - generic:
+          - generic: Welkom bij je persoonlijke SZINN AI Companion. Wat wil je weten over je Blueprint?
+      - generic:
+        - textbox "Stel een vraag…"
+        - button "→"
+  - generic [ref=e110]:
+    - generic [ref=e111]:
+      - heading "Blueprint cadeau geven" [level=2] [ref=e112]
+      - button "×" [ref=e113] [cursor=pointer]
+    - paragraph [ref=e114]: Deel een persoonlijke code met iemand die je wil inspireren. Met die code ontvangen zij gratis een volledig Alignment Blueprint.
+    - generic [ref=e116]:
+      - generic [ref=e117]: SZINN-DEMO-2026
+      - button "Kopieer" [ref=e118] [cursor=pointer]
+    - button "+ Genereer nieuwe code" [ref=e119] [cursor=pointer]
+  - generic:
+    - generic:
+      - generic:
+        - heading "Fysiek boek bestellen" [level=2]
+        - button "×"
+      - generic: € 29,95
+      - generic: Inclusief BTW · Verzending gratis boven €45
+      - generic: → Hardcover A4 druk van jouw persoonlijke Blueprint
+      - generic: → Hoogwaardig papier, gebonden uitvoering
+      - generic: → Levering binnen 5–7 werkdagen
+      - generic: → Optioneel met persoonlijke inscriptie
+      - button "Naar bestelpagina →"
+      - paragraph: Alleen beschikbaar voor voltooide Blueprints
+  - contentinfo [ref=e106]:
+    - generic [ref=e107]: SZINN
+    - paragraph [ref=e108]: © 2026 SZINN · Alterego BV · Alle rechten voorbehouden

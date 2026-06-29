@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SZINN — Inloggen</title>
+  <link rel="stylesheet" href="../css/variables.css">
+  <link rel="stylesheet" href="../css/global.css">
+  <style>
+    .login-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      animation: fadeUp 0.6s var(--ease) both;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .login-logo {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 20px;
+      filter: brightness(0.85);
+    }
+
+    .login-title {
+      font-family: "Cormorant Garamond", serif;
+      font-size: 28px;
+      font-weight: 300;
+      color: var(--ink);
+      letter-spacing: 0.12em;
+      margin-bottom: 8px;
+    }
+
+    .login-subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+
+    .login-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 36px 32px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 14px;
+      margin-top: 8px;
+    }
+
+    .login-error {
+      display: none;
+      padding: 10px 14px;
+      background: rgba(198, 40, 40, 0.06);
+      border: 1px solid rgba(198, 40, 40, 0.15);
+      border-radius: var(--r);
+      color: var(--red);
+      font-size: 12px;
+      margin-bottom: 16px;
+    }
+    .login-error.visible { display: block; }
+
+    .login-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 24px 0;
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .login-divider::before,
+    .login-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: 24px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .login-footer a {
+      color: var(--gold);
+    }
+
+    /* Gold top accent line */
+    .login-accent {
+      width: 40px;
+      height: 2px;
+      background: var(--gold);
+      margin: 0 auto 24px;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      display: none;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--cream);
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      margin: 0 auto;
+    }
+    .spinner.active { display: inline-block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="login-page">
+    <div class="login-container">
+      <div class="login-header">
+        <img src="../assets/img/logo-gold.png" alt="SZINN" class="login-logo"
+             onerror="this.style.display='none'">
+        <div class="login-accent"></div>
+        <h1 class="login-title">SZINN</h1>
+        <p class="login-subtitle">Jouw persoonlijke Alignment Blueprint portaal</p>
+      </div>
+
+      <div class="login-card">
+        <div class="login-error" id="login-error"></div>
+
+        <form id="login-form" autocomplete="on">
+          <div class="form-group">
+            <label class="form-label" for="email">E-mailadres</label>
+            <input type="email" id="email" class="form-input" placeholder="naam@voorbeeld.nl"
+                   autocomplete="email" required>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="password">Wachtwoord</label>
+            <input type="password" id="password" class="form-input" placeholder="••••••••"
+                   autocomplete="current-password" required>
+          </div>
+
+          <button type="submit" class="btn btn-primary login-btn" id="login-btn">
+            <span id="btn-text">Inloggen</span>
+            <span class="spinner" id="btn-spinner"></span>
+          </button>
+        </form>
+
+        <div class="login-divider">of</div>
+
+        <p class="login-footer">
+          Nog geen account? Na je bestelling op
+          <a href="https://szinn.ai" target="_blank">szinn.ai</a>
+          ontvang je automatisch toegang.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/auth.js"></script>
+  <script>
+    // Redirect if already logged in (server session check)
+    SzinnAuth.checkSession().then(loggedIn => {
+      if (loggedIn) window.location.href = 'dashboard.html';
+    });
+
+    const form = document.getElementById('login-form');
+    const errorEl = document.getElementById('login-error');
+    const btnText = document.getElementById('btn-text');
+    const btnSpinner = document.getElementById('btn-spinner');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.classList.remove('visible');
+
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+
+      btnText.style.display = 'none';
+      btnSpinner.classList.add('active');
+
+      try {
+        await SzinnAuth.login(email, password);
+        window.location.href = 'dashboard.html';
+      } catch (err) {
+        errorEl.textContent = err.message;
+        errorEl.classList.add('visible');
+        btnText.style.display = '';
+        btnSpinner.classList.remove('active');
+      }
+    });
+  </script>
+</body>
+</html>
