@@ -1,11 +1,13 @@
 [build]
   functions = "netlify/functions"
   publish   = "."
+  command   = "npm install"
+
+[build.environment]
+  NODE_VERSION = "22"
 
 [functions]
   node_bundler = "esbuild"
-  # Node 22 is required for the astronomy-engine and other dependencies
-  # Netlify Functions run on Node 18 by default — we bundle everything so this is fine
 
 [[redirects]]
   from   = "/api/*"
