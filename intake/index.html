@@ -1126,6 +1126,7 @@
 <!-- THANK YOU -->
 <div id="thank-you">
   <div class="ty-ornament">✦</div>
+  <div id="ty-credentials" style="display:none;background:#fff;border:1px solid rgba(201,169,110,0.3);border-radius:4px;padding:20px 24px;margin-bottom:28px;text-align:left;font-size:14px;color:var(--ink2);line-height:2;"></div>
   <h2>
     <span class="nl-text">Dank je wel</span>
     <span class="en-text" style="display:none;" style="display:none">Thank you</span>
@@ -1160,7 +1161,7 @@
 </footer>
 
 <script>
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyJQOISSqzLg2YESTrymmd13MtdoXdL0PEIUFQEtX0cW0PurffQ0pvlNJtoOFP5GmThSQ/exec';
+const APPS_SCRIPT_URL = '/api/intake/submit'; // local server
 
 let current = 0;
 let lang = 'nl';
@@ -1441,10 +1442,28 @@ function submitForm() {
   data.consent_timestamp = new Date().toISOString();
 
   fetch(APPS_SCRIPT_URL, {
-    method: 'POST', mode: 'no-cors',
+    method: 'POST',
     headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',
     body: JSON.stringify(data)
-  }).then(showThankYou).catch(showThankYou);
+  })
+  .then(r => r.json())
+  .then(resp => {
+    if (resp.tempPassword) {
+      // New account — show credentials before thank-you
+      const msgEl = document.getElementById('ty-credentials');
+      if (msgEl) {
+        msgEl.innerHTML = `<strong>Je account is aangemaakt.</strong><br>
+          Inloggen op <a href="/szinn-portal/pages/login.html" style="color:var(--gold)">szinn.ai/portaal</a> met:<br>
+          E-mail: <code style="background:rgba(201,169,110,0.15);padding:2px 6px;border-radius:3px">${data.email}</code><br>
+          Wachtwoord: <code style="background:rgba(201,169,110,0.15);padding:2px 6px;border-radius:3px">${resp.tempPassword}</code><br>
+          <small style="color:var(--muted)">Sla dit wachtwoord op — je kunt het later wijzigen in je profiel.</small>`;
+        msgEl.style.display = 'block';
+      }
+    }
+    showThankYou();
+  })
+  .catch(() => showThankYou());
 }
 
 // Init — taal automatisch NL

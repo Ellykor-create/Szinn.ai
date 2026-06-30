@@ -1,16 +1,24 @@
 {
   "name": "szinn-ai",
   "version": "1.0.0",
-  "description": "SZINN.ai local development server",
+  "description": "SZINN.ai server — portal, API, admin",
   "main": "server.js",
+  "engines": {
+    "node": ">=22.5.0"
+  },
   "scripts": {
     "start": "node --experimental-sqlite server.js",
     "dev": "node --experimental-sqlite server.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
+    "@netlify/blobs": "^10.7.9",
+    "astronomy-engine": "^2.1.19",
     "bcryptjs": "^2.4.3",
+    "cookie": "^2.0.0",
     "express": "^4.19.2",
-    "express-session": "^1.18.0"
+    "express-session": "^1.18.0",
+    "jsonwebtoken": "^9.0.3",
+    "serverless-http": "^4.0.0"
   }
 }

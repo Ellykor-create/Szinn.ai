@@ -1,0 +1,60 @@
+[build]
+  functions = "netlify/functions"
+  publish   = "."
+  command   = "npm install"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[functions]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from   = "/api/*"
+  to     = "/.netlify/functions/api"
+  status = 200
+
+[[redirects]]
+  from   = "/szinn-portal/blueprints/*"
+  to     = "/.netlify/functions/api"
+  status = 200
+
+[[redirects]]
+  from   = "/admin"
+  to     = "/admin/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/admin/"
+  to     = "/admin/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/en"
+  to     = "/en/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/en/"
+  to     = "/en/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/intake"
+  to     = "/intake/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/intake/"
+  to     = "/intake/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/intake-en"
+  to     = "/intake-en/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/intake-en/"
+  to     = "/intake-en/index.html"
+  status = 200

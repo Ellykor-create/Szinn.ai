@@ -7,11 +7,15 @@ const fs = require('fs');
 const crypto = require('crypto');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const ROOT = __dirname;
 
+// DATA_DIR: writable persistent directory (set to /data on Railway with volume)
+const DATA_DIR = process.env.DATA_DIR || ROOT;
+if (DATA_DIR !== ROOT) fs.mkdirSync(DATA_DIR, { recursive: true });
+
 // ── Database ───────────────────────────────────────────────────────────────────
-const db = new DatabaseSync(path.join(ROOT, 'szinn.db'));
+const db = new DatabaseSync(path.join(DATA_DIR, 'szinn.db'));
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
@@ -57,10 +61,17 @@ db.exec(`
   );
 `);
 
-// Migrate: add score columns if they don't exist
+// Migrate: add columns if they don't exist
 ['alignment_score','astro_score','numerology_score','soul_direction_score','personal_year_score'].forEach(col => {
   try { db.exec(`ALTER TABLE orders ADD COLUMN ${col} INTEGER DEFAULT NULL`); } catch {}
 });
+try { db.exec(`ALTER TABLE orders ADD COLUMN intake_data TEXT DEFAULT NULL`); } catch {}
+try { db.exec(`ALTER TABLE orders ADD COLUMN birth_lat REAL DEFAULT NULL`); } catch {}
+try { db.exec(`ALTER TABLE orders ADD COLUMN birth_lng REAL DEFAULT NULL`); } catch {}
+try { db.exec(`ALTER TABLE orders ADD COLUMN birth_tz TEXT DEFAULT NULL`); } catch {}
+try { db.exec(`ALTER TABLE orders ADD COLUMN full_birth_name TEXT DEFAULT NULL`); } catch {}
+try { db.exec(`ALTER TABLE orders ADD COLUMN blueprint_language TEXT DEFAULT 'nl'`); } catch {}
+try { db.exec(`ALTER TABLE orders ADD COLUMN blueprint_html TEXT DEFAULT NULL`); } catch {}
 
 // ── Seed demo data ─────────────────────────────────────────────────────────────
 const userCount = db.prepare('SELECT COUNT(*) AS n FROM users').get().n;
@@ -137,6 +148,19 @@ class SQLiteStore extends session.Store {
 }
 
 // ── Middleware ─────────────────────────────────────────────────────────────────
+// CORS for live domain
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  const allowed = (process.env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
+  if (origin && (allowed.includes(origin) || allowed.includes('*'))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  }
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
@@ -146,6 +170,27 @@ app.use(session({
   saveUninitialized: false,
   cookie: { maxAge: 7*86400000 }
 }));
+// Serve blueprints: filesystem first (local), then DB column (production)
+app.get('/szinn-portal/blueprints/:filename', (req, res, next) => {
+  const filename = req.params.filename;
+  // Try filesystem (local dev or DATA_DIR)
+  for (const dir of [
+    path.join(ROOT, 'szinn-portal', 'blueprints'),
+    path.join(DATA_DIR, 'blueprints')
+  ]) {
+    const fp = path.join(dir, filename);
+    if (fs.existsSync(fp)) return res.sendFile(fp);
+  }
+  // Fallback to DB (Railway production without persistent volume)
+  const orderId = filename.replace(/\.html$/, '');
+  const row = db.prepare('SELECT blueprint_html FROM orders WHERE id = ?').get(orderId);
+  if (row?.blueprint_html) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.send(row.blueprint_html);
+  }
+  next();
+});
+
 app.use(express.static(ROOT));
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -258,11 +303,272 @@ app.post('/api/companion/chat', async (req, res) => {
   }
 });
 
+// ── Intake submit ─────────────────────────────────────────────────────────────
+app.post('/api/intake/submit', async (req, res) => {
+  const data = req.body;
+  if (!data.email || !data.geboortedatum) {
+    return res.status(400).json({ error: 'Email en geboortedatum zijn verplicht' });
+  }
+
+  // Find or create user
+  let user = db.prepare('SELECT * FROM users WHERE LOWER(email) = LOWER(?)').get(data.email.trim());
+  let tempPassword = null;
+  const clientName = `${data.voornaam || ''} ${data.achternaam || ''}`.trim();
+
+  if (!user) {
+    tempPassword = crypto.randomBytes(4).toString('hex');
+    const hashed = bcrypt.hashSync(tempPassword, 10);
+    db.prepare('INSERT INTO users (email, password, name) VALUES (?, ?, ?)').run(
+      data.email.trim(), hashed, clientName || data.email
+    );
+    user = db.prepare('SELECT * FROM users WHERE LOWER(email) = LOWER(?)').get(data.email.trim());
+    console.log(`\n✓ Nieuw account: ${data.email} / ${tempPassword}`);
+  }
+
+  // Create order
+  const orderId = `ORD-${new Date().getFullYear()}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+  const lat = parseFloat(data.geboorte_lat) || null;
+  const lng = parseFloat(data.geboorte_lng) || null;
+
+  db.prepare(`
+    INSERT INTO orders (
+      id, user_id, type, status, client_name,
+      birth_date, birth_time, birth_location, birth_lat, birth_lng, birth_tz,
+      full_birth_name, blueprint_language, intake_data, created_at
+    ) VALUES (?, ?, 'personal', 'processing', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+  `).run(
+    orderId, user.id, clientName,
+    data.geboortedatum, data.geboortetijd || null,
+    data.geboorteplaats_volledig || data.geboorteplaats || null,
+    lat, lng, data.geboorte_tz || null,
+    data.geboortenaam || clientName,
+    data.blueprint_taal || 'nl',
+    JSON.stringify(data)
+  );
+
+  // Auto-login this user
+  req.session.userId = user.id;
+
+  // Trigger async Blueprint generation
+  const apiKey = process.env.ANTHROPIC_API_KEY;
+  if (apiKey) {
+    setImmediate(() => generateBlueprint(orderId).catch(err => {
+      console.error(`Blueprint generation failed for ${orderId}:`, err.message);
+      db.prepare("UPDATE orders SET status = 'failed' WHERE id = ?").run(orderId);
+    }));
+  } else {
+    console.warn('\n⚠ ANTHROPIC_API_KEY niet ingesteld — Blueprint wordt niet gegenereerd');
+    console.warn('  Start via: ANTHROPIC_API_KEY=sk-ant-... npm start\n');
+  }
+
+  res.json({
+    success: true,
+    orderId,
+    loginEmail: data.email,
+    tempPassword,
+    message: tempPassword
+      ? `Account aangemaakt. Inloggen met: ${data.email} / ${tempPassword}`
+      : 'Blueprint wordt gegenereerd in je bestaande account'
+  });
+});
+
+// ── Blueprint generatie (intern) ───────────────────────────────────────────────
+async function generateBlueprint(orderId) {
+  const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
+  if (!order) throw new Error(`Order ${orderId} niet gevonden`);
+
+  const intake = JSON.parse(order.intake_data || '{}');
+  const lat    = order.birth_lat || parseFloat(intake.geboorte_lat) || 52.37;
+  const lng    = order.birth_lng || parseFloat(intake.geboorte_lng) || 4.9;
+
+  // Parse timezone offset from "Europe/Amsterdam" style string
+  let tzOffset = 1; // default CET
+  if (order.birth_tz) {
+    try {
+      const fmt = new Intl.DateTimeFormat('nl', { timeZone: order.birth_tz, timeZoneName: 'shortOffset' });
+      const parts = fmt.formatToParts(new Date(`${order.birth_date}T12:00:00`));
+      const off = parts.find(p => p.type === 'timeZoneName')?.value || 'GMT+1';
+      const m = off.match(/GMT([+-]\d+)/);
+      if (m) tzOffset = parseInt(m[1]);
+    } catch {}
+  }
+
+  console.log(`\n⏳ Blueprint genereren voor ${orderId} (${order.client_name})…`);
+
+  const { calcBirthChart } = require('./lib/astro');
+  const { calcAll }        = require('./lib/numerology');
+  const { generateBlueprint: genHtml } = require('./lib/generate-blueprint');
+
+  const chart = calcBirthChart(order.birth_date, order.birth_time, lat, lng, tzOffset);
+  const numData = calcAll(order.full_birth_name || order.client_name, order.birth_date);
+
+  const blueprintsDir = path.join(ROOT, 'szinn-portal', 'blueprints');
+  if (!fs.existsSync(blueprintsDir)) fs.mkdirSync(blueprintsDir, { recursive: true });
+
+  const { scores, html } = await genHtml(
+    orderId, intake, chart, numData,
+    process.env.ANTHROPIC_API_KEY,
+    blueprintsDir
+  );
+
+  // Also store HTML in DB so it survives redeploys on Railway/Render
+  if (html) db.prepare('UPDATE orders SET blueprint_html = ? WHERE id = ?').run(html, orderId);
+
+  // Update order
+  db.prepare(`
+    UPDATE orders SET
+      status               = 'completed',
+      completed_at         = CURRENT_TIMESTAMP,
+      blueprint_url        = ?,
+      alignment_score      = ?,
+      astro_score          = ?,
+      numerology_score     = ?,
+      soul_direction_score = ?,
+      personal_year_score  = ?
+    WHERE id = ?
+  `).run(
+    `/szinn-portal/blueprints/${orderId}.html`,
+    scores.alignment, scores.astro, scores.numerology, scores.soulDirection, scores.personalYear,
+    orderId
+  );
+
+  console.log(`✓ Blueprint klaar: ${orderId} — alignment ${scores.alignment}%`);
+}
+
 // ── Book order (placeholder) ──────────────────────────────────────────────────
 app.post('/api/book/order', (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
   // TODO: connect to Stripe/Plug&Pay checkout
   res.json({ checkoutUrl: 'https://szinn.ai/boek' });
+});
+
+// ── Admin panel ───────────────────────────────────────────────────────────────
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'szinn-admin';
+
+function isAdmin(req) { return req.session.isAdmin === true; }
+
+app.post('/api/admin/login', (req, res) => {
+  if (req.body.password === ADMIN_PASSWORD) {
+    req.session.isAdmin = true;
+    res.json({ ok: true });
+  } else {
+    res.status(401).json({ error: 'Onjuist wachtwoord' });
+  }
+});
+
+app.post('/api/admin/logout', (req, res) => {
+  req.session.isAdmin = false;
+  res.json({ ok: true });
+});
+
+// List all orders for admin
+app.get('/api/admin/orders', (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Geen toegang' });
+  const rows = db.prepare(`
+    SELECT o.*, u.email, u.name AS user_name
+    FROM orders o LEFT JOIN users u ON o.user_id = u.id
+    ORDER BY o.created_at DESC
+  `).all();
+  res.json(rows);
+});
+
+// Build prompt for an order (to paste into claude.ai)
+app.get('/api/admin/prompt/:orderId', (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Geen toegang' });
+  const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.orderId);
+  if (!order) return res.status(404).json({ error: 'Aanvraag niet gevonden' });
+
+  try {
+    const intake = JSON.parse(order.intake_data || '{}');
+    const lat    = order.birth_lat || parseFloat(intake.geboorte_lat) || 52.37;
+    const lng    = order.birth_lng || parseFloat(intake.geboorte_lng) || 4.9;
+    let tzOffset = 1;
+    if (order.birth_tz) {
+      try {
+        const fmt   = new Intl.DateTimeFormat('nl', { timeZone: order.birth_tz, timeZoneName: 'shortOffset' });
+        const parts = fmt.formatToParts(new Date(`${order.birth_date}T12:00:00`));
+        const off   = parts.find(p => p.type === 'timeZoneName')?.value || 'GMT+1';
+        const m     = off.match(/GMT([+-]\d+)/);
+        if (m) tzOffset = parseInt(m[1]);
+      } catch {}
+    }
+
+    const { calcBirthChart }       = require('./lib/astro');
+    const { calcAll }              = require('./lib/numerology');
+    const { buildFullPromptForClaudeAI, getScoreLabels, generateBirthChartSVG } = require('./lib/generate-blueprint');
+
+    const chart      = calcBirthChart(order.birth_date, order.birth_time, lat, lng, tzOffset);
+    const numData    = calcAll(order.full_birth_name || order.client_name, order.birth_date);
+    const svgContent = generateBirthChartSVG(chart);
+    const fullPrompt = buildFullPromptForClaudeAI(intake, chart, numData);
+
+    res.json({ prompt: fullPrompt, svg: svgContent, orderId: order.id, clientName: order.client_name });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Save blueprint HTML pasted from claude.ai
+app.post('/api/admin/save-blueprint', (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Geen toegang' });
+  const { orderId, html } = req.body;
+  if (!orderId || !html) return res.status(400).json({ error: 'orderId en html verplicht' });
+
+  const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
+  if (!order) return res.status(404).json({ error: 'Aanvraag niet gevonden' });
+
+  // Strip markdown fences if user accidentally copied them
+  let cleanHtml = html.replace(/^```(?:html)?\n?/i, '').replace(/\n?```\s*$/, '').trim();
+
+  // Extract scores comment
+  const scoresMatch = cleanHtml.match(/<!--\s*SZINN_SCORES:\s*(\{[^}]+\})\s*-->/);
+  let scores = { alignment: 72, astro: 72, numerology: 72, soulDirection: 72, personalYear: 72 };
+  if (scoresMatch) {
+    try { scores = JSON.parse(scoresMatch[1]); } catch {}
+  }
+
+  // Inject SVG if placeholder still present
+  if (cleanHtml.includes('{{MANDALA_SVG}}')) {
+    try {
+      const intake = JSON.parse(order.intake_data || '{}');
+      const lat    = order.birth_lat || parseFloat(intake.geboorte_lat) || 52.37;
+      const lng    = order.birth_lng || parseFloat(intake.geboorte_lng) || 4.9;
+      const { calcBirthChart } = require('./lib/astro');
+      const { generateBirthChartSVG } = require('./lib/generate-blueprint');
+      const chart = calcBirthChart(order.birth_date, order.birth_time, lat, lng, 1);
+      const svg   = generateBirthChartSVG(chart);
+      cleanHtml   = cleanHtml.replace('{{MANDALA_SVG}}', `<div class="mandala-svg">${svg}</div>`);
+    } catch {}
+  }
+
+  // Save file to filesystem (works locally; skipped gracefully in production)
+  try {
+    const blueprintsDir = path.join(ROOT, 'szinn-portal', 'blueprints');
+    fs.mkdirSync(blueprintsDir, { recursive: true });
+    fs.writeFileSync(path.join(blueprintsDir, `${orderId}.html`), cleanHtml, 'utf8');
+  } catch {}
+
+  // Update order (also store HTML in DB for Railway/Render production)
+  db.prepare(`
+    UPDATE orders SET
+      status = 'completed', completed_at = CURRENT_TIMESTAMP,
+      blueprint_url = ?, blueprint_html = ?,
+      alignment_score = ?, astro_score = ?, numerology_score = ?,
+      soul_direction_score = ?, personal_year_score = ?
+    WHERE id = ?
+  `).run(
+    `/szinn-portal/blueprints/${orderId}.html`, cleanHtml,
+    scores.alignment, scores.astro, scores.numerology, scores.soulDirection, scores.personalYear,
+    orderId
+  );
+
+  console.log(`✓ Blueprint opgeslagen via admin: ${orderId}`);
+  res.json({ ok: true, blueprintUrl: `/szinn-portal/blueprints/${orderId}.html` });
+});
+
+// Serve admin page
+app.get('/admin', (req, res) => {
+  res.sendFile(path.join(ROOT, 'admin', 'index.html'));
 });
 
 // ── Static fallback ────────────────────────────────────────────────────────────

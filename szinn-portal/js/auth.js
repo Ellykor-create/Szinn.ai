@@ -2,13 +2,23 @@ const SzinnAuth = {
   currentUser: null,
 
   async login(email, password) {
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'same-origin',
-      body: JSON.stringify({ email, password })
-    });
-    const data = await res.json();
+    let res;
+    try {
+      res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ email, password })
+      });
+    } catch {
+      throw new Error('Geen verbinding met de server. Open de portal via localhost:3000.');
+    }
+    let data;
+    try {
+      data = await res.json();
+    } catch {
+      throw new Error('Het portaal werkt alleen via de lokale server (localhost:3000), niet via de live website.');
+    }
     if (!res.ok) throw new Error(data.error || 'Inloggen mislukt');
     this.currentUser = data;
     return data;
