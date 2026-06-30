@@ -1,0 +1,6 @@
+node_modules/
+szinn.db
+.env
+blueprints/
+*.log
+.DS_Store

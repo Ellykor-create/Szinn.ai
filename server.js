@@ -7,11 +7,15 @@ const fs = require('fs');
 const crypto = require('crypto');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 const ROOT = __dirname;
 
+// DATA_DIR: writable persistent directory (set to /data on Railway with volume)
+const DATA_DIR = process.env.DATA_DIR || ROOT;
+if (DATA_DIR !== ROOT) fs.mkdirSync(DATA_DIR, { recursive: true });
+
 // ── Database ───────────────────────────────────────────────────────────────────
-const db = new DatabaseSync(path.join(ROOT, 'szinn.db'));
+const db = new DatabaseSync(path.join(DATA_DIR, 'szinn.db'));
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
@@ -67,6 +71,7 @@ try { db.exec(`ALTER TABLE orders ADD COLUMN birth_lng REAL DEFAULT NULL`); } ca
 try { db.exec(`ALTER TABLE orders ADD COLUMN birth_tz TEXT DEFAULT NULL`); } catch {}
 try { db.exec(`ALTER TABLE orders ADD COLUMN full_birth_name TEXT DEFAULT NULL`); } catch {}
 try { db.exec(`ALTER TABLE orders ADD COLUMN blueprint_language TEXT DEFAULT 'nl'`); } catch {}
+try { db.exec(`ALTER TABLE orders ADD COLUMN blueprint_html TEXT DEFAULT NULL`); } catch {}
 
 // ── Seed demo data ─────────────────────────────────────────────────────────────
 const userCount = db.prepare('SELECT COUNT(*) AS n FROM users').get().n;
@@ -143,6 +148,19 @@ class SQLiteStore extends session.Store {
 }
 
 // ── Middleware ─────────────────────────────────────────────────────────────────
+// CORS for live domain
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  const allowed = (process.env.ALLOWED_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
+  if (origin && (allowed.includes(origin) || allowed.includes('*'))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  }
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
+  next();
+});
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(session({
@@ -152,6 +170,27 @@ app.use(session({
   saveUninitialized: false,
   cookie: { maxAge: 7*86400000 }
 }));
+// Serve blueprints: filesystem first (local), then DB column (production)
+app.get('/szinn-portal/blueprints/:filename', (req, res, next) => {
+  const filename = req.params.filename;
+  // Try filesystem (local dev or DATA_DIR)
+  for (const dir of [
+    path.join(ROOT, 'szinn-portal', 'blueprints'),
+    path.join(DATA_DIR, 'blueprints')
+  ]) {
+    const fp = path.join(dir, filename);
+    if (fs.existsSync(fp)) return res.sendFile(fp);
+  }
+  // Fallback to DB (Railway production without persistent volume)
+  const orderId = filename.replace(/\.html$/, '');
+  const row = db.prepare('SELECT blueprint_html FROM orders WHERE id = ?').get(orderId);
+  if (row?.blueprint_html) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.send(row.blueprint_html);
+  }
+  next();
+});
+
 app.use(express.static(ROOT));
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -366,11 +405,14 @@ async function generateBlueprint(orderId) {
   const blueprintsDir = path.join(ROOT, 'szinn-portal', 'blueprints');
   if (!fs.existsSync(blueprintsDir)) fs.mkdirSync(blueprintsDir, { recursive: true });
 
-  const { scores } = await genHtml(
+  const { scores, html } = await genHtml(
     orderId, intake, chart, numData,
     process.env.ANTHROPIC_API_KEY,
     blueprintsDir
   );
+
+  // Also store HTML in DB so it survives redeploys on Railway/Render
+  if (html) db.prepare('UPDATE orders SET blueprint_html = ? WHERE id = ?').run(html, orderId);
 
   // Update order
   db.prepare(`
@@ -499,21 +541,23 @@ app.post('/api/admin/save-blueprint', (req, res) => {
     } catch {}
   }
 
-  // Save file
-  const blueprintsDir = path.join(ROOT, 'szinn-portal', 'blueprints');
-  fs.mkdirSync(blueprintsDir, { recursive: true });
-  fs.writeFileSync(path.join(blueprintsDir, `${orderId}.html`), cleanHtml, 'utf8');
+  // Save file to filesystem (works locally; skipped gracefully in production)
+  try {
+    const blueprintsDir = path.join(ROOT, 'szinn-portal', 'blueprints');
+    fs.mkdirSync(blueprintsDir, { recursive: true });
+    fs.writeFileSync(path.join(blueprintsDir, `${orderId}.html`), cleanHtml, 'utf8');
+  } catch {}
 
-  // Update order
+  // Update order (also store HTML in DB for Railway/Render production)
   db.prepare(`
     UPDATE orders SET
       status = 'completed', completed_at = CURRENT_TIMESTAMP,
-      blueprint_url = ?,
+      blueprint_url = ?, blueprint_html = ?,
       alignment_score = ?, astro_score = ?, numerology_score = ?,
       soul_direction_score = ?, personal_year_score = ?
     WHERE id = ?
   `).run(
-    `/szinn-portal/blueprints/${orderId}.html`,
+    `/szinn-portal/blueprints/${orderId}.html`, cleanHtml,
     scores.alignment, scores.astro, scores.numerology, scores.soulDirection, scores.personalYear,
     orderId
   );

@@ -1,0 +1,58 @@
+[build]
+  functions = "netlify/functions"
+  publish   = "."
+
+[functions]
+  node_bundler = "esbuild"
+  # Node 22 is required for the astronomy-engine and other dependencies
+  # Netlify Functions run on Node 18 by default — we bundle everything so this is fine
+
+[[redirects]]
+  from   = "/api/*"
+  to     = "/.netlify/functions/api"
+  status = 200
+
+[[redirects]]
+  from   = "/szinn-portal/blueprints/*"
+  to     = "/.netlify/functions/api"
+  status = 200
+
+[[redirects]]
+  from   = "/admin"
+  to     = "/admin/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/admin/"
+  to     = "/admin/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/en"
+  to     = "/en/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/en/"
+  to     = "/en/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/intake"
+  to     = "/intake/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/intake/"
+  to     = "/intake/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/intake-en"
+  to     = "/intake-en/index.html"
+  status = 200
+
+[[redirects]]
+  from   = "/intake-en/"
+  to     = "/intake-en/index.html"
+  status = 200
