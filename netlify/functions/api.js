@@ -658,5 +658,12 @@ app.use((err, req, res, next) => {
 });
 
 // ── Export ────────────────────────────────────────────────────────────────────
-module.exports.handler = serverless(app);
-module.exports.app     = app;   // t.b.v. lokale tests; Netlify gebruikt alleen .handler
+// Klassieke Lambda-handlers krijgen de Netlify Blobs-configuratie niet
+// automatisch; connectLambda(event) leest die uit de request en zet hem klaar.
+const { connectLambda } = require('@netlify/blobs');
+const serverlessHandler = serverless(app);
+module.exports.handler = async (event, context) => {
+  try { connectLambda(event); } catch (e) { console.error('connectLambda:', e.message); }
+  return serverlessHandler(event, context);
+};
+module.exports.app = app;   // t.b.v. lokale tests; Netlify gebruikt alleen .handler

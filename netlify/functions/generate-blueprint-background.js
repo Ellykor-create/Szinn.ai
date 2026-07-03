@@ -7,12 +7,16 @@
 //   POST /.netlify/functions/generate-blueprint-background
 //   body: { orderId, secret }
 
+const { connectLambda } = require('@netlify/blobs');
 const { loadDB, saveDB, blueprintStore } = require('../../lib/db');
 const { runGeneration } = require('../../lib/pipeline');
 
 const SECRET = () => process.env.INTERNAL_TRIGGER_SECRET || process.env.JWT_SECRET || 'szinn-jwt-2026-change-me';
 
 exports.handler = async (event) => {
+  // Klassieke Lambda-handlers krijgen de Blobs-configuratie niet automatisch;
+  // connectLambda(event) leest die uit de request en zet hem klaar.
+  try { connectLambda(event); } catch (e) { console.error('connectLambda:', e.message); }
   let payload = {};
   try { payload = JSON.parse(event.body || '{}'); } catch {}
   const { orderId, secret } = payload;
