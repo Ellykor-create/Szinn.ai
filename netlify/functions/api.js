@@ -30,7 +30,26 @@ for (const method of ['get', 'post', 'put', 'delete', 'use']) {
 
 const JWT_SECRET      = process.env.JWT_SECRET      || 'szinn-jwt-2026-change-me';
 const ADMIN_PASSWORD  = process.env.ADMIN_PASSWORD  || 'szinn-admin';
+const ADMIN_EMAIL     = (process.env.ADMIN_EMAIL || 'admin@szinn.ai').trim().toLowerCase();
 const TRIGGER_SECRET  = process.env.INTERNAL_TRIGGER_SECRET || JWT_SECRET;
+
+// Zorgt dat er een admin-account in de database staat (idempotent).
+// Retourneert true als de database is gewijzigd (dan moet-ie opgeslagen worden).
+function ensureAdminUser(db) {
+  if (db.users.some(u => u.is_admin)) return false;
+  const existing = db.users.find(u => u.email.toLowerCase() === ADMIN_EMAIL);
+  if (existing) {
+    existing.is_admin = true;
+  } else {
+    db.users.push({
+      id: db.nextUserId++, email: ADMIN_EMAIL,
+      password: bcrypt.hashSync(ADMIN_PASSWORD, 10),
+      name: 'Admin', is_admin: true,
+      created_at: new Date().toISOString(),
+    });
+  }
+  return true;
+}
 
 // Start de blueprint-generatie als background function (15 min limiet).
 // Fire-and-forget: de intake-response wacht alleen op de 202-acceptatie.
@@ -81,8 +100,8 @@ app.post('/api/auth/login', async (req, res) => {
   const user = db.users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
   if (!user || !bcrypt.compareSync(password, user.password))
     return res.status(401).json({ error: 'Onjuist e-mailadres of wachtwoord' });
-  setAuthCookie(res, { userId: user.id, email: user.email, name: user.name });
-  res.json({ id: user.id, email: user.email, name: user.name, initials: user.name.substring(0,2).toUpperCase() });
+  setAuthCookie(res, { userId: user.id, email: user.email, name: user.name, isAdmin: !!user.is_admin });
+  res.json({ id: user.id, email: user.email, name: user.name, initials: user.name.substring(0,2).toUpperCase(), isAdmin: !!user.is_admin });
 });
 
 app.post('/api/auth/logout', (req, res) => {
@@ -437,10 +456,27 @@ app.get('/api/orders/:id/pdf', async (req, res) => {
 });
 
 // ── Admin ─────────────────────────────────────────────────────────────────────
-app.post('/api/admin/login', (req, res) => {
-  if (req.body.password !== ADMIN_PASSWORD) return res.status(401).json({ error: 'Onjuist wachtwoord' });
-  setAuthCookie(res, { isAdmin: true, userId: 0, email: 'admin', name: 'Admin' });
-  res.json({ ok: true });
+app.post('/api/admin/login', async (req, res) => {
+  const { email, password } = req.body || {};
+  const db = await loadDB();
+  if (ensureAdminUser(db)) await saveDB(db);
+
+  // Inloggen met e-mailadres + wachtwoord tegen het admin-account in de database.
+  if (email) {
+    const admin = db.users.find(u => u.is_admin && u.email.toLowerCase() === String(email).trim().toLowerCase());
+    if (admin && bcrypt.compareSync(password || '', admin.password)) {
+      setAuthCookie(res, { isAdmin: true, userId: admin.id, email: admin.email, name: admin.name });
+      return res.json({ ok: true });
+    }
+    return res.status(401).json({ error: 'Onjuist e-mailadres of wachtwoord' });
+  }
+
+  // Achterwaarts compatibel: alleen het gedeelde wachtwoord (env ADMIN_PASSWORD).
+  if (password === ADMIN_PASSWORD) {
+    setAuthCookie(res, { isAdmin: true, userId: 0, email: ADMIN_EMAIL, name: 'Admin' });
+    return res.json({ ok: true });
+  }
+  res.status(401).json({ error: 'Onjuist wachtwoord' });
 });
 
 app.post('/api/admin/logout', (req, res) => {

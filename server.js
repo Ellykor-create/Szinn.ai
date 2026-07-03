@@ -72,6 +72,23 @@ try { db.exec(`ALTER TABLE orders ADD COLUMN birth_tz TEXT DEFAULT NULL`); } cat
 try { db.exec(`ALTER TABLE orders ADD COLUMN full_birth_name TEXT DEFAULT NULL`); } catch {}
 try { db.exec(`ALTER TABLE orders ADD COLUMN blueprint_language TEXT DEFAULT 'nl'`); } catch {}
 try { db.exec(`ALTER TABLE orders ADD COLUMN blueprint_html TEXT DEFAULT NULL`); } catch {}
+try { db.exec(`ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0`); } catch {}
+
+// ── Admin-account ───────────────────────────────────────────────────────────────
+// Zorgt dat er altijd één admin-account in de database staat (idempotent).
+const ADMIN_EMAIL = (process.env.ADMIN_EMAIL || 'admin@szinn.ai').trim().toLowerCase();
+(function ensureAdmin() {
+  const adminPw = process.env.ADMIN_PASSWORD || 'szinn-admin';
+  if (db.prepare('SELECT id FROM users WHERE is_admin = 1').get()) return;
+  const existing = db.prepare('SELECT id FROM users WHERE LOWER(email) = ?').get(ADMIN_EMAIL);
+  if (existing) {
+    db.prepare('UPDATE users SET is_admin = 1 WHERE id = ?').run(existing.id);
+  } else {
+    db.prepare('INSERT INTO users (email, password, name, is_admin) VALUES (?, ?, ?, 1)')
+      .run(ADMIN_EMAIL, bcrypt.hashSync(adminPw, 10), 'Admin');
+  }
+  console.log(`✓ Admin-account klaar: ${ADMIN_EMAIL}`);
+})();
 
 // ── Seed demo data ─────────────────────────────────────────────────────────────
 const userCount = db.prepare('SELECT COUNT(*) AS n FROM users').get().n;
@@ -448,12 +465,25 @@ const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'szinn-admin';
 function isAdmin(req) { return req.session.isAdmin === true; }
 
 app.post('/api/admin/login', (req, res) => {
-  if (req.body.password === ADMIN_PASSWORD) {
-    req.session.isAdmin = true;
-    res.json({ ok: true });
-  } else {
-    res.status(401).json({ error: 'Onjuist wachtwoord' });
+  const { email, password } = req.body || {};
+
+  // Inloggen met e-mailadres + wachtwoord tegen het admin-account in de database.
+  if (email) {
+    const admin = db.prepare('SELECT * FROM users WHERE LOWER(email) = LOWER(?) AND is_admin = 1').get(String(email).trim());
+    if (admin && bcrypt.compareSync(password || '', admin.password)) {
+      req.session.isAdmin = true;
+      req.session.adminUserId = admin.id;
+      return res.json({ ok: true });
+    }
+    return res.status(401).json({ error: 'Onjuist e-mailadres of wachtwoord' });
   }
+
+  // Achterwaarts compatibel: alleen het gedeelde wachtwoord.
+  if (password === ADMIN_PASSWORD) {
+    req.session.isAdmin = true;
+    return res.json({ ok: true });
+  }
+  res.status(401).json({ error: 'Onjuist wachtwoord' });
 });
 
 app.post('/api/admin/logout', (req, res) => {

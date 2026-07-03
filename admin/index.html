@@ -110,7 +110,8 @@ textarea:focus { border-color: var(--gold); }
   <div class="login-box">
     <h1>SZINN Admin</h1>
     <p>Blueprint Beheer · Inloggen</p>
-    <input type="password" id="admin-pw" placeholder="Wachtwoord" autocomplete="off">
+    <input type="email" id="admin-email" placeholder="E-mailadres (bijv. admin@szinn.ai)" autocomplete="username">
+    <input type="password" id="admin-pw" placeholder="Wachtwoord" autocomplete="current-password">
     <button class="btn" style="width:100%" onclick="adminLogin()">Inloggen</button>
     <div class="err" id="login-err"></div>
   </div>
@@ -213,16 +214,20 @@ let currentPromptText = '';
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 async function adminLogin() {
-  const pw = document.getElementById('admin-pw').value;
-  const r  = await fetch('/api/admin/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ password: pw }) });
+  const email = document.getElementById('admin-email').value.trim();
+  const pw    = document.getElementById('admin-pw').value;
+  const r  = await fetch('/api/admin/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password: pw }) });
   if (r.ok) {
+    document.getElementById('login-err').textContent = '';
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     loadOrders();
   } else {
-    document.getElementById('login-err').textContent = 'Onjuist wachtwoord';
+    const data = await r.json().catch(() => ({}));
+    document.getElementById('login-err').textContent = data.error || 'Onjuist e-mailadres of wachtwoord';
   }
 }
+document.getElementById('admin-email').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('admin-pw').focus(); });
 document.getElementById('admin-pw').addEventListener('keydown', e => { if (e.key === 'Enter') adminLogin(); });
 
 async function adminLogout() {
