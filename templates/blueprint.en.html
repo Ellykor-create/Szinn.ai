@@ -187,6 +187,50 @@ footer p{font-size:10.5px;color:var(--muted);line-height:1.9}
   background-repeat:no-repeat;
   border-bottom:1px solid var(--border);
 }
+/* ── Print / PDF ─────────────────────────────────────────────────────────
+   Elke hoofdsectie begint bovenaan een eigen pagina; vh-paddings worden
+   vervangen door vaste mm-marges en kaarten breken niet doormidden. */
+@media print{
+  nav,.copy-btn,.orn{display:none!important}
+  html,body{background:var(--cream)}
+  .hero{padding:12mm 12mm 8mm}
+  .mini-row{margin:0 12mm 6mm}
+  .score-sec{padding:10mm 12mm 12mm}
+  .score-grid{gap:12px;margin-bottom:18px}
+  .scard{padding:16px 18px}
+  .feedback{padding:18px 22px;margin-bottom:12px}
+  .score-closing{break-before:avoid;page-break-before:avoid}
+  .bp-intro{break-before:page;page-break-before:always;padding:70mm 12mm 10mm;border-top:none}
+  .section{break-before:page;page-break-before:always;padding:12mm 12mm;border-top:none}
+  .mandala-sec{break-before:page;page-break-before:always;padding:8mm 12mm;border:none}
+  .mandala-sec blockquote{margin:12px 0}
+  .mandala-sec p{margin-bottom:10px}
+  footer{padding:10mm 12mm 6mm}
+  .mandala-svg{animation:none;width:272px;height:272px;margin:10px auto}
+  #mandala > div[style*="max-width"]{max-width:390px!important;margin:14px auto!important}
+  h2,h3,.sec-num,.ptitle,.feedback-label{break-after:avoid;page-break-after:avoid}
+  .hcard,.scard,.feedback,.score-closing,.ncell,.ncard,.note,.prompt,.practice,
+  .cal-month,.deep-card,.sum-card,.q-list li,blockquote,.mini,.fb-block{
+    break-inside:avoid;page-break-inside:avoid}
+  .section p{font-size:13px;line-height:1.72;margin-bottom:12px}
+  .ncard{padding:15px 18px}
+  .ncard p{line-height:1.6}
+  .ncell{padding:14px 16px}
+  .ptab td{padding:8px 10px}
+  .nsplit,.ngrid,.ptab{margin:16px 0}
+  .section h3{margin:18px 0 8px}
+  .section h2{margin-bottom:20px}
+  p,li{orphans:3;widows:3}
+  .ptab tr{break-inside:avoid;page-break-inside:avoid}
+  .ngrid{break-inside:avoid;page-break-inside:avoid}
+  .q-list li{padding:10px 0;font-size:13px}
+  .ptab tr:hover td{background:transparent}
+  /* A4 is smaller dan 900px: mobiele stapel-regels terugdraaien voor print */
+  .score-grid,.feedback-grid,.nsplit,.sum-grid,.gifts-grid{grid-template-columns:repeat(2,1fr)}
+  .ngrid,.energy-grid,.cal-grid,.deep-grid{grid-template-columns:repeat(3,1fr)}
+  .mini-row{grid-template-columns:repeat(4,1fr)}
+  .rhythm-row{grid-template-columns:100px 1fr}
+}
 </style>
 </head>
 <body>
