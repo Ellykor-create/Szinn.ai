@@ -151,24 +151,185 @@ app.post('/api/gift/generate', async (req, res) => {
   res.json({ code: code.code });
 });
 
-// ── AI Companion ──────────────────────────────────────────────────────────────
+// ── AI Companion & dashboard-data ────────────────────────────────────────────
+const COMPANION_MODEL = () => process.env.COMPANION_MODEL || 'claude-sonnet-5';
+
+// Verzamelt alles wat het dashboard en de companion nodig hebben voor deze
+// gebruiker: laatste order, berekende kaart/getallen (laag 1) en de
+// blueprint-teksten uit de database (laag 2).
+async function companionContext(userId, langOverride) {
+  const db = await loadDB();
+  const orders = db.orders.filter(o => o.user_id === userId)
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+  const order = orders.find(o => o.status === 'completed') || orders[0] || null;
+  if (!order || order.status !== 'completed') return { order };
+
+  const lang = langOverride === 'en' ? 'en'
+    : langOverride === 'nl' ? 'nl'
+    : (order.blueprint_language === 'en' ? 'en' : 'nl');
+  const textsAll = await blueprintStore().get(`${order.id}.texts.json`, { type: 'json' });
+  const texts = textsAll ? (textsAll[lang] || textsAll.nl) : null;
+
+  const { buildContext } = require('../../lib/pipeline');
+  const { calcPersonalMonths, calcPersonalDay, DAY_INFO } = require('../../lib/numerology');
+  const { currentSky } = require('../../lib/astro');
+
+  const ctx = buildContext(order);
+  const now = new Date();
+  const pm = calcPersonalMonths(order.birth_date, now, 1)[0];
+  const pd = calcPersonalDay(pm.number, now.getDate());
+  const sky = currentSky(now);
+
+  const [, bm, bd] = order.birth_date.split('-').map(Number);
+  let solar = new Date(now.getFullYear(), bm - 1, bd);
+  if (solar < now) solar = new Date(now.getFullYear() + 1, bm - 1, bd);
+
+  return { order, ctx, texts, lang, now, pm, pd, sky, solar, dayInfo: DAY_INFO };
+}
+
+function fmtPos(p) {
+  return p && p.sign !== '?'
+    ? { sign: p.sign, signEn: p.signEn, deg: p.deg, min: p.min, house: p.house || null, retro: !!p.retrograde }
+    : null;
+}
+
+// Deterministische dagduiding, opgebouwd uit blueprint-teksten en berekeningen.
+// Dient ook als vangnet wanneer de AI (tijdelijk) niet beschikbaar is.
+function dayFromBlueprint(c) {
+  const t = c.texts || {};
+  const dayIdx = Math.floor(c.now.getTime() / 86400000);
+  const questions = (t.reflection && t.reflection.questions) || [];
+  const giftNames = ['intuïtie', 'verbeeldingskracht', 'geheugen', 'redeneren', 'waarneming', 'wilskracht'];
+  const g1 = giftNames[dayIdx % 6], g2 = giftNames[(dayIdx + 2) % 6];
+  const natalMoon = c.ctx.chart.planets.moon;
+  const py = c.ctx.numerology.personalYear;
+  return {
+    thema: (t.summary && t.summary.oneLiner) || 'Jouw blueprint als kompas voor vandaag',
+    focus: (t.integration && t.integration.layers && t.integration.layers.focus) || 'Zet één kleine, concrete stap',
+    vraag: questions.length ? questions[dayIdx % questions.length] : 'Wat vraagt vandaag om jouw aandacht?',
+    lucht: `De maan staat vandaag in ${c.sky.moonSign || c.sky.moon.sign}, ${c.sky.waxing ? 'wassend' : 'afnemend'}. Jouw eigen maan staat in ${natalMoon.sign}: gebruik de energie van vandaag zonder je eigen basis te verliezen.`,
+    numFocus: c.dayInfo[c.pd] || c.dayInfo[9],
+    numReminder: `Jaar ${py} vraagt om ${(c.ctx.numerology.personalYearInfo.theme || '').toLowerCase()}: ${(c.ctx.numerology.personalYearInfo.energy || '').toLowerCase()}.`,
+    gaven: `Vandaag lichten ${g1} en ${g2} op. Leun bewust op deze twee vermogens.`,
+  };
+}
+
+function companionSystem(c) {
+  const P = c.ctx.chart.planets;
+  const n = c.ctx.numerology;
+  const line = (p) => `${p.sign} ${p.deg}°${String(p.min).padStart(2, '0')}'${p.house ? ` (Huis ${p.house})` : ''}`;
+  return `Je bent de SZINN Companion, de ingebouwde begeleider in het dagelijkse dashboard van ${c.ctx.intake.clientName}.
+Toon: warm, gegrond, helder, nooit zweverig, geen new-age clichés. Spreek aan met jij/jouw, nooit u. Geen voorspellingen, geen medische, psychologische of financiële claims. Je bent een spiegel, geen orakel. ${c.ctx.intake.clientName} is altijd de enige expert over zichzelf.
+Je REKENT NOOIT zelf astrologie of numerologie. Gebruik uitsluitend deze vaste, geverifieerde gegevens en verzin niets nieuws:
+Zon ${line(P.sun)}; Maan ${line(P.moon)}; Ascendant ${line(P.ascendant)}; Noordknoop ${line(P.northNode)}; Zuidknoop ${line(P.southNode)}; Chiron ${line(P.chiron)}.
+Levenspad ${n.lifePath}; Persoonlijk Jaar ${n.personalYear} (${n.personalYearInfo.theme}); Persoonlijke Maand ${c.pm.number}; Persoonlijke Dag ${c.pd}.
+Vandaag: maan in ${c.sky.moon.sign}, ${c.sky.waxing ? 'wassend' : 'afnemend'}. Datum: ${c.now.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}.`;
+}
+
+// Alle blueprint-data voor de dashboardblokken
+app.get('/api/companion/blueprint', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const c = await companionContext(req.auth.userId, req.query.lang);
+  if (!c.order) return res.json({ status: 'none' });
+  if (!c.ctx) return res.json({ status: c.order.status, orderId: c.order.id, clientName: c.order.client_name });
+
+  const { generateMiniMandalaSVG } = require('../../lib/mandala');
+  const P = c.ctx.chart.planets;
+  const n = c.ctx.numerology;
+
+  res.json({
+    status: 'completed',
+    orderId: c.order.id,
+    lang: c.lang,
+    clientName: c.ctx.intake.clientName,
+    firstName: (c.ctx.intake.clientName || '').trim().split(/\s+/)[0],
+    birthDate: c.order.birth_date,
+    chart: {
+      sun: fmtPos(P.sun), moon: fmtPos(P.moon), ascendant: fmtPos(P.ascendant),
+      northNode: fmtPos(P.northNode), southNode: fmtPos(P.southNode), chiron: fmtPos(P.chiron),
+    },
+    numerology: {
+      lifePath: n.lifePath, lifePathName: n.lifePathInfo.name, lifePathShadow: n.lifePathInfo.challenge,
+      personalYear: n.personalYear, personalYearTheme: n.personalYearInfo.theme, personalYearEnergy: n.personalYearInfo.energy,
+      personalMonth: c.pm.number, personalDay: c.pd,
+      expression: n.expression, soulUrge: n.soulUrge, personality: n.personality,
+    },
+    sky: {
+      moonSign: c.sky.moon.sign, waxing: c.sky.waxing,
+      nextNewMoon: c.sky.nextNewMoon ? { date: c.sky.nextNewMoon.date, sign: c.sky.nextNewMoon.sign } : null,
+      nextFullMoon: c.sky.nextFullMoon ? { date: c.sky.nextFullMoon.date, sign: c.sky.nextFullMoon.sign } : null,
+      solarReturn: { date: c.solar, sign: P.sun.sign },
+    },
+    day: dayFromBlueprint(c),
+    texts: c.texts,
+    mandala: generateMiniMandalaSVG(c.ctx.chart),
+    blueprintUrl: c.order.blueprint_url,
+    blueprintLanguages: c.order.blueprint_languages || ['nl'],
+    pdfAvailable: !!c.order.pdf_available,
+  });
+});
+
+// Dagduiding vernieuwen: AI-versie met de blueprint-fallback als vangnet
+app.post('/api/companion/day', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const c = await companionContext(req.auth.userId);
+  if (!c.ctx) return res.status(400).json({ error: 'Nog geen voltooide blueprint' });
+
+  const fallback = dayFromBlueprint(c);
+  if (!process.env.ANTHROPIC_API_KEY) return res.json({ source: 'blueprint', ...fallback });
+
+  try {
+    const Anthropic = require('@anthropic-ai/sdk');
+    const client = new (Anthropic.default || Anthropic)({ apiKey: process.env.ANTHROPIC_API_KEY });
+    const str = { type: 'string' };
+    const schema = {
+      type: 'object', additionalProperties: false,
+      properties: { thema: str, focus: str, vraag: str, lucht: str, numFocus: str, numReminder: str, gaven: str },
+      required: ['thema', 'focus', 'vraag', 'lucht', 'numFocus', 'numReminder', 'gaven'],
+    };
+    const response = await client.messages.create({
+      model: COMPANION_MODEL(), max_tokens: 700,
+      system: companionSystem(c),
+      messages: [{
+        role: 'user',
+        content: `Genereer de dagduiding voor vandaag, volledig gegrond in de vaste gegevens. Velden: thema (korte krachtige zin), focus (één concrete kleine stap), vraag (één reflectievraag), lucht (2-3 zinnen over de maanstand vandaag gekoppeld aan de geboortemaan), numFocus (1 zin bij Persoonlijke Dag ${c.pd}), numReminder (1 zin bij Persoonlijk Jaar ${c.ctx.numerology.personalYear}), gaven (1 zin: welke 2 van de zes gaven vandaag oplichten en waarom).`,
+      }],
+      output_config: { format: { type: 'json_schema', schema } },
+    });
+    const txt = response.content.filter(b => b.type === 'text').map(b => b.text).join('');
+    res.json({ source: 'ai', ...JSON.parse(txt) });
+  } catch (err) {
+    console.error('companion/day AI-fout:', err.message);
+    res.json({ source: 'blueprint', ...fallback });
+  }
+});
+
+// Gesprek met de Companion (kent de kaart en blueprint van de gebruiker)
 app.post('/api/companion/chat', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
   const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return res.json({ content: 'De AI Companion vereist een ANTHROPIC_API_KEY. Stel deze in via Netlify → Site settings → Environment variables.' });
+  if (!apiKey) return res.json({ content: 'De Companion is nog niet geactiveerd. Stel ANTHROPIC_API_KEY in via Netlify → Site settings → Environment variables.' });
 
   const { messages } = req.body;
   if (!messages?.length) return res.status(400).json({ error: 'Geen berichten' });
+
+  let system = 'Je bent de SZINN AI Companion — warm, helder, praktisch. Spreek de gebruiker aan met jij/jouw. Geen bullet points. Schrijf vloeiende zinnen.';
+  try {
+    const c = await companionContext(req.auth.userId);
+    if (c.ctx) system = companionSystem(c);
+  } catch (e) { /* generieke system prompt volstaat */ }
+
   try {
     const Anthropic = require('@anthropic-ai/sdk');
-    const client    = new Anthropic.default({ apiKey });
-    const response  = await client.messages.create({
-      model: 'claude-sonnet-4-6', max_tokens: 800,
-      system: 'Je bent de SZINN AI Companion — warm, helder, praktisch. Spreek de gebruiker aan met jij/jouw. Geen bullet points. Schrijf vloeiende zinnen.',
-      messages: messages.map(m => ({ role: m.role, content: m.content }))
+    const client = new (Anthropic.default || Anthropic)({ apiKey });
+    const response = await client.messages.create({
+      model: COMPANION_MODEL(), max_tokens: 800,
+      system,
+      messages: messages.map(m => ({ role: m.role, content: m.content })),
     });
-    res.json({ content: response.content[0].text });
+    res.json({ content: response.content.filter(b => b.type === 'text').map(b => b.text).join('') });
   } catch (err) {
+    console.error('companion/chat fout:', err.message);
     res.status(500).json({ error: 'AI Companion tijdelijk niet beschikbaar.' });
   }
 });

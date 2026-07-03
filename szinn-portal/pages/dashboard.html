@@ -1,860 +1,661 @@
 <!DOCTYPE html>
 <html lang="nl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SZINN — Dashboard</title>
-  <link rel="stylesheet" href="../css/variables.css">
-  <link rel="stylesheet" href="../css/global.css">
-  <link rel="stylesheet" href="../css/nav.css">
-  <style>
-    /* ── Hero ── */
-    .dash-hero {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 40px;
-      align-items: center;
-      padding: 5vh 0 4vh;
-      border-bottom: 1px solid var(--border);
-      margin-bottom: 4vh;
-    }
-    .dash-greeting {
-      font-family: "Cormorant Garamond", serif;
-      font-size: clamp(1.9rem, 3.5vw, 2.7rem);
-      font-weight: 300;
-      margin-bottom: 8px;
-      animation: fadeUp 0.5s var(--ease) both;
-    }
-    .dash-subtitle {
-      font-size: 13px;
-      color: var(--muted);
-      max-width: 460px;
-      line-height: 1.75;
-      margin-bottom: 28px;
-    }
-    .dash-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .btn-action {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      padding: 10px 20px;
-      border: 1px solid var(--gold);
-      border-radius: var(--r);
-      font-family: "Jost", sans-serif;
-      font-size: 11px;
-      font-weight: 400;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--gold);
-      background: transparent;
-      cursor: pointer;
-      transition: all var(--duration) var(--ease);
-      white-space: nowrap;
-      text-decoration: none;
-    }
-    .btn-action:hover { background: var(--gold); color: var(--cream); }
-    .btn-action.primary { background: var(--gold); color: var(--cream); }
-    .btn-action.primary:hover { background: var(--gold-light); color: var(--cream); border-color: var(--gold-light); }
-    .btn-action svg { width: 14px; height: 14px; flex-shrink: 0; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>SZINN · Companion · Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F7F2EA; --side:#EFE8DC; --panel:#FFFEFC; --panel2:#F6F0E6;
+  --line:#EDE5D5; --line2:#E4DBC8; --ink:#2c2622; --muted:#8a7860;
+  --gold:#A67C3A; --gold-soft:#C9A96E; --gold-deep:#8a6630;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bg);color:var(--ink);font-family:'Jost',sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
+h1,h2,h3,h4{font-family:'Cormorant Garamond',serif;font-weight:500}
+a{text-decoration:none;color:inherit;cursor:pointer}
+svg{display:block}
+.eyebrow{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
+.app{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
 
-    /* ── Alignment ring ── */
-    .alignment-ring-wrap {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      flex-shrink: 0;
-      animation: fadeUp 0.5s 0.1s var(--ease) both;
-    }
-    .ring-label {
-      font-size: 9px;
-      letter-spacing: 0.22em;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-align: center;
-    }
-    .ring-svg { position: relative; }
-    .ring-svg svg { display: block; }
-    .ring-center {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .ring-pct {
-      font-family: "Cormorant Garamond", serif;
-      font-size: 36px;
-      font-weight: 300;
-      color: var(--gold);
-      line-height: 1;
-    }
-    .ring-sub {
-      font-size: 9px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-top: 3px;
-    }
-    .ring-locked {
-      font-size: 22px;
-      color: var(--muted);
-      opacity: 0.4;
-    }
+/* sidebar */
+.sidebar{background:var(--side);border-right:1px solid var(--line2);padding:26px 18px 22px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
+.brand{display:flex;flex-direction:column;align-items:center;text-align:center;padding:4px 0 8px}
+.brand .name{font-family:'Cormorant Garamond',serif;font-size:27px;letter-spacing:.30em;color:var(--gold);margin-top:8px;font-weight:600;padding-left:.30em}
+.brand .tag{font-size:8.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+.nav{margin-top:26px;display:flex;flex-direction:column;gap:2px;flex:1}
+.nav-item{display:flex;align-items:center;gap:11px;padding:9px 13px;border-radius:11px;font-size:13.5px;color:#6f6450;transition:all .16s}
+.nav-item .ni{width:16px;height:16px;color:var(--gold-soft);flex-shrink:0}
+.nav-item:hover{background:#E2D9C6;color:var(--ink)}
+.nav-item.active{background:#F3EBD8;color:var(--ink);font-weight:500}
+.nav-item.active .ni{color:var(--gold)}
+.intention{margin-top:16px;background:#F2EAD8;border:1px solid var(--line2);border-radius:14px;padding:15px 15px 17px;text-align:center}
+.intention .il{font-size:8.5px;letter-spacing:.20em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.intention .iq{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--ink);line-height:1.34}
 
-    /* ── Score cards ── */
-    .scores-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 4vh;
-      animation: fadeUp 0.5s 0.15s var(--ease) both;
-    }
-    .score-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 20px 18px;
-      position: relative;
-      overflow: hidden;
-    }
-    .score-card.locked { opacity: 0.45; }
-    .score-card::before {
-      content: '';
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      height: 3px;
-      background: var(--gold);
-      transform-origin: left;
-      transform: scaleX(0);
-      transition: transform 0.8s var(--ease);
-    }
-    .score-card.animate-bar::before { transform: scaleX(var(--score-pct)); }
-    .score-icon {
-      font-size: 18px;
-      margin-bottom: 10px;
-      display: block;
-    }
-    .score-name {
-      font-size: 9px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-    .score-num {
-      font-family: "Cormorant Garamond", serif;
-      font-size: 34px;
-      font-weight: 300;
-      color: var(--gold);
-      line-height: 1;
-      margin-bottom: 4px;
-    }
-    .score-num.locked-num {
-      font-size: 22px;
-      color: var(--muted);
-      opacity: 0.3;
-    }
-    .score-reading {
-      font-size: 11.5px;
-      color: var(--muted);
-      line-height: 1.65;
-      margin-top: 8px;
-    }
-    .score-opportunity {
-      display: inline-block;
-      font-size: 9px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--gold);
-      border: 1px solid var(--border);
-      padding: 2px 8px;
-      border-radius: 20px;
-      margin-top: 8px;
-    }
+/* main */
+.main{padding:26px 40px 60px;max-width:1500px}
+.topbar{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;letter-spacing:.04em}
+.greet{font-size:44px;margin-top:6px;letter-spacing:.01em}
+.greet .sp{color:var(--gold-soft);font-size:26px;vertical-align:middle;margin-left:6px}
+.sub{color:var(--muted);font-size:15px;margin-top:2px}
+.astrorow{display:flex;gap:34px;margin-top:20px;flex-wrap:wrap}
+.astro{display:flex;gap:11px;align-items:flex-start}
+.astro .ic{font-size:19px;color:var(--gold);line-height:1}
+.astro .t{font-size:14.5px;font-weight:500}
+.astro .d{font-size:11.5px;color:var(--muted)}
 
-    /* ── Section header ── */
-    .section-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-    .section-title {
-      font-family: "Cormorant Garamond", serif;
-      font-size: 22px;
-      font-weight: 400;
-    }
+.movement{display:flex;align-items:baseline;gap:16px;margin:44px 0 18px}
+.movement .m{font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--gold-deep)}
+.movement .ml{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
+.movement .ms{font-size:12.5px;color:var(--muted);font-style:italic}
+.movement .badge{margin-left:auto;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);border:1px solid var(--line2);border-radius:20px;padding:5px 13px}
 
-    /* ── Order cards ── */
-    .orders-grid { display: grid; gap: 14px; margin-bottom: 4vh; }
-    .order-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 22px 24px;
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 16px;
-      align-items: center;
-      animation: fadeUp 0.4s var(--ease) both;
-      transition: box-shadow var(--duration) var(--ease);
-    }
-    .order-card:hover { box-shadow: var(--shadow-md); }
-    .order-name {
-      font-family: "Cormorant Garamond", serif;
-      font-size: 19px;
-      font-weight: 400;
-      margin-bottom: 6px;
-    }
-    .order-meta {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      font-size: 12px;
-      color: var(--muted);
-      align-items: center;
-    }
-    .order-id { font-size: 10px; letter-spacing: 0.07em; }
-    .order-actions { display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+.daycard{position:relative;border:1px solid var(--line2);border-radius:18px;overflow:hidden;background:var(--panel)}
+.daycard .bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.9}
+.daycard .veil{position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,254,252,.97) 0%,rgba(255,254,252,.86) 42%,rgba(255,254,252,.30) 100%)}
+.daycard .in{position:relative;padding:26px 30px}
+.daycard .dt{font-size:9.5px;letter-spacing:.20em;text-transform:uppercase;color:var(--gold)}
+.daycard h2{font-size:30px;margin:6px 0 18px}
+.dcgrid{display:flex;gap:60px;flex-wrap:wrap}
+.dcgrid .lab{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+.dcgrid .val{font-size:16px;max-width:340px}
+.dcq{border-top:1px solid var(--line);margin-top:18px;padding-top:16px}
+.readmore{display:inline-block;margin-top:16px;color:var(--gold-deep);font-size:13px}
 
-    /* ── Empty state ── */
-    .empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
-    .empty-state h3 { color: var(--ink); margin-bottom: 8px; }
+.cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:16px}
+.card{background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:19px 18px}
+.card h3{font-size:21px;margin-bottom:4px}
+.card p{font-size:12.5px;color:#5f5647;margin-top:9px;line-height:1.55}
+.moon{display:flex;gap:12px;align-items:center;margin-top:6px}
+.moon .orb{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#fff,#EBDFC7 70%,#D9C7A2);box-shadow:inset -6px -4px 10px rgba(150,120,70,.25)}
+.moon .mt{font-size:17px;font-family:'Cormorant Garamond',serif}
+.moon .md{font-size:11px;color:var(--muted)}
+.nums{display:flex;gap:9px;margin-top:4px}
+.num{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:11px 6px;text-align:center}
+.num .n{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--gold-deep)}
+.num .l{font-size:7.5px;letter-spacing:.10em;text-transform:uppercase;color:var(--muted);margin-top:3px;line-height:1.25}
+.numnote{margin-top:14px}
+.numnote .k{color:var(--gold-deep);font-style:italic;font-size:12.5px}
+.numnote .v{font-size:12.5px;margin-bottom:8px}
+.knoop{display:flex;gap:14px;margin-top:4px}
+.knoop .kc{flex:1}
+.knoop .kl{font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;line-height:1.4}
+.knoop .kn{font-family:'Cormorant Garamond',serif;font-size:19px;margin-bottom:5px}
+.knoop .kp{font-size:11.5px;color:#5f5647;line-height:1.5}
+.knoop .arrow{align-self:center;color:var(--gold-soft);font-size:18px}
+.mandwrap{display:flex;justify-content:center;margin-top:2px}
+.mandwrap svg{width:170px;height:170px}
+.mandcap{font-size:11px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5}
 
-    /* ── Companion panel ── */
-    .companion-overlay {
-      position: fixed; inset: 0; z-index: 200;
-      background: rgba(28,24,16,0.4);
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.3s var(--ease);
-    }
-    .companion-overlay.open { opacity: 1; pointer-events: all; }
-    .companion-panel {
-      position: absolute; right: 0; top: 0; bottom: 0;
-      width: min(480px, 95vw);
-      background: var(--cream-soft, #FAFAF8);
-      display: flex; flex-direction: column;
-      transform: translateX(100%);
-      transition: transform 0.35s var(--ease);
-      box-shadow: -4px 0 24px rgba(28,24,16,0.12);
-    }
-    .companion-overlay.open .companion-panel { transform: translateX(0); }
-    .companion-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--border);
-      flex-shrink: 0;
-    }
-    .companion-title {
-      font-family: "Cormorant Garamond", serif;
-      font-size: 18px; font-weight: 400;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .companion-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: var(--gold); display: inline-block;
-      animation: pulse-gold 2s ease-in-out infinite;
-    }
-    @keyframes pulse-gold {
-      0%,100% { opacity:1; transform: scale(1); }
-      50% { opacity:0.5; transform: scale(0.8); }
-    }
-    .companion-close {
-      background: none; border: none; cursor: pointer;
-      font-size: 20px; color: var(--muted); line-height: 1;
-      padding: 4px 8px;
-    }
-    .companion-close:hover { color: var(--ink); }
-    .companion-context {
-      padding: 10px 20px;
-      background: rgba(166,124,58,0.06);
-      border-bottom: 1px solid var(--border);
-      font-size: 11px; color: var(--muted);
-      flex-shrink: 0;
-    }
-    .companion-messages {
-      flex: 1; overflow-y: auto; padding: 20px;
-      display: flex; flex-direction: column; gap: 14px;
-    }
-    .msg { display: flex; gap: 10px; }
-    .msg.user { flex-direction: row-reverse; }
-    .msg-bubble {
-      max-width: 85%;
-      padding: 12px 16px;
-      border-radius: var(--r);
-      font-size: 13.5px;
-      line-height: 1.7;
-    }
-    .msg.assistant .msg-bubble {
-      background: var(--card);
-      border: 1px solid var(--border);
-      color: var(--ink);
-    }
-    .msg.user .msg-bubble {
-      background: var(--gold);
-      color: #FEFDF9;
-    }
-    .msg-typing .msg-bubble {
-      display: flex; gap: 4px; align-items: center;
-      padding: 14px 18px;
-    }
-    .msg-typing .dot {
-      width: 6px; height: 6px; border-radius: 50%;
-      background: var(--muted);
-      animation: bounce-dot 1.2s ease-in-out infinite;
-    }
-    .msg-typing .dot:nth-child(2) { animation-delay: 0.2s; }
-    .msg-typing .dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes bounce-dot {
-      0%,60%,100% { transform: translateY(0); }
-      30% { transform: translateY(-5px); }
-    }
-    .companion-footer {
-      padding: 14px 16px;
-      border-top: 1px solid var(--border);
-      display: flex; gap: 10px;
-      flex-shrink: 0;
-    }
-    .companion-input {
-      flex: 1;
-      padding: 11px 14px;
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      background: var(--cream-soft, #FAFAF8);
-      font-family: "Jost", sans-serif;
-      font-size: 13px;
-      font-weight: 300;
-      color: var(--ink);
-      outline: none;
-      resize: none;
-    }
-    .companion-input:focus { border-color: var(--gold); }
-    .companion-send {
-      padding: 10px 16px;
-      background: var(--gold); color: #FEFDF9;
-      border: none; border-radius: var(--r);
-      font-size: 14px; cursor: pointer;
-      transition: background var(--duration) var(--ease);
-      flex-shrink: 0;
-    }
-    .companion-send:hover { background: var(--gold-light); }
-    .companion-send:disabled { opacity: 0.5; cursor: default; }
+.cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+.card h2{font-size:24px}
+.field{width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:11px 13px;font-family:'Jost';font-size:13px;color:var(--ink);margin-top:8px}
+.field:focus{outline:none;border-color:var(--gold-soft)}
+.choices{display:flex;gap:9px;margin-top:12px}
+.choice{flex:1;background:var(--panel2);border:1px solid var(--line2);border-radius:11px;padding:12px 6px;text-align:center;cursor:pointer;transition:.15s}
+.choice .ct{font-family:'Cormorant Garamond',serif;font-size:18px}
+.choice .cd{font-size:8px;color:var(--muted);letter-spacing:.04em;margin-top:2px}
+.choice.on,.choice:hover{background:#F0E6CE;border-color:var(--gold-soft)}
+.gifts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-top:12px}
+.gift{background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:12px 8px;text-align:center;font-size:12px;cursor:pointer;transition:.15s}
+.gift.on,.gift:hover{background:#F0E6CE;border-color:var(--gold-soft)}
+.hint{font-size:11px;color:var(--muted);margin-top:11px}
+.grat{counter-reset:g;margin-top:4px}
+.gline{display:flex;align-items:center;gap:10px;margin-top:9px}
+.gline .gn{color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:16px;width:14px}
+.gline input{flex:1;background:transparent;border:none;border-bottom:1px solid var(--line2);padding:7px 2px;font-family:'Jost';font-size:13px;color:var(--ink)}
+.gline input:focus{outline:none;border-color:var(--gold-soft)}
 
-    /* ── Gift modal ── */
-    .modal-overlay {
-      position: fixed; inset: 0; z-index: 300;
-      background: rgba(28,24,16,0.5);
-      display: flex; align-items: center; justify-content: center;
-      padding: 20px;
-      opacity: 0; pointer-events: none;
-      transition: opacity 0.3s var(--ease);
-    }
-    .modal-overlay.open { opacity: 1; pointer-events: all; }
-    .modal-box {
-      background: var(--cream-soft, #FAFAF8);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 36px 32px;
-      width: 100%; max-width: 440px;
-      transform: translateY(12px) scale(0.98);
-      transition: transform 0.3s var(--ease);
-      box-shadow: var(--shadow-lg);
-    }
-    .modal-overlay.open .modal-box { transform: none; }
-    .modal-close-row {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 24px;
-    }
-    .modal-title {
-      font-family: "Cormorant Garamond", serif;
-      font-size: 22px; font-weight: 400;
-    }
-    .modal-close {
-      background: none; border: none; cursor: pointer;
-      font-size: 20px; color: var(--muted); line-height: 1;
-    }
-    .modal-close:hover { color: var(--ink); }
-    .gift-code-box {
-      background: rgba(166,124,58,0.06);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 16px 20px;
-      margin: 14px 0;
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 12px;
-    }
-    .gift-code-text {
-      font-family: "Courier New", monospace;
-      font-size: 15px; font-weight: 600;
-      color: var(--gold);
-      letter-spacing: 0.05em;
-    }
-    .gift-code-used {
-      font-size: 10px; color: var(--muted);
-      letter-spacing: 0.1em; text-transform: uppercase;
-    }
-    .copy-btn {
-      background: none; border: 1px solid var(--border);
-      border-radius: 4px; padding: 5px 10px;
-      font-size: 11px; color: var(--muted);
-      cursor: pointer; white-space: nowrap;
-      transition: all var(--duration) var(--ease);
-    }
-    .copy-btn:hover { border-color: var(--gold); color: var(--gold); }
-    .modal-desc {
-      font-size: 13px; color: var(--muted);
-      line-height: 1.75; margin: 12px 0 20px;
-    }
+.phase{display:flex;align-items:center;gap:0;margin:14px 0 4px}
+.phase .st{flex:1;text-align:center;position:relative}
+.phase .dot{width:26px;height:26px;border-radius:50%;background:var(--panel2);border:1px solid var(--line2);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--gold-soft)}
+.phase .st.on .dot{background:var(--gold);color:#fff;border-color:var(--gold)}
+.phase .pn{font-size:9px;margin-top:6px;color:var(--muted)}
+.phase .pa{font-size:8px;color:#b9ac93}
+.phase .on .pn{color:var(--ink);font-weight:500}
+.ring{position:relative;width:76px;height:76px;margin-left:auto}
+.cycrow{display:flex;align-items:flex-start;gap:14px}
+.cyc-moment{display:flex;gap:11px;align-items:flex-start;margin-top:13px}
+.cyc-moment .cm{font-size:16px;color:var(--gold-soft)}
+.cyc-moment .cmt{font-size:13px;font-weight:500}
+.cyc-moment .cmd{font-size:11px;color:var(--muted)}
 
-    /* ── Book modal ── */
-    .book-price {
-      font-family: "Cormorant Garamond", serif;
-      font-size: 42px; font-weight: 300;
-      color: var(--gold); margin: 16px 0 4px;
-      line-height: 1;
-    }
-    .book-price-sub {
-      font-size: 11px; color: var(--muted);
-      letter-spacing: 0.08em;
-      margin-bottom: 20px;
-    }
-    .book-feature {
-      display: flex; align-items: flex-start; gap: 10px;
-      font-size: 13px; color: var(--ink); line-height: 1.6;
-      margin-bottom: 10px;
-    }
-    .book-feature::before {
-      content: '→';
-      color: var(--gold);
-      flex-shrink: 0;
-      margin-top: 1px;
-    }
+.shadow{background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:26px 30px;margin-top:16px}
+.shadow h2{font-size:26px;margin-bottom:8px}
+.shadow .lead{font-size:13px;color:#5f5647;max-width:760px;line-height:1.6}
+.shadgrid{display:grid;grid-template-columns:1fr 1fr;gap:34px 48px;margin-top:24px}
+.shad .sh-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.shad .sh-t{font-family:'Cormorant Garamond',serif;font-size:18px}
+.shad .sh-src{font-size:8.5px;letter-spacing:.10em;text-transform:uppercase;color:var(--gold);text-align:right;line-height:1.4;flex-shrink:0}
+.shad .sh-d{font-size:11.5px;color:#5f5647;margin-top:5px;line-height:1.5}
+.shad input[type=range]{width:100%;margin-top:14px;accent-color:var(--gold)}
+.shad .sh-lab{display:flex;justify-content:space-between;font-size:9.5px;color:var(--muted);margin-top:3px}
+.reflect{border-top:1px solid var(--line);margin-top:26px;padding-top:18px;display:flex;gap:26px}
+.reflect .rl{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);flex-shrink:0;width:120px;padding-top:2px}
+.reflect .rt{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;line-height:1.5}
 
-    /* ── Responsive ── */
-    @media (max-width: 900px) {
-      .scores-grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 600px) {
-      .dash-hero { grid-template-columns: 1fr; }
-      .alignment-ring-wrap { display: none; }
-      .scores-grid { grid-template-columns: repeat(2, 1fr); }
-      .order-card { grid-template-columns: 1fr; }
-      .order-actions { flex-direction: row; }
-    }
-  </style>
+.save{width:100%;margin-top:26px;background:linear-gradient(180deg,#B98C43,#93692C);color:#FBF6EC;border:none;border-radius:12px;padding:16px;font-family:'Jost';font-size:14px;letter-spacing:.04em;cursor:pointer}
+.save .ss{display:block;font-size:10px;color:#EAD9B6;margin-top:3px;letter-spacing:.02em}
+.foot{text-align:center;margin-top:26px;color:var(--muted)}
+.foot .fq{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--ink)}
+.foot .fc{font-size:10px;margin-top:8px;letter-spacing:.02em}
+
+/* AI companion */
+.aibar{display:flex;align-items:center;gap:12px;margin-top:16px;background:linear-gradient(90deg,#F3EBD8,#FBF6EC);border:1px solid var(--line2);border-radius:14px;padding:14px 18px}
+.aibar .ai-ic{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#F6E4B8,#C9A96E);flex-shrink:0}
+.aibar .ai-tx{font-size:12.5px;color:#5f5647}
+.aibar .ai-tx b{color:var(--gold-deep);font-weight:500}
+.aibar button{margin-left:auto;background:var(--panel);border:1px solid var(--gold-soft);color:var(--gold-deep);border-radius:20px;padding:8px 16px;font-family:'Jost';font-size:12px;cursor:pointer;white-space:nowrap}
+.aibar button:disabled{opacity:.5;cursor:default}
+.aibar button+button{margin-left:8px}
+.chat{margin-top:12px;background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:16px 18px;display:none}
+.chat.open{display:block}
+.chatlog{max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
+.msg{font-size:13px;line-height:1.55;padding:10px 13px;border-radius:12px;max-width:82%}
+.msg.u{background:#F0E6CE;align-self:flex-end}
+.msg.a{background:var(--panel2);align-self:flex-start}
+.msg.a .who{font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
+.chatin{display:flex;gap:9px}
+.chatin input{flex:1;background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:11px 13px;font-family:'Jost';font-size:13px}
+.chatin input:focus{outline:none;border-color:var(--gold-soft)}
+.chatin button{background:linear-gradient(180deg,#B98C43,#93692C);color:#FBF6EC;border:none;border-radius:10px;padding:0 18px;cursor:pointer;font-family:'Jost';font-size:13px}
+
+/* aanvragen */
+.orders{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+.order-card{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:16px 18px;flex-wrap:wrap}
+.order-name{font-family:'Cormorant Garamond',serif;font-size:19px}
+.order-meta{display:flex;gap:12px;align-items:center;font-size:11px;color:var(--muted);margin-top:3px;flex-wrap:wrap}
+.badge{font-size:9px;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--line2);border-radius:20px;padding:3px 10px;color:var(--gold)}
+.badge-completed{background:#F0E6CE;border-color:var(--gold-soft)}
+.btn{display:inline-block;background:var(--panel2);border:1px solid var(--line2);border-radius:20px;padding:8px 16px;font-size:12px;color:var(--gold-deep)}
+.btn-primary{background:linear-gradient(180deg,#B98C43,#93692C);color:#FBF6EC;border:none}
+.btn+.btn{margin-left:6px}
+
+.needs-bp{display:none}
+.bp-ready .needs-bp{display:block}
+.bp-ready .cards4.needs-bp{display:grid}
+.bp-ready .cards3.needs-bp{display:grid}
+.pending-note{background:#F2EAD8;border:1px dashed var(--gold-soft);border-radius:14px;padding:18px 20px;margin-top:16px;font-size:13.5px;color:#5f5647;display:none}
+@media(max-width:1100px){.cards4{grid-template-columns:1fr 1fr}.cards3{grid-template-columns:1fr}.shadgrid{grid-template-columns:1fr}.app{grid-template-columns:1fr}.sidebar{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;gap:12px}.nav{display:none}.main{padding:22px}}
+</style>
 </head>
 <body>
-  <div id="szinn-nav"></div>
+<div class="app" id="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="/szinn-portal/assets/img/logo-gold.png" alt="" style="width:34px;height:auto" onerror="this.style.display='none'">
+      <div class="name">SZINN</div>
+      <div class="tag">Alignment Blueprint</div>
+    </div>
+    <nav class="nav">
+      <a class="nav-item active" href="#top"><span class="ni">&#9702;</span>Dashboard</a>
+      <a class="nav-item" href="#vandaag"><span class="ni">&#9702;</span>Vandaag</a>
+      <a class="nav-item" href="#schaduw"><span class="ni">&#9702;</span>Tikkun</a>
+      <a class="nav-item" href="#levenspad"><span class="ni">&#9702;</span>Levenspad</a>
+      <a class="nav-item" href="#getallen"><span class="ni">&#9702;</span>Getallen</a>
+      <a class="nav-item" href="#cycli"><span class="ni">&#9702;</span>Cycli</a>
+      <a class="nav-item" href="#begeleiding"><span class="ni">&#9702;</span>Begeleiding</a>
+      <a class="nav-item" href="#dagboek"><span class="ni">&#9702;</span>Dagboek</a>
+      <a class="nav-item" id="navBlueprint" href="#aanvragen"><span class="ni">&#9702;</span>Bibliotheek</a>
+      <a class="nav-item" href="#aanvragen"><span class="ni">&#9702;</span>Aanvragen</a>
+      <a class="nav-item" href="#" onclick="SzinnAuth.logout(); return false;"><span class="ni">&#9702;</span>Uitloggen</a>
+    </nav>
+    <div class="intention">
+      <div class="il">Intentie van vandaag</div>
+      <div class="iq" id="sideIntent">Eén echte stap is genoeg.</div>
+    </div>
+  </aside>
 
-  <main class="container">
+  <main class="main" id="top">
+    <div class="topbar">&#128197;&nbsp; <span id="topDate">…</span></div>
+    <h1 class="greet"><span id="greetTxt">Welkom</span><span class="sp">&#10022;</span></h1>
+    <div class="sub">Het universum is in beweging. Stem af op wat ertoe doet.</div>
+    <div class="astrorow needs-bp" style="display:flex">
+      <div class="astro"><div class="ic">&#9737;</div><div><div class="t" id="aSun">—</div><div class="d">Wie je in de kern bent</div></div></div>
+      <div class="astro"><div class="ic">&#9789;</div><div><div class="t" id="aMoon">—</div><div class="d">Wat je van binnen nodig hebt</div></div></div>
+      <div class="astro"><div class="ic">&#8593;</div><div><div class="t" id="aAsc">—</div><div class="d">Hoe je de wereld binnenkomt</div></div></div>
+    </div>
 
-    <!-- Hero -->
-    <div class="dash-hero">
-      <div>
-        <h1 class="dash-greeting" id="greeting">Welkom terug</h1>
-        <p class="dash-subtitle">
-          Jouw persoonlijke SZINN ruimte. Bekijk je Blueprint, stel vragen aan je AI Companion of geef een Blueprint cadeau aan iemand die je wil inspireren.
-        </p>
-        <div class="dash-actions">
-          <button class="btn-action primary" onclick="openCompanion()">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-              <circle cx="8" cy="8" r="6.5"/>
-              <path d="M5.5 7.5h5M5.5 10h3"/>
-            </svg>
-            AI Companion
-          </button>
-          <button class="btn-action" onclick="openGift()">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-              <rect x="2" y="6" width="12" height="9" rx="1"/>
-              <path d="M1 6h14M8 6V15"/>
-              <path d="M8 6C8 4 6 2 4.5 3S4 6 6 6"/>
-              <path d="M8 6C8 4 10 2 11.5 3S12 6 10 6"/>
-            </svg>
-            Cadeau geven
-          </button>
-          <button class="btn-action" onclick="openBook()">
-            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M3 2h8a1 1 0 011 1v10a1 1 0 01-1 1H3"/>
-              <path d="M3 2a1 1 0 00-1 1v10a1 1 0 001 1"/>
-              <path d="M6 6h4M6 9h4"/>
-            </svg>
-            Fysiek boek
-          </button>
+    <div class="pending-note" id="pendingNote"></div>
+
+    <!-- SIN -->
+    <div id="vandaag"></div>
+    <div class="movement"><div class="m">Sin</div><div><div class="ml">Zien wat er is</div><div class="ms">wat de dag je laat zien</div></div><div class="badge">Herkenning</div></div>
+
+    <div class="daycard">
+      <div class="bg" style="background-image:url('/assets/szinn-hero.jpg')"></div>
+      <div class="veil"></div>
+      <div class="in">
+        <div class="dt" id="dcDate">Vandaag</div>
+        <h2>Vandaag in één oogopslag</h2>
+        <div class="dcgrid">
+          <div><div class="lab">Thema</div><div class="val" id="dTheme">—</div></div>
+          <div><div class="lab">Focus</div><div class="val" id="dFocus">—</div></div>
+        </div>
+        <div class="dcq"><div class="lab">Vraag van de dag</div><div class="val" id="dQuestion">—</div></div>
+        <a class="readmore" id="readmore">Lees je volledige blueprint &#8594;</a>
+      </div>
+    </div>
+
+    <div class="aibar" id="begeleiding">
+      <div class="ai-ic"></div>
+      <div class="ai-tx"><b>SZINN Companion</b> &middot; ik lees je kaart en de stand van vandaag, en stem de dagduiding daarop af. Vraag me gerust iets.</div>
+      <button id="genBtn">Vernieuw dagduiding</button>
+      <button id="chatBtn">Praat met je Companion</button>
+    </div>
+    <div class="chat" id="chatBox">
+      <div class="chatlog" id="chatLog"></div>
+      <div class="chatin"><input id="chatIn" placeholder="Stel je Companion een vraag over vandaag, je kaart, je richting…"/><button id="chatSend">Stuur</button></div>
+    </div>
+
+    <div class="cards4 needs-bp">
+      <div class="card">
+        <div class="eyebrow">Waar de hemel nu staat</div>
+        <h3>De lucht vandaag</h3>
+        <div class="moon"><div class="orb"></div><div><div class="mt" id="skyMoon">—</div><div class="md" id="skySub">—</div></div></div>
+        <p id="dSky">—</p>
+      </div>
+      <div class="card" id="getallen">
+        <div class="eyebrow">Wat de dag draagt</div>
+        <h3>Jouw getallen</h3>
+        <div class="nums">
+          <div class="num"><div class="n" id="nLP">—</div><div class="l">Levenspad</div></div>
+          <div class="num"><div class="n" id="nPY">—</div><div class="l">Persoonlijk jaar</div></div>
+          <div class="num"><div class="n" id="nPM">—</div><div class="l">Persoonlijke maand</div></div>
+          <div class="num"><div class="n" id="nPD">—</div><div class="l">Persoonlijke dag</div></div>
+        </div>
+        <div class="numnote" style="margin-top:14px">
+          <span class="k">Focus vandaag</span><div class="v" id="dNumFocus">—</div>
+          <span class="k">Herinnering</span><div class="v" id="dNumRem">—</div>
         </div>
       </div>
-
-      <!-- Alignment ring -->
-      <div class="alignment-ring-wrap" id="ring-wrap">
-        <div class="ring-label">Overall Alignment</div>
-        <div class="ring-svg">
-          <svg width="110" height="110" viewBox="0 0 110 110">
-            <circle cx="55" cy="55" r="46" fill="none" stroke="rgba(166,124,58,0.12)" stroke-width="6"/>
-            <circle id="ring-progress" cx="55" cy="55" r="46" fill="none"
-              stroke="#A67C3A" stroke-width="6" stroke-linecap="round"
-              stroke-dasharray="289" stroke-dashoffset="289"
-              transform="rotate(-90 55 55)"
-              style="transition: stroke-dashoffset 1.2s cubic-bezier(.4,0,.2,1)"/>
-          </svg>
-          <div class="ring-center">
-            <span class="ring-pct" id="ring-pct">—</span>
-            <span class="ring-sub">Alignment</span>
-          </div>
+      <div class="card">
+        <div class="eyebrow">Jouw groei-as</div>
+        <h3>Noord- &amp; Zuidknoop</h3>
+        <div class="knoop">
+          <div class="kc"><div class="kl">Zuidknoop &middot;<br>waar je vandaan komt</div><div class="kn" id="knZuid">—</div><div class="kp" id="kpZuid">—</div></div>
+          <div class="arrow">&#8594;</div>
+          <div class="kc"><div class="kl">Noordknoop &middot;<br>waar je heen gaat</div><div class="kn" id="knNoord">—</div><div class="kp" id="kpNoord">—</div></div>
         </div>
+        <a class="readmore" style="font-size:12px" id="lnkNodes">Verken je knopen &#8594;</a>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Kern-essentie</div>
+        <h3>Jouw mandala</h3>
+        <div class="mandwrap" id="mandala"></div>
+        <div class="mandcap" id="mandCap">Flower of Life, jouw planeten op hun exacte graden.</div>
       </div>
     </div>
 
-    <!-- Score cards -->
-    <div class="scores-grid" id="scores-grid">
-      <!-- Filled by JS -->
+    <!-- SINN -->
+    <div id="dagboek"></div>
+    <div class="movement"><div class="m">Sinn</div><div><div class="ml">Voelen en richten</div><div class="ms">wat jij in de dag brengt</div></div><div class="badge">Helderheid</div></div>
+
+    <div class="cards3" style="display:grid">
+      <div class="card">
+        <div class="eyebrow">De energie die je kiest</div>
+        <h2>Stel je intentie</h2>
+        <p style="margin-top:8px">Je energie kiezen en je intentie zetten zijn één beweging. Kies waarmee je vandaag voorop wilt gaan.</p>
+        <div class="choices">
+          <div class="choice" data-e="Sin"><div class="ct">Sin</div><div class="cd">structuur &middot; kracht &middot; richting</div></div>
+          <div class="choice" data-e="Sinn"><div class="ct">Sinn</div><div class="cd">gevoel &middot; intuïtie &middot; afstemming</div></div>
+          <div class="choice" data-e="Zin"><div class="ct">Zin</div><div class="cd">vreugde &middot; vrijheid &middot; creatie</div></div>
+        </div>
+        <div class="eyebrow" style="margin-top:16px">Mijn intentie voor vandaag</div>
+        <input class="field" id="fIntent" placeholder="Vandaag wil ik…"/>
+        <div class="eyebrow" style="margin-top:12px">In één woord, hoe voel je je nu?</div>
+        <input class="field" id="fFeel" placeholder="bijv. rustig, vol, helder, moe…"/>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Vermogens die je kunt inzetten</div>
+        <h2>Jouw gaven</h2>
+        <p style="margin-top:8px" id="dGifts">Zes innerlijke vermogens om op te leunen.</p>
+        <div class="gifts">
+          <div class="gift">Intuïtie</div><div class="gift">Verbeeldingskracht</div><div class="gift">Geheugen</div>
+          <div class="gift">Waarneming</div><div class="gift">Redeneren</div><div class="gift">Wilskracht</div>
+        </div>
+        <div class="hint">Tik op de gave waar je vandaag op wilt leunen.</div>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Drie dingen</div>
+        <h2>Waar ben je dankbaar voor</h2>
+        <div class="grat">
+          <div class="gline"><span class="gn">1</span><input id="g1"/></div>
+          <div class="gline"><span class="gn">2</span><input id="g2"/></div>
+          <div class="gline"><span class="gn">3</span><input id="g3"/></div>
+        </div>
+        <div class="hint">Dankbaarheid verschuift je energie sneller dan bijna iets anders. Klein mag.</div>
+      </div>
     </div>
 
-    <!-- Orders -->
-    <div class="fade-up" style="animation-delay:0.2s">
-      <div class="section-head">
-        <h2 class="section-title">Mijn aanvragen</h2>
+    <!-- ZIN -->
+    <div id="levenspad"></div>
+    <div class="movement"><div class="m">Zin</div><div><div class="ml">Waar je staat</div><div class="ms">wat je draagt en oogst</div></div><div class="badge">Integratie</div></div>
+
+    <div class="cards3 needs-bp">
+      <div class="card">
+        <div class="eyebrow" id="lpEyebrow">Jouw levenspad</div>
+        <h2>Levenspad-overzicht</h2>
+        <div class="phase" id="phaseRow">
+          <div class="st" data-min="0"><div class="dot">&#10022;</div><div class="pn">Fundament</div><div class="pa">0&ndash;28</div></div>
+          <div class="st" data-min="29"><div class="dot"></div><div class="pn">Expansie</div><div class="pa">29&ndash;36</div></div>
+          <div class="st" data-min="37"><div class="dot"></div><div class="pn">Bijdrage</div><div class="pa">37&ndash;45</div></div>
+          <div class="st" data-min="46"><div class="dot"></div><div class="pn">Meesterschap</div><div class="pa">46&ndash;54</div></div>
+          <div class="st" data-min="55"><div class="dot"></div><div class="pn">Nalatenschap</div><div class="pa">55+</div></div>
+        </div>
+        <p style="margin-top:12px" id="lpText">—</p>
       </div>
-      <div class="orders-grid" id="orders-grid">
-        <!-- Filled by JS -->
+      <div class="card" id="cycli">
+        <div class="eyebrow">9-jaarscyclus</div>
+        <div class="cycrow"><div><h2>Huidige cyclus</h2><h3 style="font-size:26px;margin-top:2px" id="cycTitle">—</h3></div>
+          <div class="ring"><svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="32" fill="none" stroke="#E4DBC8" stroke-width="3"/><circle id="cycRing" cx="38" cy="38" r="32" fill="none" stroke="#A67C3A" stroke-width="3" stroke-dasharray="0 999" stroke-linecap="round" transform="rotate(-90 38 38)"/><text id="cycNum" x="38" y="35" text-anchor="middle" font-family="Cormorant Garamond" font-size="17" fill="#8a6630">–</text><text x="38" y="50" text-anchor="middle" font-family="Jost" font-size="8" fill="#8a7860" letter-spacing="1">VAN 9</text></svg></div></div>
+        <div class="eyebrow" style="margin-top:12px" id="cycTheme">—</div>
+        <p style="margin-top:8px" id="cycText">—</p>
+        <a class="readmore" style="font-size:12px" id="lnkNum">Bekijk in je blueprint &#8594;</a>
+      </div>
+      <div class="card">
+        <div class="eyebrow">Aankomende cycli</div>
+        <h2>Wat eraan komt</h2>
+        <div class="cyc-moment"><div class="cm">&#9789;</div><div><div class="cmt" id="cmNew">Nieuwe maan</div><div class="cmd" id="cmNewD">—</div></div></div>
+        <div class="cyc-moment"><div class="cm">&#9789;</div><div><div class="cmt" id="cmFull">Volle maan</div><div class="cmd" id="cmFullD">—</div></div></div>
+        <div class="cyc-moment"><div class="cm">&#10022;</div><div><div class="cmt" id="cmSolar">Zonne-terugkeer</div><div class="cmd" id="cmSolarD">—</div></div></div>
+        <a class="readmore" style="font-size:12px" id="lnkCal">Bekijk je persoonlijke kalender &#8594;</a>
       </div>
     </div>
 
+    <div class="shadow needs-bp" id="schaduw">
+      <div class="eyebrow">De andere kant van je gaven</div>
+      <h2>Jouw schaduwkanten</h2>
+      <div class="lead">Dit zijn geen gebreken om te repareren. Elke schaduw is de keerzijde van een echte gave en draagt informatie. Beweeg elke slider om te markeren hoeveel het je vandaag vasthield, en hoe helder je het zag.</div>
+      <div class="shadgrid" id="shadGrid"></div>
+      <div class="reflect"><div class="rl">Om het helder te zien</div><div class="rt" id="reflectQ">Als een van deze opkomt, pauzeer en vraag: wat bescherm ik, en wat heb ik nu echt nodig?</div></div>
+    </div>
+
+    <!-- Aanvragen -->
+    <div id="aanvragen"></div>
+    <div class="movement"><div class="m">&#10022;</div><div><div class="ml">Jouw blueprints</div><div class="ms">aanvragen en documenten</div></div><div class="badge">Bibliotheek</div></div>
+    <div class="orders" id="ordersGrid"></div>
+
+    <button class="save" id="saveBtn">Leg mijn dag vast<span class="ss">Privé bewaard, alleen voor jou zichtbaar</span></button>
+    <div class="foot">
+      <div class="fq">Je was nooit verloren, je was aan het herinneren.</div>
+      <div class="fc" id="footLine">SZINN &middot; Companion Dashboard &middot; &copy; <span id="footYear"></span> Elly Elizabeth Korving &middot; Alterego BV &middot; Alle rechten voorbehouden &middot; szinn.ai</div>
+    </div>
   </main>
+</div>
 
-  <!-- ── AI Companion panel ── -->
-  <div class="companion-overlay" id="companion-overlay" onclick="closeOnBg(event, 'companion-overlay')">
-    <div class="companion-panel">
-      <div class="companion-header">
-        <div class="companion-title">
-          <span class="companion-dot"></span>
-          SZINN AI Companion
-        </div>
-        <button class="companion-close" onclick="closeCompanion()">×</button>
+<script src="../js/auth.js"></script>
+<script src="../js/api.js"></script>
+<script>
+// ─────────────────────────────────────────────────────────────────────────────
+// Alle blokdata komt uit /api/companion/blueprint: laag 1 (berekend) + laag 2
+// (AI-teksten uit de database). Geen berekeningen of API-keys in de browser.
+// ─────────────────────────────────────────────────────────────────────────────
+let BP = null;          // blueprint-payload
+let userId = null;
+const $ = (id) => document.getElementById(id);
+const set = (id, v) => { const el = $(id); if (el && v != null && v !== '') el.textContent = v; };
+const strip = (html) => { const d = document.createElement('div'); d.innerHTML = html || ''; return (d.textContent || '').trim(); };
+const firstPara = (html) => { const d = document.createElement('div'); d.innerHTML = html || ''; const p = d.querySelector('p'); return p ? p.textContent.trim() : strip(html); };
+const trunc = (s, n) => { s = (s || '').trim(); return s.length > n ? s.slice(0, s.lastIndexOf(' ', n)) + '…' : s; };
+const fmtD = (d) => new Date(d).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
+
+SzinnAuth.requireAuth().then(ok => { if (ok) init(); });
+
+async function init() {
+  const user = SzinnAuth.getUser();
+  userId = user.id;
+  const now = new Date();
+  set('topDate', capitalize(now.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })));
+  set('dcDate', capitalize(now.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })));
+  $('footYear').textContent = now.getFullYear();
+  const h = now.getHours();
+  const greet = h < 6 ? 'Goedenacht' : h < 12 ? 'Goedemorgen' : h < 18 ? 'Goedemiddag' : 'Goedenavond';
+  set('greetTxt', `${greet}, ${user.name.split(' ')[0]}`);
+
+  loadOrders();
+  restoreDay();
+
+  try {
+    const res = await fetch('/api/companion/blueprint', { credentials: 'same-origin' });
+    const data = await res.json();
+    if (data.status === 'completed') {
+      BP = data;
+      document.getElementById('app').classList.add('bp-ready');
+      fillFromBlueprint(data);
+    } else {
+      showPending(data.status);
+    }
+  } catch (e) { showPending('error'); }
+}
+
+function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function showPending(status) {
+  const note = $('pendingNote');
+  note.style.display = 'block';
+  note.innerHTML = status === 'none'
+    ? 'Je hebt nog geen blueprint-aanvraag. Vul de vragenlijst in op <a href="https://szinn.ai/intake" style="color:var(--gold-deep)">szinn.ai</a> en dit dashboard komt tot leven met jouw kaart, getallen en dagduiding.'
+    : 'Je Alignment Blueprint wordt <b>samengesteld</b> — dit kan een aantal uur duren. Zodra hij klaar is ontvang je een e-mail en vult dit dashboard zich met jouw kaart, getallen en dagduiding.';
+  set('dTheme', 'Je blueprint is onderweg');
+  set('dFocus', 'Kom straks terug — je ontvangt een e-mail zodra alles klaarstaat');
+  set('dQuestion', 'Wat hoop je in je blueprint te herkennen?');
+}
+
+function fillFromBlueprint(d) {
+  const t = d.texts || {};
+  const C = d.chart, N = d.numerology;
+
+  // Kop & astrorij
+  set('footLine', `SZINN · Companion Dashboard · ${d.clientName} · © ${new Date().getFullYear()} Elly Elizabeth Korving · Alterego BV · Alle rechten voorbehouden · szinn.ai`);
+  if (C.sun) set('aSun', `Zon in ${C.sun.sign}${C.sun.house ? ' · Huis ' + C.sun.house : ''}`);
+  if (C.moon) set('aMoon', `Maan in ${C.moon.sign}${C.moon.house ? ' · Huis ' + C.moon.house : ''}`);
+  if (C.ascendant) set('aAsc', `${C.ascendant.sign} Ascendant`);
+
+  // Dagduiding (deterministisch uit blueprint; AI-knop vernieuwt)
+  applyDay(d.day);
+
+  // De lucht vandaag
+  set('skyMoon', `Maan in ${d.sky.moonSign}`);
+  const nextNew = d.sky.nextNewMoon;
+  set('skySub', `${d.sky.waxing ? 'Wassende' : 'Afnemende'} maan${nextNew ? ' · naar de nieuwe maan van ' + fmtD(nextNew.date) : ''}`);
+
+  // Getallen
+  set('nLP', N.lifePath); set('nPY', N.personalYear); set('nPM', N.personalMonth); set('nPD', N.personalDay);
+
+  // Knopen
+  if (C.southNode) set('knZuid', C.southNode.sign);
+  if (C.northNode) set('knNoord', `${C.northNode.sign}${C.northNode.house ? ' · Huis ' + C.northNode.house : ''}`);
+  if (t.nodes) {
+    set('kpZuid', trunc(strip(t.nodes.south), 170));
+    set('kpNoord', trunc(strip(t.nodes.north), 170));
+  }
+  $('lnkNodes').href = `blueprint-viewer.html?id=${d.orderId}`;
+
+  // Mandala
+  if (d.mandala) $('mandala').innerHTML = d.mandala;
+  if (C.northNode) set('mandCap', `Flower of Life, jouw planeten op hun exacte graden, en je Merkaba gedraaid naar je Noordknoop in ${C.northNode.sign}.`);
+
+  // Gaven-regel
+  if (d.day && d.day.gaven) set('dGifts', d.day.gaven);
+
+  // Levenspad
+  set('lpEyebrow', `Jij bent in Levenspad ${N.lifePath} · ${N.lifePathName}`);
+  const age = Math.floor((Date.now() - new Date(d.birthDate)) / 31557600000);
+  document.querySelectorAll('#phaseRow .st').forEach(st => {
+    st.classList.toggle('on', age >= parseInt(st.dataset.min, 10));
+  });
+  // laatste actieve fase markeren als 'huidig': alleen die houdt de ster
+  const active = [...document.querySelectorAll('#phaseRow .st.on')];
+  document.querySelectorAll('#phaseRow .st .dot').forEach(dt => dt.innerHTML = '');
+  if (active.length) { active.forEach(a => a.classList.remove('on')); const cur = active[active.length - 1]; cur.classList.add('on'); cur.querySelector('.dot').innerHTML = '&#10022;'; }
+  set('lpText', t.numerology ? firstPara(t.numerology.lifePathBody) : `${N.lifePathName}.`);
+
+  // 9-jaarscyclus
+  set('cycTitle', `Jaar ${N.personalYear} van 9`);
+  set('cycNum', N.personalYear);
+  $('cycRing').setAttribute('stroke-dasharray', `${(201 * N.personalYear / 9).toFixed(1)} 999`);
+  set('cycTheme', `${N.personalYearTheme} · ${N.personalYearEnergy}`);
+  set('cycText', t.numerology ? firstPara(t.numerology.pyBody) : N.personalYearEnergy);
+  $('lnkNum').href = `blueprint-viewer.html?id=${d.orderId}`;
+  $('lnkCal').href = `blueprint-viewer.html?id=${d.orderId}`;
+
+  // Aankomende cycli
+  if (d.sky.nextNewMoon) { set('cmNew', `Nieuwe maan in ${d.sky.nextNewMoon.sign}`); set('cmNewD', fmtD(d.sky.nextNewMoon.date)); }
+  if (d.sky.nextFullMoon) { set('cmFull', `Volle maan in ${d.sky.nextFullMoon.sign}`); set('cmFullD', fmtD(d.sky.nextFullMoon.date)); }
+  if (d.sky.solarReturn) { set('cmSolar', `Zonne-terugkeer · ${d.sky.solarReturn.sign}`); set('cmSolarD', fmtD(d.sky.solarReturn.date)); }
+
+  // Schaduwkanten — rechtstreeks uit de blueprint-teksten
+  const cards = [];
+  if (t.nodes && C.southNode) cards.push({ t: 'Het vertrouwde patroon', s: `Zuidknoop ${C.southNode.sign}${C.southNode.house ? ' · Huis ' + C.southNode.house : ''}`, d: strip(t.nodes.south) });
+  if (t.tikkun && t.tikkun.cards && t.tikkun.cards[0]) cards.push({ t: t.tikkun.cards[0].title || 'Kernthema', s: 'Tikkun · kernthema', d: strip(t.tikkun.cards[0].body) });
+  cards.push({ t: `De schaduw van de ${N.lifePath}`, s: `Levenspad ${N.lifePath} · ${N.lifePathName}`, d: `De keerzijde van jouw levenspad is ${N.lifePathShadow}. Herkennen is genoeg; je hoeft het niet op te lossen.` });
+  if (t.integration && t.integration.shadow) cards.push({ t: 'Jouw schaduwwerk', s: 'Integratie', d: strip(t.integration.shadow) });
+  $('shadGrid').innerHTML = cards.slice(0, 4).map((c, i) => `
+    <div class="shad">
+      <div class="sh-top"><div class="sh-t"></div><div class="sh-src"></div></div>
+      <div class="sh-d"></div>
+      <input type="range" min="0" max="100" value="50" data-si="${i}"><div class="sh-lab"><span>Hield me vast</span><span>Ik zag het, het verzachtte</span></div>
+    </div>`).join('');
+  document.querySelectorAll('#shadGrid .shad').forEach((el, i) => {
+    el.querySelector('.sh-t').textContent = cards[i].t;
+    el.querySelector('.sh-src').textContent = cards[i].s;
+    el.querySelector('.sh-d').textContent = trunc(cards[i].d, 220);
+  });
+  if (t.reflection && t.reflection.questions && t.reflection.questions.length) {
+    const idx = Math.floor(Date.now() / 86400000) % t.reflection.questions.length;
+    set('reflectQ', t.reflection.questions[idx]);
+  }
+
+  $('readmore').href = `blueprint-viewer.html?id=${d.orderId}`;
+  $('navBlueprint').href = `blueprint-viewer.html?id=${d.orderId}`;
+  restoreDay(); // sliders opnieuw toepassen nu ze bestaan
+}
+
+function applyDay(day) {
+  if (!day) return;
+  set('dTheme', day.thema); set('dFocus', day.focus); set('dQuestion', day.vraag);
+  set('dSky', day.lucht); set('dNumFocus', day.numFocus); set('dNumRem', day.numReminder);
+  if (day.gaven) set('dGifts', day.gaven);
+  set('sideIntent', day.focus || day.thema);
+}
+
+// ── Dagduiding vernieuwen via de server (AI met blueprint-fallback) ─────────
+$('genBtn').addEventListener('click', async function () {
+  const b = this; b.disabled = true; const old = b.textContent; b.textContent = 'Even afstemmen…';
+  try {
+    const r = await fetch('/api/companion/day', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    const j = await r.json();
+    if (r.ok) applyDay(j);
+  } catch (e) { /* stil falen, oude tekst blijft staan */ }
+  b.textContent = old; b.disabled = false;
+});
+
+// ── Gesprek met de Companion (server-side, kent jouw kaart) ─────────────────
+const chatBox = $('chatBox'), chatLog = $('chatLog');
+let history = [];
+$('chatBtn').addEventListener('click', () => {
+  chatBox.classList.toggle('open');
+  if (chatLog.childElementCount === 0) addMsg('a', 'Ik ben er. Je kunt me iets vragen over vandaag, over je kaart, of over waar je naartoe beweegt.');
+});
+function addMsg(role, txt) {
+  const div = document.createElement('div'); div.className = 'msg ' + role;
+  if (role === 'a') { const w = document.createElement('div'); w.className = 'who'; w.textContent = 'Companion'; div.appendChild(w); }
+  div.appendChild(document.createTextNode(txt));
+  chatLog.appendChild(div); chatLog.scrollTop = chatLog.scrollHeight; return div;
+}
+async function send() {
+  const inp = $('chatIn'); const q = inp.value.trim(); if (!q) return;
+  inp.value = ''; addMsg('u', q); history.push({ role: 'user', content: q });
+  const ph = addMsg('a', '…');
+  try {
+    const r = await fetch('/api/companion/chat', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: history }) });
+    const j = await r.json();
+    const ans = j.content || j.error || 'Ik kan nu even niet afstemmen.';
+    ph.lastChild.textContent = ans;
+    history.push({ role: 'assistant', content: ans });
+  } catch (e) { ph.lastChild.textContent = 'Ik kan nu even niet afstemmen. Probeer het zo nog eens.'; }
+  chatLog.scrollTop = chatLog.scrollHeight;
+}
+$('chatSend').addEventListener('click', send);
+$('chatIn').addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+
+// ── Aanvragen / bibliotheek ──────────────────────────────────────────────────
+async function loadOrders() {
+  try {
+    const orders = await SzinnAPI.getOrders();
+    renderOrders(orders);
+  } catch (e) {
+    $('ordersGrid').innerHTML = '<div class="order-card">Kon aanvragen niet laden.</div>';
+  }
+}
+function renderOrders(orders) {
+  const grid = $('ordersGrid');
+  if (!orders.length) {
+    grid.innerHTML = '<div class="order-card">Nog geen aanvragen. Plaats je eerste bestelling op <a href="https://szinn.ai" style="color:var(--gold-deep)">szinn.ai</a>.</div>';
+    return;
+  }
+  grid.innerHTML = orders.map(o => `
+    <div class="order-card">
+      <div>
+        <div class="order-name">${escapeHtml(o.clientName || '')}</div>
+        <div class="order-meta"><span>${o.id}</span>${statusBadge(o.status)}<span>${o.createdAt ? fmtD(o.createdAt) : ''}</span></div>
       </div>
-      <div class="companion-context" id="companion-ctx">
-        Stel een vraag over jouw Blueprint of over de SZINN-methode.
-      </div>
-      <div class="companion-messages" id="companion-messages">
-        <div class="msg assistant">
-          <div class="msg-bubble">
-            Welkom bij je persoonlijke SZINN AI Companion. Wat wil je weten over je Blueprint?
-          </div>
-        </div>
-      </div>
-      <div class="companion-footer">
-        <textarea class="companion-input" id="companion-input"
-          placeholder="Stel een vraag…" rows="1"
-          onkeydown="handleEnter(event)"></textarea>
-        <button class="companion-send" id="companion-send-btn" onclick="sendMessage()">→</button>
-      </div>
-    </div>
-  </div>
+      <div>${orderActions(o)}</div>
+    </div>`).join('');
+}
+function statusBadge(s) {
+  const m = { pending: 'Wachtend', questionnaire: 'Vragenlijst', processing: 'Wordt samengesteld', generating: 'Wordt samengesteld', failed: 'Vertraagd', completed: 'Voltooid' };
+  return `<span class="badge ${s === 'completed' ? 'badge-completed' : ''}">${m[s] || 'Wachtend'}</span>`;
+}
+function orderActions(o) {
+  if (o.status === 'completed' && o.blueprintUrl) {
+    const en = (o.blueprintLanguages || []).includes('en') ? ` <a href="blueprint-viewer.html?id=${o.id}&lang=en" class="btn">EN</a>` : '';
+    const pdf = o.pdfAvailable ? ` <a href="/api/orders/${o.id}/pdf?lang=nl" class="btn">PDF</a>` : '';
+    return `<a href="blueprint-viewer.html?id=${o.id}" class="btn btn-primary">Blueprint bekijken</a>${en}${pdf}`;
+  }
+  if (o.status === 'questionnaire') return `<a href="questionnaire.html?id=${o.id}" class="btn btn-primary">Vragenlijst invullen</a>`;
+  if (o.status === 'processing' || o.status === 'generating') return '<span class="btn" style="cursor:default;opacity:.6">Wordt samengesteld — dit kan een aantal uur duren</span>';
+  if (o.status === 'failed') return '<span class="btn" style="cursor:default;opacity:.6">Duurt langer dan verwacht — we zijn ermee bezig</span>';
+  return '<span class="btn" style="cursor:default;opacity:.5">Wachtend</span>';
+}
+function escapeHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
-  <!-- ── Gift modal ── -->
-  <div class="modal-overlay" id="gift-overlay" onclick="closeOnBg(event, 'gift-overlay')">
-    <div class="modal-box">
-      <div class="modal-close-row">
-        <h2 class="modal-title">Blueprint cadeau geven</h2>
-        <button class="modal-close" onclick="closeGift()">×</button>
-      </div>
-      <p class="modal-desc">
-        Deel een persoonlijke code met iemand die je wil inspireren. Met die code ontvangen zij gratis een volledig Alignment Blueprint.
-      </p>
-      <div id="gift-codes-list">
-        <!-- Filled by JS -->
-      </div>
-      <button class="btn-action" style="width:100%;justify-content:center;margin-top:8px" onclick="generateCode()">
-        + Genereer nieuwe code
-      </button>
-    </div>
-  </div>
-
-  <!-- ── Book modal ── -->
-  <div class="modal-overlay" id="book-overlay" onclick="closeOnBg(event, 'book-overlay')">
-    <div class="modal-box">
-      <div class="modal-close-row">
-        <h2 class="modal-title">Fysiek boek bestellen</h2>
-        <button class="modal-close" onclick="closeBook()">×</button>
-      </div>
-      <div class="book-price">€ 29,95</div>
-      <div class="book-price-sub">Inclusief BTW &middot; Verzending gratis boven €45</div>
-      <div class="book-feature">Hardcover A4 druk van jouw persoonlijke Blueprint</div>
-      <div class="book-feature">Hoogwaardig papier, gebonden uitvoering</div>
-      <div class="book-feature">Levering binnen 5–7 werkdagen</div>
-      <div class="book-feature">Optioneel met persoonlijke inscriptie</div>
-      <br>
-      <button class="btn-action primary" style="width:100%;justify-content:center" onclick="orderBook()">
-        Naar bestelpagina →
-      </button>
-      <p style="font-size:11px;color:var(--muted);margin-top:12px;text-align:center">
-        Alleen beschikbaar voor voltooide Blueprints
-      </p>
-    </div>
-  </div>
-
-  <div id="szinn-footer"></div>
-
-  <script src="../js/auth.js"></script>
-  <script src="../js/api.js"></script>
-  <script src="../js/nav.js"></script>
-  <script>
-    // ── State ──────────────────────────────────────────────────────────────────
-    let companionMessages = [];
-    let activeOrderId = null;
-    let isSending = false;
-
-    const SCORE_META = {
-      astro:         { label: 'Astrologie',    icon: '☽', reading: (s) => s >= 75 ? 'Je grafenergie is actief en bewust ingezet.' : s >= 55 ? 'Groeikansen in bewust gebruik van je kaart.' : 'Onbenutte kracht — de grootste groeikans.' },
-      numerology:    { label: 'Numerologie',   icon: '∞', reading: (s) => s >= 75 ? 'Je beweegt in de flow van je jaarcyclus.' : s >= 55 ? 'Ruimte om meer aansluiting te vinden bij je cyclus.' : 'Je jaarcyclus vraagt bewuste aandacht.' },
-      soulDirection: { label: 'Soul Direction',icon: '↑', reading: (s) => s >= 75 ? 'Je beweegt richting je Noordknoop-groei.' : s >= 55 ? 'Beweging gaande. Zuidknoop trekt nog.' : 'Sterk onontgonnen terrein — groot groeipotentieel.' },
-      personalYear:  { label: 'Personal Year', icon: '◎', reading: (s) => s >= 75 ? 'Timing en acties zijn goed afgestemd.' : s >= 55 ? 'Enige afstemming met je jaaritme mogelijk.' : 'Je jaarthema vraagt meer bewuste afstemming.' }
-    };
-
-    // ── Boot ───────────────────────────────────────────────────────────────────
-    SzinnAuth.requireAuth().then(ok => {
-      if (!ok) return;
-      const user = SzinnAuth.getUser();
-      SzinnNav.updateUserInfo();
-
-      const h = new Date().getHours();
-      const greet = h < 12 ? 'Goedemorgen' : h < 18 ? 'Goedemiddag' : 'Goedenavond';
-      document.getElementById('greeting').textContent = `${greet}, ${user.name}`;
-
-      loadDashboard();
-    });
-
-    async function loadDashboard() {
-      const orders = await SzinnAPI.getOrders();
-      const completed = orders.find(o => o.status === 'completed' && o.scores);
-
-      renderScores(completed?.scores || null);
-      renderOrders(orders);
-      if (completed) activeOrderId = completed.id;
-    }
-
-    // ── Scores ─────────────────────────────────────────────────────────────────
-    function renderScores(scores) {
-      const grid = document.getElementById('scores-grid');
-      const ring = document.getElementById('ring-progress');
-      const ringPct = document.getElementById('ring-pct');
-
-      if (!scores) {
-        grid.innerHTML = Object.values(SCORE_META).map(m => `
-          <div class="score-card locked">
-            <span class="score-icon">${m.icon}</span>
-            <div class="score-name">${m.label}</div>
-            <div class="score-num locked-num">—</div>
-            <div class="score-reading" style="font-size:11px">Beschikbaar na voltooiing van je Blueprint</div>
-          </div>`).join('');
-        document.getElementById('ring-pct').textContent = '—';
-        return;
-      }
-
-      ringPct.textContent = scores.alignment + '%';
-      // Animate ring: circumference = 2π×46 ≈ 289
-      const offset = 289 - (289 * scores.alignment / 100);
-      setTimeout(() => { ring.style.strokeDashoffset = offset; }, 100);
-
-      const keys = ['astro','numerology','soulDirection','personalYear'];
-      const vals = [scores.astro, scores.numerology, scores.soulDirection, scores.personalYear];
-      const minIdx = vals.indexOf(Math.min(...vals));
-
-      grid.innerHTML = keys.map((key, i) => {
-        const meta = SCORE_META[key];
-        const s = vals[i];
-        const isLow = i === minIdx;
-        return `
-          <div class="score-card" style="--score-pct:${s/100}" id="scard-${i}">
-            <span class="score-icon">${meta.icon}</span>
-            <div class="score-name">${meta.label}</div>
-            <div class="score-num">${s}%</div>
-            <div class="score-reading">${meta.reading(s)}</div>
-            ${isLow ? `<span class="score-opportunity">Grootste kans</span>` : ''}
-          </div>`;
-      }).join('');
-
-      // Animate bars
-      setTimeout(() => {
-        document.querySelectorAll('.score-card').forEach(c => c.classList.add('animate-bar'));
-      }, 200);
-    }
-
-    // ── Orders ─────────────────────────────────────────────────────────────────
-    function renderOrders(orders) {
-      const grid = document.getElementById('orders-grid');
-      if (!orders.length) {
-        grid.innerHTML = `<div class="empty-state"><h3>Nog geen aanvragen</h3><p>Plaats je eerste bestelling op <a href="https://szinn.ai" target="_blank">szinn.ai</a></p></div>`;
-        return;
-      }
-      grid.innerHTML = orders.map((o, i) => `
-        <div class="order-card" style="animation-delay:${0.25+i*0.07}s">
-          <div>
-            <div class="order-name">${o.clientName}</div>
-            <div class="order-meta">
-              <span class="order-id">${o.id}</span>
-              ${statusBadge(o.status)}
-              <span>${fmtDate(o.createdAt)}</span>
-              <span>${o.type === 'gift' ? 'Cadeau' : 'Persoonlijk'}</span>
-            </div>
-          </div>
-          <div class="order-actions">${orderActions(o)}</div>
-        </div>`).join('');
-    }
-
-    function statusBadge(s) {
-      const m = { pending: ['badge-pending','Wachtend'], questionnaire: ['badge-questionnaire','Vragenlijst'], processing: ['badge-processing','Wordt samengesteld'], generating: ['badge-processing','Wordt samengesteld'], failed: ['badge-pending','Vertraagd'], completed: ['badge-completed','Voltooid'] };
-      const [cls,lbl] = m[s] || m.pending;
-      return `<span class="badge ${cls}">${lbl}</span>`;
-    }
-
-    function orderActions(o) {
-      if (o.status === 'completed' && o.blueprintUrl) {
-        const en  = (o.blueprintLanguages || []).includes('en')
-          ? ` <a href="blueprint-viewer.html?id=${o.id}&lang=en" class="btn" title="English version">EN</a>` : '';
-        const pdf = o.pdfAvailable
-          ? ` <a href="/api/orders/${o.id}/pdf?lang=nl" class="btn" title="Download als PDF">PDF</a>` : '';
-        return `<a href="blueprint-viewer.html?id=${o.id}" class="btn btn-primary">Blueprint bekijken</a>${en}${pdf}`;
-      }
-      if (o.status === 'questionnaire')
-        return `<a href="questionnaire.html?id=${o.id}" class="btn btn-primary">Vragenlijst invullen</a>`;
-      if (o.status === 'processing' || o.status === 'generating')
-        return `<span class="btn" style="cursor:default;opacity:.6">Wordt samengesteld — dit kan een aantal uur duren</span>`;
-      if (o.status === 'failed')
-        return `<span class="btn" style="cursor:default;opacity:.6">Duurt langer dan verwacht — we zijn ermee bezig</span>`;
-      return `<span class="btn" style="cursor:default;opacity:.5">Wachtend</span>`;
-    }
-
-    function fmtDate(iso) {
-      if (!iso) return '—';
-      return new Date(iso).toLocaleDateString('nl-NL', { day:'numeric', month:'short', year:'numeric' });
-    }
-
-    // ── AI Companion ───────────────────────────────────────────────────────────
-    function openCompanion() {
-      document.getElementById('companion-overlay').classList.add('open');
-      if (activeOrderId) {
-        document.getElementById('companion-ctx').textContent = `Gelinkt aan aanvraag ${activeOrderId}`;
-      }
-      setTimeout(() => document.getElementById('companion-input').focus(), 350);
-    }
-    function closeCompanion() { document.getElementById('companion-overlay').classList.remove('open'); }
-
-    function handleEnter(e) {
-      if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
-    }
-
-    async function sendMessage() {
-      const input = document.getElementById('companion-input');
-      const text = input.value.trim();
-      if (!text || isSending) return;
-      isSending = true;
-      input.value = '';
-      input.style.height = '';
-
-      document.getElementById('companion-send-btn').disabled = true;
-
-      companionMessages.push({ role: 'user', content: text });
-      appendMsg('user', text);
-      const typingEl = appendTyping();
-
-      try {
-        const resp = await fetch('/api/companion/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'same-origin',
-          body: JSON.stringify({ messages: companionMessages, orderId: activeOrderId })
-        });
-        const data = await resp.json();
-        typingEl.remove();
-        const reply = data.content || data.error || 'Geen antwoord ontvangen.';
-        companionMessages.push({ role: 'assistant', content: reply });
-        appendMsg('assistant', reply);
-      } catch {
-        typingEl.remove();
-        appendMsg('assistant', 'Er ging iets mis. Probeer het opnieuw.');
-      }
-
-      isSending = false;
-      document.getElementById('companion-send-btn').disabled = false;
-      input.focus();
-    }
-
-    function appendMsg(role, text) {
-      const msgs = document.getElementById('companion-messages');
-      const div = document.createElement('div');
-      div.className = `msg ${role}`;
-      div.innerHTML = `<div class="msg-bubble">${text.replace(/\n/g,'<br>')}</div>`;
-      msgs.appendChild(div);
-      msgs.scrollTop = msgs.scrollHeight;
-      return div;
-    }
-
-    function appendTyping() {
-      const msgs = document.getElementById('companion-messages');
-      const div = document.createElement('div');
-      div.className = 'msg assistant msg-typing';
-      div.innerHTML = `<div class="msg-bubble"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
-      msgs.appendChild(div);
-      msgs.scrollTop = msgs.scrollHeight;
-      return div;
-    }
-
-    // ── Gift ───────────────────────────────────────────────────────────────────
-    async function openGift() {
-      document.getElementById('gift-overlay').classList.add('open');
-      await loadGiftCodes();
-    }
-    function closeGift() { document.getElementById('gift-overlay').classList.remove('open'); }
-
-    async function loadGiftCodes() {
-      const resp = await fetch('/api/gift/codes', { credentials: 'same-origin' });
-      const codes = await resp.json();
-      const list = document.getElementById('gift-codes-list');
-      if (!codes.length) {
-        list.innerHTML = `<p style="font-size:13px;color:var(--muted);margin-bottom:8px">Je hebt nog geen codes. Genereer er een hieronder.</p>`;
-        return;
-      }
-      list.innerHTML = codes.map(c => `
-        <div class="gift-code-box">
-          <span class="gift-code-text">${c.code}</span>
-          ${c.used_by_user_id ? `<span class="gift-code-used">Gebruikt</span>` : `<button class="copy-btn" onclick="copyCode('${c.code}', this)">Kopieer</button>`}
-        </div>`).join('');
-    }
-
-    async function generateCode() {
-      const resp = await fetch('/api/gift/generate', { method:'POST', credentials:'same-origin' });
-      const data = await resp.json();
-      if (data.error) { alert(data.error); return; }
-      await loadGiftCodes();
-    }
-
-    function copyCode(code, btn) {
-      navigator.clipboard.writeText(code).then(() => {
-        btn.textContent = 'Gekopieerd!';
-        setTimeout(() => btn.textContent = 'Kopieer', 2000);
-      });
-    }
-
-    // ── Book ───────────────────────────────────────────────────────────────────
-    function openBook() { document.getElementById('book-overlay').classList.add('open'); }
-    function closeBook() { document.getElementById('book-overlay').classList.remove('open'); }
-    async function orderBook() {
-      const resp = await fetch('/api/book/order', { method:'POST', credentials:'same-origin' });
-      const data = await resp.json();
-      if (data.checkoutUrl) window.open(data.checkoutUrl, '_blank');
-    }
-
-    // ── Close on background click ──────────────────────────────────────────────
-    function closeOnBg(e, id) {
-      if (e.target === document.getElementById(id)) {
-        document.getElementById(id).classList.remove('open');
-      }
-    }
-  </script>
+// ── Dagboek: privé in deze browser bewaard ───────────────────────────────────
+const dayKey = () => `szinn_${userId}_${new Date().toISOString().slice(0, 10)}`;
+document.querySelectorAll('.choice').forEach(c => c.addEventListener('click', () => {
+  document.querySelectorAll('.choice').forEach(x => x.classList.remove('on'));
+  c.classList.add('on'); saveDay();
+}));
+document.querySelectorAll('.gift').forEach(g => g.addEventListener('click', () => { g.classList.toggle('on'); saveDay(); }));
+$('saveBtn').addEventListener('click', function () {
+  saveDay();
+  this.querySelector('.ss').textContent = 'Bewaard ✓ Alleen voor jou zichtbaar.';
+});
+function saveDay() {
+  const data = {
+    intent: $('fIntent').value, feel: $('fFeel').value,
+    g: [$('g1').value, $('g2').value, $('g3').value],
+    energy: (document.querySelector('.choice.on') || {}).dataset ? document.querySelector('.choice.on').dataset.e : null,
+    gifts: [...document.querySelectorAll('.gift.on')].map(x => x.textContent),
+    sliders: [...document.querySelectorAll('#shadGrid input[type=range]')].map(s => s.value),
+  };
+  try { localStorage.setItem(dayKey(), JSON.stringify(data)); } catch (e) {}
+}
+function restoreDay() {
+  let d = null;
+  try { d = JSON.parse(localStorage.getItem(dayKey())); } catch (e) {}
+  if (!d) return;
+  $('fIntent').value = d.intent || ''; $('fFeel').value = d.feel || '';
+  if (d.g) { $('g1').value = d.g[0] || ''; $('g2').value = d.g[1] || ''; $('g3').value = d.g[2] || ''; }
+  if (d.energy) document.querySelectorAll('.choice').forEach(c => c.classList.toggle('on', c.dataset.e === d.energy));
+  if (d.gifts) document.querySelectorAll('.gift').forEach(g => g.classList.toggle('on', d.gifts.includes(g.textContent)));
+  if (d.sliders) document.querySelectorAll('#shadGrid input[type=range]').forEach((s, i) => { if (d.sliders[i] != null) s.value = d.sliders[i]; });
+}
+</script>
 </body>
 </html>
