@@ -650,7 +650,11 @@ app.post('/api/admin/save-blueprint', async (req, res) => {
 app.use((err, req, res, next) => {
   console.error('API-fout:', err);
   if (res.headersSent) return next(err);
-  res.status(500).json({ error: 'Er ging iets mis op de server. Probeer het later opnieuw.' });
+  // Tijdelijke diagnose: met ?debug=1 of header x-debug:1 de echte fout tonen.
+  const debug = req.query?.debug === '1' || req.headers['x-debug'] === '1';
+  res.status(500).json(debug
+    ? { error: 'Er ging iets mis op de server. Probeer het later opnieuw.', detail: String(err && err.message || err), stack: String(err && err.stack || '') }
+    : { error: 'Er ging iets mis op de server. Probeer het later opnieuw.' });
 });
 
 // ── Export ────────────────────────────────────────────────────────────────────
