@@ -122,6 +122,7 @@
         </div>
 
         <div class="viewer-actions">
+          <button class="btn" id="lang-toggle" style="display:none" onclick="toggleLang()" title="Switch language">EN</button>
           <button class="btn" onclick="printBlueprint()" title="Printen">
             <span class="icon-print"></span>Print
           </button>
@@ -161,6 +162,8 @@
   <script>
     const params = new URLSearchParams(window.location.search);
     const orderId = params.get('id');
+    let lang = params.get('lang') === 'en' ? 'en' : 'nl';
+    let currentOrder = null;
 
     SzinnAuth.requireAuth().then(ok => {
       if (!ok) return;
@@ -177,12 +180,19 @@
         if (!order || order.status !== 'completed' || !order.blueprintUrl) {
           return showError();
         }
+        currentOrder = order;
 
         document.getElementById('viewer-name').textContent = order.clientName;
         document.title = `SZINN — ${order.clientName} Blueprint`;
 
+        // Taalknop tonen wanneer beide talen beschikbaar zijn
+        if ((order.blueprintLanguages || []).includes('en')) {
+          document.getElementById('lang-toggle').style.display = '';
+          updateLangToggle();
+        }
+
         const frame = document.getElementById('blueprint-frame');
-        frame.src = order.blueprintUrl;
+        frame.src = `${order.blueprintUrl}?lang=${lang}`;
 
         frame.addEventListener('load', () => {
           document.getElementById('viewer-loading').style.display = 'none';
@@ -219,10 +229,28 @@
       }
     }
 
+    function toggleLang() {
+      lang = lang === 'nl' ? 'en' : 'nl';
+      updateLangToggle();
+      const frame = document.getElementById('blueprint-frame');
+      frame.style.display = 'none';
+      document.getElementById('viewer-loading').style.display = '';
+      frame.src = `${currentOrder.blueprintUrl}?lang=${lang}`;
+      const url = new URL(window.location);
+      url.searchParams.set('lang', lang);
+      history.replaceState(null, '', url);
+    }
+
+    function updateLangToggle() {
+      document.getElementById('lang-toggle').textContent = lang === 'nl' ? 'EN' : 'NL';
+    }
+
     function downloadPDF() {
-      // TODO: Connect to your PDF generation endpoint
-      // Example: window.open(`/api/blueprints/${orderId}/pdf`, '_blank');
-      alert('PDF download wordt binnenkort beschikbaar. Gebruik in de tussentijd de printfunctie om als PDF op te slaan.');
+      if (currentOrder && currentOrder.pdfAvailable) {
+        window.open(`/api/orders/${orderId}/pdf?lang=${lang}`, '_blank');
+      } else {
+        printBlueprint();
+      }
     }
   </script>
 </body>

@@ -9,32 +9,44 @@ const bcrypt     = require('bcryptjs');
 const jwt        = require('jsonwebtoken');
 const cookieLib  = require('cookie');
 const crypto     = require('crypto');
-const { getStore } = require('@netlify/blobs');
+const { blueprintStore, loadDB, saveDB } = require('../../lib/db');
+const { sendAccountEmail } = require('../../lib/email');
 
 const app = express();
 app.use(express.json());
 
+// Wrap álle route-handlers automatisch: een rejection in een async handler
+// (bijv. een DB-fout) wordt zo doorgestuurd naar de foutafhandelaar onderaan
+// i.p.v. een hangende request. Express 4 doet dit niet uit zichzelf.
+// Handlers met arity 4 (foutafhandelaars) laten we ongemoeid.
+for (const method of ['get', 'post', 'put', 'delete', 'use']) {
+  const orig = app[method].bind(app);
+  app[method] = (...args) => orig(...args.map(a =>
+    (typeof a === 'function' && a.length < 4)
+      ? (req, res, next) => Promise.resolve(a(req, res, next)).catch(next)
+      : a
+  ));
+}
+
 const JWT_SECRET      = process.env.JWT_SECRET      || 'szinn-jwt-2026-change-me';
 const ADMIN_PASSWORD  = process.env.ADMIN_PASSWORD  || 'szinn-admin';
+const TRIGGER_SECRET  = process.env.INTERNAL_TRIGGER_SECRET || JWT_SECRET;
 
-// ── Netlify Blobs stores ───────────────────────────────────────────────────────
-// Alles in één JSON store (eenvoudig, werkt prima voor kleine schaal)
-function dbStore()         { return getStore({ name: 'szinn-db',         consistency: 'strong' }); }
-function blueprintStore()  { return getStore({ name: 'szinn-blueprints', consistency: 'strong' }); }
-
-async function loadDB() {
-  try {
-    const data = await dbStore().get('data', { type: 'json' });
-    return data || defaultDB();
-  } catch { return defaultDB(); }
-}
-
-async function saveDB(data) {
-  await dbStore().setJSON('data', data);
-}
-
-function defaultDB() {
-  return { users: [], orders: [], giftCodes: [], nextUserId: 1 };
+// Start de blueprint-generatie als background function (15 min limiet).
+// Fire-and-forget: de intake-response wacht alleen op de 202-acceptatie.
+async function triggerGeneration(orderId) {
+  const base = process.env.URL || process.env.DEPLOY_URL;
+  if (!base) {
+    console.log(`Generatie-trigger overgeslagen (geen site-URL bekend, lokaal?): ${orderId}`);
+    return false;
+  }
+  const res = await fetch(`${base}/.netlify/functions/generate-blueprint-background`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ orderId, secret: TRIGGER_SECRET }),
+  });
+  console.log(`Generatie getriggerd voor ${orderId}: HTTP ${res.status}`);
+  return res.status >= 200 && res.status < 300;
 }
 
 // ── JWT auth middleware ────────────────────────────────────────────────────────
@@ -94,6 +106,9 @@ function toOrder(o) {
     birthTime: o.birth_time, birthLocation: o.birth_location,
     createdAt: o.created_at, completedAt: o.completed_at,
     blueprintUrl: o.blueprint_url,
+    blueprintLanguages: o.blueprint_languages || null,
+    pdfAvailable: !!o.pdf_available,
+    generationError: o.status === 'failed' ? (o.generation_error || 'onbekende fout') : null,
     scores: (o.alignment_score != null) ? {
       alignment: o.alignment_score, astro: o.astro_score,
       numerology: o.numerology_score, soulDirection: o.soul_direction_score,
@@ -197,6 +212,16 @@ app.post('/api/intake/submit', async (req, res) => {
   db.orders.push(order);
   await saveDB(db);
 
+  // Mail 1: account + wachtwoord (of "nieuwe blueprint in je bestaande account")
+  const mailLang = (order.blueprint_language === 'en') ? 'en' : 'nl';
+  await sendAccountEmail({
+    to: user.email, name: clientName || user.name,
+    tempPassword, isNewAccount: !!tempPassword, lang: mailLang,
+  }).catch(err => console.error('account-mail mislukt:', err.message));
+
+  // Automatisch de generatie starten (background function, kan uren-melding tonen)
+  await triggerGeneration(orderId).catch(err => console.error('generatie-trigger mislukt:', err.message));
+
   // Auto-login
   setAuthCookie(res, { userId: user.id, email: user.email, name: user.name });
 
@@ -205,21 +230,49 @@ app.post('/api/intake/submit', async (req, res) => {
     loginEmail: data.email, tempPassword,
     message: tempPassword
       ? `Account aangemaakt. Inloggen met: ${data.email} / ${tempPassword}`
-      : 'Blueprint wordt gegenereerd in je bestaande account'
+      : 'Blueprint wordt samengesteld in je bestaande account'
   });
 });
 
 // ── Blueprint serve (via Netlify Blobs) ───────────────────────────────────────
+// Alleen de eigenaar (of admin) mag de blueprint zien.
+async function authorizedOrder(req, orderId) {
+  if (!req.auth) return null;
+  const db = await loadDB();
+  const order = db.orders.find(o => o.id === orderId);
+  if (!order) return null;
+  if (!req.auth.isAdmin && order.user_id !== req.auth.userId) return null;
+  return order;
+}
+
 app.get('/szinn-portal/blueprints/:filename', async (req, res) => {
   const orderId = req.params.filename.replace(/\.html$/, '');
-  try {
-    const html = await blueprintStore().get(orderId);
-    if (html) {
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      return res.send(html);
-    }
-  } catch {}
+  const order = await authorizedOrder(req, orderId);
+  if (!order) return res.status(403).send('<h1>Geen toegang</h1><p>Log in op je dashboard om je blueprint te bekijken.</p>');
+
+  const lang = req.query.lang === 'en' ? 'en' : 'nl';
+  const store = blueprintStore();
+  // Nieuwe pipeline: taalvarianten; oude admin-workflow: kale orderId-key
+  const html = (await store.get(`${orderId}.${lang}.html`))
+            || (lang === 'en' ? await store.get(`${orderId}.nl.html`) : null)
+            || (await store.get(orderId));
+  if (html) {
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    return res.send(html);
+  }
   res.status(404).send('<h1>Blueprint niet gevonden</h1>');
+});
+
+// PDF-download van de blueprint
+app.get('/api/orders/:id/pdf', async (req, res) => {
+  const order = await authorizedOrder(req, req.params.id);
+  if (!order) return res.status(403).json({ error: 'Geen toegang' });
+  const lang = req.query.lang === 'en' ? 'en' : 'nl';
+  const pdf = await blueprintStore().get(`${order.id}.${lang}.pdf`, { type: 'arrayBuffer' });
+  if (!pdf) return res.status(404).json({ error: 'PDF (nog) niet beschikbaar' });
+  res.setHeader('Content-Type', 'application/pdf');
+  res.setHeader('Content-Disposition', `attachment; filename="SZINN-Blueprint-${order.id}-${lang}.pdf"`);
+  res.send(Buffer.from(pdf));
 });
 
 // ── Admin ─────────────────────────────────────────────────────────────────────
@@ -242,6 +295,19 @@ app.get('/api/admin/orders', async (req, res) => {
     return { ...o, email: user?.email, user_name: user?.name };
   }).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
   res.json(orders);
+});
+
+// Generatie (opnieuw) starten voor een order — bijv. na een 'failed'
+app.post('/api/admin/regenerate/:orderId', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  const db = await loadDB();
+  const order = db.orders.find(o => o.id === req.params.orderId);
+  if (!order) return res.status(404).json({ error: 'Aanvraag niet gevonden' });
+  order.status = 'processing';
+  order.generation_error = null;
+  await saveDB(db);
+  const ok = await triggerGeneration(order.id);
+  res.json({ ok, orderId: order.id });
 });
 
 app.get('/api/admin/prompt/:orderId', async (req, res) => {
@@ -327,5 +393,14 @@ app.post('/api/admin/save-blueprint', async (req, res) => {
   res.json({ ok: true, blueprintUrl: `/szinn-portal/blueprints/${orderId}.html` });
 });
 
+// ── Foutafhandelaar ─────────────────────────────────────────────────────────────
+// Vangt alle doorgestuurde fouten op (arity 4 → Express herkent dit als error-handler).
+app.use((err, req, res, next) => {
+  console.error('API-fout:', err);
+  if (res.headersSent) return next(err);
+  res.status(500).json({ error: 'Er ging iets mis op de server. Probeer het later opnieuw.' });
+});
+
 // ── Export ────────────────────────────────────────────────────────────────────
 module.exports.handler = serverless(app);
+module.exports.app     = app;   // t.b.v. lokale tests; Netlify gebruikt alleen .handler

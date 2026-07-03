@@ -707,18 +707,25 @@
     }
 
     function statusBadge(s) {
-      const m = { pending: ['badge-pending','Wachtend'], questionnaire: ['badge-questionnaire','Vragenlijst'], processing: ['badge-processing','In verwerking'], completed: ['badge-completed','Voltooid'] };
+      const m = { pending: ['badge-pending','Wachtend'], questionnaire: ['badge-questionnaire','Vragenlijst'], processing: ['badge-processing','Wordt samengesteld'], generating: ['badge-processing','Wordt samengesteld'], failed: ['badge-pending','Vertraagd'], completed: ['badge-completed','Voltooid'] };
       const [cls,lbl] = m[s] || m.pending;
       return `<span class="badge ${cls}">${lbl}</span>`;
     }
 
     function orderActions(o) {
-      if (o.status === 'completed' && o.blueprintUrl)
-        return `<a href="blueprint-viewer.html?id=${o.id}" class="btn btn-primary">Blueprint bekijken</a>`;
+      if (o.status === 'completed' && o.blueprintUrl) {
+        const en  = (o.blueprintLanguages || []).includes('en')
+          ? ` <a href="blueprint-viewer.html?id=${o.id}&lang=en" class="btn" title="English version">EN</a>` : '';
+        const pdf = o.pdfAvailable
+          ? ` <a href="/api/orders/${o.id}/pdf?lang=nl" class="btn" title="Download als PDF">PDF</a>` : '';
+        return `<a href="blueprint-viewer.html?id=${o.id}" class="btn btn-primary">Blueprint bekijken</a>${en}${pdf}`;
+      }
       if (o.status === 'questionnaire')
         return `<a href="questionnaire.html?id=${o.id}" class="btn btn-primary">Vragenlijst invullen</a>`;
-      if (o.status === 'processing')
-        return `<span class="btn" style="cursor:default;opacity:.6">Wordt gegenereerd…</span>`;
+      if (o.status === 'processing' || o.status === 'generating')
+        return `<span class="btn" style="cursor:default;opacity:.6">Wordt samengesteld — dit kan een aantal uur duren</span>`;
+      if (o.status === 'failed')
+        return `<span class="btn" style="cursor:default;opacity:.6">Duurt langer dan verwacht — we zijn ermee bezig</span>`;
       return `<span class="btn" style="cursor:default;opacity:.5">Wachtend</span>`;
     }
 

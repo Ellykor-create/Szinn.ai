@@ -11,14 +11,16 @@
     "dev": "node --experimental-sqlite server.js"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.39.0",
+    "@anthropic-ai/sdk": "^0.110.0",
     "@netlify/blobs": "^10.7.9",
+    "@sparticuz/chromium": "^149.0.0",
     "astronomy-engine": "^2.1.19",
     "bcryptjs": "^2.4.3",
-    "cookie": "^2.0.0",
+    "cookie": "^0.7.2",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
     "jsonwebtoken": "^9.0.3",
+    "puppeteer-core": "^25.3.0",
     "serverless-http": "^4.0.0"
   }
 }
