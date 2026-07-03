@@ -31,6 +31,9 @@ for (const method of ['get', 'post', 'put', 'delete', 'use']) {
 const JWT_SECRET      = process.env.JWT_SECRET      || 'szinn-jwt-2026-change-me';
 const ADMIN_PASSWORD  = process.env.ADMIN_PASSWORD  || 'szinn-admin';
 const ADMIN_EMAIL     = (process.env.ADMIN_EMAIL || 'admin@szinn.ai').trim().toLowerCase();
+const DEMO_EMAIL      = (process.env.DEMO_EMAIL || 'demo@szinn.ai').trim().toLowerCase();
+const DEMO_PASSWORD   = process.env.DEMO_PASSWORD || 'szinn-demo';
+const DEMO_ORDER_ID   = 'ORD-DEMO-0001';
 const TRIGGER_SECRET  = process.env.INTERNAL_TRIGGER_SECRET || JWT_SECRET;
 
 // Zorgt dat er een admin-account in de database staat (idempotent).
@@ -48,6 +51,54 @@ function ensureAdminUser(db) {
       created_at: new Date().toISOString(),
     });
   }
+  return true;
+}
+
+// Zorgt dat er een demo-gebruiker met een compleet voorbeeld-blueprint bestaat,
+// zodat het gebruikers-dashboard en de blueprint-viewer getest kunnen worden
+// zonder AI-call. Idempotent: rendert en slaat één keer op.
+async function ensureDemoData(db) {
+  let user = db.users.find(u => u.email.toLowerCase() === DEMO_EMAIL);
+  const orderExists = user && db.orders.some(o => o.id === DEMO_ORDER_ID);
+  if (orderExists) return false;
+
+  if (!user) {
+    user = {
+      id: db.nextUserId++, email: DEMO_EMAIL,
+      password: bcrypt.hashSync(DEMO_PASSWORD, 10),
+      name: 'Barry', created_at: new Date().toISOString(),
+    };
+    db.users.push(user);
+  }
+
+  const demo = require('../../lib/demo-blueprint');
+  const now = new Date().toISOString();
+  const order = {
+    id: DEMO_ORDER_ID, user_id: user.id, type: 'personal', status: 'completed',
+    client_name: demo.intake.clientName, birth_date: demo.intake.birthDate,
+    birth_time: demo.intake.birthTime,
+    birth_location: `${demo.intake.birthCity}, ${demo.intake.birthCountry}`,
+    birth_lat: demo.intake.lat, birth_lng: demo.intake.lng, birth_tz: demo.intake.tz,
+    full_birth_name: demo.intake.birthName,
+    blueprint_language: 'nl',
+    intake_data: JSON.stringify(demo.intake.raw || {}),
+    created_at: now, completed_at: now,
+    blueprint_url: `/szinn-portal/blueprints/${DEMO_ORDER_ID}.html`,
+    blueprint_languages: ['nl'], pdf_available: false,
+    alignment_score: null, astro_score: null, numerology_score: null,
+    soul_direction_score: null, personal_year_score: null,
+  };
+  db.orders.push(order);
+
+  // Blueprint renderen en opslaan (zelfde weg als de echte pipeline)
+  const { buildContext } = require('../../lib/pipeline');
+  const { renderBlueprint } = require('../../lib/template');
+  const ctx = buildContext(order);
+  const html = renderBlueprint({ ...ctx, ai: demo.texts, lang: 'nl' });
+  const store = blueprintStore();
+  await store.set(`${DEMO_ORDER_ID}.nl.html`, html);
+  await store.setJSON(`${DEMO_ORDER_ID}.texts.json`, { orderId: DEMO_ORDER_ID, demo: true, nl: demo.texts, en: demo.texts });
+  console.log(`Demo-blueprint aangemaakt voor ${DEMO_EMAIL}`);
   return true;
 }
 
@@ -97,6 +148,10 @@ app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: 'Email en wachtwoord zijn verplicht' });
   const db   = await loadDB();
+  // Demo-account + voorbeeld-blueprint aanmaken zodra iemand ermee inlogt.
+  if (email.trim().toLowerCase() === DEMO_EMAIL) {
+    if (await ensureDemoData(db)) await saveDB(db);
+  }
   const user = db.users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
   if (!user || !bcrypt.compareSync(password, user.password))
     return res.status(401).json({ error: 'Onjuist e-mailadres of wachtwoord' });
