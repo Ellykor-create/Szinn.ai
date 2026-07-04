@@ -649,6 +649,18 @@ app.post('/api/admin/login', async (req, res) => {
   const db = await loadDB();
   if (ensureAdminUser(db)) await saveDB(db);
 
+  // De env var ADMIN_PASSWORD is leidend: als die is ingesteld en afwijkt van
+  // de opgeslagen hash (bijv. account eerder aangemaakt met het standaard-
+  // wachtwoord), wordt de hash bijgewerkt en vervalt het oude wachtwoord.
+  if (process.env.ADMIN_PASSWORD) {
+    const adminUser = db.users.find(u => u.is_admin && u.email.toLowerCase() === ADMIN_EMAIL);
+    if (adminUser && !bcrypt.compareSync(ADMIN_PASSWORD, adminUser.password)) {
+      adminUser.password = bcrypt.hashSync(ADMIN_PASSWORD, 10);
+      await saveDB(db);
+      console.log('Admin-wachtwoord gesynchroniseerd met ADMIN_PASSWORD env var');
+    }
+  }
+
   // Inloggen met e-mailadres + wachtwoord tegen het admin-account in de database.
   if (email) {
     const admin = db.users.find(u => u.is_admin && u.email.toLowerCase() === String(email).trim().toLowerCase());
