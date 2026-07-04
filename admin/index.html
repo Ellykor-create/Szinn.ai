@@ -259,21 +259,44 @@ function renderOrders(orders) {
     const date = o.created_at ? new Date(o.created_at).toLocaleString('nl-NL', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
     const canGenerate = o.intake_data && o.intake_data !== '{}';
     const hasBlueprint = o.blueprint_url;
+    const err = o.generation_error
+      ? `<div style="font-size:10px;color:var(--red);max-width:220px;margin-top:4px;line-height:1.4" title="${String(o.generation_error).replace(/"/g,'&quot;')}">${String(o.generation_error).slice(0,120)}</div>`
+      : '';
     return `<tr>
       <td style="font-family:monospace;font-size:11px">${o.id}</td>
       <td><strong>${o.client_name}</strong></td>
       <td style="font-size:12px;color:var(--muted)">${o.email || '—'}</td>
       <td style="font-size:12px">${o.birth_date || '—'} ${o.birth_time ? '· ' + o.birth_time : ''}</td>
       <td style="font-size:11px;color:var(--muted)">${date}</td>
-      <td>${statusBadge(o.status)}</td>
+      <td>${statusBadge(o.status)}${err}</td>
       <td>
         <div class="actions">
-          ${canGenerate ? `<button class="btn btn-sm" onclick="openPromptModal('${o.id}', '${o.client_name.replace(/'/g,"\\'")}')">Genereer Prompt</button>` : '<span style="font-size:11px;color:var(--muted)">Geen intake-data</span>'}
+          ${canGenerate ? `<button class="btn btn-green btn-sm" onclick="regenerateOrder('${o.id}', '${o.status}')">⟳ ${o.status === 'failed' ? 'Herstart generatie' : 'Genereer'}</button>` : ''}
+          ${canGenerate ? `<button class="btn btn-ghost btn-sm" onclick="openPromptModal('${o.id}', '${o.client_name.replace(/'/g,"\\'")}')">Prompt (handmatig)</button>` : '<span style="font-size:11px;color:var(--muted)">Geen intake-data</span>'}
           ${hasBlueprint ? `<a href="${o.blueprint_url}" target="_blank" class="btn btn-ghost btn-sm">Bekijk Blueprint</a>` : ''}
         </div>
       </td>
     </tr>`;
   }).join('');
+}
+
+// ── Automatische (her)generatie via de pipeline ───────────────────────────────
+async function regenerateOrder(orderId, status) {
+  const msg = status === 'completed'
+    ? 'Deze aanvraag is al voltooid. Opnieuw genereren overschrijft de bestaande blueprint. Doorgaan?'
+    : 'De automatische generatie wordt (opnieuw) gestart. Dit duurt enkele minuten. Doorgaan?';
+  if (!confirm(msg)) return;
+  showToast('Generatie wordt gestart…');
+  const r = await fetch(`/api/admin/regenerate/${orderId}`, { method: 'POST' });
+  const data = await r.json().catch(() => ({}));
+  if (r.ok && data.ok) {
+    showToast('✓ Generatie gestart — vernieuw over een paar minuten om de status te zien');
+  } else if (r.ok) {
+    showToast('Trigger niet geaccepteerd — controleer de Netlify function logs', true);
+  } else {
+    showToast('Fout: ' + (data.error || r.status), true);
+  }
+  setTimeout(loadOrders, 1500);
 }
 
 // ── Prompt modal ──────────────────────────────────────────────────────────────
