@@ -10,7 +10,7 @@ const jwt        = require('jsonwebtoken');
 const cookieLib  = require('cookie');
 const crypto     = require('crypto');
 const { blueprintStore, loadDB, saveDB } = require('../../lib/db');
-const { sendAccountEmail, sendNewOrderEmail } = require('../../lib/email');
+const { sendAccountEmail, sendDraftEmail, sendNewOrderEmail } = require('../../lib/email');
 
 const app = express();
 app.use(express.json());
@@ -364,7 +364,13 @@ Vandaag: maan in ${c.sky.moon.sign}, ${c.sky.waxing ? 'wassend' : 'afnemend'}. D
 app.get('/api/companion/blueprint', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
   const c = await companionContext(req.auth.userId, req.query.lang);
-  if (!c.order) return res.json({ status: 'none' });
+  if (!c.order) {
+    // Geen aanvraag: wél een opgeslagen concept? Dan 'draft' zodat het
+    // dashboard "maak je vragenlijst af" kan tonen i.p.v. "geen aanvraag".
+    const db = await loadDB();
+    const user = db.users.find(u => u.id === req.auth.userId);
+    return res.json({ status: (user && user.intake_draft) ? 'draft' : 'none' });
+  }
   if (!c.ctx) return res.json({ status: c.order.status, orderId: c.order.id, clientName: c.order.client_name });
 
   const { generateMiniMandalaSVG } = require('../../lib/mandala');
@@ -475,6 +481,55 @@ app.post('/api/companion/chat', async (req, res) => {
   }
 });
 
+// ── Intake concept (tussentijds opslaan) ─────────────────────────────────────
+// Slaat een half ingevulde vragenlijst op in het account. Zonder account wordt
+// er één aangemaakt (met mail + inloggegevens). Een bestaand e-mailadres van
+// iemand die níét is ingelogd wordt geweigerd: anders zou je andermans account
+// kunnen vullen of overnemen.
+app.post('/api/intake/draft', async (req, res) => {
+  const data = req.body || {};
+  const db   = await loadDB();
+  const mailLang = (data.language === 'en' || data.blueprint_taal === 'en') ? 'en' : 'nl';
+
+  let user = req.auth ? db.users.find(u => u.id === req.auth.userId) : null;
+  let tempPassword = null;
+  if (!user) {
+    const email = (data.email || '').trim().toLowerCase();
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+      return res.status(400).json({ error: 'invalid_email' });
+    const existing = db.users.find(u => u.email.toLowerCase() === email);
+    if (existing) return res.status(409).json({ error: 'account_exists' });
+    tempPassword = crypto.randomBytes(4).toString('hex');
+    const clientName = `${data.voornaam || ''} ${data.achternaam || ''}`.trim();
+    user = {
+      id: db.nextUserId++, email,
+      password: bcrypt.hashSync(tempPassword, 10),
+      name: clientName || email, created_at: new Date().toISOString(),
+    };
+    db.users.push(user);
+    console.log(`Nieuw account via concept-opslag: ${user.email}`);
+  }
+
+  user.intake_draft = { data, updated_at: new Date().toISOString() };
+  await saveDB(db);
+
+  if (tempPassword) {
+    await sendDraftEmail({ to: user.email, name: user.name, tempPassword, lang: mailLang })
+      .catch(err => console.error('concept-mail mislukt:', err.message));
+    setAuthCookie(res, { userId: user.id, email: user.email, name: user.name });
+  }
+  res.json({ ok: true, newAccount: !!tempPassword });
+});
+
+// Opgeslagen concept ophalen (alleen je eigen account)
+app.get('/api/intake/draft', async (req, res) => {
+  if (!req.auth) return res.json({ exists: false });
+  const db   = await loadDB();
+  const user = db.users.find(u => u.id === req.auth.userId);
+  if (!user || !user.intake_draft) return res.json({ exists: false });
+  res.json({ exists: true, data: user.intake_draft.data, updatedAt: user.intake_draft.updated_at });
+});
+
 // ── Intake submit ─────────────────────────────────────────────────────────────
 app.post('/api/intake/submit', async (req, res) => {
   const data = req.body;
@@ -512,6 +567,8 @@ app.post('/api/intake/submit', async (req, res) => {
     soul_direction_score: null, personal_year_score: null
   };
   db.orders.push(order);
+  // Concept opruimen: het formulier is nu definitief ingestuurd
+  if (user.intake_draft) user.intake_draft = null;
   await saveDB(db);
 
   // Mail 1: account + wachtwoord (of "nieuwe blueprint in je bestaande account")

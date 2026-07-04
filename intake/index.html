@@ -400,6 +400,28 @@
   }
   .btn-next:hover { background: var(--ink2); border-color: var(--ink2); }
 
+  /* ── Tussentijds opslaan ── */
+  .btn-save-draft {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border-light);
+    padding: 14px 20px;
+    letter-spacing: 0.12em;
+  }
+  .btn-save-draft:hover { border-color: var(--gold2); color: var(--gold2); }
+  .btn-save-draft:disabled { opacity: .5; cursor: default; }
+  #draft-toast {
+    position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%);
+    max-width: min(560px, calc(100vw - 32px)); z-index: 90;
+    background: var(--ink); color: var(--cream);
+    padding: 14px 22px; border-radius: 4px; font-size: 13.5px; line-height: 1.6;
+    box-shadow: 0 12px 34px rgba(13,10,7,.28);
+    opacity: 0; pointer-events: none; transition: opacity .25s;
+  }
+  #draft-toast.show { opacity: 1; pointer-events: auto; }
+  #draft-toast.err { background: #7a2e2e; }
+  #draft-toast a { color: var(--gold2); }
+
   .btn-submit {
     background: var(--gold);
     color: #fff;
@@ -1410,6 +1432,112 @@ function setupBirthplace() {
   }
   manualLat && manualLat.addEventListener('input', applyManual);
   manualLng && manualLng.addEventListener('input', applyManual);
+  // Voor het herstellen van een opgeslagen concept (restoreDraft)
+  window._setCoords = setCoords;
+}
+
+/* ── Tussentijds opslaan (concept in je account) ────────────────────────── */
+const FIELD_KEYS = {
+  voornaam: 'voornaam', achternaam: 'achternaam', geboortenaam: 'geboortenaam', email: 'email',
+  geboortedatum: 'geboortedatum', geboortetijd: 'geboortetijd',
+  geboorteland: 'geboorteland', geboorteplaats: 'geboorteplaats',
+  'blueprint-taal': 'blueprint_taal',
+  p1: 'p1_bezig', p2: 'p2_verlangen', p3: 'p3_energie', p4: 'p4_veranderen', p5: 'p5_tevredenheid',
+  w1: 'w1_werk_gevoel', w2: 'w2_werk_anders', w3: 'w3_werk_stap', w4: 'w4_werk_1jaar',
+  e1: 'e1_opladen', e2: 'e2_uitgeput', e3: 'e3_balans_1jaar',
+  r1: 'r1_verbinding', r2: 'r2_relaties_verdiepen',
+  t1: 't1_een_ding', t2: 't2_komende_maand', t3: 't3_belemmering',
+  z1: 'z1_moeilijkst', z2: 'z2_helpen', z3: 'z3_1jaar',
+  b1: 'b1_ondergaan_creeren', b2: 'b2_irritatie_bewondering',
+  b3: 'b3_controle_vertrouwen', b4: 'b4_angst_loslaten'
+};
+
+function draftToast(msg, isErr) {
+  let t = document.getElementById('draft-toast');
+  if (!t) { t = document.createElement('div'); t.id = 'draft-toast'; document.body.appendChild(t); }
+  t.innerHTML = msg;
+  t.classList.toggle('err', !!isErr);
+  t.classList.add('show');
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function () { t.classList.remove('show'); }, isErr ? 9000 : 6000);
+}
+
+function saveDraft() {
+  const email = document.getElementById('email').value.trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    show(0);
+    const fd = document.getElementById('field-email');
+    fd && fd.classList.add('has-error');
+    document.getElementById('email').focus();
+    draftToast(lang === 'en'
+      ? 'Fill in your email address first (step 1) — we use it to create your account.'
+      : 'Vul eerst je e-mailadres in (stap 1) — daarmee maken we je account aan.', true);
+    return;
+  }
+  document.querySelectorAll('.btn-save-draft').forEach(function (b) { b.disabled = true; });
+  fetch('/api/intake/draft', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'same-origin',
+    body: JSON.stringify(collect())
+  })
+  .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); })
+  .then(function (res) {
+    if (res.ok && res.j.newAccount) {
+      draftToast(lang === 'en'
+        ? '<strong>Saved!</strong> Check your inbox — we sent you your login details so you can continue anytime.'
+        : '<strong>Opgeslagen!</strong> Check je inbox — we hebben je inloggegevens gemaild, zodat je later verder kunt gaan.');
+    } else if (res.ok) {
+      draftToast(lang === 'en'
+        ? '<strong>Saved.</strong> Your answers are stored in your account.'
+        : '<strong>Opgeslagen.</strong> Je antwoorden staan in je account.');
+    } else if (res.status === 409) {
+      draftToast(lang === 'en'
+        ? 'This email address already has an account. <a href="/szinn-portal/pages/login.html">Log in first</a>, then return here to continue.'
+        : 'Dit e-mailadres heeft al een account. <a href="/szinn-portal/pages/login.html">Log eerst in</a> en kom dan hier terug om verder te gaan.', true);
+    } else {
+      draftToast(lang === 'en' ? 'Saving failed — please try again.' : 'Opslaan is niet gelukt — probeer het opnieuw.', true);
+    }
+  })
+  .catch(function () {
+    draftToast(lang === 'en' ? 'Saving failed — please try again.' : 'Opslaan is niet gelukt — probeer het opnieuw.', true);
+  })
+  .finally(function () {
+    document.querySelectorAll('.btn-save-draft').forEach(function (b) { b.disabled = false; });
+  });
+}
+
+function setupDraft() {
+  // Opslaan-knop in elke sectienavigatie (links van Terug/Volgende)
+  document.querySelectorAll('.form-section .nav').forEach(function (nav) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'btn btn-save-draft';
+    b.textContent = lang === 'en' ? 'Save & continue later' : 'Opslaan, later verdergaan';
+    b.addEventListener('click', saveDraft);
+    nav.insertBefore(b, nav.firstChild);
+  });
+}
+
+function restoreDraft() {
+  fetch('/api/intake/draft', { credentials: 'same-origin' })
+    .then(function (r) { return r.json(); })
+    .then(function (j) {
+      if (!j.exists || !j.data) return;
+      const d = j.data;
+      Object.keys(FIELD_KEYS).forEach(function (id) {
+        const el = document.getElementById(id);
+        if (el && d[FIELD_KEYS[id]]) el.value = d[FIELD_KEYS[id]];
+      });
+      if (d.geboorte_lat && d.geboorte_lng && window._setCoords) {
+        window._setCoords(parseFloat(d.geboorte_lat), parseFloat(d.geboorte_lng),
+          d.geboorte_tz || '', d.geboorteplaats_volledig || '');
+      }
+      draftToast(lang === 'en'
+        ? 'Your saved answers have been loaded — continue where you left off.'
+        : 'Je opgeslagen antwoorden zijn ingeladen — ga verder waar je gebleven was.');
+    })
+    .catch(function () { /* niet ingelogd of geen concept: stil doorgaan */ });
 }
 
 function showThankYou() {
@@ -1472,6 +1600,8 @@ function submitForm() {
 document.addEventListener('DOMContentLoaded', function() {
   setLang('nl');
   setupBirthplace();
+  setupDraft();
+  restoreDraft();
   show(0);
 });
 </script>

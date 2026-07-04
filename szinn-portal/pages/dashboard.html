@@ -185,7 +185,19 @@ svg{display:block}
 .bp-ready .needs-bp{display:block}
 .bp-ready .cards4.needs-bp{display:grid}
 .bp-ready .cards3.needs-bp{display:grid}
+/* Coming soon: zolang de blueprint er niet is, blokken vervaagd tonen met label */
+.coming-soon .needs-bp{display:block;position:relative}
+.coming-soon .cards4.needs-bp,.coming-soon .cards3.needs-bp{display:grid}
+.coming-soon .needs-bp>*{filter:blur(3px) saturate(.6);opacity:.4;pointer-events:none;user-select:none}
+.coming-soon .needs-bp::after{content:var(--cs,"Binnenkort beschikbaar");position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Cormorant Garamond',serif;font-size:19px;letter-spacing:.06em;color:var(--gold-deep);background:rgba(255,254,252,.88);padding:10px 26px;border:1px solid var(--gold-soft);border-radius:30px;white-space:nowrap;z-index:5}
+.coming-soon .astrorow.needs-bp{display:flex}
+/* Ook companion, dagboek en opslaan vergrendelen tot het formulier is ingezonden */
+.coming-soon .aibar,.coming-soon .cards3:not(.needs-bp){position:relative}
+.coming-soon .aibar>*,.coming-soon .cards3:not(.needs-bp)>*,.coming-soon .save{filter:blur(3px) saturate(.6);opacity:.4;pointer-events:none;user-select:none}
+.coming-soon .aibar::after,.coming-soon .cards3:not(.needs-bp)::after{content:var(--cs,"Binnenkort beschikbaar");position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Cormorant Garamond',serif;font-size:19px;letter-spacing:.06em;color:var(--gold-deep);background:rgba(255,254,252,.88);padding:10px 26px;border:1px solid var(--gold-soft);border-radius:30px;white-space:nowrap;z-index:5}
+.coming-soon .chat{display:none!important}
 .pending-note{background:#F2EAD8;border:1px dashed var(--gold-soft);border-radius:14px;padding:18px 20px;margin-top:16px;font-size:13.5px;color:#5f5647;display:none}
+.pending-note .btn-continue{display:inline-block;margin-top:12px;background:linear-gradient(180deg,#B98C43,#93692C);color:#FBF6EC;border-radius:20px;padding:9px 20px;font-size:12.5px;letter-spacing:.03em}
 @media(max-width:1100px){
   .cards4{grid-template-columns:1fr 1fr}
   .cards3{grid-template-columns:1fr}
@@ -512,7 +524,9 @@ const T = LANG === 'en' ? {
   sunIn:'Sun in', moonIn:'Moon in', asc:'Ascendant', house:'House',
   waxing:'Waxing', waning:'Waning', moonTo:' · towards the new moon of', moonToday:'Moon in',
   pendingNone:'You don\'t have a blueprint order yet. Fill in the questionnaire at <a href="https://szinn.ai/intake-en" style="color:var(--gold-deep)">szinn.ai</a> and this dashboard will come to life with your chart, numbers and daily reading.',
+  pendingDraft:'Your questionnaire has been <b>saved</b> but not yet submitted. Finish it to unlock your dashboard — your answers are waiting for you.<br><a class="btn-continue" href="/intake-en">Continue your questionnaire →</a>',
   pendingBusy:'Your Alignment Blueprint is being <b>composed</b> — this can take several hours. Once it is ready you will receive an email and this dashboard will fill with your chart, numbers and daily reading.',
+  csLabel:'Coming soon',
   pThemeBusy:'Your blueprint is on its way', pFocusBusy:'Come back soon — you will receive an email once everything is ready',
   pQBusy:'What do you hope to recognise in your blueprint?',
   lifePathIn:'You are in Life path', yearOf:'Year', of9:'of 9', asksFor:'asks for',
@@ -536,7 +550,9 @@ const T = LANG === 'en' ? {
   sunIn:'Zon in', moonIn:'Maan in', asc:'Ascendant', house:'Huis',
   waxing:'Wassende', waning:'Afnemende', moonTo:' · naar de nieuwe maan van', moonToday:'Maan in',
   pendingNone:'Je hebt nog geen blueprint-aanvraag. Vul de vragenlijst in op <a href="https://szinn.ai/intake" style="color:var(--gold-deep)">szinn.ai</a> en dit dashboard komt tot leven met jouw kaart, getallen en dagduiding.',
+  pendingDraft:'Je vragenlijst is <b>opgeslagen</b> maar nog niet ingestuurd. Maak hem af om je dashboard te ontgrendelen — je antwoorden staan voor je klaar.<br><a class="btn-continue" href="/intake">Ga verder met je vragenlijst →</a>',
   pendingBusy:'Je Alignment Blueprint wordt <b>samengesteld</b> — dit kan een aantal uur duren. Zodra hij klaar is ontvang je een e-mail en vult dit dashboard zich met jouw kaart, getallen en dagduiding.',
+  csLabel:'Binnenkort beschikbaar',
   pThemeBusy:'Je blueprint is onderweg', pFocusBusy:'Kom straks terug — je ontvangt een e-mail zodra alles klaarstaat',
   pQBusy:'Wat hoop je in je blueprint te herkennen?',
   lifePathIn:'Jij bent in Levenspad', yearOf:'Jaar', of9:'van 9', asksFor:'vraagt om',
@@ -614,9 +630,12 @@ function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 function showPending(status) {
   const note = $('pendingNote');
   note.style.display = 'block';
-  note.innerHTML = status === 'none' ? T.pendingNone : T.pendingBusy;
-  set('dTheme', T.pThemeBusy);
-  set('dFocus', T.pFocusBusy);
+  note.innerHTML = status === 'none' ? T.pendingNone : status === 'draft' ? T.pendingDraft : T.pendingBusy;
+  // Blokken als "coming soon" tonen totdat de blueprint er is
+  document.getElementById('app').classList.add('coming-soon');
+  document.documentElement.style.setProperty('--cs', JSON.stringify(T.csLabel));
+  set('dTheme', status === 'draft' ? (LANG === 'en' ? 'Your questionnaire is waiting for you' : 'Je vragenlijst wacht op je') : T.pThemeBusy);
+  set('dFocus', status === 'draft' ? (LANG === 'en' ? 'Finish it to unlock your dashboard' : 'Maak hem af om je dashboard te ontgrendelen') : T.pFocusBusy);
   set('dQuestion', T.pQBusy);
 }
 
