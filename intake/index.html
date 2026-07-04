@@ -1171,9 +1171,11 @@ function setLang(l) {
   lang = l;
   document.documentElement.lang = l;
 
-  // Toggle button states
-  document.getElementById('btn-nl').classList.toggle('active', l === 'nl');
-  document.getElementById('btn-en').classList.toggle('active', l === 'en');
+  // Toggle button states (safe — buttons may not exist on this page)
+  const btnNl = document.getElementById('btn-nl');
+  const btnEn = document.getElementById('btn-en');
+  if (btnNl) btnNl.classList.toggle('active', l === 'nl');
+  if (btnEn) btnEn.classList.toggle('active', l === 'en');
 
   // Show/hide language-specific elements
   document.querySelectorAll('.nl-text').forEach(el => {
