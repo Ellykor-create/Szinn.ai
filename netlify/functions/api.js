@@ -697,6 +697,31 @@ app.get('/api/admin/orders', async (req, res) => {
 });
 
 // Generatie (opnieuw) starten voor een order — bijv. na een 'failed'
+// ── Prompt-instellingen: aanscherping voor alle volgende generaties ─────────
+app.get('/api/admin/prompt-settings', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  const db = await loadDB();
+  const { SYSTEM } = require('../../lib/ai-texts');
+  res.json({
+    addendum: (db.settings && db.settings.promptAddendum) || '',
+    updatedAt: (db.settings && db.settings.promptAddendumUpdatedAt) || null,
+    basePrompt: SYSTEM,
+  });
+});
+
+app.post('/api/admin/prompt-settings', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  const addendum = String(req.body?.addendum || '').slice(0, 8000);
+  const db = await loadDB();
+  db.settings = {
+    ...(db.settings || {}),
+    promptAddendum: addendum,
+    promptAddendumUpdatedAt: new Date().toISOString(),
+  };
+  await saveDB(db);
+  res.json({ ok: true, length: addendum.length });
+});
+
 app.post('/api/admin/regenerate/:orderId', async (req, res) => {
   if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
   const db = await loadDB();

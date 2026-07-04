@@ -136,6 +136,25 @@ textarea:focus { border-color: var(--gold); }
       3. Kopieer de HTML die Claude teruggeeft · 4. Plak de HTML in het venster en klik <strong>Opslaan Blueprint</strong>
     </div>
 
+    <!-- Prompt aanscherpen -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:22px;margin-bottom:28px">
+      <h3 style="margin-bottom:6px">Prompt aanscherpen</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">
+        Aanvullende schrijfinstructies die bij <strong>elke volgende blueprint-generatie</strong> (en hergeneratie) worden meegestuurd,
+        bovenop de vaste basisprompt. Bij tegenstrijdigheid gaan jouw instructies vóór. Leeg laten = alleen de basisprompt.
+      </p>
+      <textarea id="prompt-addendum" style="height:150px;font-family:'Segoe UI',sans-serif;font-size:13px"
+        placeholder="Bijv.:&#10;- Schrijf de introductie compacter, maximaal 2 alinea's.&#10;- Vermijd het woord 'kosmisch'.&#10;- Sluit elke sectie af met één concrete, kleine actie voor vandaag."></textarea>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:10px">
+        <button class="btn btn-sm" onclick="savePromptSettings()">Opslaan</button>
+        <span id="prompt-status" style="font-size:12px;color:var(--muted)"></span>
+      </div>
+      <details style="margin-top:14px">
+        <summary style="font-size:12px;color:var(--gold);cursor:pointer">Bekijk de vaste basisprompt (ter referentie, niet bewerkbaar)</summary>
+        <textarea id="prompt-base" readonly style="height:220px;margin-top:10px"></textarea>
+      </details>
+    </div>
+
     <div class="orders-wrap">
       <table id="orders-table">
         <thead>
@@ -222,6 +241,7 @@ async function adminLogin() {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     loadOrders();
+    loadPromptSettings();
   } else {
     const data = await r.json().catch(() => ({}));
     document.getElementById('login-err').textContent = data.error || 'Onjuist e-mailadres of wachtwoord';
@@ -278,6 +298,39 @@ function renderOrders(orders) {
       </td>
     </tr>`;
   }).join('');
+}
+
+// ── Prompt-instellingen ───────────────────────────────────────────────────────
+async function loadPromptSettings() {
+  try {
+    const r = await fetch('/api/admin/prompt-settings');
+    if (!r.ok) return;
+    const data = await r.json();
+    document.getElementById('prompt-addendum').value = data.addendum || '';
+    document.getElementById('prompt-base').value = data.basePrompt || '';
+    document.getElementById('prompt-status').textContent = data.updatedAt
+      ? 'Laatst gewijzigd: ' + new Date(data.updatedAt).toLocaleString('nl-NL')
+      : '';
+  } catch (e) { /* stil */ }
+}
+
+async function savePromptSettings() {
+  const addendum = document.getElementById('prompt-addendum').value;
+  const status = document.getElementById('prompt-status');
+  status.textContent = 'Opslaan…';
+  const r = await fetch('/api/admin/prompt-settings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ addendum })
+  });
+  if (r.ok) {
+    status.textContent = '✓ Opgeslagen — geldt voor alle volgende generaties';
+    showToast('✓ Prompt-aanscherping opgeslagen');
+  } else {
+    const data = await r.json().catch(() => ({}));
+    status.textContent = '';
+    showToast('Fout: ' + (data.error || r.status), true);
+  }
 }
 
 // ── Automatische (her)generatie via de pipeline ───────────────────────────────
