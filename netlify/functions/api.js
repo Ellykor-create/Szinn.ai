@@ -267,21 +267,81 @@ function fmtPos(p) {
     : null;
 }
 
+// ── Engelse vertalingen voor de companion (labels + dagduiding) ───────────────
+const SIGN_EN = {
+  Ram: 'Aries', Stier: 'Taurus', Tweelingen: 'Gemini', Kreeft: 'Cancer',
+  Leeuw: 'Leo', Maagd: 'Virgo', Weegschaal: 'Libra', Schorpioen: 'Scorpio',
+  Boogschutter: 'Sagittarius', Steenbok: 'Capricorn', Waterman: 'Aquarius', Vissen: 'Pisces',
+};
+const signT = (lang, s) => (lang === 'en' ? (SIGN_EN[s] || s) : s);
+const DAY_INFO_EN = {
+  1: 'Day 1 carries a new beginning. Take the initiative yourself today.',
+  2: 'Day 2 asks for patience and cooperation. Listen and attune.',
+  3: 'Day 3 carries expression and joy. Share what lives inside you.',
+  4: 'Day 4 carries ground and structure. Build, organise, finish.',
+  5: 'Day 5 brings movement and change. Leave room for the unexpected.',
+  6: 'Day 6 is about care and harmony. Give attention to your people and your home.',
+  7: 'Day 7 asks for depth and stillness. Turn inward for a moment.',
+  8: 'Day 8 carries decisiveness and form. Act, complete.',
+  9: 'Day 9 closes. Let go of what is finished and be gentle.',
+  11: 'Master day 11: heightened intuition. Follow your feeling before you reason it away.',
+  22: 'Master day 22: build concretely on your greatest vision today.',
+};
+const PY_INFO_EN = {
+  1: { theme: 'New beginning',        energy: 'sowing, starting, choosing direction, taking initiative' },
+  2: { theme: 'Cooperation',          energy: 'patience, deepening relationships, listening, receiving' },
+  3: { theme: 'Expression & Joy',     energy: 'creativity, visibility, communicating, playing' },
+  4: { theme: 'Building & Structure', energy: 'hard work, laying foundations, discipline, order' },
+  5: { theme: 'Change',               energy: 'freedom, movement, new experiences, letting go' },
+  6: { theme: 'Responsibility',       energy: 'home, care, balance, relationships, being of service' },
+  7: { theme: 'Inner year',           energy: 'reflection, study, rest, spiritual deepening' },
+  8: { theme: 'Harvest & Power',      energy: 'material matters, business, reaping results, leadership' },
+  9: { theme: 'Completion & Release', energy: 'rounding off, forgiving, making room for the new' },
+};
+const LP_INFO_EN = {
+  1:  { name: 'Leader & Pioneer',        challenge: 'self-centredness' },
+  2:  { name: 'Mediator & Partner',      challenge: 'dependency' },
+  3:  { name: 'Creative Expresser',      challenge: 'scattering' },
+  4:  { name: 'Builder & Organiser',     challenge: 'rigidity' },
+  5:  { name: 'Freedom Seeker',          challenge: 'impatience' },
+  6:  { name: 'Caregiver & Guardian',    challenge: 'perfectionism' },
+  7:  { name: 'Seeker & Philosopher',    challenge: 'isolation' },
+  8:  { name: 'Material Master',         challenge: 'materialism' },
+  9:  { name: 'Humanitarian & Completer', challenge: 'difficulty letting go' },
+  11: { name: 'Spiritual Lightbringer', challenge: 'sensitivity' },
+  22: { name: 'Master Builder',          challenge: 'perfectionism' },
+  33: { name: 'Master Teacher',          challenge: 'self-sacrifice' },
+};
+
 // Deterministische dagduiding, opgebouwd uit blueprint-teksten en berekeningen.
 // Dient ook als vangnet wanneer de AI (tijdelijk) niet beschikbaar is.
 function dayFromBlueprint(c) {
   const t = c.texts || {};
+  const en = c.lang === 'en';
   const dayIdx = Math.floor(c.now.getTime() / 86400000);
   const questions = (t.reflection && t.reflection.questions) || [];
-  const giftNames = ['intuïtie', 'verbeeldingskracht', 'geheugen', 'redeneren', 'waarneming', 'wilskracht'];
+  const giftNames = en
+    ? ['intuition', 'imagination', 'memory', 'reasoning', 'perception', 'willpower']
+    : ['intuïtie', 'verbeeldingskracht', 'geheugen', 'redeneren', 'waarneming', 'wilskracht'];
   const g1 = giftNames[dayIdx % 6], g2 = giftNames[(dayIdx + 2) % 6];
   const natalMoon = c.ctx.chart.planets.moon;
   const py = c.ctx.numerology.personalYear;
+  const moonSign = signT(c.lang, c.sky.moonSign || c.sky.moon.sign);
+  const pyInfo = en ? (PY_INFO_EN[py] || PY_INFO_EN[9]) : c.ctx.numerology.personalYearInfo;
+  if (en) return {
+    thema: (t.summary && t.summary.oneLiner) || 'Your blueprint as a compass for today',
+    focus: (t.integration && t.integration.layers && t.integration.layers.focus) || 'Take one small, concrete step',
+    vraag: questions.length ? questions[dayIdx % questions.length] : 'What asks for your attention today?',
+    lucht: `The moon is in ${moonSign} today, ${c.sky.waxing ? 'waxing' : 'waning'}. Your own moon is in ${signT('en', natalMoon.sign)}: use today's energy without losing your own foundation.`,
+    numFocus: DAY_INFO_EN[c.pd] || DAY_INFO_EN[9],
+    numReminder: `Year ${py} asks for ${pyInfo.theme.toLowerCase()}: ${pyInfo.energy.toLowerCase()}.`,
+    gaven: `Today ${g1} and ${g2} light up. Lean consciously on these two capacities.`,
+  };
   return {
     thema: (t.summary && t.summary.oneLiner) || 'Jouw blueprint als kompas voor vandaag',
     focus: (t.integration && t.integration.layers && t.integration.layers.focus) || 'Zet één kleine, concrete stap',
     vraag: questions.length ? questions[dayIdx % questions.length] : 'Wat vraagt vandaag om jouw aandacht?',
-    lucht: `De maan staat vandaag in ${c.sky.moonSign || c.sky.moon.sign}, ${c.sky.waxing ? 'wassend' : 'afnemend'}. Jouw eigen maan staat in ${natalMoon.sign}: gebruik de energie van vandaag zonder je eigen basis te verliezen.`,
+    lucht: `De maan staat vandaag in ${moonSign}, ${c.sky.waxing ? 'wassend' : 'afnemend'}. Jouw eigen maan staat in ${natalMoon.sign}: gebruik de energie van vandaag zonder je eigen basis te verliezen.`,
     numFocus: c.dayInfo[c.pd] || c.dayInfo[9],
     numReminder: `Jaar ${py} vraagt om ${(c.ctx.numerology.personalYearInfo.theme || '').toLowerCase()}: ${(c.ctx.numerology.personalYearInfo.energy || '').toLowerCase()}.`,
     gaven: `Vandaag lichten ${g1} en ${g2} op. Leun bewust op deze twee vermogens.`,
@@ -297,7 +357,7 @@ Toon: warm, gegrond, helder, nooit zweverig, geen new-age clichés. Spreek aan m
 Je REKENT NOOIT zelf astrologie of numerologie. Gebruik uitsluitend deze vaste, geverifieerde gegevens en verzin niets nieuws:
 Zon ${line(P.sun)}; Maan ${line(P.moon)}; Ascendant ${line(P.ascendant)}; Noordknoop ${line(P.northNode)}; Zuidknoop ${line(P.southNode)}; Chiron ${line(P.chiron)}.
 Levenspad ${n.lifePath}; Persoonlijk Jaar ${n.personalYear} (${n.personalYearInfo.theme}); Persoonlijke Maand ${c.pm.number}; Persoonlijke Dag ${c.pd}.
-Vandaag: maan in ${c.sky.moon.sign}, ${c.sky.waxing ? 'wassend' : 'afnemend'}. Datum: ${c.now.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}.`;
+Vandaag: maan in ${c.sky.moon.sign}, ${c.sky.waxing ? 'wassend' : 'afnemend'}. Datum: ${c.now.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}.${c.lang === 'en' ? '\nIMPORTANT: The user uses the English dashboard. Reply entirely in English (use English zodiac sign names), while keeping the same warm, grounded tone.' : ''}`;
 }
 
 // Alle blueprint-data voor de dashboardblokken
@@ -322,17 +382,22 @@ app.get('/api/companion/blueprint', async (req, res) => {
       sun: fmtPos(P.sun), moon: fmtPos(P.moon), ascendant: fmtPos(P.ascendant),
       northNode: fmtPos(P.northNode), southNode: fmtPos(P.southNode), chiron: fmtPos(P.chiron),
     },
-    numerology: {
-      lifePath: n.lifePath, lifePathName: n.lifePathInfo.name, lifePathShadow: n.lifePathInfo.challenge,
-      personalYear: n.personalYear, personalYearTheme: n.personalYearInfo.theme, personalYearEnergy: n.personalYearInfo.energy,
-      personalMonth: c.pm.number, personalDay: c.pd,
-      expression: n.expression, soulUrge: n.soulUrge, personality: n.personality,
-    },
+    numerology: (() => {
+      const en = c.lang === 'en';
+      const lp = en ? (LP_INFO_EN[n.lifePath] || n.lifePathInfo) : n.lifePathInfo;
+      const py = en ? (PY_INFO_EN[n.personalYear] || n.personalYearInfo) : n.personalYearInfo;
+      return {
+        lifePath: n.lifePath, lifePathName: lp.name, lifePathShadow: lp.challenge,
+        personalYear: n.personalYear, personalYearTheme: py.theme, personalYearEnergy: py.energy,
+        personalMonth: c.pm.number, personalDay: c.pd,
+        expression: n.expression, soulUrge: n.soulUrge, personality: n.personality,
+      };
+    })(),
     sky: {
-      moonSign: c.sky.moon.sign, waxing: c.sky.waxing,
-      nextNewMoon: c.sky.nextNewMoon ? { date: c.sky.nextNewMoon.date, sign: c.sky.nextNewMoon.sign } : null,
-      nextFullMoon: c.sky.nextFullMoon ? { date: c.sky.nextFullMoon.date, sign: c.sky.nextFullMoon.sign } : null,
-      solarReturn: { date: c.solar, sign: P.sun.sign },
+      moonSign: signT(c.lang, c.sky.moon.sign), waxing: c.sky.waxing,
+      nextNewMoon: c.sky.nextNewMoon ? { date: c.sky.nextNewMoon.date, sign: signT(c.lang, c.sky.nextNewMoon.sign) } : null,
+      nextFullMoon: c.sky.nextFullMoon ? { date: c.sky.nextFullMoon.date, sign: signT(c.lang, c.sky.nextFullMoon.sign) } : null,
+      solarReturn: { date: c.solar, sign: signT(c.lang, P.sun.sign) },
     },
     day: dayFromBlueprint(c),
     texts: c.texts,
@@ -346,7 +411,7 @@ app.get('/api/companion/blueprint', async (req, res) => {
 // Dagduiding vernieuwen: AI-versie met de blueprint-fallback als vangnet
 app.post('/api/companion/day', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
-  const c = await companionContext(req.auth.userId);
+  const c = await companionContext(req.auth.userId, req.body?.lang || req.query.lang);
   if (!c.ctx) return res.status(400).json({ error: 'Nog geen voltooide blueprint' });
 
   const fallback = dayFromBlueprint(c);
@@ -361,13 +426,13 @@ app.post('/api/companion/day', async (req, res) => {
       properties: { thema: str, focus: str, vraag: str, lucht: str, numFocus: str, numReminder: str, gaven: str },
       required: ['thema', 'focus', 'vraag', 'lucht', 'numFocus', 'numReminder', 'gaven'],
     };
+    const userPrompt = c.lang === 'en'
+      ? `Generate today's daily reading in ENGLISH, fully grounded in the fixed data. Fields: thema (short powerful sentence), focus (one concrete small step), vraag (one reflection question), lucht (2-3 sentences about today's moon linked to the natal moon), numFocus (1 sentence for Personal Day ${c.pd}), numReminder (1 sentence for Personal Year ${c.ctx.numerology.personalYear}), gaven (1 sentence: which 2 of the six gifts light up today and why).`
+      : `Genereer de dagduiding voor vandaag, volledig gegrond in de vaste gegevens. Velden: thema (korte krachtige zin), focus (één concrete kleine stap), vraag (één reflectievraag), lucht (2-3 zinnen over de maanstand vandaag gekoppeld aan de geboortemaan), numFocus (1 zin bij Persoonlijke Dag ${c.pd}), numReminder (1 zin bij Persoonlijk Jaar ${c.ctx.numerology.personalYear}), gaven (1 zin: welke 2 van de zes gaven vandaag oplichten en waarom).`;
     const response = await client.messages.create({
       model: COMPANION_MODEL(), max_tokens: 700,
       system: companionSystem(c),
-      messages: [{
-        role: 'user',
-        content: `Genereer de dagduiding voor vandaag, volledig gegrond in de vaste gegevens. Velden: thema (korte krachtige zin), focus (één concrete kleine stap), vraag (één reflectievraag), lucht (2-3 zinnen over de maanstand vandaag gekoppeld aan de geboortemaan), numFocus (1 zin bij Persoonlijke Dag ${c.pd}), numReminder (1 zin bij Persoonlijk Jaar ${c.ctx.numerology.personalYear}), gaven (1 zin: welke 2 van de zes gaven vandaag oplichten en waarom).`,
-      }],
+      messages: [{ role: 'user', content: userPrompt }],
       output_config: { format: { type: 'json_schema', schema } },
     });
     const txt = response.content.filter(b => b.type === 'text').map(b => b.text).join('');
@@ -384,12 +449,14 @@ app.post('/api/companion/chat', async (req, res) => {
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) return res.json({ content: 'De Companion is nog niet geactiveerd. Stel ANTHROPIC_API_KEY in via Netlify → Site settings → Environment variables.' });
 
-  const { messages } = req.body;
+  const { messages, lang } = req.body;
   if (!messages?.length) return res.status(400).json({ error: 'Geen berichten' });
 
-  let system = 'Je bent de SZINN AI Companion — warm, helder, praktisch. Spreek de gebruiker aan met jij/jouw. Geen bullet points. Schrijf vloeiende zinnen.';
+  let system = lang === 'en'
+    ? 'You are the SZINN AI Companion — warm, clear, practical. No bullet points. Write flowing sentences in English.'
+    : 'Je bent de SZINN AI Companion — warm, helder, praktisch. Spreek de gebruiker aan met jij/jouw. Geen bullet points. Schrijf vloeiende zinnen.';
   try {
-    const c = await companionContext(req.auth.userId);
+    const c = await companionContext(req.auth.userId, lang);
     if (c.ctx) system = companionSystem(c);
   } catch (e) { /* generieke system prompt volstaat */ }
 

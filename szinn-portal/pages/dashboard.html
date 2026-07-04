@@ -38,7 +38,13 @@ svg{display:block}
 
 /* main */
 .main{padding:26px 40px 60px;max-width:1500px}
-.topbar{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;letter-spacing:.04em}
+.topbar{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;letter-spacing:.04em;flex-wrap:wrap}
+.topactions{margin-left:auto;display:flex;align-items:center;gap:8px}
+.tbtn{display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line2);border-radius:20px;padding:7px 14px;font-family:'Jost';font-size:12px;color:var(--gold-deep);cursor:pointer;white-space:nowrap;transition:.15s}
+.tbtn:hover{background:#F0E6CE;border-color:var(--gold-soft)}
+.langsw{display:flex;border:1px solid var(--line2);border-radius:20px;overflow:hidden;background:var(--panel)}
+.langsw button{border:none;background:transparent;font-family:'Jost';font-size:11px;letter-spacing:.08em;padding:7px 12px;color:var(--muted);cursor:pointer;transition:.15s}
+.langsw button.on{background:var(--gold);color:#FBF6EC}
 .greet{font-size:44px;margin-top:6px;letter-spacing:.01em}
 .greet .sp{color:var(--gold-soft);font-size:26px;vertical-align:middle;margin-left:6px}
 .sub{color:var(--muted);font-size:15px;margin-top:2px}
@@ -180,7 +186,50 @@ svg{display:block}
 .bp-ready .cards4.needs-bp{display:grid}
 .bp-ready .cards3.needs-bp{display:grid}
 .pending-note{background:#F2EAD8;border:1px dashed var(--gold-soft);border-radius:14px;padding:18px 20px;margin-top:16px;font-size:13.5px;color:#5f5647;display:none}
-@media(max-width:1100px){.cards4{grid-template-columns:1fr 1fr}.cards3{grid-template-columns:1fr}.shadgrid{grid-template-columns:1fr}.app{grid-template-columns:1fr}.sidebar{position:static;height:auto;flex-direction:row;flex-wrap:wrap;align-items:center;gap:12px}.nav{display:none}.main{padding:22px}}
+@media(max-width:1100px){
+  .cards4{grid-template-columns:1fr 1fr}
+  .cards3{grid-template-columns:1fr}
+  .shadgrid{grid-template-columns:1fr}
+  .app{grid-template-columns:1fr}
+  /* min-width:0: anders duwt de nowrap-chiprij de grid-kolom breder dan het scherm */
+  .sidebar,.main{min-width:0}
+  .sidebar{position:static;height:auto;padding:14px 16px 12px}
+  .brand{flex-direction:row;gap:10px;justify-content:center;text-align:left;padding:0}
+  .brand .name{font-size:20px;margin-top:0}
+  .brand .tag{display:none}
+  /* nav wordt een horizontaal scrollbare chip-rij, incl. Uitloggen */
+  .nav{flex-direction:row;overflow-x:auto;margin-top:12px;gap:6px;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+  .nav::-webkit-scrollbar{display:none}
+  .nav-item{white-space:nowrap;padding:7px 13px;border:1px solid var(--line2);border-radius:20px;font-size:12px;background:var(--panel)}
+  .intention{display:none}
+  .main{padding:22px}
+}
+@media(max-width:700px){
+  .main{padding:16px 14px 44px}
+  .greet{font-size:30px}
+  .greet .sp{font-size:19px}
+  .sub{font-size:13.5px}
+  .astrorow{flex-direction:column;gap:14px;margin-top:16px}
+  .topactions{margin-left:0;width:100%;justify-content:flex-start}
+  .movement{flex-wrap:wrap;gap:10px;margin:30px 0 14px}
+  .movement .badge{margin-left:0}
+  .daycard .in{padding:20px 16px}
+  .daycard h2{font-size:24px}
+  .daycard .veil{background:linear-gradient(90deg,rgba(255,254,252,.97) 0%,rgba(255,254,252,.93) 60%,rgba(255,254,252,.75) 100%)}
+  .dcgrid{gap:18px}
+  .cards4{grid-template-columns:1fr}
+  .aibar{flex-wrap:wrap;gap:10px}
+  .aibar button{margin-left:0}
+  .aibar button+button{margin-left:0}
+  .chatlog{max-height:320px}
+  .msg{max-width:92%}
+  .shadow{padding:20px 16px}
+  .reflect{flex-direction:column;gap:8px}
+  .reflect .rl{width:auto}
+  .order-card{flex-direction:column;align-items:flex-start}
+  .gifts{grid-template-columns:1fr 1fr}
+  .choices{flex-direction:column}
+}
 </style>
 </head>
 <body>
@@ -192,100 +241,106 @@ svg{display:block}
       <div class="tag">Alignment Blueprint</div>
     </div>
     <nav class="nav">
-      <a class="nav-item active" href="#top"><span class="ni">&#9702;</span>Dashboard</a>
-      <a class="nav-item" href="#vandaag"><span class="ni">&#9702;</span>Vandaag</a>
+      <a class="nav-item active" href="#top"><span class="ni">&#9702;</span><span data-i18n="navDash">Dashboard</span></a>
+      <a class="nav-item" href="#vandaag"><span class="ni">&#9702;</span><span data-i18n="navToday">Vandaag</span></a>
       <a class="nav-item" href="#schaduw"><span class="ni">&#9702;</span>Tikkun</a>
-      <a class="nav-item" href="#levenspad"><span class="ni">&#9702;</span>Levenspad</a>
-      <a class="nav-item" href="#getallen"><span class="ni">&#9702;</span>Getallen</a>
-      <a class="nav-item" href="#cycli"><span class="ni">&#9702;</span>Cycli</a>
-      <a class="nav-item" href="#begeleiding"><span class="ni">&#9702;</span>Begeleiding</a>
-      <a class="nav-item" href="#dagboek"><span class="ni">&#9702;</span>Dagboek</a>
-      <a class="nav-item" id="navBlueprint" href="#aanvragen"><span class="ni">&#9702;</span>Bibliotheek</a>
-      <a class="nav-item" href="#aanvragen"><span class="ni">&#9702;</span>Aanvragen</a>
-      <a class="nav-item" href="#" onclick="SzinnAuth.logout(); return false;"><span class="ni">&#9702;</span>Uitloggen</a>
+      <a class="nav-item" href="#levenspad"><span class="ni">&#9702;</span><span data-i18n="navLifepath">Levenspad</span></a>
+      <a class="nav-item" href="#getallen"><span class="ni">&#9702;</span><span data-i18n="navNumbers">Getallen</span></a>
+      <a class="nav-item" href="#cycli"><span class="ni">&#9702;</span><span data-i18n="navCycles">Cycli</span></a>
+      <a class="nav-item" href="#begeleiding"><span class="ni">&#9702;</span><span data-i18n="navGuide">Begeleiding</span></a>
+      <a class="nav-item" href="#dagboek"><span class="ni">&#9702;</span><span data-i18n="navJournal">Dagboek</span></a>
+      <a class="nav-item" id="navBlueprint" href="#aanvragen"><span class="ni">&#9702;</span><span data-i18n="navLibrary">Bibliotheek</span></a>
+      <a class="nav-item" href="#aanvragen"><span class="ni">&#9702;</span><span data-i18n="navOrders">Aanvragen</span></a>
+      <a class="nav-item" href="#" onclick="SzinnAuth.logout(); return false;"><span class="ni">&#9702;</span><span data-i18n="navLogout">Uitloggen</span></a>
     </nav>
     <div class="intention">
-      <div class="il">Intentie van vandaag</div>
+      <div class="il" data-i18n="intentToday">Intentie van vandaag</div>
       <div class="iq" id="sideIntent">Eén echte stap is genoeg.</div>
     </div>
   </aside>
 
   <main class="main" id="top">
-    <div class="topbar">&#128197;&nbsp; <span id="topDate">…</span></div>
+    <div class="topbar">&#128197;&nbsp; <span id="topDate">…</span>
+      <div class="topactions">
+        <a class="tbtn" href="https://szinn.ai">&#8592; szinn.ai</a>
+        <div class="langsw"><button id="langNL" data-l="nl">NL</button><button id="langEN" data-l="en">EN</button></div>
+        <button class="tbtn" id="logoutBtn" data-i18n="navLogout">Uitloggen</button>
+      </div>
+    </div>
     <h1 class="greet"><span id="greetTxt">Welkom</span><span class="sp">&#10022;</span></h1>
-    <div class="sub">Het universum is in beweging. Stem af op wat ertoe doet.</div>
+    <div class="sub" data-i18n="sub">Het universum is in beweging. Stem af op wat ertoe doet.</div>
     <div class="astrorow needs-bp" style="display:flex">
-      <div class="astro"><div class="ic">&#9737;</div><div><div class="t" id="aSun">—</div><div class="d">Wie je in de kern bent</div></div></div>
-      <div class="astro"><div class="ic">&#9789;</div><div><div class="t" id="aMoon">—</div><div class="d">Wat je van binnen nodig hebt</div></div></div>
-      <div class="astro"><div class="ic">&#8593;</div><div><div class="t" id="aAsc">—</div><div class="d">Hoe je de wereld binnenkomt</div></div></div>
+      <div class="astro"><div class="ic">&#9737;</div><div><div class="t" id="aSun">—</div><div class="d" data-i18n="dSun">Wie je in de kern bent</div></div></div>
+      <div class="astro"><div class="ic">&#9789;</div><div><div class="t" id="aMoon">—</div><div class="d" data-i18n="dMoon">Wat je van binnen nodig hebt</div></div></div>
+      <div class="astro"><div class="ic">&#8593;</div><div><div class="t" id="aAsc">—</div><div class="d" data-i18n="dAsc">Hoe je de wereld binnenkomt</div></div></div>
     </div>
 
     <div class="pending-note" id="pendingNote"></div>
 
     <!-- SIN -->
     <div id="vandaag"></div>
-    <div class="movement"><div class="m">Sin</div><div><div class="ml">Zien wat er is</div><div class="ms">wat de dag je laat zien</div></div><div class="badge">Herkenning</div></div>
+    <div class="movement"><div class="m">Sin</div><div><div class="ml" data-i18n="mvSin">Zien wat er is</div><div class="ms" data-i18n="mvSinS">wat de dag je laat zien</div></div><div class="badge" data-i18n="bdgSin">Herkenning</div></div>
 
     <div class="daycard">
       <div class="bg" style="background-image:url('/assets/szinn-hero.jpg')"></div>
       <div class="veil"></div>
       <div class="in">
         <div class="dt" id="dcDate">Vandaag</div>
-        <h2>Vandaag in één oogopslag</h2>
+        <h2 data-i18n="dayGlance">Vandaag in één oogopslag</h2>
         <div class="dcgrid">
-          <div><div class="lab">Thema</div><div class="val" id="dTheme">—</div></div>
-          <div><div class="lab">Focus</div><div class="val" id="dFocus">—</div></div>
+          <div><div class="lab" data-i18n="labTheme">Thema</div><div class="val" id="dTheme">—</div></div>
+          <div><div class="lab" data-i18n="labFocus">Focus</div><div class="val" id="dFocus">—</div></div>
         </div>
-        <div class="dcq"><div class="lab">Vraag van de dag</div><div class="val" id="dQuestion">—</div></div>
-        <a class="readmore" id="readmore">Lees je volledige blueprint &#8594;</a>
+        <div class="dcq"><div class="lab" data-i18n="labQuestion">Vraag van de dag</div><div class="val" id="dQuestion">—</div></div>
+        <a class="readmore" id="readmore" data-i18n="readFull">Lees je volledige blueprint &#8594;</a>
       </div>
     </div>
 
     <div class="aibar" id="begeleiding">
       <div class="ai-ic"></div>
-      <div class="ai-tx"><b>SZINN Companion</b> &middot; ik lees je kaart en de stand van vandaag, en stem de dagduiding daarop af. Vraag me gerust iets.</div>
-      <button id="genBtn">Vernieuw dagduiding</button>
-      <button id="chatBtn">Praat met je Companion</button>
+      <div class="ai-tx" data-i18n-html="aiIntro"><b>SZINN Companion</b> &middot; ik lees je kaart en de stand van vandaag, en stem de dagduiding daarop af. Vraag me gerust iets.</div>
+      <button id="genBtn" data-i18n="btnRefresh">Vernieuw dagduiding</button>
+      <button id="chatBtn" data-i18n="btnChat">Praat met je Companion</button>
     </div>
     <div class="chat" id="chatBox">
       <div class="chatlog" id="chatLog"></div>
-      <div class="chatin"><input id="chatIn" placeholder="Stel je Companion een vraag over vandaag, je kaart, je richting…"/><button id="chatSend">Stuur</button></div>
+      <div class="chatin"><input id="chatIn" data-i18n-ph="chatPh" placeholder="Stel je Companion een vraag over vandaag, je kaart, je richting…"/><button id="chatSend" data-i18n="btnSend">Stuur</button></div>
     </div>
 
     <div class="cards4 needs-bp">
       <div class="card">
-        <div class="eyebrow">Waar de hemel nu staat</div>
-        <h3>De lucht vandaag</h3>
+        <div class="eyebrow" data-i18n="eyeSky">Waar de hemel nu staat</div>
+        <h3 data-i18n="hSky">De lucht vandaag</h3>
         <div class="moon"><div class="orb"></div><div><div class="mt" id="skyMoon">—</div><div class="md" id="skySub">—</div></div></div>
         <p id="dSky">—</p>
       </div>
       <div class="card" id="getallen">
-        <div class="eyebrow">Wat de dag draagt</div>
-        <h3>Jouw getallen</h3>
+        <div class="eyebrow" data-i18n="eyeNum">Wat de dag draagt</div>
+        <h3 data-i18n="hNum">Jouw getallen</h3>
         <div class="nums">
-          <div class="num"><div class="n" id="nLP">—</div><div class="l">Levenspad</div></div>
-          <div class="num"><div class="n" id="nPY">—</div><div class="l">Persoonlijk jaar</div></div>
-          <div class="num"><div class="n" id="nPM">—</div><div class="l">Persoonlijke maand</div></div>
-          <div class="num"><div class="n" id="nPD">—</div><div class="l">Persoonlijke dag</div></div>
+          <div class="num"><div class="n" id="nLP">—</div><div class="l" data-i18n="lLP">Levenspad</div></div>
+          <div class="num"><div class="n" id="nPY">—</div><div class="l" data-i18n="lPY">Persoonlijk jaar</div></div>
+          <div class="num"><div class="n" id="nPM">—</div><div class="l" data-i18n="lPM">Persoonlijke maand</div></div>
+          <div class="num"><div class="n" id="nPD">—</div><div class="l" data-i18n="lPD">Persoonlijke dag</div></div>
         </div>
         <div class="numnote" style="margin-top:14px">
-          <span class="k">Focus vandaag</span><div class="v" id="dNumFocus">—</div>
-          <span class="k">Herinnering</span><div class="v" id="dNumRem">—</div>
+          <span class="k" data-i18n="kFocus">Focus vandaag</span><div class="v" id="dNumFocus">—</div>
+          <span class="k" data-i18n="kRem">Herinnering</span><div class="v" id="dNumRem">—</div>
         </div>
       </div>
       <div class="card">
-        <div class="eyebrow">Jouw groei-as</div>
-        <h3>Noord- &amp; Zuidknoop</h3>
+        <div class="eyebrow" data-i18n="eyeNodes">Jouw groei-as</div>
+        <h3 data-i18n="hNodes">Noord- &amp; Zuidknoop</h3>
         <div class="knoop">
-          <div class="kc"><div class="kl">Zuidknoop &middot;<br>waar je vandaan komt</div><div class="kn" id="knZuid">—</div><div class="kp" id="kpZuid">—</div></div>
+          <div class="kc"><div class="kl" data-i18n-html="klSouth">Zuidknoop &middot;<br>waar je vandaan komt</div><div class="kn" id="knZuid">—</div><div class="kp" id="kpZuid">—</div></div>
           <div class="arrow">&#8594;</div>
-          <div class="kc"><div class="kl">Noordknoop &middot;<br>waar je heen gaat</div><div class="kn" id="knNoord">—</div><div class="kp" id="kpNoord">—</div></div>
+          <div class="kc"><div class="kl" data-i18n-html="klNorth">Noordknoop &middot;<br>waar je heen gaat</div><div class="kn" id="knNoord">—</div><div class="kp" id="kpNoord">—</div></div>
         </div>
-        <a class="readmore" style="font-size:12px" id="lnkNodes">Verken je knopen &#8594;</a>
+        <a class="readmore" style="font-size:12px" id="lnkNodes" data-i18n="lnkNodes">Verken je knopen &#8594;</a>
       </div>
       <div class="card">
-        <div class="eyebrow">Kern-essentie</div>
-        <h3>Jouw mandala</h3>
+        <div class="eyebrow" data-i18n="eyeMand">Kern-essentie</div>
+        <h3 data-i18n="hMand">Jouw mandala</h3>
         <div class="mandwrap" id="mandala"></div>
         <div class="mandcap" id="mandCap">Flower of Life, jouw planeten op hun exacte graden.</div>
       </div>
@@ -293,96 +348,96 @@ svg{display:block}
 
     <!-- SINN -->
     <div id="dagboek"></div>
-    <div class="movement"><div class="m">Sinn</div><div><div class="ml">Voelen en richten</div><div class="ms">wat jij in de dag brengt</div></div><div class="badge">Helderheid</div></div>
+    <div class="movement"><div class="m">Sinn</div><div><div class="ml" data-i18n="mvSinn">Voelen en richten</div><div class="ms" data-i18n="mvSinnS">wat jij in de dag brengt</div></div><div class="badge" data-i18n="bdgSinn">Helderheid</div></div>
 
     <div class="cards3" style="display:grid">
       <div class="card">
-        <div class="eyebrow">De energie die je kiest</div>
-        <h2>Stel je intentie</h2>
-        <p style="margin-top:8px">Je energie kiezen en je intentie zetten zijn één beweging. Kies waarmee je vandaag voorop wilt gaan.</p>
+        <div class="eyebrow" data-i18n="eyeEnergy">De energie die je kiest</div>
+        <h2 data-i18n="hIntent">Stel je intentie</h2>
+        <p style="margin-top:8px" data-i18n="pIntent">Je energie kiezen en je intentie zetten zijn één beweging. Kies waarmee je vandaag voorop wilt gaan.</p>
         <div class="choices">
-          <div class="choice" data-e="Sin"><div class="ct">Sin</div><div class="cd">structuur &middot; kracht &middot; richting</div></div>
-          <div class="choice" data-e="Sinn"><div class="ct">Sinn</div><div class="cd">gevoel &middot; intuïtie &middot; afstemming</div></div>
-          <div class="choice" data-e="Zin"><div class="ct">Zin</div><div class="cd">vreugde &middot; vrijheid &middot; creatie</div></div>
+          <div class="choice" data-e="Sin"><div class="ct">Sin</div><div class="cd" data-i18n="chSin">structuur &middot; kracht &middot; richting</div></div>
+          <div class="choice" data-e="Sinn"><div class="ct">Sinn</div><div class="cd" data-i18n="chSinn">gevoel &middot; intuïtie &middot; afstemming</div></div>
+          <div class="choice" data-e="Zin"><div class="ct">Zin</div><div class="cd" data-i18n="chZin">vreugde &middot; vrijheid &middot; creatie</div></div>
         </div>
-        <div class="eyebrow" style="margin-top:16px">Mijn intentie voor vandaag</div>
-        <input class="field" id="fIntent" placeholder="Vandaag wil ik…"/>
-        <div class="eyebrow" style="margin-top:12px">In één woord, hoe voel je je nu?</div>
-        <input class="field" id="fFeel" placeholder="bijv. rustig, vol, helder, moe…"/>
+        <div class="eyebrow" style="margin-top:16px" data-i18n="eyeMyIntent">Mijn intentie voor vandaag</div>
+        <input class="field" id="fIntent" data-i18n-ph="phIntent" placeholder="Vandaag wil ik…"/>
+        <div class="eyebrow" style="margin-top:12px" data-i18n="eyeFeel">In één woord, hoe voel je je nu?</div>
+        <input class="field" id="fFeel" data-i18n-ph="phFeel" placeholder="bijv. rustig, vol, helder, moe…"/>
       </div>
       <div class="card">
-        <div class="eyebrow">Vermogens die je kunt inzetten</div>
-        <h2>Jouw gaven</h2>
+        <div class="eyebrow" data-i18n="eyeGifts">Vermogens die je kunt inzetten</div>
+        <h2 data-i18n="hGifts">Jouw gaven</h2>
         <p style="margin-top:8px" id="dGifts">Zes innerlijke vermogens om op te leunen.</p>
         <div class="gifts">
-          <div class="gift">Intuïtie</div><div class="gift">Verbeeldingskracht</div><div class="gift">Geheugen</div>
-          <div class="gift">Waarneming</div><div class="gift">Redeneren</div><div class="gift">Wilskracht</div>
+          <div class="gift" data-i18n="g1">Intuïtie</div><div class="gift" data-i18n="g2">Verbeeldingskracht</div><div class="gift" data-i18n="g3">Geheugen</div>
+          <div class="gift" data-i18n="g4">Waarneming</div><div class="gift" data-i18n="g5">Redeneren</div><div class="gift" data-i18n="g6">Wilskracht</div>
         </div>
-        <div class="hint">Tik op de gave waar je vandaag op wilt leunen.</div>
+        <div class="hint" data-i18n="hintGift">Tik op de gave waar je vandaag op wilt leunen.</div>
       </div>
       <div class="card">
-        <div class="eyebrow">Drie dingen</div>
-        <h2>Waar ben je dankbaar voor</h2>
+        <div class="eyebrow" data-i18n="eyeThree">Drie dingen</div>
+        <h2 data-i18n="hGrat">Waar ben je dankbaar voor</h2>
         <div class="grat">
           <div class="gline"><span class="gn">1</span><input id="g1"/></div>
           <div class="gline"><span class="gn">2</span><input id="g2"/></div>
           <div class="gline"><span class="gn">3</span><input id="g3"/></div>
         </div>
-        <div class="hint">Dankbaarheid verschuift je energie sneller dan bijna iets anders. Klein mag.</div>
+        <div class="hint" data-i18n="hintGrat">Dankbaarheid verschuift je energie sneller dan bijna iets anders. Klein mag.</div>
       </div>
     </div>
 
     <!-- ZIN -->
     <div id="levenspad"></div>
-    <div class="movement"><div class="m">Zin</div><div><div class="ml">Waar je staat</div><div class="ms">wat je draagt en oogst</div></div><div class="badge">Integratie</div></div>
+    <div class="movement"><div class="m">Zin</div><div><div class="ml" data-i18n="mvZin">Waar je staat</div><div class="ms" data-i18n="mvZinS">wat je draagt en oogst</div></div><div class="badge" data-i18n="bdgZin">Integratie</div></div>
 
     <div class="cards3 needs-bp">
       <div class="card">
         <div class="eyebrow" id="lpEyebrow">Jouw levenspad</div>
-        <h2>Levenspad-overzicht</h2>
+        <h2 data-i18n="hLP">Levenspad-overzicht</h2>
         <div class="phase" id="phaseRow">
-          <div class="st" data-min="0"><div class="dot">&#10022;</div><div class="pn">Fundament</div><div class="pa">0&ndash;28</div></div>
-          <div class="st" data-min="29"><div class="dot"></div><div class="pn">Expansie</div><div class="pa">29&ndash;36</div></div>
-          <div class="st" data-min="37"><div class="dot"></div><div class="pn">Bijdrage</div><div class="pa">37&ndash;45</div></div>
-          <div class="st" data-min="46"><div class="dot"></div><div class="pn">Meesterschap</div><div class="pa">46&ndash;54</div></div>
-          <div class="st" data-min="55"><div class="dot"></div><div class="pn">Nalatenschap</div><div class="pa">55+</div></div>
+          <div class="st" data-min="0"><div class="dot">&#10022;</div><div class="pn" data-i18n="ph1">Fundament</div><div class="pa">0&ndash;28</div></div>
+          <div class="st" data-min="29"><div class="dot"></div><div class="pn" data-i18n="ph2">Expansie</div><div class="pa">29&ndash;36</div></div>
+          <div class="st" data-min="37"><div class="dot"></div><div class="pn" data-i18n="ph3">Bijdrage</div><div class="pa">37&ndash;45</div></div>
+          <div class="st" data-min="46"><div class="dot"></div><div class="pn" data-i18n="ph4">Meesterschap</div><div class="pa">46&ndash;54</div></div>
+          <div class="st" data-min="55"><div class="dot"></div><div class="pn" data-i18n="ph5">Nalatenschap</div><div class="pa">55+</div></div>
         </div>
         <p style="margin-top:12px" id="lpText">—</p>
       </div>
       <div class="card" id="cycli">
-        <div class="eyebrow">9-jaarscyclus</div>
-        <div class="cycrow"><div><h2>Huidige cyclus</h2><h3 style="font-size:26px;margin-top:2px" id="cycTitle">—</h3></div>
+        <div class="eyebrow" data-i18n="eyeCyc">9-jaarscyclus</div>
+        <div class="cycrow"><div><h2 data-i18n="hCyc">Huidige cyclus</h2><h3 style="font-size:26px;margin-top:2px" id="cycTitle">—</h3></div>
           <div class="ring"><svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="32" fill="none" stroke="#E4DBC8" stroke-width="3"/><circle id="cycRing" cx="38" cy="38" r="32" fill="none" stroke="#A67C3A" stroke-width="3" stroke-dasharray="0 999" stroke-linecap="round" transform="rotate(-90 38 38)"/><text id="cycNum" x="38" y="35" text-anchor="middle" font-family="Cormorant Garamond" font-size="17" fill="#8a6630">–</text><text x="38" y="50" text-anchor="middle" font-family="Jost" font-size="8" fill="#8a7860" letter-spacing="1">VAN 9</text></svg></div></div>
         <div class="eyebrow" style="margin-top:12px" id="cycTheme">—</div>
         <p style="margin-top:8px" id="cycText">—</p>
-        <a class="readmore" style="font-size:12px" id="lnkNum">Bekijk in je blueprint &#8594;</a>
+        <a class="readmore" style="font-size:12px" id="lnkNum" data-i18n="lnkBP">Bekijk in je blueprint &#8594;</a>
       </div>
       <div class="card">
-        <div class="eyebrow">Aankomende cycli</div>
-        <h2>Wat eraan komt</h2>
+        <div class="eyebrow" data-i18n="eyeUpcoming">Aankomende cycli</div>
+        <h2 data-i18n="hUpcoming">Wat eraan komt</h2>
         <div class="cyc-moment"><div class="cm">&#9789;</div><div><div class="cmt" id="cmNew">Nieuwe maan</div><div class="cmd" id="cmNewD">—</div></div></div>
         <div class="cyc-moment"><div class="cm">&#9789;</div><div><div class="cmt" id="cmFull">Volle maan</div><div class="cmd" id="cmFullD">—</div></div></div>
         <div class="cyc-moment"><div class="cm">&#10022;</div><div><div class="cmt" id="cmSolar">Zonne-terugkeer</div><div class="cmd" id="cmSolarD">—</div></div></div>
-        <a class="readmore" style="font-size:12px" id="lnkCal">Bekijk je persoonlijke kalender &#8594;</a>
+        <a class="readmore" style="font-size:12px" id="lnkCal" data-i18n="lnkCal">Bekijk je persoonlijke kalender &#8594;</a>
       </div>
     </div>
 
     <div class="shadow needs-bp" id="schaduw">
-      <div class="eyebrow">De andere kant van je gaven</div>
-      <h2>Jouw schaduwkanten</h2>
-      <div class="lead">Dit zijn geen gebreken om te repareren. Elke schaduw is de keerzijde van een echte gave en draagt informatie. Beweeg elke slider om te markeren hoeveel het je vandaag vasthield, en hoe helder je het zag.</div>
+      <div class="eyebrow" data-i18n="eyeShadow">De andere kant van je gaven</div>
+      <h2 data-i18n="hShadow">Jouw schaduwkanten</h2>
+      <div class="lead" data-i18n="leadShadow">Dit zijn geen gebreken om te repareren. Elke schaduw is de keerzijde van een echte gave en draagt informatie. Beweeg elke slider om te markeren hoeveel het je vandaag vasthield, en hoe helder je het zag.</div>
       <div class="shadgrid" id="shadGrid"></div>
-      <div class="reflect"><div class="rl">Om het helder te zien</div><div class="rt" id="reflectQ">Als een van deze opkomt, pauzeer en vraag: wat bescherm ik, en wat heb ik nu echt nodig?</div></div>
+      <div class="reflect"><div class="rl" data-i18n="rlSee">Om het helder te zien</div><div class="rt" id="reflectQ">Als een van deze opkomt, pauzeer en vraag: wat bescherm ik, en wat heb ik nu echt nodig?</div></div>
     </div>
 
     <!-- Aanvragen -->
     <div id="aanvragen"></div>
-    <div class="movement"><div class="m">&#10022;</div><div><div class="ml">Jouw blueprints</div><div class="ms">aanvragen en documenten</div></div><div class="badge">Bibliotheek</div></div>
+    <div class="movement"><div class="m">&#10022;</div><div><div class="ml" data-i18n="mvLib">Jouw blueprints</div><div class="ms" data-i18n="mvLibS">aanvragen en documenten</div></div><div class="badge" data-i18n="bdgLib">Bibliotheek</div></div>
     <div class="orders" id="ordersGrid"></div>
 
-    <button class="save" id="saveBtn">Leg mijn dag vast<span class="ss">Privé bewaard, alleen voor jou zichtbaar</span></button>
+    <button class="save" id="saveBtn"><span data-i18n="btnSave">Leg mijn dag vast</span><span class="ss" data-i18n="btnSaveS">Privé bewaard, alleen voor jou zichtbaar</span></button>
     <div class="foot">
-      <div class="fq">Je was nooit verloren, je was aan het herinneren.</div>
+      <div class="fq" data-i18n="footQ">Je was nooit verloren, je was aan het herinneren.</div>
       <div class="fc" id="footLine">SZINN &middot; Companion Dashboard &middot; &copy; <span id="footYear"></span> Elly Elizabeth Korving &middot; Alterego BV &middot; Alle rechten voorbehouden &middot; szinn.ai</div>
     </div>
   </main>
@@ -402,7 +457,128 @@ const set = (id, v) => { const el = $(id); if (el && v != null && v !== '') el.t
 const strip = (html) => { const d = document.createElement('div'); d.innerHTML = html || ''; return (d.textContent || '').trim(); };
 const firstPara = (html) => { const d = document.createElement('div'); d.innerHTML = html || ''; const p = d.querySelector('p'); return p ? p.textContent.trim() : strip(html); };
 const trunc = (s, n) => { s = (s || '').trim(); return s.length > n ? s.slice(0, s.lastIndexOf(' ', n)) + '…' : s; };
-const fmtD = (d) => new Date(d).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
+
+// ── Taal (NL/EN) ─────────────────────────────────────────────────────────────
+const LANG = (localStorage.getItem('szinn_lang') === 'en') ? 'en' : 'nl';
+const LOCALE = LANG === 'en' ? 'en-GB' : 'nl-NL';
+const fmtD = (d) => new Date(d).toLocaleDateString(LOCALE, { day: 'numeric', month: 'long', year: 'numeric' });
+// Vertalingen voor alle vaste teksten; NL staat al in de HTML.
+const I18N_EN = {
+  navDash:'Dashboard', navToday:'Today', navLifepath:'Life path', navNumbers:'Numbers', navCycles:'Cycles',
+  navGuide:'Guidance', navJournal:'Journal', navLibrary:'Library', navOrders:'Orders', navLogout:'Log out',
+  intentToday:"Today's intention",
+  sub:'The universe is in motion. Attune to what matters.',
+  dSun:'Who you are at the core', dMoon:'What you need inside', dAsc:'How you enter the world',
+  mvSin:'Seeing what is', mvSinS:'what the day shows you', bdgSin:'Recognition',
+  dayGlance:'Today at a glance', labTheme:'Theme', labFocus:'Focus', labQuestion:'Question of the day',
+  readFull:'Read your full blueprint →',
+  aiIntro:'<b>SZINN Companion</b> · I read your chart and today\'s sky, and attune the daily reading to it. Feel free to ask me anything.',
+  btnRefresh:'Refresh daily reading', btnChat:'Talk to your Companion', btnSend:'Send',
+  chatPh:'Ask your Companion about today, your chart, your direction…',
+  eyeSky:'Where the sky is now', hSky:'The sky today',
+  eyeNum:'What the day carries', hNum:'Your numbers',
+  lLP:'Life path', lPY:'Personal year', lPM:'Personal month', lPD:'Personal day',
+  kFocus:'Focus today', kRem:'Reminder',
+  eyeNodes:'Your growth axis', hNodes:'North & South Node',
+  klSouth:'South Node ·<br>where you come from', klNorth:'North Node ·<br>where you are heading',
+  lnkNodes:'Explore your nodes →',
+  eyeMand:'Core essence', hMand:'Your mandala',
+  mvSinn:'Feeling and directing', mvSinnS:'what you bring to the day', bdgSinn:'Clarity',
+  eyeEnergy:'The energy you choose', hIntent:'Set your intention',
+  pIntent:'Choosing your energy and setting your intention are one movement. Choose what you want to lead with today.',
+  chSin:'structure · strength · direction', chSinn:'feeling · intuition · attunement', chZin:'joy · freedom · creation',
+  eyeMyIntent:'My intention for today', phIntent:'Today I want to…',
+  eyeFeel:'In one word, how do you feel right now?', phFeel:'e.g. calm, full, clear, tired…',
+  eyeGifts:'Capacities you can draw on', hGifts:'Your gifts',
+  g1:'Intuition', g2:'Imagination', g3:'Memory', g4:'Perception', g5:'Reasoning', g6:'Willpower',
+  hintGift:'Tap the gift you want to lean on today.',
+  eyeThree:'Three things', hGrat:'What are you grateful for',
+  hintGrat:'Gratitude shifts your energy faster than almost anything. Small counts.',
+  mvZin:'Where you stand', mvZinS:'what you carry and harvest', bdgZin:'Integration',
+  hLP:'Life path overview',
+  ph1:'Foundation', ph2:'Expansion', ph3:'Contribution', ph4:'Mastery', ph5:'Legacy',
+  eyeCyc:'9-year cycle', hCyc:'Current cycle', lnkBP:'View in your blueprint →',
+  eyeUpcoming:'Upcoming cycles', hUpcoming:'What is coming', lnkCal:'View your personal calendar →',
+  eyeShadow:'The other side of your gifts', hShadow:'Your shadow sides',
+  leadShadow:'These are not flaws to fix. Every shadow is the flip side of a real gift and carries information. Move each slider to mark how much it held you today, and how clearly you saw it.',
+  rlSee:'To see it clearly',
+  mvLib:'Your blueprints', mvLibS:'orders and documents', bdgLib:'Library',
+  btnSave:'Capture my day', btnSaveS:'Stored privately, visible only to you',
+  footQ:'You were never lost, you were remembering.',
+};
+// Dynamische strings die in JS worden opgebouwd
+const T = LANG === 'en' ? {
+  greetN:'Good night', greetM:'Good morning', greetA:'Good afternoon', greetE:'Good evening',
+  sunIn:'Sun in', moonIn:'Moon in', asc:'Ascendant', house:'House',
+  waxing:'Waxing', waning:'Waning', moonTo:' · towards the new moon of', moonToday:'Moon in',
+  pendingNone:'You don\'t have a blueprint order yet. Fill in the questionnaire at <a href="https://szinn.ai/intake-en" style="color:var(--gold-deep)">szinn.ai</a> and this dashboard will come to life with your chart, numbers and daily reading.',
+  pendingBusy:'Your Alignment Blueprint is being <b>composed</b> — this can take several hours. Once it is ready you will receive an email and this dashboard will fill with your chart, numbers and daily reading.',
+  pThemeBusy:'Your blueprint is on its way', pFocusBusy:'Come back soon — you will receive an email once everything is ready',
+  pQBusy:'What do you hope to recognise in your blueprint?',
+  lifePathIn:'You are in Life path', yearOf:'Year', of9:'of 9', asksFor:'asks for',
+  newMoonIn:'New moon in', fullMoonIn:'Full moon in', solarReturn:'Solar return',
+  mandCap:(nn)=>`Flower of Life, your planets at their exact degrees, and your Merkaba turned towards your North Node in ${nn}.`,
+  shFamiliar:'The familiar pattern', shSouth:'South Node', shCore:'Core theme', shTikkun:'Tikkun · core theme',
+  shLPt:(lp)=>`The shadow of the ${lp}`, shLPs:(lp,name)=>`Life path ${lp} · ${name}`,
+  shLPd:(shadow)=>`The flip side of your life path is ${shadow}. Recognising it is enough; you don't have to fix it.`,
+  shWork:'Your shadow work', shInt:'Integration',
+  attuning:'Attuning…', saved:'Saved ✓ Visible only to you.',
+  chatHello:'I\'m here. You can ask me about today, your chart, or where you are heading.',
+  chatErr:'I can\'t attune right now. Try again in a moment.',
+  ordersNone:'No orders yet. Place your first order at <a href="https://szinn.ai" style="color:var(--gold-deep)">szinn.ai</a>.',
+  ordersFail:'Could not load orders.',
+  stWait:'Waiting', stQ:'Questionnaire', stBusy:'Being composed', stFail:'Delayed', stDone:'Completed',
+  actView:'View blueprint', actFill:'Fill in questionnaire',
+  actBusy:'Being composed — this can take several hours', actFail:'Taking longer than expected — we are on it',
+  reflectDefault:'When one of these comes up, pause and ask: what am I protecting, and what do I really need right now?',
+} : {
+  greetN:'Goedenacht', greetM:'Goedemorgen', greetA:'Goedemiddag', greetE:'Goedenavond',
+  sunIn:'Zon in', moonIn:'Maan in', asc:'Ascendant', house:'Huis',
+  waxing:'Wassende', waning:'Afnemende', moonTo:' · naar de nieuwe maan van', moonToday:'Maan in',
+  pendingNone:'Je hebt nog geen blueprint-aanvraag. Vul de vragenlijst in op <a href="https://szinn.ai/intake" style="color:var(--gold-deep)">szinn.ai</a> en dit dashboard komt tot leven met jouw kaart, getallen en dagduiding.',
+  pendingBusy:'Je Alignment Blueprint wordt <b>samengesteld</b> — dit kan een aantal uur duren. Zodra hij klaar is ontvang je een e-mail en vult dit dashboard zich met jouw kaart, getallen en dagduiding.',
+  pThemeBusy:'Je blueprint is onderweg', pFocusBusy:'Kom straks terug — je ontvangt een e-mail zodra alles klaarstaat',
+  pQBusy:'Wat hoop je in je blueprint te herkennen?',
+  lifePathIn:'Jij bent in Levenspad', yearOf:'Jaar', of9:'van 9', asksFor:'vraagt om',
+  newMoonIn:'Nieuwe maan in', fullMoonIn:'Volle maan in', solarReturn:'Zonne-terugkeer',
+  mandCap:(nn)=>`Flower of Life, jouw planeten op hun exacte graden, en je Merkaba gedraaid naar je Noordknoop in ${nn}.`,
+  shFamiliar:'Het vertrouwde patroon', shSouth:'Zuidknoop', shCore:'Kernthema', shTikkun:'Tikkun · kernthema',
+  shLPt:(lp)=>`De schaduw van de ${lp}`, shLPs:(lp,name)=>`Levenspad ${lp} · ${name}`,
+  shLPd:(shadow)=>`De keerzijde van jouw levenspad is ${shadow}. Herkennen is genoeg; je hoeft het niet op te lossen.`,
+  shWork:'Jouw schaduwwerk', shInt:'Integratie',
+  attuning:'Even afstemmen…', saved:'Bewaard ✓ Alleen voor jou zichtbaar.',
+  chatHello:'Ik ben er. Je kunt me iets vragen over vandaag, over je kaart, of over waar je naartoe beweegt.',
+  chatErr:'Ik kan nu even niet afstemmen. Probeer het zo nog eens.',
+  ordersNone:'Nog geen aanvragen. Plaats je eerste bestelling op <a href="https://szinn.ai" style="color:var(--gold-deep)">szinn.ai</a>.',
+  ordersFail:'Kon aanvragen niet laden.',
+  stWait:'Wachtend', stQ:'Vragenlijst', stBusy:'Wordt samengesteld', stFail:'Vertraagd', stDone:'Voltooid',
+  actView:'Blueprint bekijken', actFill:'Vragenlijst invullen',
+  actBusy:'Wordt samengesteld — dit kan een aantal uur duren', actFail:'Duurt langer dan verwacht — we zijn ermee bezig',
+  reflectDefault:'Als een van deze opkomt, pauzeer en vraag: wat bescherm ik, en wat heb ik nu echt nodig?',
+};
+// Teken-naam in de juiste taal (payload bevat sign + signEn)
+const sn = (p) => p ? (LANG === 'en' ? (p.signEn || p.sign) : p.sign) : '';
+const langQ = LANG === 'en' ? '&lang=en' : '';
+
+function applyLang() {
+  document.documentElement.lang = LANG;
+  document.querySelectorAll('.langsw button').forEach(b => b.classList.toggle('on', b.dataset.l === LANG));
+  if (LANG !== 'en') return; // NL staat al in de HTML
+  document.querySelectorAll('[data-i18n]').forEach(el => { const v = I18N_EN[el.dataset.i18n]; if (v) el.textContent = v; });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { const v = I18N_EN[el.dataset.i18nHtml]; if (v) el.innerHTML = v; });
+  document.querySelectorAll('[data-i18n-ph]').forEach(el => { const v = I18N_EN[el.dataset.i18nPh]; if (v) el.placeholder = v; });
+  set('sideIntent', 'One real step is enough.');
+  set('mandCap', 'Flower of Life, your planets at their exact degrees.');
+  set('dGifts', 'Six inner capacities to lean on.');
+  set('reflectQ', T.reflectDefault);
+}
+applyLang();
+document.querySelectorAll('.langsw button').forEach(b => b.addEventListener('click', () => {
+  if (b.dataset.l === LANG) return;
+  localStorage.setItem('szinn_lang', b.dataset.l);
+  location.reload();
+}));
+$('logoutBtn').addEventListener('click', () => SzinnAuth.logout());
 
 SzinnAuth.requireAuth().then(ok => { if (ok) init(); });
 
@@ -410,18 +586,18 @@ async function init() {
   const user = SzinnAuth.getUser();
   userId = user.id;
   const now = new Date();
-  set('topDate', capitalize(now.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })));
-  set('dcDate', capitalize(now.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })));
+  set('topDate', capitalize(now.toLocaleDateString(LOCALE, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })));
+  set('dcDate', capitalize(now.toLocaleDateString(LOCALE, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })));
   $('footYear').textContent = now.getFullYear();
   const h = now.getHours();
-  const greet = h < 6 ? 'Goedenacht' : h < 12 ? 'Goedemorgen' : h < 18 ? 'Goedemiddag' : 'Goedenavond';
+  const greet = h < 6 ? T.greetN : h < 12 ? T.greetM : h < 18 ? T.greetA : T.greetE;
   set('greetTxt', `${greet}, ${user.name.split(' ')[0]}`);
 
   loadOrders();
   restoreDay();
 
   try {
-    const res = await fetch('/api/companion/blueprint', { credentials: 'same-origin' });
+    const res = await fetch(`/api/companion/blueprint?lang=${LANG}`, { credentials: 'same-origin' });
     const data = await res.json();
     if (data.status === 'completed') {
       BP = data;
@@ -438,12 +614,10 @@ function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
 function showPending(status) {
   const note = $('pendingNote');
   note.style.display = 'block';
-  note.innerHTML = status === 'none'
-    ? 'Je hebt nog geen blueprint-aanvraag. Vul de vragenlijst in op <a href="https://szinn.ai/intake" style="color:var(--gold-deep)">szinn.ai</a> en dit dashboard komt tot leven met jouw kaart, getallen en dagduiding.'
-    : 'Je Alignment Blueprint wordt <b>samengesteld</b> — dit kan een aantal uur duren. Zodra hij klaar is ontvang je een e-mail en vult dit dashboard zich met jouw kaart, getallen en dagduiding.';
-  set('dTheme', 'Je blueprint is onderweg');
-  set('dFocus', 'Kom straks terug — je ontvangt een e-mail zodra alles klaarstaat');
-  set('dQuestion', 'Wat hoop je in je blueprint te herkennen?');
+  note.innerHTML = status === 'none' ? T.pendingNone : T.pendingBusy;
+  set('dTheme', T.pThemeBusy);
+  set('dFocus', T.pFocusBusy);
+  set('dQuestion', T.pQBusy);
 }
 
 function fillFromBlueprint(d) {
@@ -452,39 +626,39 @@ function fillFromBlueprint(d) {
 
   // Kop & astrorij
   set('footLine', `SZINN · Companion Dashboard · ${d.clientName} · © ${new Date().getFullYear()} Elly Elizabeth Korving · Alterego BV · Alle rechten voorbehouden · szinn.ai`);
-  if (C.sun) set('aSun', `Zon in ${C.sun.sign}${C.sun.house ? ' · Huis ' + C.sun.house : ''}`);
-  if (C.moon) set('aMoon', `Maan in ${C.moon.sign}${C.moon.house ? ' · Huis ' + C.moon.house : ''}`);
-  if (C.ascendant) set('aAsc', `${C.ascendant.sign} Ascendant`);
+  if (C.sun) set('aSun', `${T.sunIn} ${sn(C.sun)}${C.sun.house ? ` · ${T.house} ` + C.sun.house : ''}`);
+  if (C.moon) set('aMoon', `${T.moonIn} ${sn(C.moon)}${C.moon.house ? ` · ${T.house} ` + C.moon.house : ''}`);
+  if (C.ascendant) set('aAsc', `${sn(C.ascendant)} ${T.asc}`);
 
   // Dagduiding (deterministisch uit blueprint; AI-knop vernieuwt)
   applyDay(d.day);
 
-  // De lucht vandaag
-  set('skyMoon', `Maan in ${d.sky.moonSign}`);
+  // De lucht vandaag (moonSign komt al in de juiste taal van de server)
+  set('skyMoon', `${T.moonToday} ${d.sky.moonSign}`);
   const nextNew = d.sky.nextNewMoon;
-  set('skySub', `${d.sky.waxing ? 'Wassende' : 'Afnemende'} maan${nextNew ? ' · naar de nieuwe maan van ' + fmtD(nextNew.date) : ''}`);
+  set('skySub', `${d.sky.waxing ? T.waxing : T.waning} ${LANG === 'en' ? 'moon' : 'maan'}${nextNew ? T.moonTo + ' ' + fmtD(nextNew.date) : ''}`);
 
   // Getallen
   set('nLP', N.lifePath); set('nPY', N.personalYear); set('nPM', N.personalMonth); set('nPD', N.personalDay);
 
   // Knopen
-  if (C.southNode) set('knZuid', C.southNode.sign);
-  if (C.northNode) set('knNoord', `${C.northNode.sign}${C.northNode.house ? ' · Huis ' + C.northNode.house : ''}`);
+  if (C.southNode) set('knZuid', sn(C.southNode));
+  if (C.northNode) set('knNoord', `${sn(C.northNode)}${C.northNode.house ? ` · ${T.house} ` + C.northNode.house : ''}`);
   if (t.nodes) {
     set('kpZuid', trunc(strip(t.nodes.south), 170));
     set('kpNoord', trunc(strip(t.nodes.north), 170));
   }
-  $('lnkNodes').href = `blueprint-viewer.html?id=${d.orderId}`;
+  $('lnkNodes').href = `blueprint-viewer.html?id=${d.orderId}${langQ}`;
 
   // Mandala
   if (d.mandala) $('mandala').innerHTML = d.mandala;
-  if (C.northNode) set('mandCap', `Flower of Life, jouw planeten op hun exacte graden, en je Merkaba gedraaid naar je Noordknoop in ${C.northNode.sign}.`);
+  if (C.northNode) set('mandCap', T.mandCap(sn(C.northNode)));
 
   // Gaven-regel
   if (d.day && d.day.gaven) set('dGifts', d.day.gaven);
 
   // Levenspad
-  set('lpEyebrow', `Jij bent in Levenspad ${N.lifePath} · ${N.lifePathName}`);
+  set('lpEyebrow', `${T.lifePathIn} ${N.lifePath} · ${N.lifePathName}`);
   const age = Math.floor((Date.now() - new Date(d.birthDate)) / 31557600000);
   document.querySelectorAll('#phaseRow .st').forEach(st => {
     st.classList.toggle('on', age >= parseInt(st.dataset.min, 10));
@@ -496,30 +670,30 @@ function fillFromBlueprint(d) {
   set('lpText', t.numerology ? firstPara(t.numerology.lifePathBody) : `${N.lifePathName}.`);
 
   // 9-jaarscyclus
-  set('cycTitle', `Jaar ${N.personalYear} van 9`);
+  set('cycTitle', `${T.yearOf} ${N.personalYear} ${T.of9}`);
   set('cycNum', N.personalYear);
   $('cycRing').setAttribute('stroke-dasharray', `${(201 * N.personalYear / 9).toFixed(1)} 999`);
   set('cycTheme', `${N.personalYearTheme} · ${N.personalYearEnergy}`);
   set('cycText', t.numerology ? firstPara(t.numerology.pyBody) : N.personalYearEnergy);
-  $('lnkNum').href = `blueprint-viewer.html?id=${d.orderId}`;
-  $('lnkCal').href = `blueprint-viewer.html?id=${d.orderId}`;
+  $('lnkNum').href = `blueprint-viewer.html?id=${d.orderId}${langQ}`;
+  $('lnkCal').href = `blueprint-viewer.html?id=${d.orderId}${langQ}`;
 
-  // Aankomende cycli
-  if (d.sky.nextNewMoon) { set('cmNew', `Nieuwe maan in ${d.sky.nextNewMoon.sign}`); set('cmNewD', fmtD(d.sky.nextNewMoon.date)); }
-  if (d.sky.nextFullMoon) { set('cmFull', `Volle maan in ${d.sky.nextFullMoon.sign}`); set('cmFullD', fmtD(d.sky.nextFullMoon.date)); }
-  if (d.sky.solarReturn) { set('cmSolar', `Zonne-terugkeer · ${d.sky.solarReturn.sign}`); set('cmSolarD', fmtD(d.sky.solarReturn.date)); }
+  // Aankomende cycli (signs komen al in de juiste taal van de server)
+  if (d.sky.nextNewMoon) { set('cmNew', `${T.newMoonIn} ${d.sky.nextNewMoon.sign}`); set('cmNewD', fmtD(d.sky.nextNewMoon.date)); }
+  if (d.sky.nextFullMoon) { set('cmFull', `${T.fullMoonIn} ${d.sky.nextFullMoon.sign}`); set('cmFullD', fmtD(d.sky.nextFullMoon.date)); }
+  if (d.sky.solarReturn) { set('cmSolar', `${T.solarReturn} · ${d.sky.solarReturn.sign}`); set('cmSolarD', fmtD(d.sky.solarReturn.date)); }
 
   // Schaduwkanten — rechtstreeks uit de blueprint-teksten
   const cards = [];
-  if (t.nodes && C.southNode) cards.push({ t: 'Het vertrouwde patroon', s: `Zuidknoop ${C.southNode.sign}${C.southNode.house ? ' · Huis ' + C.southNode.house : ''}`, d: strip(t.nodes.south) });
-  if (t.tikkun && t.tikkun.cards && t.tikkun.cards[0]) cards.push({ t: t.tikkun.cards[0].title || 'Kernthema', s: 'Tikkun · kernthema', d: strip(t.tikkun.cards[0].body) });
-  cards.push({ t: `De schaduw van de ${N.lifePath}`, s: `Levenspad ${N.lifePath} · ${N.lifePathName}`, d: `De keerzijde van jouw levenspad is ${N.lifePathShadow}. Herkennen is genoeg; je hoeft het niet op te lossen.` });
-  if (t.integration && t.integration.shadow) cards.push({ t: 'Jouw schaduwwerk', s: 'Integratie', d: strip(t.integration.shadow) });
+  if (t.nodes && C.southNode) cards.push({ t: T.shFamiliar, s: `${T.shSouth} ${sn(C.southNode)}${C.southNode.house ? ` · ${T.house} ` + C.southNode.house : ''}`, d: strip(t.nodes.south) });
+  if (t.tikkun && t.tikkun.cards && t.tikkun.cards[0]) cards.push({ t: t.tikkun.cards[0].title || T.shCore, s: T.shTikkun, d: strip(t.tikkun.cards[0].body) });
+  cards.push({ t: T.shLPt(N.lifePath), s: T.shLPs(N.lifePath, N.lifePathName), d: T.shLPd(N.lifePathShadow) });
+  if (t.integration && t.integration.shadow) cards.push({ t: T.shWork, s: T.shInt, d: strip(t.integration.shadow) });
   $('shadGrid').innerHTML = cards.slice(0, 4).map((c, i) => `
     <div class="shad">
       <div class="sh-top"><div class="sh-t"></div><div class="sh-src"></div></div>
       <div class="sh-d"></div>
-      <input type="range" min="0" max="100" value="50" data-si="${i}"><div class="sh-lab"><span>Hield me vast</span><span>Ik zag het, het verzachtte</span></div>
+      <input type="range" min="0" max="100" value="50" data-si="${i}"><div class="sh-lab"><span>${LANG === 'en' ? 'Held me' : 'Hield me vast'}</span><span>${LANG === 'en' ? 'I saw it, it softened' : 'Ik zag het, het verzachtte'}</span></div>
     </div>`).join('');
   document.querySelectorAll('#shadGrid .shad').forEach((el, i) => {
     el.querySelector('.sh-t').textContent = cards[i].t;
@@ -531,8 +705,8 @@ function fillFromBlueprint(d) {
     set('reflectQ', t.reflection.questions[idx]);
   }
 
-  $('readmore').href = `blueprint-viewer.html?id=${d.orderId}`;
-  $('navBlueprint').href = `blueprint-viewer.html?id=${d.orderId}`;
+  $('readmore').href = `blueprint-viewer.html?id=${d.orderId}${langQ}`;
+  $('navBlueprint').href = `blueprint-viewer.html?id=${d.orderId}${langQ}`;
   restoreDay(); // sliders opnieuw toepassen nu ze bestaan
 }
 
@@ -546,9 +720,9 @@ function applyDay(day) {
 
 // ── Dagduiding vernieuwen via de server (AI met blueprint-fallback) ─────────
 $('genBtn').addEventListener('click', async function () {
-  const b = this; b.disabled = true; const old = b.textContent; b.textContent = 'Even afstemmen…';
+  const b = this; b.disabled = true; const old = b.textContent; b.textContent = T.attuning;
   try {
-    const r = await fetch('/api/companion/day', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: '{}' });
+    const r = await fetch('/api/companion/day', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lang: LANG }) });
     const j = await r.json();
     if (r.ok) applyDay(j);
   } catch (e) { /* stil falen, oude tekst blijft staan */ }
@@ -560,7 +734,7 @@ const chatBox = $('chatBox'), chatLog = $('chatLog');
 let history = [];
 $('chatBtn').addEventListener('click', () => {
   chatBox.classList.toggle('open');
-  if (chatLog.childElementCount === 0) addMsg('a', 'Ik ben er. Je kunt me iets vragen over vandaag, over je kaart, of over waar je naartoe beweegt.');
+  if (chatLog.childElementCount === 0) addMsg('a', T.chatHello);
 });
 function addMsg(role, txt) {
   const div = document.createElement('div'); div.className = 'msg ' + role;
@@ -573,12 +747,12 @@ async function send() {
   inp.value = ''; addMsg('u', q); history.push({ role: 'user', content: q });
   const ph = addMsg('a', '…');
   try {
-    const r = await fetch('/api/companion/chat', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: history }) });
+    const r = await fetch('/api/companion/chat', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: history, lang: LANG }) });
     const j = await r.json();
-    const ans = j.content || j.error || 'Ik kan nu even niet afstemmen.';
+    const ans = j.content || j.error || T.chatErr;
     ph.lastChild.textContent = ans;
     history.push({ role: 'assistant', content: ans });
-  } catch (e) { ph.lastChild.textContent = 'Ik kan nu even niet afstemmen. Probeer het zo nog eens.'; }
+  } catch (e) { ph.lastChild.textContent = T.chatErr; }
   chatLog.scrollTop = chatLog.scrollHeight;
 }
 $('chatSend').addEventListener('click', send);
@@ -590,13 +764,13 @@ async function loadOrders() {
     const orders = await SzinnAPI.getOrders();
     renderOrders(orders);
   } catch (e) {
-    $('ordersGrid').innerHTML = '<div class="order-card">Kon aanvragen niet laden.</div>';
+    $('ordersGrid').innerHTML = `<div class="order-card">${T.ordersFail}</div>`;
   }
 }
 function renderOrders(orders) {
   const grid = $('ordersGrid');
   if (!orders.length) {
-    grid.innerHTML = '<div class="order-card">Nog geen aanvragen. Plaats je eerste bestelling op <a href="https://szinn.ai" style="color:var(--gold-deep)">szinn.ai</a>.</div>';
+    grid.innerHTML = `<div class="order-card">${T.ordersNone}</div>`;
     return;
   }
   grid.innerHTML = orders.map(o => `
@@ -609,19 +783,21 @@ function renderOrders(orders) {
     </div>`).join('');
 }
 function statusBadge(s) {
-  const m = { pending: 'Wachtend', questionnaire: 'Vragenlijst', processing: 'Wordt samengesteld', generating: 'Wordt samengesteld', failed: 'Vertraagd', completed: 'Voltooid' };
-  return `<span class="badge ${s === 'completed' ? 'badge-completed' : ''}">${m[s] || 'Wachtend'}</span>`;
+  const m = { pending: T.stWait, questionnaire: T.stQ, processing: T.stBusy, generating: T.stBusy, failed: T.stFail, completed: T.stDone };
+  return `<span class="badge ${s === 'completed' ? 'badge-completed' : ''}">${m[s] || T.stWait}</span>`;
 }
 function orderActions(o) {
   if (o.status === 'completed' && o.blueprintUrl) {
-    const en = (o.blueprintLanguages || []).includes('en') ? ` <a href="blueprint-viewer.html?id=${o.id}&lang=en" class="btn">EN</a>` : '';
-    const pdf = o.pdfAvailable ? ` <a href="/api/orders/${o.id}/pdf?lang=nl" class="btn">PDF</a>` : '';
-    return `<a href="blueprint-viewer.html?id=${o.id}" class="btn btn-primary">Blueprint bekijken</a>${en}${pdf}`;
+    const other = LANG === 'en'
+      ? ` <a href="blueprint-viewer.html?id=${o.id}" class="btn">NL</a>`
+      : ((o.blueprintLanguages || []).includes('en') ? ` <a href="blueprint-viewer.html?id=${o.id}&lang=en" class="btn">EN</a>` : '');
+    const pdf = o.pdfAvailable ? ` <a href="/api/orders/${o.id}/pdf?lang=${LANG}" class="btn">PDF</a>` : '';
+    return `<a href="blueprint-viewer.html?id=${o.id}${langQ}" class="btn btn-primary">${T.actView}</a>${other}${pdf}`;
   }
-  if (o.status === 'questionnaire') return `<a href="questionnaire.html?id=${o.id}" class="btn btn-primary">Vragenlijst invullen</a>`;
-  if (o.status === 'processing' || o.status === 'generating') return '<span class="btn" style="cursor:default;opacity:.6">Wordt samengesteld — dit kan een aantal uur duren</span>';
-  if (o.status === 'failed') return '<span class="btn" style="cursor:default;opacity:.6">Duurt langer dan verwacht — we zijn ermee bezig</span>';
-  return '<span class="btn" style="cursor:default;opacity:.5">Wachtend</span>';
+  if (o.status === 'questionnaire') return `<a href="questionnaire.html?id=${o.id}" class="btn btn-primary">${T.actFill}</a>`;
+  if (o.status === 'processing' || o.status === 'generating') return `<span class="btn" style="cursor:default;opacity:.6">${T.actBusy}</span>`;
+  if (o.status === 'failed') return `<span class="btn" style="cursor:default;opacity:.6">${T.actFail}</span>`;
+  return `<span class="btn" style="cursor:default;opacity:.5">${T.stWait}</span>`;
 }
 function escapeHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
@@ -634,7 +810,7 @@ document.querySelectorAll('.choice').forEach(c => c.addEventListener('click', ()
 document.querySelectorAll('.gift').forEach(g => g.addEventListener('click', () => { g.classList.toggle('on'); saveDay(); }));
 $('saveBtn').addEventListener('click', function () {
   saveDay();
-  this.querySelector('.ss').textContent = 'Bewaard ✓ Alleen voor jou zichtbaar.';
+  this.querySelector('.ss').textContent = T.saved;
 });
 function saveDay() {
   const data = {
