@@ -19,7 +19,7 @@ exports.handler = async (event) => {
   try { connectLambda(event); } catch (e) { console.error('connectLambda:', e.message); }
   let payload = {};
   try { payload = JSON.parse(event.body || '{}'); } catch {}
-  const { orderId, secret } = payload;
+  const { orderId, order, secret } = payload;
 
   if (secret !== SECRET()) {
     console.error('generate-blueprint: ongeldige trigger (secret klopt niet)');
@@ -29,7 +29,7 @@ exports.handler = async (event) => {
 
   console.log(`generate-blueprint gestart voor ${orderId}`);
   try {
-    const result = await runGeneration(orderId, { loadDB, saveDB, blueprintStore });
+    const result = await runGeneration(orderId, { loadDB, saveDB, blueprintStore, orderData: order });
     return { statusCode: 200, body: JSON.stringify(result) };
   } catch (err) {
     console.error(`generate-blueprint fataal voor ${orderId}:`, err);

@@ -104,7 +104,9 @@ async function ensureDemoData(db) {
 
 // Start de blueprint-generatie als background function (15 min limiet).
 // Fire-and-forget: de intake-response wacht alleen op de 202-acceptatie.
-async function triggerGeneration(orderId) {
+// De order gaat mee in de payload: Blobs is eventually consistent, dus de
+// background function ziet de zojuist opgeslagen order mogelijk nog niet.
+async function triggerGeneration(orderId, order) {
   const base = process.env.URL || process.env.DEPLOY_URL;
   if (!base) {
     console.log(`Generatie-trigger overgeslagen (geen site-URL bekend, lokaal?): ${orderId}`);
@@ -113,7 +115,7 @@ async function triggerGeneration(orderId) {
   const res = await fetch(`${base}/.netlify/functions/generate-blueprint-background`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ orderId, secret: TRIGGER_SECRET }),
+    body: JSON.stringify({ orderId, order: order || null, secret: TRIGGER_SECRET }),
   });
   console.log(`Generatie getriggerd voor ${orderId}: HTTP ${res.status}`);
   return res.status >= 200 && res.status < 300;
@@ -586,7 +588,7 @@ app.post('/api/intake/submit', async (req, res) => {
   }).catch(err => console.error('nieuwe-aanvraag-mail mislukt:', err.message));
 
   // Automatisch de generatie starten (background function, kan uren-melding tonen)
-  await triggerGeneration(orderId).catch(err => console.error('generatie-trigger mislukt:', err.message));
+  await triggerGeneration(orderId, order).catch(err => console.error('generatie-trigger mislukt:', err.message));
 
   // Auto-login
   setAuthCookie(res, { userId: user.id, email: user.email, name: user.name });
@@ -689,7 +691,7 @@ app.post('/api/admin/regenerate/:orderId', async (req, res) => {
   order.status = 'processing';
   order.generation_error = null;
   await saveDB(db);
-  const ok = await triggerGeneration(order.id);
+  const ok = await triggerGeneration(order.id, order);
   res.json({ ok, orderId: order.id });
 });
 
