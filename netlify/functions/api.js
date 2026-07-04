@@ -10,7 +10,7 @@ const jwt        = require('jsonwebtoken');
 const cookieLib  = require('cookie');
 const crypto     = require('crypto');
 const { blueprintStore, loadDB, saveDB } = require('../../lib/db');
-const { sendAccountEmail } = require('../../lib/email');
+const { sendAccountEmail, sendNewOrderEmail } = require('../../lib/email');
 
 const app = express();
 app.use(express.json());
@@ -453,6 +453,13 @@ app.post('/api/intake/submit', async (req, res) => {
     to: user.email, name: clientName || user.name,
     tempPassword, isNewAccount: !!tempPassword, lang: mailLang,
   }).catch(err => console.error('account-mail mislukt:', err.message));
+
+  // Admin-notificatie: nieuwe aanvraag binnengekomen
+  await sendNewOrderEmail({
+    orderId, clientName, email: user.email,
+    birthDate: order.birth_date, birthLocation: order.birth_location,
+    language: order.blueprint_language,
+  }).catch(err => console.error('nieuwe-aanvraag-mail mislukt:', err.message));
 
   // Automatisch de generatie starten (background function, kan uren-melding tonen)
   await triggerGeneration(orderId).catch(err => console.error('generatie-trigger mislukt:', err.message));
