@@ -29,7 +29,9 @@ for (const method of ['get', 'post', 'put', 'delete', 'use']) {
 }
 
 const JWT_SECRET      = process.env.JWT_SECRET      || 'szinn-jwt-2026-change-me';
-const ADMIN_PASSWORD  = process.env.ADMIN_PASSWORD  || 'szinn-admin';
+// trim(): een meegekopieerd regeleinde/spatie in de Netlify env var zou anders
+// elke login laten mislukken.
+const ADMIN_PASSWORD  = (process.env.ADMIN_PASSWORD  || 'szinn-admin').trim();
 const ADMIN_EMAIL     = (process.env.ADMIN_EMAIL || 'admin@szinn.ai').trim().toLowerCase();
 const DEMO_EMAIL      = (process.env.DEMO_EMAIL || 'demo@szinn.ai').trim().toLowerCase();
 const DEMO_PASSWORD   = process.env.DEMO_PASSWORD || 'szinn-demo';
