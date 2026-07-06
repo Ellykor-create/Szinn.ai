@@ -1,0 +1,172 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e5]: SZINN
+    - navigation [ref=e6]:
+      - link "◦ Dashboard" [ref=e7] [cursor=pointer]:
+        - /url: "#top"
+        - generic [ref=e8]: ◦
+        - generic [ref=e9]: Dashboard
+      - link "◦ Vandaag" [ref=e10] [cursor=pointer]:
+        - /url: "#vandaag"
+        - generic [ref=e11]: ◦
+        - generic [ref=e12]: Vandaag
+      - link "◦ Tikkun" [ref=e13] [cursor=pointer]:
+        - /url: "#schaduw"
+        - generic [ref=e14]: ◦
+        - text: Tikkun
+      - link "◦ Levenspad" [ref=e15] [cursor=pointer]:
+        - /url: "#levenspad"
+        - generic [ref=e16]: ◦
+        - generic [ref=e17]: Levenspad
+      - link "◦ Getallen" [ref=e18] [cursor=pointer]:
+        - /url: "#getallen"
+        - generic [ref=e19]: ◦
+        - generic [ref=e20]: Getallen
+      - link "◦ Cycli" [ref=e21] [cursor=pointer]:
+        - /url: "#cycli"
+        - generic [ref=e22]: ◦
+        - generic [ref=e23]: Cycli
+      - link "◦ Begeleiding" [ref=e24] [cursor=pointer]:
+        - /url: "#begeleiding"
+        - generic [ref=e25]: ◦
+        - generic [ref=e26]: Begeleiding
+      - link "◦ Dagboek" [ref=e27] [cursor=pointer]:
+        - /url: "#dagboek"
+        - generic [ref=e28]: ◦
+        - generic [ref=e29]: Dagboek
+      - link "◦ Bibliotheek" [ref=e30] [cursor=pointer]:
+        - /url: "#aanvragen"
+        - generic [ref=e31]: ◦
+        - generic [ref=e32]: Bibliotheek
+      - link "◦ Aanvragen" [ref=e33] [cursor=pointer]:
+        - /url: "#aanvragen"
+        - generic [ref=e34]: ◦
+        - generic [ref=e35]: Aanvragen
+      - link "◦ Uitloggen" [ref=e36] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=e37]: ◦
+        - generic [ref=e38]: Uitloggen
+  - main [ref=e39]:
+    - generic [ref=e40]:
+      - text: 📅
+      - generic [ref=e41]: …
+      - generic [ref=e42]:
+        - link "← szinn.ai" [ref=e43] [cursor=pointer]:
+          - /url: https://szinn.ai
+        - generic [ref=e44]:
+          - button "NL" [ref=e45] [cursor=pointer]
+          - button "EN" [ref=e46] [cursor=pointer]
+        - button "Uitloggen" [ref=e47] [cursor=pointer]
+    - heading "Welkom✦" [level=1] [ref=e48]
+    - generic [ref=e49]: Het universum is in beweging. Stem af op wat ertoe doet.
+    - generic [ref=e50]:
+      - generic [ref=e51]:
+        - generic [ref=e52]: ☉
+        - generic [ref=e53]:
+          - generic [ref=e54]: —
+          - generic [ref=e55]: Wie je in de kern bent
+      - generic [ref=e56]:
+        - generic [ref=e57]: ☽
+        - generic [ref=e58]:
+          - generic [ref=e59]: —
+          - generic [ref=e60]: Wat je van binnen nodig hebt
+      - generic [ref=e61]:
+        - generic [ref=e62]: ↑
+        - generic [ref=e63]:
+          - generic [ref=e64]: —
+          - generic [ref=e65]: Hoe je de wereld binnenkomt
+    - generic [ref=e66]:
+      - generic [ref=e67]: Sin
+      - generic [ref=e68]:
+        - generic [ref=e69]: Zien wat er is
+        - generic [ref=e70]: wat de dag je laat zien
+      - generic [ref=e71]: Herkenning
+    - generic [ref=e75]:
+      - generic [ref=e76]: Vandaag
+      - heading "Vandaag in één oogopslag" [level=2] [ref=e77]
+      - generic [ref=e78]:
+        - generic [ref=e79]:
+          - generic [ref=e80]: Thema
+          - generic [ref=e81]: —
+        - generic [ref=e82]:
+          - generic [ref=e83]: Focus
+          - generic [ref=e84]: —
+      - generic [ref=e85]:
+        - generic [ref=e86]: Vraag van de dag
+        - generic [ref=e87]: —
+      - generic [ref=e88] [cursor=pointer]: Lees je volledige blueprint →
+    - generic [ref=e89]:
+      - generic [ref=e91]: SZINN Companion · ik lees je kaart en de stand van vandaag, en stem de dagduiding daarop af. Vraag me gerust iets.
+      - button "Vernieuw dagduiding" [ref=e92] [cursor=pointer]
+      - button "Praat met je Companion" [ref=e93] [cursor=pointer]
+    - generic [ref=e94]:
+      - generic [ref=e95]: Sinn
+      - generic [ref=e96]:
+        - generic [ref=e97]: Voelen en richten
+        - generic [ref=e98]: wat jij in de dag brengt
+      - generic [ref=e99]: Helderheid
+    - generic [ref=e100]:
+      - generic [ref=e101]:
+        - generic [ref=e102]: De energie die je kiest
+        - heading "Stel je intentie" [level=2] [ref=e103]
+        - paragraph [ref=e104]: Je energie kiezen en je intentie zetten zijn één beweging. Kies waarmee je vandaag voorop wilt gaan.
+        - generic [ref=e105]:
+          - generic [ref=e106] [cursor=pointer]:
+            - generic [ref=e107]: Sin
+            - generic [ref=e108]: structuur · kracht · richting
+          - generic [ref=e109] [cursor=pointer]:
+            - generic [ref=e110]: Sinn
+            - generic [ref=e111]: gevoel · intuïtie · afstemming
+          - generic [ref=e112] [cursor=pointer]:
+            - generic [ref=e113]: Zin
+            - generic [ref=e114]: vreugde · vrijheid · creatie
+        - generic [ref=e115]: Mijn intentie voor vandaag
+        - textbox "Vandaag wil ik…" [ref=e116]
+        - generic [ref=e117]: In één woord, hoe voel je je nu?
+        - textbox "bijv. rustig, vol, helder, moe…" [ref=e118]
+      - generic [ref=e119]:
+        - generic [ref=e120]: Vermogens die je kunt inzetten
+        - heading "Jouw gaven" [level=2] [ref=e121]
+        - paragraph [ref=e122]: Zes innerlijke vermogens om op te leunen.
+        - generic [ref=e123]:
+          - generic [ref=e124] [cursor=pointer]: Intuïtie
+          - generic [ref=e125] [cursor=pointer]: Verbeeldingskracht
+          - generic [ref=e126] [cursor=pointer]: Geheugen
+          - generic [ref=e127] [cursor=pointer]: Waarneming
+          - generic [ref=e128] [cursor=pointer]: Redeneren
+          - generic [ref=e129] [cursor=pointer]: Wilskracht
+        - generic [ref=e130]: Tik op de gave waar je vandaag op wilt leunen.
+      - generic [ref=e131]:
+        - generic [ref=e132]: Drie dingen
+        - heading "Waar ben je dankbaar voor" [level=2] [ref=e133]
+        - generic [ref=e134]:
+          - generic [ref=e135]:
+            - generic [ref=e136]: "1"
+            - textbox [ref=e137]
+          - generic [ref=e138]:
+            - generic [ref=e139]: "2"
+            - textbox [ref=e140]
+          - generic [ref=e141]:
+            - generic [ref=e142]: "3"
+            - textbox [ref=e143]
+        - generic [ref=e144]: Dankbaarheid verschuift je energie sneller dan bijna iets anders. Klein mag.
+    - generic [ref=e145]:
+      - generic [ref=e146]: Zin
+      - generic [ref=e147]:
+        - generic [ref=e148]: Waar je staat
+        - generic [ref=e149]: wat je draagt en oogst
+      - generic [ref=e150]: Integratie
+    - generic [ref=e151]:
+      - generic [ref=e152]: ✦
+      - generic [ref=e153]:
+        - generic [ref=e154]: Jouw blueprints
+        - generic [ref=e155]: aanvragen en documenten
+      - generic [ref=e156]: Bibliotheek
+    - button "Leg mijn dag vast Privé bewaard, alleen voor jou zichtbaar" [ref=e157] [cursor=pointer]:
+      - text: Leg mijn dag vast
+      - generic [ref=e158]: Privé bewaard, alleen voor jou zichtbaar
+    - generic [ref=e159]:
+      - generic [ref=e160]: Je was nooit verloren, je was aan het herinneren.
+      - generic [ref=e161]:
+        - text: SZINN · Companion Dashboard · ©
+        - text: Elly Elizabeth Korving · Alterego BV · Alle rechten voorbehouden · szinn.ai

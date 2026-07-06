@@ -9,6 +9,18 @@
 [functions]
   node_bundler = "esbuild"
 
+# Background function: draait de blueprint-pipeline (max 15 min, vereist Netlify Pro).
+# Chromium wordt niet gebundeld maar meegekopieerd; de templates leest de renderer
+# van schijf en moeten dus expliciet mee in het function-pakket.
+[functions."generate-blueprint-background"]
+  external_node_modules = ["@sparticuz/chromium", "puppeteer-core"]
+  included_files = ["templates/*.html"]
+
+# De api-functie rendert de demo-blueprint bij het inloggen; de templates
+# moeten dus ook in dit function-pakket meegekopieerd worden.
+[functions."api"]
+  included_files = ["templates/*.html"]
+
 [[redirects]]
   from   = "/api/*"
   to     = "/.netlify/functions/api"

@@ -1,0 +1,86 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e5]:
+      - generic [ref=e6]: SZINN · szinn.ai
+      - heading "Jouw Alignment Blueprint begint hier" [level=1] [ref=e7]:
+        - text: Jouw
+        - emphasis [ref=e8]: Alignment
+        - text: Blueprint begint hier
+      - paragraph [ref=e9]: Neem de tijd. Er zijn geen goede of foute antwoorden — alleen jouw waarheid.
+  - generic [ref=e21]: Stap 1 van 8
+  - generic [ref=e22]:
+    - generic [ref=e23]:
+      - paragraph [ref=e24]: ✦ Bedankt voor je aankoop
+      - paragraph [ref=e25]: Vul je gegevens hieronder in om jouw Blueprint te maken.
+      - paragraph [ref=e26]: Je ontvangt ook een factuur per e-mail. Controleer je spammap en voeg ons toe aan je veilige afzenders zodat onze e-mails altijd aankomen.
+    - generic [ref=e27]:
+      - paragraph [ref=e28]: Stap 1 — Jouw gegevens
+      - heading "Wie ben jij?" [level=2] [ref=e29]:
+        - text: Wie
+        - emphasis [ref=e30]: ben jij?
+      - paragraph [ref=e31]: Deze gegevens vormen de basis van jouw persoonlijke berekeningen. Vul je geboortetijd en -plaats zo nauwkeurig mogelijk in.
+      - generic [ref=e32]:
+        - generic [ref=e33]:
+          - generic [ref=e34]: Voornaam
+          - textbox "Jouw voornaam" [ref=e35]
+        - generic [ref=e36]:
+          - generic [ref=e37]: Achternaam
+          - textbox "Jouw achternaam" [ref=e38]
+      - generic [ref=e39]:
+        - generic [ref=e40]: Volledige geboortenaam
+        - paragraph [ref=e41]: Zoals je volledige naam op je geboorteakte staat, met al je voornamen. SZINN gebruikt deze naam voor je numerologie. Wijkt hij af van de naam hierboven (bijvoorbeeld een meisjesnaam of extra voornamen)? Vul hem dan hier volledig in.
+        - textbox "Bijv. Anna Maria van der Berg" [ref=e42]
+      - generic [ref=e43]:
+        - generic [ref=e44]: E-mailadres
+        - textbox "jouw@email.nl" [ref=e45]
+      - separator [ref=e46]
+      - generic [ref=e47]:
+        - generic [ref=e48]:
+          - generic [ref=e49]: Geboortedatum
+          - textbox [ref=e50]
+        - generic [ref=e51]:
+          - generic [ref=e52]: Geboortetijd (zo exact mogelijk)
+          - textbox [ref=e53]
+        - generic [ref=e54]:
+          - generic [ref=e55]: Geboorteland
+          - combobox [ref=e56] [cursor=pointer]:
+            - option "— Selecteer —" [selected]
+            - option "Nederland"
+            - option "België"
+            - option "Duitsland"
+            - option "Frankrijk"
+            - option "Verenigd Koninkrijk"
+            - option "Spanje"
+            - option "Italië"
+            - option "Zwitserland"
+            - option "Oostenrijk"
+            - option "Verenigde Staten"
+            - option "Canada"
+            - option "Australië"
+            - option "Zuid-Afrika"
+            - option "Anders"
+      - generic [ref=e57]:
+        - generic [ref=e58]: Geboorteplaats
+        - paragraph [ref=e59]: Typ je geboortestad en kies de juiste plaats uit de lijst. SZINN vult dan automatisch de exacte coördinaten en tijdzone in, net zoals astro.com dat doet.
+        - textbox "Begin te typen, bijv. Amsterdam" [ref=e61]
+        - generic [ref=e62]:
+          - generic [ref=e63]: ◇
+          - button "wijzigen" [ref=e64] [cursor=pointer]
+        - button "Plaats niet gevonden? Coördinaten handmatig invullen" [ref=e65] [cursor=pointer]
+      - generic [ref=e66]:
+        - generic [ref=e67]: In welke taal wil je je Blueprint ontvangen?
+        - combobox [ref=e68] [cursor=pointer]:
+          - option "— Kies een taal —" [selected]
+          - option "Nederlands"
+          - option "Engels"
+      - generic [ref=e69]:
+        - button "Opslaan, later verdergaan" [ref=e70] [cursor=pointer]
+        - button "Volgende →" [ref=e71] [cursor=pointer]
+    - text: +
+  - contentinfo [ref=e72]:
+    - img "SZINN logo" [ref=e74]
+    - generic [ref=e75]: SZINN
+    - generic [ref=e76]: Alignment Blueprint™
+    - text: © 2026 Elly Elizabeth Korving · Alterego BV · All rights reserved ·
+    - link "Privacy" [ref=e77] [cursor=pointer]:
+      - /url: /privacy

@@ -1,0 +1,175 @@
+- generic [ref=e2]:
+  - complementary [ref=e3]:
+    - generic [ref=e4]:
+      - generic [ref=e5]: SZINN
+      - generic [ref=e6]: Alignment Blueprint
+    - navigation [ref=e7]:
+      - link "◦ Dashboard" [ref=e8] [cursor=pointer]:
+        - /url: "#top"
+        - generic [ref=e9]: ◦
+        - generic [ref=e10]: Dashboard
+      - link "◦ Today" [ref=e11] [cursor=pointer]:
+        - /url: "#vandaag"
+        - generic [ref=e12]: ◦
+        - generic [ref=e13]: Today
+      - link "◦ Tikkun" [ref=e14] [cursor=pointer]:
+        - /url: "#schaduw"
+        - generic [ref=e15]: ◦
+        - text: Tikkun
+      - link "◦ Life path" [ref=e16] [cursor=pointer]:
+        - /url: "#levenspad"
+        - generic [ref=e17]: ◦
+        - generic [ref=e18]: Life path
+      - link "◦ Numbers" [ref=e19] [cursor=pointer]:
+        - /url: "#getallen"
+        - generic [ref=e20]: ◦
+        - generic [ref=e21]: Numbers
+      - link "◦ Cycles" [ref=e22] [cursor=pointer]:
+        - /url: "#cycli"
+        - generic [ref=e23]: ◦
+        - generic [ref=e24]: Cycles
+      - link "◦ Guidance" [ref=e25] [cursor=pointer]:
+        - /url: "#begeleiding"
+        - generic [ref=e26]: ◦
+        - generic [ref=e27]: Guidance
+      - link "◦ Journal" [ref=e28] [cursor=pointer]:
+        - /url: "#dagboek"
+        - generic [ref=e29]: ◦
+        - generic [ref=e30]: Journal
+      - link "◦ Library" [ref=e31] [cursor=pointer]:
+        - /url: "#aanvragen"
+        - generic [ref=e32]: ◦
+        - generic [ref=e33]: Library
+      - link "◦ Orders" [ref=e34] [cursor=pointer]:
+        - /url: "#aanvragen"
+        - generic [ref=e35]: ◦
+        - generic [ref=e36]: Orders
+      - link "◦ Log out" [ref=e37] [cursor=pointer]:
+        - /url: "#"
+        - generic [ref=e38]: ◦
+        - generic [ref=e39]: Log out
+    - generic [ref=e40]:
+      - generic [ref=e41]: Today's intention
+      - generic [ref=e42]: One real step is enough.
+  - main [ref=e43]:
+    - generic [ref=e44]:
+      - text: 📅
+      - generic [ref=e45]: Saturday, 4 July 2026
+      - generic [ref=e46]:
+        - link "← szinn.ai" [ref=e47] [cursor=pointer]:
+          - /url: https://szinn.ai
+        - generic [ref=e48]:
+          - button "NL" [ref=e49] [cursor=pointer]
+          - button "EN" [ref=e50] [cursor=pointer]
+        - button "Log out" [ref=e51] [cursor=pointer]
+    - heading "Good afternoon, Barry✦" [level=1] [ref=e52]
+    - generic [ref=e53]: The universe is in motion. Attune to what matters.
+    - generic [ref=e54]:
+      - generic [ref=e55]:
+        - generic [ref=e56]: ☉
+        - generic [ref=e57]:
+          - generic [ref=e58]: —
+          - generic [ref=e59]: Who you are at the core
+      - generic [ref=e60]:
+        - generic [ref=e61]: ☽
+        - generic [ref=e62]:
+          - generic [ref=e63]: —
+          - generic [ref=e64]: What you need inside
+      - generic [ref=e65]:
+        - generic [ref=e66]: ↑
+        - generic [ref=e67]:
+          - generic [ref=e68]: —
+          - generic [ref=e69]: How you enter the world
+    - generic [ref=e70]:
+      - generic [ref=e71]: Sin
+      - generic [ref=e72]:
+        - generic [ref=e73]: Seeing what is
+        - generic [ref=e74]: what the day shows you
+      - generic [ref=e75]: Recognition
+    - generic [ref=e79]:
+      - generic [ref=e80]: Saturday, 4 July 2026
+      - heading "Today at a glance" [level=2] [ref=e81]
+      - generic [ref=e82]:
+        - generic [ref=e83]:
+          - generic [ref=e84]: Theme
+          - generic [ref=e85]: —
+        - generic [ref=e86]:
+          - generic [ref=e87]: Focus
+          - generic [ref=e88]: —
+      - generic [ref=e89]:
+        - generic [ref=e90]: Question of the day
+        - generic [ref=e91]: —
+      - generic [ref=e92] [cursor=pointer]: Read your full blueprint →
+    - generic [ref=e93]:
+      - generic [ref=e95]: SZINN Companion · I read your chart and today's sky, and attune the daily reading to it. Feel free to ask me anything.
+      - button "Refresh daily reading" [ref=e96] [cursor=pointer]
+      - button "Talk to your Companion" [ref=e97] [cursor=pointer]
+    - generic [ref=e98]:
+      - generic [ref=e99]: Sinn
+      - generic [ref=e100]:
+        - generic [ref=e101]: Feeling and directing
+        - generic [ref=e102]: what you bring to the day
+      - generic [ref=e103]: Clarity
+    - generic [ref=e104]:
+      - generic [ref=e105]:
+        - generic [ref=e106]: The energy you choose
+        - heading "Set your intention" [level=2] [ref=e107]
+        - paragraph [ref=e108]: Choosing your energy and setting your intention are one movement. Choose what you want to lead with today.
+        - generic [ref=e109]:
+          - generic [ref=e110] [cursor=pointer]:
+            - generic [ref=e111]: Sin
+            - generic [ref=e112]: structure · strength · direction
+          - generic [ref=e113] [cursor=pointer]:
+            - generic [ref=e114]: Sinn
+            - generic [ref=e115]: feeling · intuition · attunement
+          - generic [ref=e116] [cursor=pointer]:
+            - generic [ref=e117]: Zin
+            - generic [ref=e118]: joy · freedom · creation
+        - generic [ref=e119]: My intention for today
+        - textbox "Today I want to…" [ref=e120]
+        - generic [ref=e121]: In one word, how do you feel right now?
+        - textbox "e.g. calm, full, clear, tired…" [ref=e122]
+      - generic [ref=e123]:
+        - generic [ref=e124]: Capacities you can draw on
+        - heading "Your gifts" [level=2] [ref=e125]
+        - paragraph [ref=e126]: Six inner capacities to lean on.
+        - generic [ref=e127]:
+          - generic [ref=e128] [cursor=pointer]: Intuition
+          - generic [ref=e129] [cursor=pointer]: Imagination
+          - generic [ref=e130] [cursor=pointer]: Memory
+          - generic [ref=e131] [cursor=pointer]: Perception
+          - generic [ref=e132] [cursor=pointer]: Reasoning
+          - generic [ref=e133] [cursor=pointer]: Willpower
+        - generic [ref=e134]: Tap the gift you want to lean on today.
+      - generic [ref=e135]:
+        - generic [ref=e136]: Three things
+        - heading "What are you grateful for" [level=2] [ref=e137]
+        - generic [ref=e138]:
+          - generic [ref=e139]:
+            - generic [ref=e140]: "1"
+            - textbox [ref=e141]
+          - generic [ref=e142]:
+            - generic [ref=e143]: "2"
+            - textbox [ref=e144]
+          - generic [ref=e145]:
+            - generic [ref=e146]: "3"
+            - textbox [ref=e147]
+        - generic [ref=e148]: Gratitude shifts your energy faster than almost anything. Small counts.
+    - generic [ref=e149]:
+      - generic [ref=e150]: Zin
+      - generic [ref=e151]:
+        - generic [ref=e152]: Where you stand
+        - generic [ref=e153]: what you carry and harvest
+      - generic [ref=e154]: Integration
+    - generic [ref=e155]:
+      - generic [ref=e156]: ✦
+      - generic [ref=e157]:
+        - generic [ref=e158]: Your blueprints
+        - generic [ref=e159]: orders and documents
+      - generic [ref=e160]: Library
+    - button "Capture my day Stored privately, visible only to you" [ref=e161] [cursor=pointer]:
+      - text: Capture my day
+      - generic [ref=e162]: Stored privately, visible only to you
+    - generic [ref=e163]:
+      - generic [ref=e164]: You were never lost, you were remembering.
+      - generic [ref=e165]: SZINN · Companion Dashboard · © 2026 Elly Elizabeth Korving · Alterego BV · Alle rechten voorbehouden · szinn.ai

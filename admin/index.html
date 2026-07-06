@@ -110,7 +110,8 @@ textarea:focus { border-color: var(--gold); }
   <div class="login-box">
     <h1>SZINN Admin</h1>
     <p>Blueprint Beheer · Inloggen</p>
-    <input type="password" id="admin-pw" placeholder="Wachtwoord" autocomplete="off">
+    <input type="email" id="admin-email" placeholder="E-mailadres (bijv. admin@szinn.ai)" autocomplete="username">
+    <input type="password" id="admin-pw" placeholder="Wachtwoord" autocomplete="current-password">
     <button class="btn" style="width:100%" onclick="adminLogin()">Inloggen</button>
     <div class="err" id="login-err"></div>
   </div>
@@ -133,6 +134,25 @@ textarea:focus { border-color: var(--gold); }
       <strong>Werkwijze zonder API-kosten:</strong><br>
       1. Klik <strong>Genereer Prompt</strong> bij een aanvraag · 2. Kopieer de prompt en plak in <strong>claude.ai</strong> ·
       3. Kopieer de HTML die Claude teruggeeft · 4. Plak de HTML in het venster en klik <strong>Opslaan Blueprint</strong>
+    </div>
+
+    <!-- Prompt aanscherpen -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:22px;margin-bottom:28px">
+      <h3 style="margin-bottom:6px">Prompt aanscherpen</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">
+        Aanvullende schrijfinstructies die bij <strong>elke volgende blueprint-generatie</strong> (en hergeneratie) worden meegestuurd,
+        bovenop de vaste basisprompt. Bij tegenstrijdigheid gaan jouw instructies vóór. Leeg laten = alleen de basisprompt.
+      </p>
+      <textarea id="prompt-addendum" style="height:150px;font-family:'Segoe UI',sans-serif;font-size:13px"
+        placeholder="Bijv.:&#10;- Schrijf de introductie compacter, maximaal 2 alinea's.&#10;- Vermijd het woord 'kosmisch'.&#10;- Sluit elke sectie af met één concrete, kleine actie voor vandaag."></textarea>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:10px">
+        <button class="btn btn-sm" onclick="savePromptSettings()">Opslaan</button>
+        <span id="prompt-status" style="font-size:12px;color:var(--muted)"></span>
+      </div>
+      <details style="margin-top:14px">
+        <summary style="font-size:12px;color:var(--gold);cursor:pointer">Bekijk de vaste basisprompt (ter referentie, niet bewerkbaar)</summary>
+        <textarea id="prompt-base" readonly style="height:220px;margin-top:10px"></textarea>
+      </details>
     </div>
 
     <div class="orders-wrap">
@@ -213,16 +233,21 @@ let currentPromptText = '';
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
 async function adminLogin() {
-  const pw = document.getElementById('admin-pw').value;
-  const r  = await fetch('/api/admin/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ password: pw }) });
+  const email = document.getElementById('admin-email').value.trim();
+  const pw    = document.getElementById('admin-pw').value;
+  const r  = await fetch('/api/admin/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password: pw }) });
   if (r.ok) {
+    document.getElementById('login-err').textContent = '';
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     loadOrders();
+    loadPromptSettings();
   } else {
-    document.getElementById('login-err').textContent = 'Onjuist wachtwoord';
+    const data = await r.json().catch(() => ({}));
+    document.getElementById('login-err').textContent = data.error || 'Onjuist e-mailadres of wachtwoord';
   }
 }
+document.getElementById('admin-email').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('admin-pw').focus(); });
 document.getElementById('admin-pw').addEventListener('keydown', e => { if (e.key === 'Enter') adminLogin(); });
 
 async function adminLogout() {
@@ -254,21 +279,77 @@ function renderOrders(orders) {
     const date = o.created_at ? new Date(o.created_at).toLocaleString('nl-NL', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
     const canGenerate = o.intake_data && o.intake_data !== '{}';
     const hasBlueprint = o.blueprint_url;
+    const err = o.generation_error
+      ? `<div style="font-size:10px;color:var(--red);max-width:220px;margin-top:4px;line-height:1.4" title="${String(o.generation_error).replace(/"/g,'&quot;')}">${String(o.generation_error).slice(0,120)}</div>`
+      : '';
     return `<tr>
       <td style="font-family:monospace;font-size:11px">${o.id}</td>
       <td><strong>${o.client_name}</strong></td>
       <td style="font-size:12px;color:var(--muted)">${o.email || '—'}</td>
       <td style="font-size:12px">${o.birth_date || '—'} ${o.birth_time ? '· ' + o.birth_time : ''}</td>
       <td style="font-size:11px;color:var(--muted)">${date}</td>
-      <td>${statusBadge(o.status)}</td>
+      <td>${statusBadge(o.status)}${err}</td>
       <td>
         <div class="actions">
-          ${canGenerate ? `<button class="btn btn-sm" onclick="openPromptModal('${o.id}', '${o.client_name.replace(/'/g,"\\'")}')">Genereer Prompt</button>` : '<span style="font-size:11px;color:var(--muted)">Geen intake-data</span>'}
+          ${canGenerate ? `<button class="btn btn-green btn-sm" onclick="regenerateOrder('${o.id}', '${o.status}')">⟳ ${o.status === 'failed' ? 'Herstart generatie' : 'Genereer'}</button>` : ''}
+          ${canGenerate ? `<button class="btn btn-ghost btn-sm" onclick="openPromptModal('${o.id}', '${o.client_name.replace(/'/g,"\\'")}')">Prompt (handmatig)</button>` : '<span style="font-size:11px;color:var(--muted)">Geen intake-data</span>'}
           ${hasBlueprint ? `<a href="${o.blueprint_url}" target="_blank" class="btn btn-ghost btn-sm">Bekijk Blueprint</a>` : ''}
         </div>
       </td>
     </tr>`;
   }).join('');
+}
+
+// ── Prompt-instellingen ───────────────────────────────────────────────────────
+async function loadPromptSettings() {
+  try {
+    const r = await fetch('/api/admin/prompt-settings');
+    if (!r.ok) return;
+    const data = await r.json();
+    document.getElementById('prompt-addendum').value = data.addendum || '';
+    document.getElementById('prompt-base').value = data.basePrompt || '';
+    document.getElementById('prompt-status').textContent = data.updatedAt
+      ? 'Laatst gewijzigd: ' + new Date(data.updatedAt).toLocaleString('nl-NL')
+      : '';
+  } catch (e) { /* stil */ }
+}
+
+async function savePromptSettings() {
+  const addendum = document.getElementById('prompt-addendum').value;
+  const status = document.getElementById('prompt-status');
+  status.textContent = 'Opslaan…';
+  const r = await fetch('/api/admin/prompt-settings', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ addendum })
+  });
+  if (r.ok) {
+    status.textContent = '✓ Opgeslagen — geldt voor alle volgende generaties';
+    showToast('✓ Prompt-aanscherping opgeslagen');
+  } else {
+    const data = await r.json().catch(() => ({}));
+    status.textContent = '';
+    showToast('Fout: ' + (data.error || r.status), true);
+  }
+}
+
+// ── Automatische (her)generatie via de pipeline ───────────────────────────────
+async function regenerateOrder(orderId, status) {
+  const msg = status === 'completed'
+    ? 'Deze aanvraag is al voltooid. Opnieuw genereren overschrijft de bestaande blueprint. Doorgaan?'
+    : 'De automatische generatie wordt (opnieuw) gestart. Dit duurt enkele minuten. Doorgaan?';
+  if (!confirm(msg)) return;
+  showToast('Generatie wordt gestart…');
+  const r = await fetch(`/api/admin/regenerate/${orderId}`, { method: 'POST' });
+  const data = await r.json().catch(() => ({}));
+  if (r.ok && data.ok) {
+    showToast('✓ Generatie gestart — vernieuw over een paar minuten om de status te zien');
+  } else if (r.ok) {
+    showToast('Trigger niet geaccepteerd — controleer de Netlify function logs', true);
+  } else {
+    showToast('Fout: ' + (data.error || r.status), true);
+  }
+  setTimeout(loadOrders, 1500);
 }
 
 // ── Prompt modal ──────────────────────────────────────────────────────────────
