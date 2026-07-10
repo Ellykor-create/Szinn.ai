@@ -105,6 +105,9 @@ nav{
   white-space:nowrap;transition:color .2s;
 }
 .nav-links a:hover,.nav-links a.active{color:var(--gold);}
+.nav-links a.nav-event{color:var(--gold);font-weight:500;}
+.nav-links a.nav-event::before{content:"✦";margin-right:5px;font-size:8px;vertical-align:middle;}
+.nav-links a.nav-event:hover{color:var(--gold2);}
 
 /* GOLD RULE */
 .gr{height:1px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold2),var(--gold),transparent);}
@@ -587,6 +590,7 @@ p.center{text-align:center;}
     <a href="#elly">Elly Elizabeth</a>
     <a href="#bestellen">Bestellen</a>
     <a href="#ervaringen">Reviews</a>
+    <a href="/save-the-date" class="nav-event">22 Augustus</a>
   </div>
   <div class="nav-cta">
     <a href="/szinn-portal/pages/login.html" class="btn-login" id="nav-portal-link">Mijn portaal</a>
