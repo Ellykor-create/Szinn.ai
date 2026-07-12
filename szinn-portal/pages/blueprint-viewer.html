@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SZINN — Alignment Blueprint</title>
-  <link rel="stylesheet" href="../css/variables.css">
-  <link rel="stylesheet" href="../css/global.css">
-  <link rel="stylesheet" href="../css/nav.css">
+  <link rel="stylesheet" href="/szinn-portal/css/variables.css">
+  <link rel="stylesheet" href="/szinn-portal/css/global.css">
+  <link rel="stylesheet" href="/szinn-portal/css/nav.css">
   <style>
     .viewer-page {
       padding: 3vh 0 6vh;
@@ -47,20 +47,22 @@
       gap: 10px;
     }
 
-    /* Blueprint iframe container */
+    /* Blueprint iframe container — de blueprint scrollt binnen dit kader,
+       zodat de eigen (sticky) navigatie van de blueprint blijft meelopen. */
     .blueprint-frame-wrapper {
       background: white;
       border: 1px solid var(--border);
       border-radius: var(--r);
       overflow: hidden;
       box-shadow: var(--shadow-lg);
-      min-height: 80vh;
+      height: calc(100vh - 190px);
+      min-height: 480px;
       position: relative;
     }
 
     .blueprint-frame {
       width: 100%;
-      min-height: 80vh;
+      height: 100%;
       border: none;
       display: block;
     }
@@ -114,7 +116,7 @@
   <main class="container">
     <div class="viewer-page fade-up">
       <div class="viewer-toolbar">
-        <a href="dashboard.html" class="viewer-back">← Terug naar dashboard</a>
+        <a href="/portaal" class="viewer-back">← Terug naar dashboard</a>
 
         <div class="viewer-info" id="viewer-info">
           <span class="eyebrow">Alignment Blueprint</span>
@@ -141,7 +143,7 @@
         <iframe class="blueprint-frame"
                 id="blueprint-frame"
                 style="display: none;"
-                sandbox="allow-same-origin allow-scripts"
+                sandbox="allow-same-origin allow-scripts allow-modals allow-popups allow-downloads"
                 title="Alignment Blueprint">
         </iframe>
       </div>
@@ -149,16 +151,17 @@
       <div class="viewer-error" id="viewer-error">
         <h3>Blueprint niet gevonden</h3>
         <p>Deze Blueprint is nog niet beschikbaar of het adres is onjuist.</p>
-        <a href="dashboard.html" class="btn btn-primary">Terug naar dashboard</a>
+        <a href="/portaal" class="btn btn-primary">Terug naar dashboard</a>
       </div>
     </div>
   </main>
 
   <div id="szinn-footer"></div>
 
-  <script src="../js/auth.js"></script>
-  <script src="../js/api.js"></script>
-  <script src="../js/nav.js"></script>
+  <script src="/szinn-portal/js/auth.js"></script>
+  <script src="/szinn-portal/js/api.js"></script>
+  <script src="/szinn-portal/js/nav.js"></script>
+  <script src="/szinn-portal/js/companion-drawer.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
     const orderId = params.get('id');
@@ -197,15 +200,8 @@
         frame.addEventListener('load', () => {
           document.getElementById('viewer-loading').style.display = 'none';
           frame.style.display = 'block';
-
-          // Auto-resize iframe to content height
-          try {
-            const contentHeight = frame.contentDocument.body.scrollHeight;
-            frame.style.minHeight = contentHeight + 'px';
-          } catch (e) {
-            // Cross-origin fallback
-            frame.style.minHeight = '200vh';
-          }
+          // De iframe heeft een vaste hoogte en scrollt intern; daardoor blijft
+          // de sticky navigatie van de blueprint in beeld en werkt de scrollspy.
         });
 
         frame.addEventListener('error', showError);
@@ -223,9 +219,14 @@
     function printBlueprint() {
       const frame = document.getElementById('blueprint-frame');
       try {
+        // Alleen de blueprint zelf printen (zonder portal-omgeving).
+        frame.contentWindow.focus();
         frame.contentWindow.print();
       } catch (e) {
-        window.print();
+        // Laatste redmiddel: open de blueprint los in een nieuw tabblad om te printen.
+        const url = `${currentOrder.blueprintUrl}?lang=${lang}`;
+        const w = window.open(url, '_blank');
+        if (!w) window.print();
       }
     }
 
@@ -247,8 +248,11 @@
 
     function downloadPDF() {
       if (currentOrder && currentOrder.pdfAvailable) {
-        window.open(`/api/orders/${orderId}/pdf?lang=${lang}`, '_blank');
+        const url = `/api/orders/${orderId}/pdf?lang=${lang}`;
+        const w = window.open(url, '_blank');
+        if (!w) window.location.href = url; // popup geblokkeerd → directe download
       } else {
+        // Nog geen kant-en-klare PDF: gebruik de print-dialoog ("Opslaan als PDF").
         printBlueprint();
       }
     }

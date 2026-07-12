@@ -23,14 +23,14 @@ const SzinnNav = {
     nav.innerHTML = `
       <nav class="nav">
         <div class="nav-inner">
-          <a href="/szinn-portal/pages/dashboard.html" class="nav-logo">
+          <a href="/portaal" class="nav-logo">
             <img src="/szinn-portal/assets/img/logo-gold.png" alt="SZINN" onerror="this.style.display='none'">
             <span class="nav-logo-text">SZINN</span>
           </a>
 
           <ul class="nav-links" id="nav-links">
-            <li><a href="/szinn-portal/pages/dashboard.html" data-page="dashboard">Dashboard</a></li>
-            <li><a href="/szinn-portal/pages/questionnaire.html" data-page="questionnaire">Vragenlijst</a></li>
+            <li><a href="/portaal" data-page="dashboard">Dashboard</a></li>
+            <li><a href="/portaal/vragenlijst" data-page="questionnaire">Vragenlijst</a></li>
             <li><a href="#" onclick="SzinnAuth.logout(); return false;">Uitloggen</a></li>
           </ul>
 

@@ -263,6 +263,7 @@ svg{display:block}
       <a class="nav-item" href="#dagboek"><span class="ni">&#9702;</span><span data-i18n="navJournal">Dagboek</span></a>
       <a class="nav-item" id="navBlueprint" href="#aanvragen"><span class="ni">&#9702;</span><span data-i18n="navLibrary">Bibliotheek</span></a>
       <a class="nav-item" href="#aanvragen"><span class="ni">&#9702;</span><span data-i18n="navOrders">Aanvragen</span></a>
+      <a class="nav-item" href="/cadeau"><span class="ni">&#10022;</span><span data-i18n="navGift">Cadeau geven</span></a>
       <a class="nav-item" href="#" onclick="SzinnAuth.logout(); return false;"><span class="ni">&#9702;</span><span data-i18n="navLogout">Uitloggen</span></a>
     </nav>
     <div class="intention">
@@ -455,8 +456,9 @@ svg{display:block}
   </main>
 </div>
 
-<script src="../js/auth.js"></script>
-<script src="../js/api.js"></script>
+<script src="/szinn-portal/js/auth.js"></script>
+<script src="/szinn-portal/js/api.js"></script>
+<script src="/szinn-portal/js/companion-drawer.js"></script>
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
 // Alle blokdata komt uit /api/companion/blueprint: laag 1 (berekend) + laag 2
@@ -477,7 +479,7 @@ const fmtD = (d) => new Date(d).toLocaleDateString(LOCALE, { day: 'numeric', mon
 // Vertalingen voor alle vaste teksten; NL staat al in de HTML.
 const I18N_EN = {
   navDash:'Dashboard', navToday:'Today', navLifepath:'Life path', navNumbers:'Numbers', navCycles:'Cycles',
-  navGuide:'Guidance', navJournal:'Journal', navLibrary:'Library', navOrders:'Orders', navLogout:'Log out',
+  navGuide:'Guidance', navJournal:'Journal', navLibrary:'Library', navOrders:'Orders', navGift:'Give a gift', navLogout:'Log out',
   intentToday:"Today's intention",
   sub:'The universe is in motion. Attune to what matters.',
   dSun:'Who you are at the core', dMoon:'What you need inside', dAsc:'How you enter the world',
@@ -667,7 +669,7 @@ function fillFromBlueprint(d) {
     set('kpZuid', trunc(strip(t.nodes.south), 170));
     set('kpNoord', trunc(strip(t.nodes.north), 170));
   }
-  $('lnkNodes').href = `blueprint-viewer.html?id=${d.orderId}${langQ}`;
+  $('lnkNodes').href = `/portaal/blueprint?id=${d.orderId}${langQ}`;
 
   // Mandala
   if (d.mandala) $('mandala').innerHTML = d.mandala;
@@ -694,8 +696,8 @@ function fillFromBlueprint(d) {
   $('cycRing').setAttribute('stroke-dasharray', `${(201 * N.personalYear / 9).toFixed(1)} 999`);
   set('cycTheme', `${N.personalYearTheme} · ${N.personalYearEnergy}`);
   set('cycText', t.numerology ? firstPara(t.numerology.pyBody) : N.personalYearEnergy);
-  $('lnkNum').href = `blueprint-viewer.html?id=${d.orderId}${langQ}`;
-  $('lnkCal').href = `blueprint-viewer.html?id=${d.orderId}${langQ}`;
+  $('lnkNum').href = `/portaal/blueprint?id=${d.orderId}${langQ}`;
+  $('lnkCal').href = `/portaal/blueprint?id=${d.orderId}${langQ}`;
 
   // Aankomende cycli (signs komen al in de juiste taal van de server)
   if (d.sky.nextNewMoon) { set('cmNew', `${T.newMoonIn} ${d.sky.nextNewMoon.sign}`); set('cmNewD', fmtD(d.sky.nextNewMoon.date)); }
@@ -724,8 +726,8 @@ function fillFromBlueprint(d) {
     set('reflectQ', t.reflection.questions[idx]);
   }
 
-  $('readmore').href = `blueprint-viewer.html?id=${d.orderId}${langQ}`;
-  $('navBlueprint').href = `blueprint-viewer.html?id=${d.orderId}${langQ}`;
+  $('readmore').href = `/portaal/blueprint?id=${d.orderId}${langQ}`;
+  $('navBlueprint').href = `/portaal/blueprint?id=${d.orderId}${langQ}`;
   restoreDay(); // sliders opnieuw toepassen nu ze bestaan
 }
 
@@ -808,12 +810,12 @@ function statusBadge(s) {
 function orderActions(o) {
   if (o.status === 'completed' && o.blueprintUrl) {
     const other = LANG === 'en'
-      ? ` <a href="blueprint-viewer.html?id=${o.id}" class="btn">NL</a>`
-      : ((o.blueprintLanguages || []).includes('en') ? ` <a href="blueprint-viewer.html?id=${o.id}&lang=en" class="btn">EN</a>` : '');
+      ? ` <a href="/portaal/blueprint?id=${o.id}" class="btn">NL</a>`
+      : ((o.blueprintLanguages || []).includes('en') ? ` <a href="/portaal/blueprint?id=${o.id}&lang=en" class="btn">EN</a>` : '');
     const pdf = o.pdfAvailable ? ` <a href="/api/orders/${o.id}/pdf?lang=${LANG}" class="btn">PDF</a>` : '';
-    return `<a href="blueprint-viewer.html?id=${o.id}${langQ}" class="btn btn-primary">${T.actView}</a>${other}${pdf}`;
+    return `<a href="/portaal/blueprint?id=${o.id}${langQ}" class="btn btn-primary">${T.actView}</a>${other}${pdf}`;
   }
-  if (o.status === 'questionnaire') return `<a href="questionnaire.html?id=${o.id}" class="btn btn-primary">${T.actFill}</a>`;
+  if (o.status === 'questionnaire') return `<a href="/portaal/vragenlijst?id=${o.id}" class="btn btn-primary">${T.actFill}</a>`;
   if (o.status === 'processing' || o.status === 'generating') return `<span class="btn" style="cursor:default;opacity:.6">${T.actBusy}</span>`;
   if (o.status === 'failed') return `<span class="btn" style="cursor:default;opacity:.6">${T.actFail}</span>`;
   return `<span class="btn" style="cursor:default;opacity:.5">${T.stWait}</span>`;

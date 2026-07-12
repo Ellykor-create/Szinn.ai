@@ -21,6 +21,58 @@
 [functions."api"]
   included_files = ["templates/*.html"]
 
+# Ingeplande functie: verstuurt cadeau-e-mails op hun verzenddatum (dagelijks 09:00 UTC).
+[functions."process-gifts"]
+  schedule = "0 9 * * *"
+
+# ── Schone portal- en cadeau-URL's (geen .html) ──────────────────────────────
+[[redirects]]
+  from = "/portaal"
+  to = "/szinn-portal/pages/dashboard.html"
+  status = 200
+[[redirects]]
+  from = "/portaal/inloggen"
+  to = "/szinn-portal/pages/login.html"
+  status = 200
+[[redirects]]
+  from = "/portaal/vragenlijst"
+  to = "/szinn-portal/pages/questionnaire.html"
+  status = 200
+[[redirects]]
+  from = "/portaal/blueprint"
+  to = "/szinn-portal/pages/blueprint-viewer.html"
+  status = 200
+[[redirects]]
+  from = "/cadeau"
+  to = "/szinn-portal/pages/gift.html"
+  status = 200
+[[redirects]]
+  from = "/cadeau/verzilveren"
+  to = "/intake/index.html"
+  status = 302
+
+# Oude .html-pagina's 301 naar hun schone variant
+[[redirects]]
+  from = "/szinn-portal/pages/dashboard.html"
+  to = "/portaal"
+  status = 301
+[[redirects]]
+  from = "/szinn-portal/pages/login.html"
+  to = "/portaal/inloggen"
+  status = 301
+[[redirects]]
+  from = "/szinn-portal/pages/questionnaire.html"
+  to = "/portaal/vragenlijst"
+  status = 301
+[[redirects]]
+  from = "/szinn-portal/pages/blueprint-viewer.html"
+  to = "/portaal/blueprint"
+  status = 301
+[[redirects]]
+  from = "/szinn-portal/pages/gift.html"
+  to = "/cadeau"
+  status = 301
+
 [[redirects]]
   from   = "/api/*"
   to     = "/.netlify/functions/api"

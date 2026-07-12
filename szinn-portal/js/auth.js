@@ -27,7 +27,7 @@ const SzinnAuth = {
   async logout() {
     await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
     this.currentUser = null;
-    window.location.href = '/szinn-portal/pages/login.html';
+    window.location.href = '/portaal/inloggen';
   },
 
   isAuthenticated() {
@@ -45,7 +45,7 @@ const SzinnAuth = {
       this.currentUser = await res.json();
       return true;
     } catch {
-      window.location.href = '/szinn-portal/pages/login.html';
+      window.location.href = '/portaal/inloggen';
       return false;
     }
   },

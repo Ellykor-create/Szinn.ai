@@ -5,6 +5,7 @@ const bcrypt = require('bcryptjs');
 const path = require('path');
 const fs = require('fs');
 const crypto = require('crypto');
+const { sendGiftEmail, sendGiftConfirmationEmail } = require('./lib/email');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -73,6 +74,11 @@ try { db.exec(`ALTER TABLE orders ADD COLUMN full_birth_name TEXT DEFAULT NULL`)
 try { db.exec(`ALTER TABLE orders ADD COLUMN blueprint_language TEXT DEFAULT 'nl'`); } catch {}
 try { db.exec(`ALTER TABLE orders ADD COLUMN blueprint_html TEXT DEFAULT NULL`); } catch {}
 try { db.exec(`ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0`); } catch {}
+// Cadeau-velden op gift_codes (ontvanger, bericht, verzenddatum, status).
+['recipient_email TEXT','recipient_name TEXT','message TEXT','send_date TEXT','lang TEXT DEFAULT \'nl\'',
+ 'status TEXT DEFAULT \'draft\'','sent_at TEXT','paid INTEGER DEFAULT 0'].forEach(coldef => {
+  try { db.exec(`ALTER TABLE gift_codes ADD COLUMN ${coldef}`); } catch {}
+});
 
 // ── Admin-account ───────────────────────────────────────────────────────────────
 // Zorgt dat er altijd één admin-account in de database staat (idempotent).
@@ -208,6 +214,41 @@ app.get('/szinn-portal/blueprints/:filename', (req, res, next) => {
   next();
 });
 
+// ── Schone URL's (geen .html) ─────────────────────────────────────────────────
+// Vaste, nette aliassen naar de portal- en cadeaupagina's.
+const PAGE_ALIASES = {
+  '/portaal': 'szinn-portal/pages/dashboard.html',
+  '/portaal/inloggen': 'szinn-portal/pages/login.html',
+  '/portaal/vragenlijst': 'szinn-portal/pages/questionnaire.html',
+  '/portaal/blueprint': 'szinn-portal/pages/blueprint-viewer.html',
+  '/cadeau': 'szinn-portal/pages/gift.html',
+};
+app.get(Object.keys(PAGE_ALIASES), (req, res) => {
+  res.sendFile(path.join(ROOT, PAGE_ALIASES[req.path]));
+});
+// Cadeau verzilveren → intake (met eventuele code).
+app.get('/cadeau/verzilveren', (req, res) => {
+  const code = req.query.code ? `?code=${encodeURIComponent(String(req.query.code))}` : '';
+  res.redirect(302, `/intake${code}`);
+});
+// Elke .html-pagina 301 naar de schone variant (blueprint-bestanden uitgezonderd).
+app.use((req, res, next) => {
+  if (req.method === 'GET' && req.path.endsWith('.html') && !req.path.startsWith('/szinn-portal/blueprints/')) {
+    let clean = req.path.replace(/\.html$/, '').replace(/\/index$/, '') || '/';
+    const map = {
+      '/szinn-portal/pages/dashboard': '/portaal',
+      '/szinn-portal/pages/login': '/portaal/inloggen',
+      '/szinn-portal/pages/questionnaire': '/portaal/vragenlijst',
+      '/szinn-portal/pages/blueprint-viewer': '/portaal/blueprint',
+      '/szinn-portal/pages/gift': '/cadeau',
+    };
+    if (map[clean]) clean = map[clean];
+    const qs = req.originalUrl.slice(req.path.length); // behoud ?query
+    return res.redirect(301, clean + qs);
+  }
+  next();
+});
+
 app.use(express.static(ROOT));
 
 // ── Auth ──────────────────────────────────────────────────────────────────────
@@ -278,6 +319,97 @@ app.post('/api/gift/generate', (req, res) => {
   db.prepare('INSERT INTO gift_codes (code, owner_user_id) VALUES (?, ?)').run(code, req.session.userId);
   res.json({ code });
 });
+
+// ── Cadeau-flow: betaling → ontvanger + verzenddatum → (ingeplande) mail ──────
+// Betaling: nu een mock (bouw-nu-koppel-Stripe-later). Zodra STRIPE_SECRET_KEY
+// bestaat, maak hier een Stripe Checkout Session en geef session.url terug.
+const GIFT_PRICE_EUR = process.env.GIFT_PRICE_EUR || '49,90';
+
+function newGiftCode() {
+  const part = crypto.randomBytes(3).toString('hex').toUpperCase();
+  return `SZINN-${part.slice(0, 4)}-${part.slice(4, 8)}`;
+}
+
+app.post('/api/gift/checkout', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  const stripeKey = process.env.STRIPE_SECRET_KEY;
+  if (stripeKey) {
+    // TODO: echte Stripe Checkout Session aanmaken en session.url teruggeven.
+    // const stripe = require('stripe')(stripeKey); ... success_url: SITE/cadeau?paid=1
+    return res.status(501).json({ error: 'Stripe nog niet ingesteld — vul STRIPE_SECRET_KEY in.' });
+  }
+  // Mock: geen echte betaling. De front-end simuleert de betaalstap.
+  res.json({ mock: true, price: GIFT_PRICE_EUR, paidToken: 'mock-' + crypto.randomBytes(6).toString('hex') });
+});
+
+// Datum in "vandaag of later" (YYYY-MM-DD). Leeg/vandaag = direct versturen.
+function isTodayOrPast(dateStr) {
+  if (!dateStr) return true;
+  const today = new Date().toISOString().slice(0, 10);
+  return dateStr <= today;
+}
+
+app.post('/api/gift/create', async (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  const { recipientEmail, recipientName, message, sendDate, lang, paidToken } = req.body || {};
+
+  if (!process.env.STRIPE_SECRET_KEY && !String(paidToken || '').startsWith('mock-'))
+    return res.status(402).json({ error: 'Betaling niet bevestigd.' });
+  if (!recipientEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail))
+    return res.status(400).json({ error: 'Vul een geldig e-mailadres van de ontvanger in.' });
+  if (sendDate && !/^\d{4}-\d{2}-\d{2}$/.test(sendDate))
+    return res.status(400).json({ error: 'Ongeldige verzenddatum.' });
+
+  const language = lang === 'en' ? 'en' : 'nl';
+  const sender = db.prepare('SELECT name, email FROM users WHERE id = ?').get(req.session.userId);
+  const code = newGiftCode();
+  const sendNow = isTodayOrPast(sendDate);
+  const status = sendNow ? 'sending' : 'pending';
+
+  db.prepare(`INSERT INTO gift_codes
+    (code, owner_user_id, recipient_email, recipient_name, message, send_date, lang, status, paid)
+    VALUES (?,?,?,?,?,?,?,?,1)`).run(
+    code, req.session.userId, recipientEmail.trim(),
+    (recipientName || '').trim() || null, (message || '').trim() || null,
+    sendDate || null, language, status
+  );
+
+  if (sendNow) {
+    try {
+      await sendGiftEmail({ to: recipientEmail.trim(), recipientName, senderName: sender?.name, giftCode: code, personalMessage: message, lang: language });
+      db.prepare(`UPDATE gift_codes SET status='sent', sent_at=CURRENT_TIMESTAMP WHERE code=?`).run(code);
+    } catch (err) {
+      console.error('cadeau-mail mislukt:', err.message);
+      db.prepare(`UPDATE gift_codes SET status='pending' WHERE code=?`).run(code);
+    }
+  }
+  // Bevestiging aan de gever (best effort).
+  if (sender?.email) {
+    sendGiftConfirmationEmail({ to: sender.email, senderName: sender.name, recipientEmail: recipientEmail.trim(), sendDate: sendNow ? 'now' : sendDate, giftCode: code, lang: language })
+      .catch(e => console.error('cadeau-bevestiging mislukt:', e.message));
+  }
+
+  res.json({ ok: true, code, scheduled: !sendNow, sendDate: sendNow ? null : sendDate });
+});
+
+// Verwerkt ingeplande cadeaus waarvan de verzenddatum bereikt is.
+async function processScheduledGifts() {
+  const today = new Date().toISOString().slice(0, 10);
+  const due = db.prepare(`SELECT * FROM gift_codes WHERE status='pending' AND (send_date IS NULL OR send_date <= ?)`).all(today);
+  for (const g of due) {
+    try {
+      const sender = db.prepare('SELECT name FROM users WHERE id = ?').get(g.owner_user_id);
+      await sendGiftEmail({ to: g.recipient_email, recipientName: g.recipient_name, senderName: sender?.name, giftCode: g.code, personalMessage: g.message, lang: g.lang });
+      db.prepare(`UPDATE gift_codes SET status='sent', sent_at=CURRENT_TIMESTAMP WHERE code=?`).run(g.code);
+      console.log(`✓ Ingepland cadeau verstuurd: ${g.code} → ${g.recipient_email}`);
+    } catch (err) {
+      console.error(`cadeau ${g.code} versturen mislukt:`, err.message);
+    }
+  }
+}
+// Elk uur controleren (en één keer bij de start).
+setInterval(() => { processScheduledGifts().catch(e => console.error(e.message)); }, 60 * 60 * 1000);
+setTimeout(() => { processScheduledGifts().catch(e => console.error(e.message)); }, 5000);
 
 // ── AI Companion ──────────────────────────────────────────────────────────────
 app.post('/api/companion/chat', async (req, res) => {
@@ -601,10 +733,14 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(ROOT, 'admin', 'index.html'));
 });
 
-// ── Static fallback ────────────────────────────────────────────────────────────
+// ── Static fallback (schone, extensieloze URL's) ───────────────────────────────
 app.get('*', (req, res, next) => {
-  const htmlFile = path.join(ROOT, req.path, 'index.html');
-  if (fs.existsSync(htmlFile)) return res.sendFile(htmlFile);
+  if (path.extname(req.path)) return next();
+  const candidates = [
+    path.join(ROOT, req.path + '.html'),
+    path.join(ROOT, req.path, 'index.html'),
+  ];
+  for (const f of candidates) { if (fs.existsSync(f)) return res.sendFile(f); }
   next();
 });
 

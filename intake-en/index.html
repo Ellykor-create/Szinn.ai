@@ -1266,26 +1266,70 @@ function show(i) {
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-function validate(i) {
-  if (i !== 0) return true;
-  let ok = true;
-  ['voornaam','achternaam','geboortenaam','email','geboortedatum','geboortetijd','geboorteland','geboorteplaats'].forEach(id => {
-    const el = document.getElementById(id);
-    const fd = document.getElementById('field-' + id);
-    if (!el || !el.value.trim()) { fd && fd.classList.add('has-error'); ok = false; }
-    else fd && fd.classList.remove('has-error');
-  });
-  const em = document.getElementById('email');
-  const ef = document.getElementById('field-email');
-  if (em && em.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value)) {
-    ef && ef.classList.add('has-error'); ok = false;
+// Open reflection questions are required per step — the client must fill them all in, otherwise no blueprint.
+const SECTION_TEXTAREAS = {
+  1: ['p1','p2','p3','p4','p5'],
+  2: ['w1','w2','w3','w4'],
+  3: ['e1','e2','e3'],
+  4: ['r1','r2'],
+  5: ['t1','t2','t3'],
+  6: ['z1','z2','z3'],
+  7: ['b1','b2','b3','b4'],
+};
+
+// Add/remove the error marker on a required open question's field.
+function markTextareaError(el, ok) {
+  const field = el.closest('.field');
+  if (!field) return;
+  field.classList.toggle('has-error', !ok);
+  if (!ok && !field.querySelector('.err-msg')) {
+    const span = document.createElement('span');
+    span.className = 'err-msg';
+    span.setAttribute('data-nl', 'Vul dit veld in om verder te gaan');
+    span.setAttribute('data-en', 'Please fill in this field to continue');
+    span.textContent = lang === 'en' ? 'Please fill in this field to continue' : 'Vul dit veld in om verder te gaan';
+    field.appendChild(span);
   }
-  // Place of birth must have resolved coordinates (from the list or manual)
-  const latH = document.getElementById('geboorte_lat');
-  const lngH = document.getElementById('geboorte_lng');
-  const fp = document.getElementById('field-geboorteplaats');
-  if (!latH || !latH.value || !lngH || !lngH.value) {
-    fp && fp.classList.add('has-error'); ok = false;
+}
+
+function validate(i) {
+  let ok = true;
+  let firstBad = null;
+
+  if (i === 0) {
+    ['voornaam','achternaam','geboortenaam','email','geboortedatum','geboortetijd','geboorteland','geboorteplaats'].forEach(id => {
+      const el = document.getElementById(id);
+      const fd = document.getElementById('field-' + id);
+      if (!el || !el.value.trim()) { fd && fd.classList.add('has-error'); ok = false; firstBad = firstBad || fd || el; }
+      else fd && fd.classList.remove('has-error');
+    });
+    const em = document.getElementById('email');
+    const ef = document.getElementById('field-email');
+    if (em && em.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value)) {
+      ef && ef.classList.add('has-error'); ok = false; firstBad = firstBad || ef;
+    }
+    // Place of birth must have resolved coordinates (from the list or manual)
+    const latH = document.getElementById('geboorte_lat');
+    const lngH = document.getElementById('geboorte_lng');
+    const fp = document.getElementById('field-geboorteplaats');
+    if (!latH || !latH.value || !lngH || !lngH.value) {
+      fp && fp.classList.add('has-error'); ok = false; firstBad = firstBad || fp;
+    }
+  }
+
+  // Every open reflection question in this step is required.
+  (SECTION_TEXTAREAS[i] || []).forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const filled = !!el.value.trim();
+    markTextareaError(el, filled);
+    if (!filled) { ok = false; firstBad = firstBad || el; }
+  });
+
+  if (!ok && firstBad) {
+    const target = firstBad.closest ? (firstBad.closest('.field') || firstBad) : firstBad;
+    target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (typeof firstBad.focus === 'function') { try { firstBad.focus({ preventScroll: true }); } catch (e) { firstBad.focus(); } }
   }
   return ok;
 }
@@ -1571,6 +1615,9 @@ function showThankYou() {
 }
 
 function submitForm() {
+  // The open questions of the final step are required too.
+  if (!validate(7)) return;
+
   const c1 = document.getElementById('consent-verwerking').checked;
   const c2 = document.getElementById('consent-disclaimer').checked;
   const c3 = document.getElementById('consent-leeftijd').checked;
@@ -1618,6 +1665,14 @@ function submitForm() {
   })
   .catch(() => showThankYou());
 }
+
+// Remove the error marker as soon as the client starts typing.
+document.addEventListener('input', function (e) {
+  const el = e.target;
+  if (!el || !/^(TEXTAREA|INPUT|SELECT)$/.test(el.tagName)) return;
+  const field = el.closest && el.closest('.field');
+  if (field && el.value && el.value.trim()) field.classList.remove('has-error');
+});
 
 // Init — language automatically EN
 document.addEventListener('DOMContentLoaded', function() {

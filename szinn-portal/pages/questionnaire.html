@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SZINN — Vragenlijst</title>
-  <link rel="stylesheet" href="../css/variables.css">
-  <link rel="stylesheet" href="../css/global.css">
-  <link rel="stylesheet" href="../css/nav.css">
+  <link rel="stylesheet" href="/szinn-portal/css/variables.css">
+  <link rel="stylesheet" href="/szinn-portal/css/global.css">
+  <link rel="stylesheet" href="/szinn-portal/css/nav.css">
   <style>
     .questionnaire-page {
       max-width: 680px;
@@ -128,6 +128,14 @@
 
     /* Hide/show questions */
     .q-card.hidden { display: none; }
+
+    /* Verplicht-veld foutmelding */
+    .form-input.input-error { border-color: var(--red, #b84040); }
+    .q-error {
+      color: var(--red, #b84040);
+      font-size: 12px;
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
@@ -162,15 +170,15 @@
         Je Blueprint wordt nu gegenereerd. Dit duurt ongeveer 2-3 minuten.
         Je ontvangt een e-mail zodra je persoonlijke wegwijzer klaar is.
       </p>
-      <a href="dashboard.html" class="btn btn-primary">Terug naar dashboard</a>
+      <a href="/portaal" class="btn btn-primary">Terug naar dashboard</a>
     </div>
   </div>
 
   <div id="szinn-footer"></div>
 
-  <script src="../js/auth.js"></script>
-  <script src="../js/api.js"></script>
-  <script src="../js/nav.js"></script>
+  <script src="/szinn-portal/js/auth.js"></script>
+  <script src="/szinn-portal/js/api.js"></script>
+  <script src="/szinn-portal/js/nav.js"></script>
   <script>
     if (!SzinnAuth.requireAuth()) throw new Error('Not authenticated');
 
@@ -210,6 +218,27 @@
 
     let currentStep = 0;
     const answers = {};
+
+    function showQError(input) {
+      if (!input) return;
+      input.classList.add('input-error');
+      const card = input.closest('.q-card');
+      if (card && !card.querySelector('.q-error')) {
+        const msg = document.createElement('div');
+        msg.className = 'q-error';
+        msg.textContent = 'Vul deze vraag in om verder te gaan.';
+        card.appendChild(msg);
+      }
+      input.focus();
+    }
+
+    function clearQError(input) {
+      if (!input) return;
+      input.classList.remove('input-error');
+      const card = input.closest('.q-card');
+      const msg = card && card.querySelector('.q-error');
+      if (msg) msg.remove();
+    }
 
     // Render
     const container = document.getElementById('questions-container');
@@ -270,7 +299,15 @@
       // Save current answer
       const q = questions[currentStep];
       const input = document.getElementById(`input-${q.id}`);
-      answers[q.id] = input ? input.value.trim() : '';
+      const value = input ? input.value.trim() : '';
+
+      // Verplicht: elke vraag moet ingevuld zijn om de blueprint te kunnen ontvangen.
+      if (!value) {
+        showQError(input);
+        return;
+      }
+      clearQError(input);
+      answers[q.id] = value;
 
       if (currentStep < questions.length - 1) {
         showStep(currentStep + 1);
@@ -295,6 +332,11 @@
           btnNext.disabled = false;
         }
       }
+    });
+
+    // Foutmelding weghalen zodra er getypt wordt.
+    container.addEventListener('input', e => {
+      if (e.target.value && e.target.value.trim()) clearQError(e.target);
     });
 
     showStep(0);

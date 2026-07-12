@@ -10,7 +10,7 @@ const jwt        = require('jsonwebtoken');
 const cookieLib  = require('cookie');
 const crypto     = require('crypto');
 const { blueprintStore, loadDB, saveDB } = require('../../lib/db');
-const { sendAccountEmail, sendDraftEmail, sendNewOrderEmail } = require('../../lib/email');
+const { sendAccountEmail, sendDraftEmail, sendNewOrderEmail, sendGiftEmail, sendGiftConfirmationEmail } = require('../../lib/email');
 
 const app = express();
 app.use(express.json());
@@ -227,6 +227,78 @@ app.post('/api/gift/generate', async (req, res) => {
   db.giftCodes.push(code);
   await saveDB(db);
   res.json({ code: code.code });
+});
+
+// ── Cadeau-flow: betaling (mock) → ontvanger + datum → (ingeplande) mail ──────
+const GIFT_PRICE_EUR = process.env.GIFT_PRICE_EUR || '49,90';
+
+app.post('/api/gift/checkout', (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  if (process.env.STRIPE_SECRET_KEY) {
+    // TODO: echte Stripe Checkout Session; success_url → /cadeau?paid=1
+    return res.status(501).json({ error: 'Stripe nog niet ingesteld.' });
+  }
+  res.json({ mock: true, price: GIFT_PRICE_EUR, paidToken: 'mock-' + crypto.randomBytes(6).toString('hex') });
+});
+
+function giftIsDue(sendDate) {
+  if (!sendDate) return true;
+  return sendDate <= new Date().toISOString().slice(0, 10);
+}
+
+app.post('/api/gift/create', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const { recipientEmail, recipientName, message, sendDate, lang, paidToken } = req.body || {};
+  if (!process.env.STRIPE_SECRET_KEY && !String(paidToken || '').startsWith('mock-'))
+    return res.status(402).json({ error: 'Betaling niet bevestigd.' });
+  if (!recipientEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail))
+    return res.status(400).json({ error: 'Vul een geldig e-mailadres van de ontvanger in.' });
+  if (sendDate && !/^\d{4}-\d{2}-\d{2}$/.test(sendDate))
+    return res.status(400).json({ error: 'Ongeldige verzenddatum.' });
+
+  const language = lang === 'en' ? 'en' : 'nl';
+  const db = await loadDB();
+  const sender = db.users.find(u => u.id === req.auth.userId);
+  const part = crypto.randomBytes(3).toString('hex').toUpperCase();
+  const code = `SZINN-${part.slice(0, 4)}-${part.slice(4)}`;
+  const due = giftIsDue(sendDate);
+  const entry = {
+    code, owner_user_id: req.auth.userId, recipient_email: recipientEmail.trim(),
+    recipient_name: (recipientName || '').trim() || null, message: (message || '').trim() || null,
+    send_date: sendDate || null, lang: language, status: due ? 'sending' : 'pending',
+    paid: true, created_at: new Date().toISOString(), sent_at: null,
+  };
+  db.giftCodes.push(entry);
+
+  if (due) {
+    try {
+      await sendGiftEmail({ to: entry.recipient_email, recipientName, senderName: sender?.name, giftCode: code, personalMessage: message, lang: language });
+      entry.status = 'sent'; entry.sent_at = new Date().toISOString();
+    } catch (err) { console.error('cadeau-mail mislukt:', err.message); entry.status = 'pending'; }
+  }
+  await saveDB(db);
+
+  if (sender?.email) {
+    sendGiftConfirmationEmail({ to: sender.email, senderName: sender.name, recipientEmail: entry.recipient_email, sendDate: due ? 'now' : sendDate, giftCode: code, lang: language })
+      .catch(e => console.error('cadeau-bevestiging mislukt:', e.message));
+  }
+  res.json({ ok: true, code, scheduled: !due, sendDate: due ? null : sendDate });
+});
+
+// Verwerkt ingeplande cadeaus waarvan de datum bereikt is (voor scheduled function).
+app.post('/api/gift/process', async (req, res) => {
+  const db = await loadDB();
+  const due = (db.giftCodes || []).filter(g => g.status === 'pending' && giftIsDue(g.send_date));
+  let sent = 0;
+  for (const g of due) {
+    try {
+      const sender = db.users.find(u => u.id === g.owner_user_id);
+      await sendGiftEmail({ to: g.recipient_email, recipientName: g.recipient_name, senderName: sender?.name, giftCode: g.code, personalMessage: g.message, lang: g.lang });
+      g.status = 'sent'; g.sent_at = new Date().toISOString(); sent++;
+    } catch (err) { console.error(`cadeau ${g.code} mislukt:`, err.message); }
+  }
+  if (sent) await saveDB(db);
+  res.json({ ok: true, sent });
 });
 
 // ── AI Companion & dashboard-data ────────────────────────────────────────────
