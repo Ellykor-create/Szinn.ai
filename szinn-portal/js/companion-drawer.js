@@ -10,6 +10,11 @@
   var lang = (window.SZINN_LANG ||
     (document.documentElement.getAttribute('lang') || 'nl')).toLowerCase().indexOf('en') === 0 ? 'en' : 'nl';
 
+  // Docked-modus: op pagina's die window.SZINN_COMPANION_DOCK = true zetten
+  // (zoals de blueprint-viewer) schuift het paneel niet als overlay óver de
+  // pagina, maar naast de inhoud — blueprint links, gesprek rechts.
+  var DOCKED = !!window.SZINN_COMPANION_DOCK;
+
   var T = {
     nl: {
       launch: 'Companion',
@@ -128,9 +133,21 @@
     try { seen = localStorage.getItem('szinn_companion_seen') === '1'; } catch (e) {}
     greeting.textContent = seen ? T.welcomeReturn : T.welcomeFirst;
     try { localStorage.setItem('szinn_companion_seen', '1'); } catch (e) {}
-    overlay.classList.add('open'); drawer.classList.add('open');
+    // Docken kan alleen als er ruimte naast de inhoud is; op smalle schermen
+    // valt het paneel terug op de overlay-weergave.
+    var dock = DOCKED && window.innerWidth > 820;
+    if (dock) {
+      document.documentElement.classList.add('szc-docked-open');
+    } else {
+      overlay.classList.add('open');
+    }
+    drawer.classList.add('open');
   }
-  function close() { overlay.classList.remove('open'); drawer.classList.remove('open'); }
+  function close() {
+    overlay.classList.remove('open');
+    drawer.classList.remove('open');
+    document.documentElement.classList.remove('szc-docked-open');
+  }
 
   launch.addEventListener('click', open);
   overlay.addEventListener('click', close);

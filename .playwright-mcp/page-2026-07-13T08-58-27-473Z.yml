@@ -1,0 +1,344 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - generic [ref=e5]: SZINN
+        - generic [ref=e6]: Alignment Blueprint
+      - navigation [ref=e7]:
+        - link "◦ Dashboard" [ref=e8] [cursor=pointer]:
+          - /url: "#top"
+          - generic [ref=e9]: ◦
+          - generic [ref=e10]: Dashboard
+        - link "◦ Vandaag" [ref=e11] [cursor=pointer]:
+          - /url: "#vandaag"
+          - generic [ref=e12]: ◦
+          - generic [ref=e13]: Vandaag
+        - link "◦ Tikkun" [ref=e14] [cursor=pointer]:
+          - /url: "#schaduw"
+          - generic [ref=e15]: ◦
+          - text: Tikkun
+        - link "◦ Levenspad" [ref=e16] [cursor=pointer]:
+          - /url: "#levenspad"
+          - generic [ref=e17]: ◦
+          - generic [ref=e18]: Levenspad
+        - link "◦ Getallen" [ref=e19] [cursor=pointer]:
+          - /url: "#getallen"
+          - generic [ref=e20]: ◦
+          - generic [ref=e21]: Getallen
+        - link "◦ Cycli" [ref=e22] [cursor=pointer]:
+          - /url: "#cycli"
+          - generic [ref=e23]: ◦
+          - generic [ref=e24]: Cycli
+        - link "◦ Begeleiding" [ref=e25] [cursor=pointer]:
+          - /url: "#begeleiding"
+          - generic [ref=e26]: ◦
+          - generic [ref=e27]: Begeleiding
+        - link "◦ Dagboek" [ref=e28] [cursor=pointer]:
+          - /url: "#dagboek"
+          - generic [ref=e29]: ◦
+          - generic [ref=e30]: Dagboek
+        - link "◦ Bibliotheek" [ref=e31] [cursor=pointer]:
+          - /url: "#aanvragen"
+          - generic [ref=e32]: ◦
+          - generic [ref=e33]: Bibliotheek
+        - link "◦ Aanvragen" [ref=e34] [cursor=pointer]:
+          - /url: "#aanvragen"
+          - generic [ref=e35]: ◦
+          - generic [ref=e36]: Aanvragen
+        - link "✦ Cadeau geven" [ref=e37] [cursor=pointer]:
+          - /url: /cadeau
+          - generic [ref=e38]: ✦
+          - generic [ref=e39]: Cadeau geven
+        - link "◦ Uitloggen" [ref=e40] [cursor=pointer]:
+          - /url: "#"
+          - generic [ref=e41]: ◦
+          - generic [ref=e42]: Uitloggen
+      - generic [ref=e43]:
+        - generic [ref=e44]: Intentie van vandaag
+        - generic [ref=e45]: Eén echte stap is genoeg.
+    - main [ref=e46]:
+      - generic [ref=e47]:
+        - text: 📅
+        - generic [ref=e48]: Maandag 13 juli 2026
+        - generic [ref=e49]:
+          - link "← szinn.ai" [ref=e50] [cursor=pointer]:
+            - /url: https://szinn.ai
+          - generic [ref=e51]:
+            - button "NL" [ref=e52] [cursor=pointer]
+            - button "EN" [ref=e53] [cursor=pointer]
+          - button "Uitloggen" [ref=e54] [cursor=pointer]
+      - heading "Goedemorgen, Demo✦" [level=1] [ref=e55]
+      - generic [ref=e56]: Het universum is in beweging. Stem af op wat ertoe doet.
+      - generic [ref=e57]:
+        - generic:
+          - generic: ☉
+          - generic:
+            - generic: —
+            - generic: Wie je in de kern bent
+        - generic:
+          - generic: ☽
+          - generic:
+            - generic: —
+            - generic: Wat je van binnen nodig hebt
+        - generic:
+          - generic: ↑
+          - generic:
+            - generic: —
+            - generic: Hoe je de wereld binnenkomt
+        - text: Binnenkort beschikbaar
+      - generic [ref=e58]: Je Alignment Blueprint wordt samengesteld — dit kan een aantal uur duren. Zodra hij klaar is ontvang je een e-mail en vult dit dashboard zich met jouw kaart, getallen en dagduiding.
+      - generic [ref=e59]:
+        - generic [ref=e60]: Sin
+        - generic [ref=e61]:
+          - generic [ref=e62]: Zien wat er is
+          - generic [ref=e63]: wat de dag je laat zien
+        - generic [ref=e64]: Herkenning
+      - generic [ref=e68]:
+        - generic [ref=e69]: Maandag 13 juli 2026
+        - heading "Vandaag in één oogopslag" [level=2] [ref=e70]
+        - generic [ref=e71]:
+          - generic [ref=e72]:
+            - generic [ref=e73]: Thema
+            - generic [ref=e74]: Je blueprint is onderweg
+          - generic [ref=e75]:
+            - generic [ref=e76]: Focus
+            - generic [ref=e77]: Kom straks terug — je ontvangt een e-mail zodra alles klaarstaat
+        - generic [ref=e78]:
+          - generic [ref=e79]: Vraag van de dag
+          - generic [ref=e80]: Wat hoop je in je blueprint te herkennen?
+        - generic [ref=e81] [cursor=pointer]: Lees je volledige blueprint →
+      - generic [ref=e82]:
+        - generic: SZINN Companion · ik lees je kaart en de stand van vandaag, en stem de dagduiding daarop af. Vraag me gerust iets.
+        - button "Vernieuw dagduiding"
+        - button "Praat met je Companion"
+        - text: Binnenkort beschikbaar
+      - generic [ref=e83]:
+        - generic:
+          - generic: Waar de hemel nu staat
+          - heading "De lucht vandaag" [level=3]
+          - generic:
+            - generic:
+              - generic: —
+              - generic: —
+          - paragraph: —
+        - generic:
+          - generic: Wat de dag draagt
+          - heading "Jouw getallen" [level=3]
+          - generic:
+            - generic:
+              - generic: —
+              - generic: Levenspad
+            - generic:
+              - generic: —
+              - generic: Persoonlijk jaar
+            - generic:
+              - generic: —
+              - generic: Persoonlijke maand
+            - generic:
+              - generic: —
+              - generic: Persoonlijke dag
+          - generic:
+            - text: Focus vandaag
+            - generic: —
+            - text: Herinnering
+            - generic: —
+        - generic:
+          - generic: Jouw groei-as
+          - heading "Noord- & Zuidknoop" [level=3]
+          - generic:
+            - generic:
+              - generic:
+                - text: Zuidknoop ·
+                - text: waar je vandaan komt
+              - generic: —
+              - generic: —
+            - generic: →
+            - generic:
+              - generic:
+                - text: Noordknoop ·
+                - text: waar je heen gaat
+              - generic: —
+              - generic: —
+          - generic: Verken je knopen →
+        - generic:
+          - generic: Kern-essentie
+          - heading "Jouw mandala" [level=3]
+          - generic: Flower of Life, jouw planeten op hun exacte graden.
+        - text: Binnenkort beschikbaar
+      - generic [ref=e84]:
+        - generic [ref=e85]: Sinn
+        - generic [ref=e86]:
+          - generic [ref=e87]: Voelen en richten
+          - generic [ref=e88]: wat jij in de dag brengt
+        - generic [ref=e89]: Helderheid
+      - generic [ref=e90]:
+        - generic:
+          - generic: De energie die je kiest
+          - heading "Stel je intentie" [level=2]
+          - paragraph: Je energie kiezen en je intentie zetten zijn één beweging. Kies waarmee je vandaag voorop wilt gaan.
+          - generic:
+            - generic:
+              - generic: Sin
+              - generic: structuur · kracht · richting
+            - generic:
+              - generic: Sinn
+              - generic: gevoel · intuïtie · afstemming
+            - generic:
+              - generic: Zin
+              - generic: vreugde · vrijheid · creatie
+          - generic: Mijn intentie voor vandaag
+          - textbox "Vandaag wil ik…"
+          - generic: In één woord, hoe voel je je nu?
+          - textbox "bijv. rustig, vol, helder, moe…"
+        - generic:
+          - generic: Vermogens die je kunt inzetten
+          - heading "Jouw gaven" [level=2]
+          - paragraph: Zes innerlijke vermogens om op te leunen.
+          - generic:
+            - generic: Intuïtie
+            - generic: Verbeeldingskracht
+            - generic: Geheugen
+            - generic: Waarneming
+            - generic: Redeneren
+            - generic: Wilskracht
+          - generic: Tik op de gave waar je vandaag op wilt leunen.
+        - generic:
+          - generic: Drie dingen
+          - heading "Waar ben je dankbaar voor" [level=2]
+          - generic:
+            - generic:
+              - generic: "1"
+              - textbox
+            - generic:
+              - generic: "2"
+              - textbox
+            - generic:
+              - generic: "3"
+              - textbox
+          - generic: Dankbaarheid verschuift je energie sneller dan bijna iets anders. Klein mag.
+        - text: Binnenkort beschikbaar
+      - generic [ref=e91]:
+        - generic [ref=e92]: Zin
+        - generic [ref=e93]:
+          - generic [ref=e94]: Waar je staat
+          - generic [ref=e95]: wat je draagt en oogst
+        - generic [ref=e96]: Integratie
+      - generic [ref=e97]:
+        - generic:
+          - generic: Jouw levenspad
+          - heading "Levenspad-overzicht" [level=2]
+          - generic:
+            - generic:
+              - generic: ✦
+              - generic: Fundament
+              - generic: 0–28
+            - generic:
+              - generic: Expansie
+              - generic: 29–36
+            - generic:
+              - generic: Bijdrage
+              - generic: 37–45
+            - generic:
+              - generic: Meesterschap
+              - generic: 46–54
+            - generic:
+              - generic: Nalatenschap
+              - generic: 55+
+          - paragraph: —
+        - generic:
+          - generic: 9-jaarscyclus
+          - generic:
+            - generic:
+              - heading "Huidige cyclus" [level=2]
+              - heading "—" [level=3]
+            - generic:
+              - img:
+                - generic: –
+                - generic: VAN 9
+          - generic: —
+          - paragraph: —
+          - generic: Bekijk in je blueprint →
+        - generic:
+          - generic: Aankomende cycli
+          - heading "Wat eraan komt" [level=2]
+          - generic:
+            - generic: ☽
+            - generic:
+              - generic: Nieuwe maan
+              - generic: —
+          - generic:
+            - generic: ☽
+            - generic:
+              - generic: Volle maan
+              - generic: —
+          - generic:
+            - generic: ✦
+            - generic:
+              - generic: Zonne-terugkeer
+              - generic: —
+          - generic: Bekijk je persoonlijke kalender →
+        - text: Binnenkort beschikbaar
+      - generic [ref=e98]:
+        - generic: De andere kant van je gaven
+        - heading "Jouw schaduwkanten" [level=2]
+        - generic: Dit zijn geen gebreken om te repareren. Elke schaduw is de keerzijde van een echte gave en draagt informatie. Beweeg elke slider om te markeren hoeveel het je vandaag vasthield, en hoe helder je het zag.
+        - generic:
+          - generic: Om het helder te zien
+          - generic: "Als een van deze opkomt, pauzeer en vraag: wat bescherm ik, en wat heb ik nu echt nodig?"
+        - text: Binnenkort beschikbaar
+      - generic [ref=e99]:
+        - generic [ref=e100]: ✦
+        - generic [ref=e101]:
+          - generic [ref=e102]: Jouw blueprints
+          - generic [ref=e103]: aanvragen en documenten
+        - generic [ref=e104]: Bibliotheek
+      - generic [ref=e105]:
+        - generic [ref=e106]:
+          - generic [ref=e107]:
+            - generic [ref=e108]: Lisa Jansen
+            - generic [ref=e109]:
+              - generic [ref=e110]: ORD-2026-003
+              - generic [ref=e111]: Vragenlijst
+              - generic [ref=e112]: 22 juni 2026
+          - link "Vragenlijst invullen" [ref=e114] [cursor=pointer]:
+            - /url: /portaal/vragenlijst?id=ORD-2026-003
+        - generic [ref=e115]:
+          - generic [ref=e116]:
+            - generic [ref=e117]: Marc de Vries
+            - generic [ref=e118]:
+              - generic [ref=e119]: ORD-2026-002
+              - generic [ref=e120]: Wordt samengesteld
+              - generic [ref=e121]: 20 juni 2026
+          - generic [ref=e123]: Wordt samengesteld — dit kan een aantal uur duren
+        - generic [ref=e124]:
+          - generic [ref=e125]:
+            - generic [ref=e126]: Sara Emily Thomas
+            - generic [ref=e127]:
+              - generic [ref=e128]: ORD-2026-001
+              - generic [ref=e129]: Voltooid
+              - generic [ref=e130]: 15 juni 2026
+          - link "Blueprint bekijken" [ref=e132] [cursor=pointer]:
+            - /url: /portaal/blueprint?id=ORD-2026-001
+      - button "Leg mijn dag vast Privé bewaard, alleen voor jou zichtbaar":
+        - text: Leg mijn dag vast
+        - generic: Privé bewaard, alleen voor jou zichtbaar
+      - generic [ref=e133]:
+        - generic [ref=e134]: Je was nooit verloren, je was aan het herinneren.
+        - generic [ref=e135]: SZINN · Companion Dashboard · © 2026 Elly Elizabeth Korving · Alterego BV · Alle rechten voorbehouden · szinn.ai
+  - button "Companion" [ref=e136] [cursor=pointer]:
+    - generic [ref=e137]: ✦
+    - generic [ref=e138]: Companion
+  - dialog "SZINN Companion" [ref=e139]:
+    - generic [ref=e140]:
+      - button "Sluiten" [ref=e141] [cursor=pointer]: ×
+      - generic [ref=e142]: SZINN
+      - generic [ref=e143]: SZINN Companion
+      - generic [ref=e144]: Een rustige plek voor je vragen over je Blueprint
+    - generic [ref=e147]:
+      - generic [ref=e148]: Binnenkort beschikbaar
+      - generic [ref=e149]: De Companion wordt nu met zorg voorbereid. Heel binnenkort kun je hier een echt gesprek voeren over je Blueprint.
+    - generic [ref=e150]:
+      - generic [ref=e151]:
+        - textbox "Binnenkort kun je hier je vraag stellen…" [disabled] [ref=e152]
+        - button "Stuur" [disabled] [ref=e153]
+      - generic [ref=e154]: 🔒 Je gesprekken blijven altijd van jou.

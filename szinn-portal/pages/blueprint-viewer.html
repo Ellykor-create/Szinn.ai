@@ -108,6 +108,14 @@
       .viewer-toolbar { flex-direction: column; text-align: center; }
       .viewer-actions { justify-content: center; }
     }
+
+    /* Companion in docked-modus: de hele pagina schuift soepel naar links,
+       zodat de Companion-drawer (390px, rechts vast) er precies naast past.
+       Zo staat de blueprint links en het gesprek erover rechts. */
+    body { transition: margin-right .32s cubic-bezier(.22, .61, .36, 1); }
+    @media (min-width: 821px) {
+      html.szc-docked-open body { margin-right: 390px; }
+    }
   </style>
 </head>
 <body>
@@ -161,6 +169,8 @@
   <script src="/szinn-portal/js/auth.js"></script>
   <script src="/szinn-portal/js/api.js"></script>
   <script src="/szinn-portal/js/nav.js"></script>
+  <!-- Op de blueprint-pagina dockt de Companion naast de blueprint i.p.v. als overlay. -->
+  <script>window.SZINN_COMPANION_DOCK = true;</script>
   <script src="/szinn-portal/js/companion-drawer.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
