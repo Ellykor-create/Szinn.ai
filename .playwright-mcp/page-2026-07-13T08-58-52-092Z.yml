@@ -1,0 +1,1075 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e3]:
+    - generic [ref=e4]:
+      - link "SZINN SZINN" [ref=e5] [cursor=pointer]:
+        - /url: /portaal
+        - img "SZINN" [ref=e6]
+        - generic [ref=e7]: SZINN
+      - list [ref=e8]:
+        - listitem [ref=e9]:
+          - link "Dashboard" [ref=e10] [cursor=pointer]:
+            - /url: /portaal
+        - listitem [ref=e11]:
+          - link "Vragenlijst" [ref=e12] [cursor=pointer]:
+            - /url: /portaal/vragenlijst
+        - listitem [ref=e13]:
+          - link "Uitloggen" [ref=e14] [cursor=pointer]:
+            - /url: "#"
+      - generic [ref=e15]:
+        - generic [ref=e16]: Demo gebruiker
+        - generic [ref=e17]: DE
+  - main [ref=e19]:
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - link "← Terug naar dashboard" [ref=e22] [cursor=pointer]:
+          - /url: /portaal
+        - generic [ref=e23]:
+          - text: Alignment Blueprint
+          - heading "Sara Emily Thomas" [level=2] [ref=e24]
+        - generic [ref=e25]:
+          - button "⎙ Print" [ref=e26] [cursor=pointer]:
+            - generic [ref=e27]: ⎙
+            - text: Print
+          - button "↓ PDF" [ref=e28] [cursor=pointer]:
+            - generic [ref=e29]: ↓
+            - text: PDF
+      - iframe [ref=e31]:
+        - generic [active] [ref=f2e1]:
+          - navigation [ref=f2e2]:
+            - link "SZINN · Barry" [ref=f2e3] [cursor=pointer]:
+              - /url: "#"
+            - generic [ref=f2e4]:
+              - link "Visie" [ref=f2e5] [cursor=pointer]:
+                - /url: "#vision"
+              - link "Introductie" [ref=f2e6] [cursor=pointer]:
+                - /url: "#introduction"
+              - link "Flow" [ref=f2e7] [cursor=pointer]:
+                - /url: "#flow"
+              - link "Astrologie" [ref=f2e8] [cursor=pointer]:
+                - /url: "#astrology"
+              - link "Knopen" [ref=f2e9] [cursor=pointer]:
+                - /url: "#nodes"
+              - link "Numerologie" [ref=f2e10] [cursor=pointer]:
+                - /url: "#numerology"
+              - link "Tikkun" [ref=f2e11] [cursor=pointer]:
+                - /url: "#tikkun"
+              - link "Mandala" [ref=f2e12] [cursor=pointer]:
+                - /url: "#mandala"
+              - link "Overzicht" [ref=f2e13] [cursor=pointer]:
+                - /url: "#summary"
+              - link "Reflectie" [ref=f2e14] [cursor=pointer]:
+                - /url: "#reflection"
+              - link "Energie" [ref=f2e15] [cursor=pointer]:
+                - /url: "#energy"
+              - link "Integratie" [ref=f2e16] [cursor=pointer]:
+                - /url: "#integration"
+              - link "Verdieping" [ref=f2e17] [cursor=pointer]:
+                - /url: "#deepening"
+            - generic [ref=f2e18]: Barry 2026
+          - generic [ref=f2e20]:
+            - img "SZINN" [ref=f2e22]
+            - generic [ref=f2e23]:
+              - generic [ref=f2e24]: Jouw persoonlijke Alignment Blueprint
+              - heading "Barry" [level=1] [ref=f2e25]
+              - paragraph [ref=f2e26]:
+                - text: 30 juni 1971 · 08:30
+                - text: Hoogezand, Nederland
+              - paragraph [ref=f2e27]: Een spiegel van wie je bent, samengesteld uit jouw geboortekaart, jouw getallen en jouw zielstaak. Geen voorspelling en geen oordeel. Een uitnodiging om te herinneren wat er al in je zit.
+              - generic [ref=f2e28]:
+                - generic [ref=f2e29]: Zon Kreeft
+                - generic [ref=f2e30]: Asc Leeuw
+                - generic [ref=f2e31]: Levenspad 9
+            - generic [ref=f2e32]:
+              - generic [ref=f2e33]:
+                - generic [ref=f2e34]: Kern
+                - generic [ref=f2e35]: Jouw authentieke zelf
+                - generic [ref=f2e36]: Zon Kreeft · Asc Leeuw · Levenspad 9
+                - generic [ref=f2e37]: Een warme, stralende buitenkant met een gevoelig, beschermend hart. De Leeuw laat zich zien; de Kreeft voelt alles.
+              - generic [ref=f2e38]:
+                - generic [ref=f2e39]: Energiepatronen
+                - generic [ref=f2e40]: Jouw terugkerende cycli
+                - generic [ref=f2e41]: Maan Weegschaal · NN Waterman · Persoonlijk Jaar 1
+                - generic [ref=f2e42]: Een gevoel dat harmonie zoekt, een richting die naar de bijdrage wijst, en een jaar dat een nieuw begin draagt.
+              - generic [ref=f2e43]:
+                - generic [ref=f2e44]: Alignment-overzicht
+                - generic [ref=f2e45]: Jouw totale alignment
+                - generic [ref=f2e46]: Kaart · Numerologie · Knopen
+                - generic [ref=f2e47]:
+                  - generic [ref=f2e48]:
+                    - text: Astrologie
+                    - text: Zon, Mercurius & Venus in Huis 11 · Mars op de Noordknoop in Waterman, Huis 6
+                  - generic [ref=f2e49]:
+                    - text: Numerologie
+                    - text: Levenspad 9 · Persoonlijk Jaar 1 · Geboortedag 3
+                  - generic [ref=f2e50]:
+                    - text: Zielrichting
+                    - text: Noordknoop Waterman · Huis 6 · bijdragen aan het geheel
+                  - generic [ref=f2e51]:
+                    - text: Persoonlijk Jaar
+                    - text: Jaar 1 · een nieuw begin
+          - generic [ref=f2e52]:
+            - generic [ref=f2e53]:
+              - generic [ref=f2e54]: ☊
+              - generic [ref=f2e55]: Zielsgroei-richting
+              - generic [ref=f2e56]: Noordknoop Waterman · H6
+            - generic [ref=f2e57]:
+              - generic [ref=f2e58]: ☽
+              - generic [ref=f2e59]: Innerlijk weten
+              - generic [ref=f2e60]: Maan Weegschaal · H2
+            - generic [ref=f2e61]:
+              - generic [ref=f2e62]: ☉
+              - generic [ref=f2e63]: Kernuitstraling
+              - generic [ref=f2e64]: Zon Kreeft · H11
+            - generic [ref=f2e65]:
+              - generic [ref=f2e66]: ◆
+              - generic [ref=f2e67]: Levensblauwdruk
+              - generic [ref=f2e68]: Levenspad 9 · Persoonlijk Jaar 1
+          - generic [ref=f2e69]:
+            - generic [ref=f2e70]:
+              - heading "Jouw Dashboard" [level=2] [ref=f2e71]:
+                - text: Jouw
+                - emphasis [ref=f2e72]: Dashboard
+              - paragraph [ref=f2e73]: Dit dashboard is geen rapportcijfer. Het laat in vier lenzen zien waar jouw energie nu staat ten opzichte van je volledige potentieel. Een sterk geactiveerde laag betekent beweging; een licht geactiveerde laag betekent ongerept terrein, de plek met het meeste potentieel. Lees het als een kompas, niet als een eindoordeel.
+            - generic [ref=f2e74]:
+              - generic [ref=f2e75]:
+                - generic [ref=f2e76]: Sterk geactiveerd
+                - generic [ref=f2e77]: Astrologie
+                - generic [ref=f2e78]: Drie planeten in Huis 11 en Mars precies op je Noordknoop maken je kaart krachtig en gericht. Veel energie staat klaar om bewust ingezet te worden.
+                - generic [ref=f2e79]: Beweegt via
+                - generic [ref=f2e80]: Je zes gaven en je dagelijkse praktijken
+              - generic [ref=f2e81]:
+                - generic [ref=f2e82]: Drempeljaar
+                - generic [ref=f2e83]: Numerologie
+                - generic [ref=f2e84]: Een Levenspad 9 dat in 2026 een Persoonlijk Jaar 1 binnengaat. Een oude ziel die een gloednieuwe cyclus begint. Voltooien en opnieuw beginnen tegelijk.
+                - generic [ref=f2e85]: Beweegt via
+                - generic [ref=f2e86]: Je persoonlijke kalender en je maandritme
+              - generic [ref=f2e87]:
+                - generic [ref=f2e88]: Ongerept terrein
+                - generic [ref=f2e89]: Zielrichting
+                - generic [ref=f2e90]: Je Noordknoop in Waterman in Huis 6 wijst naar bijdragen aan het grotere geheel via concreet dagelijks werk. Hier ligt je meeste groei, juist omdat het nog open is.
+                - generic [ref=f2e91]: Beweegt via
+                - generic [ref=f2e92]: Je schaduwwerk en je AI-prompts
+              - generic [ref=f2e93]:
+                - generic [ref=f2e94]: Nieuw begin
+                - generic [ref=f2e95]: Persoonlijk Jaar
+                - generic [ref=f2e96]: "2026 is voor jou een Persoonlijk Jaar 1: het eerste jaar van een nieuwe negenjarige cyclus. Een jaar van initiatief, eerste stappen en zelf het roer pakken."
+                - generic [ref=f2e97]: Beweegt via
+                - generic [ref=f2e98]: Je dagelijkse praktijken en je kalender
+            - generic [ref=f2e99]:
+              - generic [ref=f2e100]: Hoe je dit dashboard leest
+              - generic [ref=f2e101]:
+                - generic [ref=f2e102]:
+                  - heading "Dit is geen eindoordeel" [level=4] [ref=f2e103]
+                  - paragraph [ref=f2e104]: Het is een momentopname van waar jouw energie nu staat ten opzichte van je volledige potentieel. Een licht geactiveerde laag betekent ongerept terrein, geen falen. Een sterk geactiveerde laag betekent beweging, geen perfectie.
+                - generic [ref=f2e105]:
+                  - heading "De praktijken hieronder activeren de lagen" [level=4] [ref=f2e106]
+                  - paragraph [ref=f2e107]: Elke sectie in deze Blueprint raakt aan minstens één laag. Hoe meer je de energie van je kaart integreert, hoe meer er gaat bewegen. Dit is geen statisch document, maar een levend navigatie-instrument.
+            - paragraph [ref=f2e109]: De lens die nu het lichtst is, je Zielrichting, is niet je zwakte. Het is je grootste kans. Het is het terrein waar in dit jaar van nieuwe beginnen de meeste beweging mogelijk is.
+          - generic [ref=f2e111]:
+            - img "SZINN" [ref=f2e114]
+            - generic [ref=f2e115]: Barry
+            - generic [ref=f2e116]: 30 juni 1971 · 08:30 · Hoogezand, Nederland
+            - generic [ref=f2e117]:
+              - generic [ref=f2e118]:
+                - generic [ref=f2e119]: Zon
+                - generic [ref=f2e120]: Kreeft 7°52'
+              - generic [ref=f2e121]:
+                - generic [ref=f2e122]: Maan
+                - generic [ref=f2e123]: Weegschaal 3°01'
+              - generic [ref=f2e124]:
+                - generic [ref=f2e125]: Ascendant
+                - generic [ref=f2e126]: Leeuw 23°35'
+              - generic [ref=f2e127]:
+                - generic [ref=f2e128]: Levenspad
+                - generic [ref=f2e129]: "9"
+              - generic [ref=f2e130]:
+                - generic [ref=f2e131]: Pers. Jaar
+                - generic [ref=f2e132]: 1 (2026)
+            - generic [ref=f2e133]: "\"Jouw start is een blauwdruk, niet je bestemming.\""
+          - generic [ref=f2e134]: · · · ✦ · · ·
+          - generic [ref=f2e135]:
+            - generic [ref=f2e136]: 01 — Visie & Missie
+            - heading "Jij bent de blauwdruk." [level=2] [ref=f2e137]:
+              - text: Jij bent
+              - emphasis [ref=f2e138]: de blauwdruk.
+            - heading "Visie" [level=3] [ref=f2e139]
+            - paragraph [ref=f2e140]: Een wereld waarin mensen leven vanuit wie ze werkelijk zijn. Niet vanuit conditionering. Niet vanuit angst. Niet vanuit wat anderen van hen verwachten of wat het systeem van hen vraagt. Maar vanuit de unieke blauwdruk die elk mens bij geboorte meedraagt, de energetische handtekening van wie jij bent, los van alles wat er daarna bovenop is gestapeld.
+            - paragraph [ref=f2e141]: Een mens die leeft vanuit zijn eigen blauwdruk verandert de wereld om zich heen. Niet via grote gebaren of revolutie van buiten, maar via de stille, fundamentele verschuiving die plaatsvindt wanneer iemand stopt met overleven en begint met leven. Een mens in lijn met zichzelf geeft anders, leidt anders, bemint anders, creëert anders. Vanuit overvloed in plaats van tekort. Vanuit bewustzijn in plaats van angst. Vanuit verbinding in plaats van behoefte.
+            - blockquote [ref=f2e142]: "\"Als genoeg mensen herinneren wie ze zijn, verandert de wereld om ons heen vanzelf.\""
+            - heading "Missie" [level=3] [ref=f2e143]
+            - paragraph [ref=f2e144]: SZINN bestaat om mensen te helpen zichzelf te herinneren. Niet leren. Niet worden. Herinneren, want wat jij in dit document tegenkomt is geen nieuwe informatie. Het is een spiegel die laat zien wat er al in jou zit, wat er altijd al is geweest, onder de conditionering, onder de patronen, onder het verhaal dat anderen over jou hebben gebouwd en dat jij op een gegeven moment als je eigen waarheid bent gaan dragen.
+            - heading "De vier bewegingen" [level=3] [ref=f2e145]
+            - paragraph [ref=f2e146]: SZINN begeleidt die herinnering via vier bewegingen die samen de kern vormen van alles wat dit Blueprint doet. Herkenning, het moment dat je een patroon ziet, niet als iets wat je overkomt maar als iets wat je draait. Zodra je ernaar kijkt in plaats van erin te staan, ontstaat er keuze. En keuze is het begin van vrijheid.
+            - paragraph [ref=f2e147]: Helderheid, niet de helderheid van alle antwoorden weten, maar de helderheid van weten wie je bent. Los van wat je doet, los van wat anderen van je denken, los van de rollen die je draagt. Helderheid over jouw energie, jouw kwaliteiten, jouw schaduwkanten en de richting die jouw groei vraagt.
+            - paragraph [ref=f2e148]: Richting, geen bestemming, maar een kompasrichting. Een gevoel van bewegen vanuit alignment in plaats van vanuit reactie. Wanneer je weet wie je bent en waar je staat, wordt de volgende stap vanzelf zichtbaar.
+            - paragraph [ref=f2e149]: Integratie, het sluitstuk en tegelijkertijd het moeilijkste. Kennis is niet genoeg. Integratie is het moment dat inzicht daadwerkelijk gedrag verandert. Dat je niet alleen begrijpt maar leeft. Niet alleen weet maar belichaamt.
+            - paragraph [ref=f2e150]: De naam SZINN draagt drie lagen die de kern van dit systeem vormen. Sin is het sympathische zenuwstelsel in overdrive, de masculiene energie van structuur en kracht die doorslaat naar stress en burnout. Zin is het parasympathische zenuwstelsel in balans, de feminiene energie van ontvangen en creatie. Sinn is de bewuste beweging tussen beide, de kinderlijke creatieve energie die ontstaat wanneer je leert dansen tussen masculien en feminien in plaats van vast te zitten in één kant. Dit is geen spiritueel concept. Dit is biologie. En het maakt de methode toegankelijk voor iedereen.
+            - paragraph [ref=f2e151]: "Deze Blueprint is geen voorspelling en geen oordeel. Het is een spiegel. Hij laat zien wat er al in je aanwezig is: patronen die zich herhalen, krachten die wachten om bewust te worden ingezet, en een richting die jouw ziel al kent. De vraag is niet of deze dingen in jou zitten. De vraag is of jij klaar bent om ze te herkennen."
+            - generic [ref=f2e152]:
+              - generic [ref=f2e153]:
+                - generic [ref=f2e154]: Herkenning
+                - generic [ref=f2e155]: Wie ben ik?
+                - generic [ref=f2e156]: Jouw kern, los van rollen en verwachtingen
+              - generic [ref=f2e157]:
+                - generic [ref=f2e158]: Helderheid
+                - generic [ref=f2e159]: Wat wil ik?
+                - generic [ref=f2e160]: Jouw diepste verlangen, niet het aangeleerde
+              - generic [ref=f2e161]:
+                - generic [ref=f2e162]: Richting
+                - generic [ref=f2e163]: Waar ga ik heen?
+                - generic [ref=f2e164]: De lijn die astrologie, numerologie en Kabbalah samen trekken
+              - generic [ref=f2e165]:
+                - generic [ref=f2e166]: Integratie
+                - generic [ref=f2e167]: Hoe leef ik dit?
+                - generic [ref=f2e168]: Concreet, dagelijks, in jouw eigen tempo
+              - generic [ref=f2e169]:
+                - generic [ref=f2e170]: Drie systemen
+                - generic [ref=f2e171]: Één instrument
+                - generic [ref=f2e172]: Astrologie · Numerologie · Kabbalah/Tikkun
+              - generic [ref=f2e173]:
+                - generic [ref=f2e174]: Jouw rol
+                - generic [ref=f2e175]: Enige expert
+                - generic [ref=f2e176]: Jij bent de enige expert op jouzelf. Dit is een uitnodiging, geen instructie.
+            - blockquote [ref=f2e177]: "\"Je was nooit jezelf kwijt. Je bent aan het herinneren.\""
+            - paragraph [ref=f2e179]: Dit document is vertrouwelijk en persoonlijk voor jou samengesteld. Het is geen astrologisch advies, geen psychologische diagnose en geen belofte. Het is een spiegel. Wat je erin ziet, bepaal je zelf.
+          - generic [ref=f2e180]:
+            - generic [ref=f2e181]: 02 — Introductie
+            - heading "Een nieuw paradigma van zelfherkenning." [level=2] [ref=f2e182]:
+              - text: Een nieuw paradigma
+              - emphasis [ref=f2e183]: van zelfherkenning.
+            - paragraph [ref=f2e184]:
+              - emphasis [ref=f2e185]: Dit Szinn Alignment Blueprint is geen waarheid. Het is een spiegel, een reflectie. Wat resoneert, neem het mee. Wat niet klopt, laat het los. Beschouw niets hier als absolute waarheid. Ga zelf op onderzoek. Jij bent altijd de enige expert op jouzelf.
+            - paragraph [ref=f2e186]: De meeste mensen leren zichzelf kennen via hoe anderen hen zien. Via hun rol in een familie, een baan, een vriendschap. Via wat er van hen verwacht wordt. SZINN gaat ervan uit dat er een dieper zelf is, niet gevormd door omstandigheden maar simpelweg aanwezig. En dat dat diepere zelf een handtekening heeft, zichtbaar in de momenten en patronen van je leven, als je weet waar je moet kijken.
+            - paragraph [ref=f2e187]: "Jij, Barry, bent iemand met een Zon in Kreeft en een Ascendant in Leeuw. De Ascendant in Leeuw geeft je een warme, gulle, zichtbare buitenkant. Anderen ontmoeten eerst iemand met uitstraling, iemand die warmte brengt en een ruimte kan vullen. Achter die Leeuw-buitenkant zit een Zon in Kreeft: gevoelig, beschermend, sterk verbonden met thuis en met wat geweest is. En je Mercurius staat vlak bij die zon, ook in Kreeft, in Huis 11: je denkt vanuit gevoel en geheugen, en je geest is gericht op de groep en op de toekomst die je samen met anderen bouwt."
+            - paragraph [ref=f2e188]: "En dan is er de Maan in Weegschaal, in Huis 2. Je emotionele natuur zoekt harmonie, balans en eerlijkheid, en Huis 2 gaat over eigenwaarde en eigen grond. Hier woont je behoefte om je veilig te voelen via evenwicht en via het weten wat jij zelf waard bent, los van de ander. Je Venus staat in Tweeling, ook in Huis 11: je hebt mensen, gesprekken en uitwisseling lief, en je waardeert vrijheid en lichtheid in verbinding."
+            - paragraph [ref=f2e189]: De buitenkant straalt, de binnenkant voelt. Dat is geen tegenstelling om op te lossen, maar een beweging om bewust te worden. De Leeuw die gezien wil worden en de Kreeft die zich wil terugtrekken in de veiligheid van thuis horen allebei bij jou. Je groeit niet door één van de twee kwijt te raken, maar door ze elkaar te laten kennen.
+            - paragraph [ref=f2e191]: Lees deze sectie niet als een oordeel. Lees haar als een uitnodiging om met iets meer nieuwsgierigheid dan gewoonlijk naar jezelf te kijken. Wat resoneert, neem het mee. Wat niet klopt, laat het los.
+          - generic [ref=f2e192]:
+            - generic [ref=f2e193]: 03 — Leven vanuit flow
+            - heading "Sin · Sinn · Zin" [level=2] [ref=f2e194]:
+              - text: Sin · Sinn ·
+              - emphasis [ref=f2e195]: Zin
+            - paragraph [ref=f2e196]: Hoe kan je leven vanuit flow? We staan continu aan. We zoeken bevestiging, richting en rust in wat er om ons heen gebeurt, terwijl de enige echte beweging van binnen naar buiten gaat. In SZINN werken we met een bewustzijnsreis die verloopt van het leven overkomt mij, naar het leven is voor mij, naar het leven stroomt door mij, naar ik creëer mijn leven. Elke fase begint met eerlijkheid over waar je nu werkelijk staat.
+            - paragraph [ref=f2e197]: Creatie ontstaat in de beweging tussen twee energieën. De masculiene energie van richting, actie en focus, en de feminiene energie van ontvangen, vertrouwen en loslaten. Geen van beide is beter. Beide zijn nodig.
+            - paragraph [ref=f2e198]: In de SZINN-methode noemen we dit Sin, Sinn en Zin. Sin is het sympathische zenuwstelsel in overdrive, de masculiene energie die doorslaat naar stress en burnout. Zin is het parasympathische zenuwstelsel in balans, de feminiene energie van ontvangen en creëren. Sinn is de bewuste beweging tussen de twee, de creatieve energie die ontstaat wanneer je leert dansen tussen masculien en feminien in plaats van vast te zitten in één kant. Dit is geen spiritueel concept. Dit is biologie.
+            - paragraph [ref=f2e199]: "Er zijn drie lagen waarop je altijd tegelijk werkt. Sin is de lichaamslaag: je zenuwstelsel, je ritme, je rust of vermoeidheid. Sinn is de betekenislaag: de vraag of wat je doet zin heeft, of het echt klopt. Zin is de intentielaag: de richting die je kiest, bewust of niet."
+            - paragraph [ref=f2e200]: "In jouw kaart vertaalt zich dat als volgt. Sin spreekt via je Kreeft-zon en je Mercurius in Kreeft: een gevoelig systeem dat veel opneemt en dat rust en veiligheid nodig heeft om helder te blijven. Sinn spreekt via je Maan in Weegschaal in Huis 2 en je cluster in Huis 11: betekenis ontstaat voor jou in evenwicht, in eigen waarde en in wat je deelt met de groep. Zin spreekt via je Noordknoop in Waterman in Huis 6, met Mars er vlak bij: je richting wijst naar bijdragen aan het grotere geheel via concreet dagelijks werk."
+            - paragraph [ref=f2e201]: "Het ene dat de flow nog onderbreekt is de spanning tussen het persoonlijke en het collectieve: tussen de behoefte om gezien te worden als jezelf en het verlangen om bij te dragen aan iets dat groter is dan jij. Dat is geen blokkade, maar precies het werk van je knooppunt-as: leren dat je je niet hoeft te bewijzen om mee te tellen."
+            - generic [ref=f2e202]:
+              - generic [ref=f2e203]:
+                - generic [ref=f2e204]: Sin / Lichaam
+                - generic [ref=f2e205]: Kreeft-zon · Mercurius Kreeft
+                - generic [ref=f2e206]: Een gevoelig systeem dat veel opneemt; rust en veiligheid als bron van helderheid
+              - generic [ref=f2e207]:
+                - generic [ref=f2e208]: Sinn / Betekenis
+                - generic [ref=f2e209]: Maan Weegschaal H2 · cluster H11
+                - generic [ref=f2e210]: Betekenis in evenwicht, eigen waarde en wat je deelt met de groep
+              - generic [ref=f2e211]:
+                - generic [ref=f2e212]: Zin / Richting
+                - generic [ref=f2e213]: NN Waterman H6 · Mars
+                - generic [ref=f2e214]: Bijdragen aan het grotere geheel via concreet dagelijks werk als bestemming
+            - heading "Vijf reflectievragen over jouw flow" [level=3] [ref=f2e215]
+            - list [ref=f2e216]:
+              - listitem [ref=f2e217]:
+                - generic [ref=f2e218]: "1"
+                - text: Wanneer voelde je je deze afgelopen maand het meest in flow, en wat was je toen precies aan het doen?
+              - listitem [ref=f2e219]:
+                - generic [ref=f2e220]: "2"
+                - text: Waar in je leven draag je iets bij aan een groter geheel, en wat zou er gebeuren als je daar meer ruimte voor maakte?
+              - listitem [ref=f2e221]:
+                - generic [ref=f2e222]: "3"
+                - text: Welke vorm van gezien worden voelt als bevestiging van buitenaf, en welke voelt als echt jezelf laten zien?
+              - listitem [ref=f2e223]:
+                - generic [ref=f2e224]: "4"
+                - text: Wat zou je beginnen als je wist dat dit jaar een nieuw begin draagt en de eerste stap genoeg is?
+              - listitem [ref=f2e225]:
+                - generic [ref=f2e226]: "5"
+                - text: Waar houd je nog vast aan iets dat eigenlijk af is, en wat zou er ruimte maken als je het losliet?
+          - generic [ref=f2e227]:
+            - generic [ref=f2e228]: 04 — Astrologie
+            - heading "De geboortekaart van Barry" [level=2] [ref=f2e229]:
+              - text: De
+              - emphasis [ref=f2e230]: geboortekaart
+              - text: van Barry
+            - paragraph [ref=f2e231]: Placidus huizensysteem · Astronomische ephemeris · Berekend vanuit 30 juni 1971, 08:30 Hoogezand
+            - paragraph [ref=f2e232]: Een geboortekaart is geen voorspelling. Het is een energetische vingerafdruk, een snapshot van de hemel op het exacte moment dat jij aankwam op deze aarde, op die specifieke plek. De posities van de planeten op dat moment worden gezien als symbolische krachten die resoneren met wie jij bent en hoe jouw energie werkt. Denk eraan als een landkaart. De kaart bepaalt niet hoe je reist, maar hij laat wel zien welke bergen er zijn, waar de rivieren lopen en welke wegen er al bestaan. Jij bepaalt altijd hoe je beweegt.
+            - paragraph [ref=f2e233]: "Een geboortekaart bestaat uit drie lagen die je altijd samenleest. De planeten zijn de krachten, archetypen van menselijke ervaring. De tekens zijn de kwaliteit waarmee die krachten zich uitdrukken. De huizen zijn het terrein: ze vertellen je waar in je leven een energie speelt. De aspecten, de hoeken tussen planeten, beschrijven hoe die energieën in jou met elkaar in gesprek zijn. Een retrograde planeet werkt naar binnen in plaats van naar buiten: meer gericht op reflectie en verdieping dan op directe uiterlijke expressie."
+            - paragraph [ref=f2e234]: Energie is neutraal. Ze is niet goed of slecht, ze wil alleen bewegen. De patronen die je onbewust hebt geleefd zijn als geulen waar het water vanzelf doorheen stroomt. Bewust worden betekent niet die geulen stoppen, maar kiezen welke bedding je vanaf nu wilt graven.
+            - heading "Wat de planeten betekenen" [level=3] [ref=f2e235]
+            - paragraph [ref=f2e236]: De Zon is wie je bent als je vrij bent, je levensdoel en je manier van stralen. De Maan is wat je vanbinnen nodig hebt, je emotionele natuur en hoe je je veilig voelt. De Ascendant is hoe je de wereld binnenkomt, hoe anderen je als eerste ervaren. Mercurius is hoe je denkt en communiceert. Venus is wat je aantrekt en waar je je toe aangetrokken voelt. Mars is hoe je handelt en wat je drijft. Jupiter is waar je groeit en expandeert. Saturnus is waar je levenslessen zitten, wat structuur en geduld vraagt. Uranus, Neptunus en Pluto zijn generationele krachten die het grotere veld beschrijven. Chiron is de gewonde genezer, de plek waar je een diepe wond draagt en precies daar anderen kunt helen. De MC is je roeping, wat je hier komt brengen in de wereld.
+            - heading "De twaalf huizen" [level=3] [ref=f2e237]
+            - generic [ref=f2e238]:
+              - generic [ref=f2e239]:
+                - generic [ref=f2e240]: Huis 1
+                - generic [ref=f2e241]: Identiteit & lichaam
+                - generic [ref=f2e242]: Hoe je de wereld binnenkomt, hoe je verschijnt. Begint bij de Ascendant.
+              - generic [ref=f2e243]:
+                - generic [ref=f2e244]: Huis 2
+                - generic [ref=f2e245]: Waarden
+                - generic [ref=f2e246]: Wat je waardevol vindt en wat je nodig hebt om je veilig te voelen.
+              - generic [ref=f2e247]:
+                - generic [ref=f2e248]: Huis 3
+                - generic [ref=f2e249]: Communicatie
+                - generic [ref=f2e250]: Hoe je leert, spreekt en je directe omgeving ervaart.
+              - generic [ref=f2e251]:
+                - generic [ref=f2e252]: Huis 4
+                - generic [ref=f2e253]: Thuis & wortels
+                - generic [ref=f2e254]: Je innerlijke fundament, je oorsprong, wat thuis voor je betekent.
+              - generic [ref=f2e255]:
+                - generic [ref=f2e256]: Huis 5
+                - generic [ref=f2e257]: Creativiteit
+                - generic [ref=f2e258]: Spel, plezier, romantiek en alles wat je vanuit vreugde maakt.
+              - generic [ref=f2e259]:
+                - generic [ref=f2e260]: Huis 6
+                - generic [ref=f2e261]: Werk & gezondheid
+                - generic [ref=f2e262]: Hoe je werkt, hoe je voor je lichaam zorgt, de structuur van je dag.
+              - generic [ref=f2e263]:
+                - generic [ref=f2e264]: Huis 7
+                - generic [ref=f2e265]: Relaties
+                - generic [ref=f2e266]: Wat je aantrekt in een ander en hoe je leert verbinden en spiegelen.
+              - generic [ref=f2e267]:
+                - generic [ref=f2e268]: Huis 8
+                - generic [ref=f2e269]: Transformatie
+                - generic [ref=f2e270]: Gedeelde middelen, diepte, crisis als katalysator. Door de oppervlakte heen.
+              - generic [ref=f2e271]:
+                - generic [ref=f2e272]: Huis 9
+                - generic [ref=f2e273]: Zingeving
+                - generic [ref=f2e274]: Reizen, hogere kennis, het grotere verhaal. De zoektocht naar betekenis.
+              - generic [ref=f2e275]:
+                - generic [ref=f2e276]: Huis 10
+                - generic [ref=f2e277]: Roeping
+                - generic [ref=f2e278]: Je plek in de wereld en wat je hier komt bijdragen. Begint bij de MC.
+              - generic [ref=f2e279]:
+                - generic [ref=f2e280]: Huis 11
+                - generic [ref=f2e281]: Gemeenschap
+                - generic [ref=f2e282]: Vriendschappen, netwerken en de toekomst die je samen bouwt.
+              - generic [ref=f2e283]:
+                - generic [ref=f2e284]: Huis 12
+                - generic [ref=f2e285]: Het verborgen leven
+                - generic [ref=f2e286]: Spiritualiteit, het onbewuste, wat je zelden toont. De laag onder alle lagen.
+            - heading "De aspecten" [level=3] [ref=f2e287]
+            - paragraph [ref=f2e288]: Aspecten zijn de hoeken die planeten met elkaar maken. Ze beschrijven hoe de energieën in jou met elkaar in gesprek zijn. Een conjunctie (0°) is versmelting. Een sextile (60°) is een kans. Een square (90°) is een wrijving die groei creëert. Een trine (120°) is vloeiende ondersteuning. Een oppositie (180°) is een spanning die om balans vraagt.
+            - table [ref=f2e289]:
+              - rowgroup [ref=f2e290]:
+                - row "Planeet Positie Huis Kwaliteit" [ref=f2e291]:
+                  - columnheader "Planeet" [ref=f2e292]
+                  - columnheader "Positie" [ref=f2e293]
+                  - columnheader "Huis" [ref=f2e294]
+                  - columnheader "Kwaliteit" [ref=f2e295]
+              - rowgroup [ref=f2e296]:
+                - row "☉ Zon Kreeft 7°52' 11 Gevoelig, beschermend, verbonden met thuis en met wat geweest is; een identiteit die straalt via warmte en zorg, gericht op de groep" [ref=f2e297]:
+                  - cell "☉ Zon" [ref=f2e298]
+                  - cell "Kreeft 7°52'" [ref=f2e299]
+                  - cell "11" [ref=f2e300]
+                  - cell "Gevoelig, beschermend, verbonden met thuis en met wat geweest is; een identiteit die straalt via warmte en zorg, gericht op de groep" [ref=f2e301]
+                - row "☽ Maan Weegschaal 3°01' 2 Gevoelsleven dat harmonie, balans en eerlijkheid zoekt; behoefte aan evenwicht en aan eigen waarde" [ref=f2e302]:
+                  - cell "☽ Maan" [ref=f2e303]
+                  - cell "Weegschaal 3°01'" [ref=f2e304]
+                  - cell "2" [ref=f2e305]
+                  - cell "Gevoelsleven dat harmonie, balans en eerlijkheid zoekt; behoefte aan evenwicht en aan eigen waarde" [ref=f2e306]
+                - row "☿ Mercurius Kreeft 18°20' 11 Denken vanuit gevoel en geheugen; een geest gericht op vriendschappen, de groep en de gedeelde toekomst" [ref=f2e307]:
+                  - cell "☿ Mercurius" [ref=f2e308]
+                  - cell "Kreeft 18°20'" [ref=f2e309]
+                  - cell "11" [ref=f2e310]
+                  - cell "Denken vanuit gevoel en geheugen; een geest gericht op vriendschappen, de groep en de gedeelde toekomst" [ref=f2e311]
+                - row "♀ Venus Tweelingen 21°56' 11 Liefhebben en waarderen via gesprek, uitwisseling en lichtheid; vrijheid en nieuwsgierigheid als voorwaarde" [ref=f2e312]:
+                  - cell "♀ Venus" [ref=f2e313]
+                  - cell "Tweelingen 21°56'" [ref=f2e314]
+                  - cell "11" [ref=f2e315]
+                  - cell "Liefhebben en waarderen via gesprek, uitwisseling en lichtheid; vrijheid en nieuwsgierigheid als voorwaarde" [ref=f2e316]
+                - row "♂ Mars Waterman 21°12' 6 Daadkracht die wil bijdragen aan het collectief, vernieuwend en op het werk gericht; staat vlak bij je Noordknoop" [ref=f2e317]:
+                  - cell "♂ Mars" [ref=f2e318]
+                  - cell "Waterman 21°12'" [ref=f2e319]
+                  - cell "6" [ref=f2e320]
+                  - cell "Daadkracht die wil bijdragen aan het collectief, vernieuwend en op het werk gericht; staat vlak bij je Noordknoop" [ref=f2e321]
+                - row "♃ Jupiter Rx Schorpioen 27°29' 4 Groei via diepte, thuis en je innerlijke fundament; retrograde, eerst van binnen gevonden" [ref=f2e322]:
+                  - cell "♃ Jupiter Rx" [ref=f2e323]
+                  - cell "Schorpioen 27°29'" [ref=f2e324]
+                  - cell "4" [ref=f2e325]
+                  - cell "Groei via diepte, thuis en je innerlijke fundament; retrograde, eerst van binnen gevonden" [ref=f2e326]
+                - row "♄ Saturnus Tweelingen 1°21' 10 Levensles rond communicatie, leren en je woord; de leraar in het huis van je roeping" [ref=f2e327]:
+                  - cell "♄ Saturnus" [ref=f2e328]
+                  - cell "Tweelingen 1°21'" [ref=f2e329]
+                  - cell "10" [ref=f2e330]
+                  - cell "Levensles rond communicatie, leren en je woord; de leraar in het huis van je roeping" [ref=f2e331]
+                - row "⛢ Uranus Weegschaal 9°30' 3 Onrust en vernieuwing in je denken en je directe omgeving; eigen, originele ideeën" [ref=f2e332]:
+                  - cell "⛢ Uranus" [ref=f2e333]
+                  - cell "Weegschaal 9°30'" [ref=f2e334]
+                  - cell "3" [ref=f2e335]
+                  - cell "Onrust en vernieuwing in je denken en je directe omgeving; eigen, originele ideeën" [ref=f2e336]
+                - row "♆ Neptunus Rx Boogschutter 0°45' 4 Verlangen naar betekenis en zin rond thuis en geloof; retrograde, innerlijk doorleefd" [ref=f2e337]:
+                  - cell "♆ Neptunus Rx" [ref=f2e338]
+                  - cell "Boogschutter 0°45'" [ref=f2e339]
+                  - cell "4" [ref=f2e340]
+                  - cell "Verlangen naar betekenis en zin rond thuis en geloof; retrograde, innerlijk doorleefd" [ref=f2e341]
+                - row "♇ Pluto Maagd 27°07' 2 Langzame transformatie van eigenwaarde via het werk en het verfijnen van het kleine" [ref=f2e342]:
+                  - cell "♇ Pluto" [ref=f2e343]
+                  - cell "Maagd 27°07'" [ref=f2e344]
+                  - cell "2" [ref=f2e345]
+                  - cell "Langzame transformatie van eigenwaarde via het werk en het verfijnen van het kleine" [ref=f2e346]
+                - 'row "☊ Noordknoop Waterman 16°21'' 6 Zielrichting: bijdragen aan het geheel via concreet dagelijks werk" [ref=f2e347]':
+                  - cell "☊ Noordknoop" [ref=f2e348]
+                  - cell "Waterman 16°21'" [ref=f2e349]
+                  - cell "6" [ref=f2e350]
+                  - 'cell "Zielrichting: bijdragen aan het geheel via concreet dagelijks werk" [ref=f2e351]'
+                - row "⚷ Chiron Ram 14°17' 9 Wond en heling rond je recht om je eigen kant te kiezen, in het huis van betekenis en geloof" [ref=f2e352]:
+                  - cell "⚷ Chiron" [ref=f2e353]
+                  - cell "Ram 14°17'" [ref=f2e354]
+                  - cell "9" [ref=f2e355]
+                  - cell "Wond en heling rond je recht om je eigen kant te kiezen, in het huis van betekenis en geloof" [ref=f2e356]
+            - heading "Opvallende patronen in jouw kaart" [level=3] [ref=f2e357]
+            - paragraph [ref=f2e358]: "Het eerste dat opvalt is een sterke nadruk op Huis 11, het huis van vriendschap, gemeenschap en de toekomst die je samen met anderen bouwt: je Zon, Mercurius en Venus staan daar samen, met een Leeuw-ascendant ervoor. Je kernidentiteit, je denken en je liefde leven in het huis van de groep en het collectief."
+            - paragraph [ref=f2e359]: "In Huis 6, het huis van werk, dienstbaarheid en het dagelijkse, staan je Mars en je Noordknoop vlak bij elkaar in Waterman. Je daadkracht staat precies op je groeirichting: doen, bijdragen, je handen uit de mouwen voor iets dat groter is dan jij."
+            - paragraph [ref=f2e360]: "Je Zuidknoop staat in Leeuw in Huis 12, tegenover je Noordknoop in Waterman in Huis 6. Dat is de as van je groei: van het persoonlijke, het zelf dat gezien wil worden, naar de bijdrage aan het collectief in concreet dagelijks werk."
+            - paragraph [ref=f2e361]: "Twee planeten staan retrograde in je kaart: Jupiter en Neptunus, allebei in Huis 4, het huis van thuis en je innerlijke fundament. Daarbij draag je een Levenspad 9, en je gaat in 2026 een Persoonlijk Jaar 1 binnen. Je staat op een drempel: iets oud sluit af, iets nieuws begint."
+            - generic [ref=f2e362]:
+              - generic [ref=f2e363]:
+                - generic [ref=f2e364]: Cluster Huis 11 (Zon · Mercurius · Venus)
+                - heading "Wie je bent en met wie" [level=3] [ref=f2e365]
+                - paragraph [ref=f2e366]: Je identiteit, je denken en je liefde leven in het huis van vriendschap en gemeenschap. De groei is om je gaven bewust in te zetten in de groep, vanuit warmte in plaats van vanuit de behoefte om gezien te worden.
+              - generic [ref=f2e367]:
+                - generic [ref=f2e368]: Knooppunt-as Leeuw H12 ↔ Waterman H6
+                - heading "Van het zelf naar de bijdrage" [level=3] [ref=f2e369]
+                - paragraph [ref=f2e370]: Je Noordknoop in Waterman in Huis 6 wijst naar bijdragen aan het grotere geheel via concreet dagelijks werk. Met Mars vlak bij die knoop staat je daadkracht al klaar om die stap te zetten.
+          - generic [ref=f2e371]:
+            - generic [ref=f2e372]: 05 — Noord- & Zuidknoop
+            - heading "Van Leeuw naar Waterman" [level=2] [ref=f2e373]:
+              - text: Van Leeuw
+              - emphasis [ref=f2e374]: naar Waterman
+            - paragraph [ref=f2e375]: "De Noord- en Zuidknoop zijn geen planeten. Het zijn twee wiskundige punten waar de baan van de Maan de ecliptica kruist. Ze staan altijd exact tegenover elkaar, op 180 graden afstand: altijd een as, altijd een spanning tussen twee richtingen. De Zuidknoop laat zien waar je vandaan komt, wat je al weet, wat je bijna reflexmatig doet en wat veilig voelt. De Noordknoop laat zien waar je naartoe groeit, wat nieuw aanvoelt, soms ongemakkelijk, en precies daar ligt de groei van dit leven."
+            - paragraph [ref=f2e376]: De bedoeling is niet om de Zuidknoop achter te laten. Zie de Zuidknoop als de wortels van een boom en de Noordknoop als de richting waarin de takken groeien. Zonder wortels kan een boom niet groeien; zonder groei hebben de wortels geen bestemming. De spanning die je voelt wanneer je richting je Noordknoop beweegt, betekent niet dat je de verkeerde kant op gaat. Vaak betekent het dat je een nieuwe versie van jezelf ontmoet.
+            - paragraph [ref=f2e377]: "Je herkent de Zuidknoop aan wat moeiteloos lijkt te gaan. Het voelt vertrouwd, je hoeft er nauwelijks over na te denken, en onder druk val je erop terug. De Zuidknoop is niet fout; veel van je natuurlijke kracht leeft hier. Je herkent de Noordknoop aan een gevoel van onzekerheid of weerstand. Het kan voelen als \"dit ben ik niet\" of \"wie ben ik om dit te doen\". Juist daarom is het zo waardevol: het wijst naar waar groei en vervulling plaatsvinden."
+            - paragraph [ref=f2e378]: "De knooppunt-as in jouw kaart vertelt het verhaal van jouw ziel. De Zuidknoop in Leeuw in Huis 12 laat zien wat vertrouwd is: het zelf, de behoefte om gezien en gewaardeerd te worden, warmte en uitstraling, maar gespeeld op een verborgen, innerlijk podium. Het is een echte gave, en het heeft je vaak hart en kleur gegeven."
+            - paragraph [ref=f2e379]: "De Noordknoop in Waterman in Huis 6 wijst de richting: naar bijdragen aan het collectief, naar vernieuwen, naar concreet dagelijks werk dat het grotere geheel dient. Van \"het draait om mij\" naar \"het draait om wat ik geef\". Met Mars vlak bij je Noordknoop is je daadkracht al op die richting afgestemd."
+            - generic [ref=f2e380]:
+              - generic [ref=f2e381]:
+                - generic [ref=f2e382]: Zuidknoop — Oorsprong
+                - heading "Leeuw · Huis 12" [level=3] [ref=f2e383]
+                - paragraph [ref=f2e384]: Je kent de energie van het zelf dat gezien wil worden, van warmte en uitstraling, maar op een innerlijk, verborgen podium. Dit patroon is vertrouwd en heeft je kleur gegeven. Maar het voedt je niet meer wanneer alles om jou als middelpunt draait, of wanneer je je licht juist verbergt.
+              - generic [ref=f2e385]:
+                - generic [ref=f2e386]: Noordknoop — Groeirichting
+                - heading "Waterman · Huis 6" [level=3] [ref=f2e387]
+                - paragraph [ref=f2e388]: Jouw zielsrichting is bijdragen aan het grotere geheel via concreet dagelijks werk. Niet het zelf in het midden, maar het werk dat het collectief dient. De stap is je daadkracht inzetten voor iets dat groter is dan jou, en vertrouwen dat je meetelt door wat je geeft.
+            - heading "Chiron in Ram in Huis 9" [level=3] [ref=f2e389]
+            - paragraph [ref=f2e390]: "Chiron, de gewonde genezer, staat in Ram in Huis 9, het huis van betekenis, geloof en het grotere verhaal. Dit kan wijzen op een oude gevoeligheid rond je recht om je eigen kant te kiezen. De heling komt juist via het durven kiezen van je eigen koers: elke keer dat je je eigen richting volgt in plaats van te wachten op toestemming, keer je deze wond naar haar gave."
+          - generic [ref=f2e391]:
+            - generic [ref=f2e392]: 06 — Numerologie
+            - heading "De getallen van Barry" [level=2] [ref=f2e393]:
+              - text: De
+              - emphasis [ref=f2e394]: getallen
+              - text: van Barry
+            - paragraph [ref=f2e395]: Pythagorisch systeem · Berekend vanuit 30 juni 1971 en je geboortenaam · Meestergetallen niet gereduceerd
+            - paragraph [ref=f2e396]: "Numerologie is de studie van de symbolische en energetische betekenis van getallen. Het systeem dat wij gebruiken is gebaseerd op de leer van Pythagoras: elk getal van 1 tot en met 9 draagt een eigen energie, een eigen karakter, een eigen beweging. Het voorspelt niet wat er gaat gebeuren; het maakt zichtbaar welke energieën en patronen actief zijn in jouw leven. Getallen liegen niet. Ze spiegelen."
+            - generic [ref=f2e397]:
+              - generic [ref=f2e398]:
+                - generic [ref=f2e399]: 1 · Pionier
+                - generic [ref=f2e400]: Begin & moed
+                - generic [ref=f2e401]: "De moed om als eerste te gaan. Schaduw: eigenzinnigheid."
+              - generic [ref=f2e402]:
+                - generic [ref=f2e403]: 2 · De brug
+                - generic [ref=f2e404]: Verbinding
+                - generic [ref=f2e405]: "Gevoeligheid en samenwerking. Schaduw: afhankelijkheid."
+              - generic [ref=f2e406]:
+                - generic [ref=f2e407]: 3 · Schepper
+                - generic [ref=f2e408]: Expressie
+                - generic [ref=f2e409]: "Creativiteit, vreugde, communicatie. Schaduw: verstrooiing."
+              - generic [ref=f2e410]:
+                - generic [ref=f2e411]: 4 · Bouwer
+                - generic [ref=f2e412]: Structuur
+                - generic [ref=f2e413]: "Fundament en betrouwbaarheid, bouwen wat blijft. Schaduw: rigiditeit."
+              - generic [ref=f2e414]:
+                - generic [ref=f2e415]: 5 · Avonturier
+                - generic [ref=f2e416]: Vrijheid
+                - generic [ref=f2e417]: "Avontuur, verandering, beweging. Schaduw: rusteloosheid."
+              - generic [ref=f2e418]:
+                - generic [ref=f2e419]: 6 · Verzorger
+                - generic [ref=f2e420]: Harmonie
+                - generic [ref=f2e421]: "Zorg en verantwoordelijkheid, geven vanuit liefde. Schaduw: jezelf verliezen."
+              - generic [ref=f2e422]:
+                - generic [ref=f2e423]: 7 · Mysticus
+                - generic [ref=f2e424]: Diepte
+                - generic [ref=f2e425]: "Wijsheid, zoeken, onderzoek. Schaduw: isolatie."
+              - generic [ref=f2e426]:
+                - generic [ref=f2e427]: 8 · Meesterbouwer
+                - generic [ref=f2e428]: Kracht
+                - generic [ref=f2e429]: "Oogst, autoriteit, manifestatie. Schaduw: controle."
+              - generic [ref=f2e430]:
+                - generic [ref=f2e431]: 9 · Wijze
+                - generic [ref=f2e432]: Voltooiing
+                - generic [ref=f2e433]: "Mededogen en overgave, loslaten. Schaduw: martelaarschap."
+            - paragraph [ref=f2e434]: "De meestergetallen 11 (de ziener), 22 (de meesterbouwer) en 33 (de meesterleraar) dragen een verhoogde trilling van hun basisgetal. Ze brengen meer potentieel, maar vragen ook om meer bewustzijn en innerlijke ontwikkeling. We werken met je officiële geboortenaam zoals geregistreerd op je geboorteakte, niet met een roepnaam of getrouwde naam: dat is de energetische signatuur waarmee je dit leven bent gestart."
+            - heading "De vijf kerngetallen" [level=3] [ref=f2e435]
+            - paragraph [ref=f2e436]: "Het Levenspad, berekend uit je geboortedatum, is de centrale energie van dit leven, je hoofdthema en de les die je bent gekomen om te leren. Het verandert nooit. Het Persoonlijk Jaar, uit je geboortedag, geboortemaand en het huidige jaar, is de energie die dit jaar beschikbaar is, als deel van een negenjarige cyclus. Het Uitdrukkingsgetal, uit je volledige geboortenaam, is hoe je je uitdrukt in de wereld: je talenten en capaciteiten. De Zielenurge, uit de klinkers in je naam, is wat jouw ziel werkelijk verlangt, het meest intieme getal. Het Persoonlijkheidsgetal, uit de medeklinkers, is hoe anderen jou waarnemen voordat ze je echt kennen."
+            - generic [ref=f2e437]:
+              - generic [ref=f2e438]:
+                - generic [ref=f2e439]: Levenspad
+                - generic [ref=f2e440]: "9"
+                - generic [ref=f2e441]: dag 30→3, maand 6, jaar 1971→18→9; 3+6+9 = 18 → 9
+              - generic [ref=f2e442]:
+                - generic [ref=f2e443]: Persoonlijk Jaar 2026
+                - generic [ref=f2e444]: "1"
+                - generic [ref=f2e445]: maand 6 + dag 30→3 + jaar 2026→10→1; 6+3+1 = 10 → 1
+              - generic [ref=f2e446]:
+                - generic [ref=f2e447]: Geboortedag
+                - generic [ref=f2e448]: "3"
+                - generic [ref=f2e449]: 30 → 3
+              - generic [ref=f2e450]:
+                - generic [ref=f2e451]: Uitdrukking
+                - generic [ref=f2e452]: "5"
+                - generic [ref=f2e453]: "Je uitdrukkingsgetal laat zien hoe je je talenten en capaciteiten in de wereld zet: de manier waarop anderen je in actie leren kennen."
+              - generic [ref=f2e454]:
+                - generic [ref=f2e455]: Zielenurge
+                - generic [ref=f2e456]: "6"
+                - generic [ref=f2e457]: Je zielenurge, berekend uit de klinkers in je naam, wijst op wat je diepste drijfveer werkelijk verlangt, onder alles wat zichtbaar is.
+              - generic [ref=f2e458]:
+                - generic [ref=f2e459]: Persoonlijkheid
+                - generic [ref=f2e460]: "8"
+                - generic [ref=f2e461]: Je persoonlijkheidsgetal, uit de medeklinkers, beschrijft de eerste indruk die je maakt voordat mensen je echt kennen.
+            - heading "Levenspad 9 — De Wijze" [level=3] [ref=f2e462]
+            - paragraph [ref=f2e463]: "Het getal 9 is de oude ziel, de voltooier. Het is het laatste getal van de cyclus en draagt de energie van mededogen, overgave en loslaten. Wie een 9 draagt, voelt zich vaak verbonden met iets dat groter is dan het persoonlijke. Je hebt een breed hart en de neiging om te geven, te dragen en te helpen. De schaduw is martelaarschap: blijven dragen wat eigenlijk losgelaten mag worden."
+            - paragraph [ref=f2e464]: "Hier raken je getal en je kaart elkaar. Je Levenspad 9 en je Zuidknoop in Leeuw beschrijven samen het werk rond geven en gezien worden. En je Noordknoop in Waterman in Huis 6 wijst naar de volwassen vorm van de 9: bijdragen aan het collectief, niet vanuit opoffering, maar vanuit een vrije keuze om iets te geven aan het geheel."
+            - heading "Persoonlijk Jaar 1 (2026)" [level=3] [ref=f2e465]
+            - paragraph [ref=f2e466]: "De 1 staat voor een nieuw begin, initiatief, de eerste stap en zelf het roer pakken. Het is het eerste jaar van een nieuwe negenjarige cyclus. Voor jou is dat extra betekenisvol: een Levenspad 9, de voltooier, gaat een 1-jaar binnen. Iets ouds is afgerond en er begint iets gloednieuws."
+            - paragraph [ref=f2e467]: "De energie van dit 1-jaar resoneert met je Noordknoop in Waterman in Huis 6 en met Mars die daar vlak bij staat: een jaar dat je uitnodigt om de eerste concrete stappen te zetten richting je bijdrage aan het geheel."
+            - generic [ref=f2e469]:
+              - generic [ref=f2e470]: De cyclus van 2026
+              - heading "Van oogst naar fundament" [level=3] [ref=f2e471]
+              - paragraph [ref=f2e472]: "Je persoonlijke maandgetallen lopen van 8 (juli, kracht en oogst) via 9 (augustus, voltooien en loslaten) naar 1 (september, een nieuw begin), 11 (oktober, een meestermaand vol intuïtie), 3 (november, expressie en vreugde) en 4 (december, grond en structuur). Oktober draagt de meester-energie 11: een maand om extra naar je gevoel en je intuïtie te luisteren."
+          - generic [ref=f2e473]:
+            - generic [ref=f2e474]: 07 — Kabbalah & Tikkun
+            - heading "De zielstaak van Barry" [level=2] [ref=f2e475]:
+              - text: De
+              - emphasis [ref=f2e476]: zielstaak
+              - text: van Barry
+            - paragraph [ref=f2e477]: "Tikkun is een Hebreeuws woord. Het betekent correctie, herstel, heelmaking. In de Kabbalistieke traditie verwijst het naar de specifieke taak die jouw ziel op zich heeft genomen in dit leven: wat is er gekomen om te helen, te leren en te transformeren? Het is geen straf en geen gebrek. Het is een richting, een keuze die je ziel maakte voordat je hier aankwam. Het is de reden waarom bepaalde patronen steeds terugkeren, totdat je erdoorheen kijkt."
+            - paragraph [ref=f2e478]: Waar numerologie je vertelt welke energie je meebrengt, en astrologie laat zien hoe die energie zich ontvouwt, gaat Tikkun een laag dieper. Het vraagt niet wie je bent of hoe je functioneert. Het vraagt waarom je hier bent, op het niveau van de ziel.
+            - paragraph [ref=f2e479]: "Tikkun beschrijft drie dingen samen. De kernwond is het thema dat het diepst zit, dat het vroegst verscheen en dat het langst heeft doorgewerkt: de plek waar jouw pijn en jouw gave hetzelfde adres delen. Het herhalingspatroon laat zien welke thema's steeds terugkeren in relaties, werk en keuzes. En de zielstaak is de richting: wat je het hardst hebt moeten leren, is vaak precies wat je later het diepst kunt doorgeven. De bedoeling is niet om je Tikkun op te lossen, maar om ermee te leren dansen."
+            - generic [ref=f2e481]:
+              - generic [ref=f2e482]: Kernthema
+              - heading "Gezien worden versus bijdragen aan het geheel" [level=3] [ref=f2e483]
+              - paragraph [ref=f2e484]: "De Zuidknoop in Leeuw in Huis 12 wijst op een vertrouwd patroon: de behoefte om gezien, gewaardeerd en bevestigd te worden op een innerlijk, verborgen podium. Daaronder leeft de vraag of je meetelt. Als oude ziel met een Levenspad 9 ken je ook het patroon van blijven dragen en moeilijk kunnen loslaten."
+            - generic [ref=f2e486]:
+              - generic [ref=f2e487]: Groei
+              - heading "Bijdragen via concreet dagelijks werk" [level=3] [ref=f2e488]
+              - paragraph [ref=f2e489]: "Je Noordknoop in Waterman in Huis 6 vraagt het tegenovergestelde: je richten op het collectief, op vernieuwing en op concreet dagelijks werk dat het grotere geheel dient. Van \"het draait om mij\" naar \"ik draag bij\". Met Mars vlak bij je Noordknoop is de daadkracht al aanwezig."
+            - generic [ref=f2e491]:
+              - generic [ref=f2e492]: Zielstaak
+              - paragraph [ref=f2e493]: "Jouw Tikkun in dit leven is: leren dat je meetelt door wat je geeft aan het geheel, niet door gezien te worden, en als Levenspad 9 leren om los te laten en te voltooien zonder jezelf te verliezen. Het betekent ook durven loslaten wat af is, zodat er ruimte komt voor het nieuwe begin dat 2026 draagt."
+            - 'heading "Retrograde planeten: innerlijke verwerking" [level=3] [ref=f2e494]'
+            - paragraph [ref=f2e495]: "Twee planeten staan retrograde in jouw kaart: Jupiter en Neptunus, allebei in Huis 4, het huis van thuis, wortels en je innerlijke fundament. Je diepste groei komt van binnenuit, rond het gevoel ergens thuis te horen. Dat innerlijke werk rond je fundament is precies wat je in staat stelt om naar buiten bij te dragen vanuit een stevige basis."
+          - generic [ref=f2e496]:
+            - generic [ref=f2e497]: 08 — Sacred Geometry
+            - heading "De Mandala van Barry" [level=2] [ref=f2e498]:
+              - text: De
+              - emphasis [ref=f2e499]: Mandala
+              - text: van Barry
+            - paragraph [ref=f2e500]: "Jouw volledige geboortekaart, gegenereerd vanuit jouw exacte geboortedata, met de planeten op hun precieze ecliptische graden. In het hart roteert de Merkaba op de knooppunt-as: het gouden punt reikt naar jouw Noordknoop in Waterman (16°21'), het amethist naar jouw Zuidknoop in Leeuw."
+            - img "SZINN chart Barry" [ref=f2e502]:
+              - generic [ref=f2e594]: ♈
+              - generic [ref=f2e595]: Ram
+              - generic [ref=f2e597]: ♉
+              - generic [ref=f2e598]: Stier
+              - generic [ref=f2e600]: ♊
+              - generic [ref=f2e601]: Tweeling
+              - generic [ref=f2e603]: ♋
+              - generic [ref=f2e604]: Kreeft
+              - generic [ref=f2e606]: ♌
+              - generic [ref=f2e607]: Leeuw
+              - generic [ref=f2e609]: ♍
+              - generic [ref=f2e610]: Maagd
+              - generic [ref=f2e612]: ♎
+              - generic [ref=f2e613]: Weegschaal
+              - generic [ref=f2e615]: ♏
+              - generic [ref=f2e616]: Schorpioen
+              - generic [ref=f2e618]: ♐
+              - generic [ref=f2e619]: Boogschutter
+              - generic [ref=f2e621]: ♑
+              - generic [ref=f2e622]: Steenbok
+              - generic [ref=f2e624]: ♒
+              - generic [ref=f2e625]: Waterman
+              - generic [ref=f2e627]: ♓
+              - generic [ref=f2e628]: Vissen
+              - generic [ref=f2e629]: "1"
+              - generic [ref=f2e631]: "2"
+              - generic [ref=f2e633]: "3"
+              - generic [ref=f2e635]: "4"
+              - generic [ref=f2e637]: "5"
+              - generic [ref=f2e639]: "6"
+              - generic [ref=f2e640]: "7"
+              - generic [ref=f2e642]: "8"
+              - generic [ref=f2e644]: "9"
+              - generic [ref=f2e646]: "10"
+              - generic [ref=f2e648]: "11"
+              - generic [ref=f2e650]: "12"
+              - generic [ref=f2e651]: AC
+              - generic [ref=f2e652]: MC
+              - generic [ref=f2e653]: DC
+              - generic [ref=f2e654]: IC
+              - generic [ref=f2e656]: ☉
+              - generic [ref=f2e658]: ☽
+              - generic [ref=f2e660]: ☿
+              - generic [ref=f2e662]: ♀
+              - generic [ref=f2e664]: ♂
+              - generic [ref=f2e666]: ♃
+              - generic [ref=f2e667]: ℞
+              - generic [ref=f2e669]: ♄
+              - generic [ref=f2e671]: ♅
+              - generic [ref=f2e673]: ♆
+              - generic [ref=f2e674]: ℞
+              - generic [ref=f2e676]: ♇
+              - generic [ref=f2e678]: ⚷
+              - generic [ref=f2e681]: ☊
+              - generic [ref=f2e684]: ☋
+              - generic [ref=f2e701]: PLANETEN · positie in graden
+              - generic [ref=f2e702]: ☉
+              - generic [ref=f2e703]: Zon
+              - generic [ref=f2e704]: 7°52'♋
+              - generic [ref=f2e705]: ☽
+              - generic [ref=f2e706]: Maan
+              - generic [ref=f2e707]: 3°01'♎
+              - generic [ref=f2e708]: ☿
+              - generic [ref=f2e709]: Mercurius
+              - generic [ref=f2e710]: 18°20'♋
+              - generic [ref=f2e711]: ♀
+              - generic [ref=f2e712]: Venus
+              - generic [ref=f2e713]: 21°56'♊
+              - generic [ref=f2e714]: ♂
+              - generic [ref=f2e715]: Mars
+              - generic [ref=f2e716]: 21°12'♒
+              - generic [ref=f2e717]: ♃
+              - generic [ref=f2e718]: Jupiter
+              - generic [ref=f2e719]: 27°29'♏ ℞
+              - generic [ref=f2e720]: ♄
+              - generic [ref=f2e721]: Saturnus
+              - generic [ref=f2e722]: 1°21'♊
+              - generic [ref=f2e723]: ♅
+              - generic [ref=f2e724]: Uranus
+              - generic [ref=f2e725]: 9°30'♎
+              - generic [ref=f2e726]: ♆
+              - generic [ref=f2e727]: Neptunus
+              - generic [ref=f2e728]: 0°45'♐ ℞
+              - generic [ref=f2e729]: ♇
+              - generic [ref=f2e730]: Pluto
+              - generic [ref=f2e731]: 27°07'♍
+              - generic [ref=f2e732]: ☊
+              - generic [ref=f2e733]: Noordknoop
+              - generic [ref=f2e734]: 16°21'♒
+              - generic [ref=f2e735]: ☋
+              - generic [ref=f2e736]: Zuidknoop
+              - generic [ref=f2e737]: 16°21'♌
+              - generic [ref=f2e738]: ⚷
+              - generic [ref=f2e739]: Chiron
+              - generic [ref=f2e740]: 14°17'♈
+              - generic [ref=f2e741]: © 2026 Elly Elizabeth Korving · Alterego BV · Alle rechten voorbehouden · szinn.ai
+            - paragraph [ref=f2e742]: Dit patroon is als een QR-code van jouw ziel. Het is niet bedoeld om met het hoofd te begrijpen, maar om met het lichaam te voelen. Adem er zes seconden op in, zes seconden uit. Kijk wat er beweegt.
+            - paragraph [ref=f2e743]: "Sacred geometry is niet iets wat je begrijpt. Het is iets wat je herkent. Jouw mandala is geen afbeelding om te ontcijferen, maar een frequentie om te herkennen. Kijk ernaar zoals je naar de zon kijkt: niet om te analyseren, maar om te ontvangen."
+            - blockquote [ref=f2e744]: Ademreeks 6 · 6 · 6 · 6 — zes seconden in, zes seconden vasthouden, zes seconden uit, zes seconden stil.
+            - paragraph [ref=f2e745]: Het laat je adem volledig worden, kalmeert je zenuwstelsel en brengt je terug naar stilte. Hang haar op een plek waar je haar dagelijks ziet. Gebruik haar op momenten van keuze of twijfel, niet om een antwoord te vinden maar om terug te keren naar jezelf.
+          - generic [ref=f2e746]:
+            - generic [ref=f2e747]: 09 — Overzicht & Samenvatting
+            - heading "Barry in één zin" [level=2] [ref=f2e748]:
+              - text: Barry
+              - emphasis [ref=f2e749]: in één zin
+            - blockquote [ref=f2e750]: "\"Een warme, gevoelige man met een stralende buitenkant en een oude ziel, die in 2026 een nieuw begin maakt en die wordt uitgenodigd om van het persoonlijke naar de bijdrage aan het grotere geheel te bewegen, via concreet dagelijks werk.\""
+            - paragraph [ref=f2e751]: "Je hebt je door vier systemen bewogen die elk vanuit een andere hoek hetzelfde beschrijven: wie je bent, wat je draagt en wat je hier komt doen. Astrologie liet zien hoe jouw energie werkt. Numerologie gaf je de getallen die bij je geboorte aanwezig waren. Kabbalah ging een laag dieper: waarom je hier bent. Sacred geometry gaf je een taal die je lichaam al kent. Vier talen, één waarheid. Er is een energie in jou die groter is dan het verhaal dat je over jezelf vertelt, een richting die dieper gaat dan de doelen die je bewust nastreeft, en een gave die precies verstopt zit achter de plek die het meest van je heeft gevraagd."
+            - table [ref=f2e752]:
+              - rowgroup [ref=f2e753]:
+                - row "Kernidentiteit Zon Kreeft H11 Gevoelig, beschermend en verbonden met thuis en de groep, achter een warme Leeuw-buitenkant. Wie je van binnen bent mag net zo zichtbaar worden als wat je laat zien." [ref=f2e754]:
+                  - cell "Kernidentiteit Zon Kreeft H11" [ref=f2e755]:
+                    - strong [ref=f2e756]: Kernidentiteit
+                    - text: Zon Kreeft H11
+                  - cell "Gevoelig, beschermend en verbonden met thuis en de groep, achter een warme Leeuw-buitenkant. Wie je van binnen bent mag net zo zichtbaar worden als wat je laat zien." [ref=f2e757]
+                - row "Emotioneel kompas Maan Weegschaal H2 Je gevoel zoekt harmonie, evenwicht en eigen waarde. De groei is om je veilig te voelen via wat jij zelf waard bent, los van de ander." [ref=f2e758]:
+                  - cell "Emotioneel kompas Maan Weegschaal H2" [ref=f2e759]:
+                    - strong [ref=f2e760]: Emotioneel kompas
+                    - text: Maan Weegschaal H2
+                  - cell "Je gevoel zoekt harmonie, evenwicht en eigen waarde. De groei is om je veilig te voelen via wat jij zelf waard bent, los van de ander." [ref=f2e761]
+                - row "Zielrichting NN Waterman H6 Bijdragen aan het grotere geheel via concreet dagelijks werk. Met Mars vlak bij die knoop staat je daadkracht al klaar." [ref=f2e762]:
+                  - cell "Zielrichting NN Waterman H6" [ref=f2e763]:
+                    - strong [ref=f2e764]: Zielrichting
+                    - text: NN Waterman H6
+                  - cell "Bijdragen aan het grotere geheel via concreet dagelijks werk. Met Mars vlak bij die knoop staat je daadkracht al klaar." [ref=f2e765]
+                - row "Levensthema Levenspad 9 / PJ 1 De oude ziel die leert voltooien en loslaten. 2026 (Persoonlijk Jaar 1) is een nieuw begin, het eerste jaar van een nieuwe cyclus." [ref=f2e766]:
+                  - cell "Levensthema Levenspad 9 / PJ 1" [ref=f2e767]:
+                    - strong [ref=f2e768]: Levensthema
+                    - text: Levenspad 9 / PJ 1
+                  - cell "De oude ziel die leert voltooien en loslaten. 2026 (Persoonlijk Jaar 1) is een nieuw begin, het eerste jaar van een nieuwe cyclus." [ref=f2e769]
+                - row "Tikkun Van het zelf naar de bijdrage Leren dat je meetelt door wat je geeft aan het geheel, niet door gezien te worden, en loslaten wat af is." [ref=f2e770]:
+                  - cell "Tikkun Van het zelf naar de bijdrage" [ref=f2e771]:
+                    - strong [ref=f2e772]: Tikkun
+                    - text: Van het zelf naar de bijdrage
+                  - cell "Leren dat je meetelt door wat je geeft aan het geheel, niet door gezien te worden, en loslaten wat af is." [ref=f2e773]
+                - 'row "Schaduwthema ZN Leeuw H12 De vertrouwde reflex: het zelf in het midden, of juist je licht verbergen. Dit herkennen is de eerste stap naar je bijdrage." [ref=f2e774]':
+                  - cell "Schaduwthema ZN Leeuw H12" [ref=f2e775]:
+                    - strong [ref=f2e776]: Schaduwthema
+                    - text: ZN Leeuw H12
+                  - 'cell "De vertrouwde reflex: het zelf in het midden, of juist je licht verbergen. Dit herkennen is de eerste stap naar je bijdrage." [ref=f2e777]'
+          - generic [ref=f2e778]:
+            - generic [ref=f2e779]: 10 — Reflectievragen
+            - heading "10 journaling vragen" [level=2] [ref=f2e780]:
+              - text: "10"
+              - emphasis [ref=f2e781]: journaling
+              - text: vragen
+            - paragraph [ref=f2e782]: Geen informatie meer. Alleen jij en de vragen. Lees elke vraag langzaam en wacht op wat er als eerste opkomt, niet op wat logisch klinkt. Schrijf het op papier, niet in je hoofd. Er gebeurt iets anders als je schrijft.
+            - list [ref=f2e783]:
+              - listitem [ref=f2e784]:
+                - generic [ref=f2e785]: "1"
+                - text: Welk inzicht uit jouw astrologie, numerologie of Tikkun kwam het hardst binnen, en wat zegt het dat juist dat je raakte?
+              - listitem [ref=f2e786]:
+                - generic [ref=f2e787]: "2"
+                - text: Waar voelde je weerstand tijdens het lezen, en wat zou die weerstand je kunnen laten zien?
+              - listitem [ref=f2e788]:
+                - generic [ref=f2e789]: "3"
+                - text: Waar in je leven zoek je bevestiging dat je meetelt, en wat zou er veranderen als je wist dat je er al toe doet?
+              - listitem [ref=f2e790]:
+                - generic [ref=f2e791]: "4"
+                - text: Wat draag je nog mee dat eigenlijk af is, en wat zou er ruimte komen als je het losliet?
+              - listitem [ref=f2e792]:
+                - generic [ref=f2e793]: "5"
+                - text: Waar houd je je licht klein of verberg je jezelf, en wat zou er gebeuren als je je liet zien zonder middelpunt te hoeven zijn?
+              - listitem [ref=f2e794]:
+                - generic [ref=f2e795]: "6"
+                - text: Welke concrete bijdrage aan een groter geheel geeft je energie, en hoe zou je daar deze maand een eerste stap in zetten?
+              - listitem [ref=f2e796]:
+                - generic [ref=f2e797]: "7"
+                - text: Wat zou je beginnen als je echt geloofde dat dit jaar een nieuw begin draagt en de eerste stap genoeg is?
+              - listitem [ref=f2e798]:
+                - generic [ref=f2e799]: "8"
+                - text: Waar wacht je op toestemming om je eigen koers te kiezen, en van wie?
+              - listitem [ref=f2e800]:
+                - generic [ref=f2e801]: "9"
+                - text: Wanneer voelde je je voor het laatst echt thuis bij jezelf? Wat maakte dat mogelijk?
+              - listitem [ref=f2e802]:
+                - generic [ref=f2e803]: "10"
+                - text: Als je daadkracht één ding mocht doen voor het geheel, wat zou dat zijn?
+          - generic [ref=f2e804]:
+            - generic [ref=f2e805]: 11 — Werken met de energie
+            - heading "Jouw ritme" [level=2] [ref=f2e806]:
+              - text: Jouw
+              - emphasis [ref=f2e807]: ritme
+            - paragraph [ref=f2e808]: Jouw dagelijkse en seizoensritme op basis van jouw kaart.
+            - paragraph [ref=f2e809]: Je bent geen machine. Een machine werkt elke dag hetzelfde, dezelfde input, dezelfde output, zonder ritme, zonder seizoen, zonder eb en vloed. Jij bent aarde, vuur, ether, lucht en water. En water beweegt in cycli. Het stijgt en daalt, vult en trekt zich terug, is soms helder en soms troebel. Niet omdat er iets mis is, maar omdat dat de natuur is van levende energie.
+            - heading "De maan als kompas" [level=3] [ref=f2e810]
+            - paragraph [ref=f2e811]: Van alle cycli die het leven structureren is de maancyclus de meest directe en meest persoonlijk voelbare. De maan beweegt het water van de oceanen, en jouw lichaam bestaat grotendeels uit water. De cyclus duurt ongeveer negenentwintig en een halve dag en doorloopt vier hoofdfasen die elk een eigen energiekwaliteit dragen.
+            - generic [ref=f2e812]:
+              - generic [ref=f2e813]:
+                - generic [ref=f2e814]: Nieuwe maan
+                - generic [ref=f2e815]: Zaaien
+                - generic [ref=f2e816]: Het donkerste punt, met de meeste potentie. Een moment voor intentie, niet voor actie.
+              - generic [ref=f2e817]:
+                - generic [ref=f2e818]: Wassende maan
+                - generic [ref=f2e819]: Bouwen
+                - generic [ref=f2e820]: De energie wordt actiever en meer naar buiten gericht. Zichtbaar worden en stappen zetten.
+              - generic [ref=f2e821]:
+                - generic [ref=f2e822]: Volle maan
+                - generic [ref=f2e823]: Oogsten
+                - generic [ref=f2e824]: Alles staat in het licht, emoties dichter aan de oppervlakte. Niet pushen, maar oogsten.
+              - generic [ref=f2e825]:
+                - generic [ref=f2e826]: Afnemende maan
+                - generic [ref=f2e827]: Loslaten
+                - generic [ref=f2e828]: De energie trekt zich terug. Evalueren, integreren en loslaten wat niet mee mag.
+            - paragraph [ref=f2e829]: Werken met de maan betekent niet dat je alleen handelt bij wassende maan. Het betekent dat je patronen begint op te merken en leert bewegen met wat er al is in plaats van ertegen.
+            - paragraph [ref=f2e830]: Jouw kaart heeft een eigen ritme. Je Zon en Mercurius in Kreeft vragen om gevoel, rust en veiligheid; je Venus in Tweeling en je Mars in Waterman willen juist beweging, uitwisseling en bijdragen. De spanning daartussen is geen probleem maar een ritme. Tegelijk vraagt je Maan in Weegschaal om evenwicht, en je twee retrograde planeten in Huis 4 om innerlijke rust rond thuis en je wortels.
+            - generic [ref=f2e831]:
+              - generic [ref=f2e832]:
+                - generic [ref=f2e833]: Ochtend
+                - generic [ref=f2e834]: Voel eerst naar binnen
+                - generic [ref=f2e835]: Je gevoelige Kreeft-zon is in de ochtend, voordat de wereld aanstaat, het zuiverst. Neem even rust en voel naar binnen voordat de dag zich vult met de behoeften van anderen.
+              - generic [ref=f2e836]:
+                - generic [ref=f2e837]: Aarde & lichaam
+                - generic [ref=f2e838]: Vertrouwde grond
+                - generic [ref=f2e839]: Met je Kreeft-zon en je wortels in Huis 4 laad je op in vertrouwde, veilige omgevingen en in contact met thuis. Geef die momenten ruimte; ze halen je uit je hoofd terug in je lichaam.
+              - generic [ref=f2e840]:
+                - generic [ref=f2e841]: Hart & verbinding
+                - generic [ref=f2e842]: Vriendschap & groep
+                - generic [ref=f2e843]: Je cluster in Huis 11 en je Venus in Tweeling voeden zich met vriendschap, gesprek en gedeelde richting. Zoek die verbindingen bewust op, en blijf daar bij jezelf terwijl je geeft.
+              - generic [ref=f2e844]:
+                - generic [ref=f2e845]: Werk & bijdrage
+                - generic [ref=f2e846]: Eén concrete daad
+                - generic [ref=f2e847]: Je Mars en Noordknoop in Waterman in Huis 6 laden op wanneer je iets concreets bijdraagt aan een groter geheel. Eén concrete daad per dag voor het werk of de gemeenschap voedt je richting.
+              - generic [ref=f2e848]:
+                - generic [ref=f2e849]: Avond & herstel
+                - generic [ref=f2e850]: Echte stilte
+                - generic [ref=f2e851]: Met twee retrograde planeten in Huis 4 verwerk je veel naar binnen. Behandel rust niet als beloning, maar als herstelenergie die je kaart nodig heeft.
+            - heading "De elementen in jouw kaart" [level=3] [ref=f2e852]
+            - generic [ref=f2e853]:
+              - generic [ref=f2e854]:
+                - generic [ref=f2e855]: Water (Zon & Mercurius Kreeft)
+                - heading "Gevoeligheid en geheugen" [level=3] [ref=f2e856]
+                - paragraph [ref=f2e857]: Je Kreeft-zon en Mercurius maken je gevoelig, zorgzaam en sterk verbonden met wat geweest is. Je voelt en onthoudt veel. Vertrouw op wat je voelt, niet alleen op wat je beredeneert.
+              - generic [ref=f2e858]:
+                - generic [ref=f2e859]: Lucht (Venus Tweeling · Mars & NN Waterman · Maan Weegschaal)
+                - heading "Verbinding, beweging en bijdrage" [level=3] [ref=f2e860]
+                - paragraph [ref=f2e861]: "In de lucht leeft je gerichtheid op anderen, op uitwisseling en op het collectief. Hier wijst ook je groeirichting: bijdragen aan het geheel via concreet werk. Beweeg naar buiten, deel, draag bij."
+              - generic [ref=f2e862]:
+                - generic [ref=f2e863]: Vuur & aarde (Chiron Ram · Neptunus Boogschutter · Pluto Maagd)
+                - heading "Eigen koers en langzame verdieping" [level=3] [ref=f2e864]
+                - paragraph [ref=f2e865]: Je vuur draagt het thema van je eigen richting durven kiezen. Je aarde transformeert langzaam je eigenwaarde via het werk. Kies je eigen weg, en geef de verdieping tijd.
+          - generic [ref=f2e866]:
+            - generic [ref=f2e867]: 12 — Integratie
+            - heading "Jouw persoonlijke upgrade-plan" [level=2] [ref=f2e868]:
+              - text: Jouw persoonlijke
+              - emphasis [ref=f2e869]: upgrade-plan
+            - paragraph [ref=f2e871]:
+              - strong [ref=f2e872]: "Jouw vier lagen op dit moment:"
+              - text: "Astrologie — Cluster in Huis 11 en Mars op de Noordknoop in Waterman, Huis 6: jezelf vinden in de groep en bijdragen aan het geheel"
+              - text: "Numerologie — Levenspad 9 en Persoonlijk Jaar 1: de oude ziel die een nieuw begin maakt"
+              - text: "Zielrichting — Helder en open: van het persoonlijke naar de bijdrage, via concreet dagelijks werk"
+              - text: "Persoonlijk Jaar — PJ 1: het eerste jaar van een nieuwe cyclus, een jaar van initiatief"
+              - text: "De praktijken hieronder richten zich op waar de meeste beweging mogelijk is. Voor jou is dat nu vooral:"
+              - strong [ref=f2e873]: de brug tussen het persoonlijke en de bijdrage, en tussen gezien willen worden en weten dat je ertoe doet
+            - paragraph [ref=f2e874]: "Dit is het moeilijkste deel. Niet omdat het ingewikkeld is, maar omdat het eerlijkheid vraagt. Kennis verandert niets. Herkenning verandert niets. Zelfs de diepste spirituele ervaring verandert niets als ze niet gevolgd wordt door één ding: een andere keuze. In een gewoon moment, op een gewone dag."
+            - heading "De wereld is jouw spiegel" [level=3] [ref=f2e875]
+            - paragraph [ref=f2e876]: De werkelijkste, eerlijkste en meest directe spiegel die je hebt is de wereld om je heen. De mensen in je leven, de situaties die steeds terugkomen, de dingen die je irriteren, raken, bewonderen of afstoten. Alles wat je buiten jezelf ziet is een reflectie van wat er binnen in je leeft. Het moment dat je dit herkent en helder hebt, stop je met onbewust herhalen en begin je bewust te creëren.
+            - heading "Schaduwkanten als spiegel" [level=3] [ref=f2e877]
+            - paragraph [ref=f2e878]: "Wat je in een ander irriteert draagt een kwaliteit die ook in jou leeft, anders zou het je niet raken. Wat je in een ander bewondert draagt een kwaliteit die ook in jou leeft, nog niet volledig geclaimd maar aanwezig, anders zou je het niet herkennen. Elk oordeel over een ander is een spiegel. De vraag is nooit wat er mis is met die ander, maar altijd: wat wil deze reactie mij laten zien over mezelf?"
+            - heading "Jouw schaduwkanten zijn niet je vijanden" [level=3] [ref=f2e879]
+            - paragraph [ref=f2e880]: "Voor jou leeft de schaduw vooral in twee dingen. Het eerste is de behoefte om gezien en bevestigd te worden, of juist het tegenovergestelde: je licht verbergen en jezelf wegcijferen, geworteld in je Zuidknoop in Leeuw in Huis 12. Het tweede is het patroon van de oude ziel: blijven dragen en moeilijk kunnen loslaten wat eigenlijk af is, geworteld in je Levenspad 9. Geen van beide is een vijand. Elke keer dat je iets geeft aan het geheel zonder je te hoeven bewijzen, beweeg je richting je Noordknoop in Waterman."
+            - heading "Jouw zes gaven" [level=3] [ref=f2e881]
+            - paragraph [ref=f2e882]: "Er is iets wat jou onderscheidt van alles om je heen: zes vermogens die jou in staat stellen om te stoppen, te kijken en anders te kiezen. Intuïtie is het weten dat er is voordat de redenering er is. Verbeeldingskracht is het vermogen om iets te zien dat er nog niet is. Geheugen is het vermogen om patronen te herkennen over tijd. Redeneren is het vermogen om verbanden te leggen. Perceptie is hoe je waarneemt, en hoe je het ziet bepaalt wat je ervaart. Wilskracht is het vermogen om te kiezen in plaats van automatisch te reageren. Deze zes gaven zijn altijd beschikbaar. Ze wachten niet op een goed moment."
+            - heading "Hoe jouw zes gaven oplichten in je kaart" [level=3] [ref=f2e883]
+            - paragraph [ref=f2e884]: Je zes gaven zijn de kracht van je kaart in pure vorm. Hoe bewuster je ze inzet, hoe meer je kaart-energie stroomt.
+            - generic [ref=f2e885]:
+              - generic [ref=f2e886]:
+                - generic [ref=f2e887]: Gave 01
+                - generic [ref=f2e888]: Intuïtie
+                - generic [ref=f2e889]: Kreeft-zon en Mercurius in Kreeft. Je voelt en weet vaak iets voordat je het kunt beredeneren. Vertrouw die zachte, snelle stem en handel ernaar voordat je hem wegdenkt.
+              - generic [ref=f2e890]:
+                - generic [ref=f2e891]: Gave 02
+                - generic [ref=f2e892]: Verbeeldingskracht
+                - generic [ref=f2e893]: Neptunus in Boogschutter in Huis 4. Je kunt voorbij het zichtbare kijken en iets zien dat er nog niet is, vooral rond thuis en betekenis. Gebruik deze gave om je eigen toekomst te verbeelden.
+              - generic [ref=f2e894]:
+                - generic [ref=f2e895]: Gave 03
+                - generic [ref=f2e896]: Geheugen
+                - generic [ref=f2e897]: Kreeft, het teken van het geheugen, met je Zon en Mercurius. Je herkent patronen over tijd en draagt een diep geheugen voor mensen. Gebruik dat om te zien wat zich herhaalt, en wat af mag.
+              - generic [ref=f2e898]:
+                - generic [ref=f2e899]: Gave 04
+                - generic [ref=f2e900]: Redeneren
+                - generic [ref=f2e901]: "Saturnus in Tweeling in Huis 10. Je hebt een gestructureerd, gedisciplineerd denkvermogen: je kunt verbanden leggen en met je geest bouwen. Zet dit in om je richting concreet te maken."
+              - generic [ref=f2e902]:
+                - generic [ref=f2e903]: Gave 05
+                - generic [ref=f2e904]: Waarneming
+                - generic [ref=f2e905]: Venus in Tweeling en Noordknoop in Waterman. Je neemt helder en met enige afstand waar, en ziet patronen en mensen scherp. Hoe je iets ziet bepaalt wat je ervaart; kies bewust een blik die je dient.
+              - generic [ref=f2e906]:
+                - generic [ref=f2e907]: Gave 06
+                - generic [ref=f2e908]: Wilskracht
+                - generic [ref=f2e909]: "Mars op de Noordknoop in Waterman, Huis 6. Dit is je sterkste gave: je daadkracht staat precies op je groeirichting. Zet die wil in voor iets dat groter is dan jou."
+            - heading "De adem als sleutel" [level=3] [ref=f2e910]
+            - paragraph [ref=f2e911]: "Op het moment dat je reageert, verandert je ademhaling direct: sneller, vluchtiger, hoger in de borst. Een bewuste, diepe ademhaling activeert het parasympathische zenuwstelsel, de staat van rust en helderheid. Voor jou, met een gevoelige Kreeft-zon en veel beweging in je luchttekens, is de adem de snelste weg terug naar rust en naar je lichaam."
+            - heading "Integratie in zes bewegingen" [level=3] [ref=f2e912]
+            - paragraph [ref=f2e913]: Zodra je weerstand voelt, stop. Niet wegrennen, niet doorzetten. Stop. En adem, diep en bewust, met een uitademing die langer is dan de inademing. Voel wat er is, zonder oordeel. Kijk ernaar met de ogen van iemand die nieuwsgierig is in plaats van bang. Ervaar het volledig, want wat je volledig ervaart en doorademt, heeft geen macht meer over je. En laat dan los wat zijn werk heeft gedaan. Stoppen, ademen, voelen, kijken, ervaren, laten. De adem loopt door alles heen.
+            - heading "De mandala als dagelijks integratietool" [level=3] [ref=f2e914]
+            - paragraph [ref=f2e915]: Jouw mandala is de geometrische spiegel van wie je bent. Op het moment dat je een patroon herkent, een irritatie of een reactie die meer energie vraagt dan de situatie rechtvaardigt, kijk je even naar je mandala en keer je terug naar jezelf, naar de frequentie die jij uitzendt als je bewust bent in plaats van reactief.
+            - heading "AI als dagelijkse gesprekspartner" [level=3] [ref=f2e916]
+            - paragraph [ref=f2e917]: AI kent jouw Blueprint, voer hem in. AI kan je helpen de verbinding te maken tussen wat je hier hebt gelezen en wat je vandaag ervaart. Niet als therapeut, maar als gesprekspartner die jouw context kent en jou de vragen stelt die jij jezelf nog niet stelt. De kracht zit niet in de antwoorden, maar in het formuleren. Want wat je formuleert wordt zichtbaar, en wat zichtbaar is kun je kiezen.
+            - heading "Dagelijkse praktijken" [level=3] [ref=f2e918]
+            - generic [ref=f2e919]:
+              - generic [ref=f2e920]: Praktijk 01
+              - generic [ref=f2e921]: Begin de dag bij jezelf
+              - generic [ref=f2e922]: Kreeft-zon, Levenspad 9. Neem voordat je je telefoon pakt een paar minuten rust en adem laag in je buik. Voel naar binnen voordat de dag zich vult met de behoeften van anderen.
+            - generic [ref=f2e923]:
+              - generic [ref=f2e924]: Praktijk 02
+              - generic [ref=f2e925]: Eén concrete daad voor het geheel
+              - generic [ref=f2e926]: Mars op de Noordknoop, Waterman in Huis 6. Doe elke dag één concrete daad die bijdraagt aan iets dat groter is dan jij. Dit is directe beweging richting je Noordknoop.
+            - generic [ref=f2e927]:
+              - generic [ref=f2e928]: Praktijk 03
+              - generic [ref=f2e929]: Kies elke dag één nieuw begin
+              - generic [ref=f2e930]: Persoonlijk Jaar 1. Dit is je jaar van nieuwe beginnen. Start elke dag of week één klein nieuw ding, vanuit eigen initiatief. De eerste stap hoeft niet groot te zijn, alleen van jou.
+            - generic [ref=f2e931]:
+              - generic [ref=f2e932]: Praktijk 04
+              - generic [ref=f2e933]: Volg je gevoel voordat je het wegredeneert
+              - generic [ref=f2e934]: Kreeft-zon. Merk één keer per dag op wat je gevoel als eerste zegt, en neem het serieus voordat je het wegredeneert. Elke keer groeit het vertrouwen in je eigen weten.
+            - generic [ref=f2e935]:
+              - generic [ref=f2e936]: Praktijk 05
+              - generic [ref=f2e937]: Laat elke dag één ding los
+              - generic [ref=f2e938]: "Levenspad 9. Als oude ziel draag je veel. Laat elke dag bewust één klein ding los dat af is: een taak, een gedachte, een verwachting. Loslaten maakt ruimte voor het nieuwe."
+            - generic [ref=f2e939]:
+              - generic [ref=f2e940]: Praktijk 06
+              - generic [ref=f2e941]: Voed je thuis en je wortels
+              - generic [ref=f2e942]: Jupiter en Neptunus in Huis 4. Je fundament zit in Huis 4. Geef je thuis en je innerlijke basis bewust aandacht. Een stevige basis maakt het makkelijker om naar buiten bij te dragen.
+            - heading "Zes AI-prompts voor jouw kaart" [level=3] [ref=f2e943]
+            - paragraph [ref=f2e944]: Deze prompts zijn klaar voor gebruik in Claude of ChatGPT. Ze zijn gebouwd op jouw specifieke kaartgegevens. Gebruik ze voor reflectie, voor keuzes of voor journaling. Kopieer en plak ze direct.
+            - paragraph [ref=f2e945]: Klik op de knop om een prompt te kopiëren
+            - generic [ref=f2e946]:
+              - generic [ref=f2e947]: Prompt 01 — Onderscheiden tussen het persoonlijke en de bijdrage
+              - paragraph [ref=f2e948]: Ik ben Barry (Zon in Kreeft in Huis 11, Mercurius in Kreeft in Huis 11, Venus in Tweeling in Huis 11, Maan in Weegschaal in Huis 2, Leeuw-ascendant, Levenspad 9, Persoonlijk Jaar 1 in 2026). Mijn Zuidknoop staat in Leeuw in Huis 12 en mijn Noordknoop in Waterman in Huis 6. Help me onderscheiden wanneer ik handel vanuit de behoefte om gezien te worden, en wanneer ik werkelijk bijdraag aan het geheel, en stel me vijf vragen om dat verschil beter te leren voelen.
+              - button "Kopieer" [ref=f2e949] [cursor=pointer]
+            - generic [ref=f2e950]:
+              - generic [ref=f2e951]: Prompt 02 — Mijn wil afstemmen op mijn richting
+              - paragraph [ref=f2e952]: "Mijn Mars staat vlak bij mijn Noordknoop in Waterman in Huis 6: mijn daadkracht staat op mijn groeirichting. Geef me drie concrete situaties van deze week waarin ik mijn wil bewust kan inzetten voor een bijdrage aan iets dat groter is dan ikzelf, in mijn dagelijkse werk."
+              - button "Kopieer" [ref=f2e953] [cursor=pointer]
+            - generic [ref=f2e954]:
+              - generic [ref=f2e955]: Prompt 03 — Een nieuw begin in een 1-jaar na een 9-cyclus
+              - paragraph [ref=f2e956]: "Ik heb een Levenspad 9 en ben in 2026 in een Persoonlijk Jaar 1 beland: een oude ziel die een nieuw begin maakt. Help me onderzoeken wat er in mij afgesloten mag worden, en welke kleine, concrete eerste stap ik kan zetten in een richting die echt van mij is."
+              - button "Kopieer" [ref=f2e957] [cursor=pointer]
+            - generic [ref=f2e958]:
+              - generic [ref=f2e959]: Prompt 04 — Bijdragen via concreet dagelijks werk
+              - paragraph [ref=f2e960]: Mijn Noordknoop in Waterman in Huis 6 wijst naar bijdragen aan het collectief via concreet dagelijks werk. Help me ontdekken welke vorm van bijdragen bij mij past en geef me een eenvoudig dagelijks ritme waarin ik elke dag één concrete stap in die richting zet.
+              - button "Kopieer" [ref=f2e961] [cursor=pointer]
+            - generic [ref=f2e962]:
+              - generic [ref=f2e963]: Prompt 05 — Loslaten en voltooien
+              - paragraph [ref=f2e964]: Als Levenspad 9 draag ik veel en vind ik het soms moeilijk om iets echt af te sluiten. Help me herkennen wat ik vasthoud terwijl het eigenlijk af is, en geef me concrete, kleine manieren om los te laten zonder mezelf te verliezen.
+              - button "Kopieer" [ref=f2e965] [cursor=pointer]
+            - generic [ref=f2e966]:
+              - generic [ref=f2e967]: Prompt 06 — Mijn binnenwereld en mijn wortels
+              - paragraph [ref=f2e968]: Ik heb een gevoelige Kreeft-zon en Jupiter en Neptunus retrograde in Huis 4 (thuis, wortels, fundament). Help me een eenvoudig ritme ontwerpen dat mijn innerlijke basis en mijn gevoel van thuishoren voedt, zodat ik vanuit een stevige basis naar buiten kan bijdragen.
+              - button "Kopieer" [ref=f2e969] [cursor=pointer]
+            - heading "Persoonlijke kalender — juli tot december 2026" [level=3] [ref=f2e970]
+            - paragraph [ref=f2e971]: Je persoonlijke maandgetallen zijn berekend vanuit Persoonlijk Jaar 1. Elke maand draagt een eigen kleur van energie. Hoe bewuster je dit ritme volgt, hoe meer je meebeweegt met de stroom van je jaar.
+            - generic [ref=f2e972]:
+              - generic [ref=f2e973]:
+                - generic [ref=f2e974]: Juli 2026
+                - generic [ref=f2e975]: "8"
+                - generic [ref=f2e976]: Kracht en oogst
+                - generic [ref=f2e977]: Persoonlijke Maand 8
+                - generic [ref=f2e978]: De 8 brengt kracht, oogst en manifestatie. Een maand om te oogsten wat klaar is en je plek te pakken. Concreet en doelgericht.
+                - list [ref=f2e979]:
+                  - listitem [ref=f2e980]: — Oogst wat klaar is om geoogst te worden
+                  - listitem [ref=f2e981]: — Pak je plek en je autoriteit
+                  - listitem [ref=f2e982]: — Zet kracht achter wat je begint
+              - generic [ref=f2e983]:
+                - generic [ref=f2e984]: Augustus 2026
+                - generic [ref=f2e985]: "9"
+                - generic [ref=f2e986]: Voltooien en loslaten
+                - generic [ref=f2e987]: Persoonlijke Maand 9
+                - generic [ref=f2e988]: De 9 sluit een cyclus. Een maand om af te ronden, los te laten en ruimte te maken. Mededogen voor jezelf en voor wat geweest is.
+                - list [ref=f2e989]:
+                  - listitem [ref=f2e990]: — Rond af wat afgerond mag worden
+                  - listitem [ref=f2e991]: — Laat los wat niet mee mag naar het nieuwe
+                  - listitem [ref=f2e992]: — Wees mild voor jezelf en voor wat was
+              - generic [ref=f2e993]:
+                - generic [ref=f2e994]: September 2026
+                - generic [ref=f2e995]: "1"
+                - generic [ref=f2e996]: Een nieuw begin
+                - generic [ref=f2e997]: Persoonlijke Maand 1
+                - generic [ref=f2e998]: De 1 opent een nieuwe cyclus. Begin iets van jezelf, klein en eigen, vanuit initiatief en eigen wil.
+                - list [ref=f2e999]:
+                  - listitem [ref=f2e1000]: — Zet een eerste stap vanuit wat jij wilt
+                  - listitem [ref=f2e1001]: — Begin iets kleins dat puur van jou is
+                  - listitem [ref=f2e1002]: — Neem het initiatief, wacht niet af
+              - generic [ref=f2e1003]:
+                - generic [ref=f2e1004]: Oktober 2026
+                - generic [ref=f2e1005]: "11"
+                - generic [ref=f2e1006]: Intuïtie en gevoeligheid
+                - generic [ref=f2e1007]: Persoonlijke Maand 11 — meestermaand
+                - generic [ref=f2e1008]: Een meestermaand met verhoogde gevoeligheid en intuïtie. Maak ruimte voor stilte en luister extra naar wat je van binnen voelt.
+                - list [ref=f2e1009]:
+                  - listitem [ref=f2e1010]: — Maak ruimte voor stilte
+                  - listitem [ref=f2e1011]: — Volg je gevoel voordat je het wegredeneert
+                  - listitem [ref=f2e1012]: — Let op wat zich aandient, het draagt richting
+              - generic [ref=f2e1013]:
+                - generic [ref=f2e1014]: November 2026
+                - generic [ref=f2e1015]: "3"
+                - generic [ref=f2e1016]: Expressie en vreugde
+                - generic [ref=f2e1017]: Persoonlijke Maand 3
+                - generic [ref=f2e1018]: De 3 brengt expressie, vreugde en communicatie. Laat je zien, deel wat je maakt en geniet van je mensen.
+                - list [ref=f2e1019]:
+                  - listitem [ref=f2e1020]: — Deel openlijk wat in je leeft
+                  - listitem [ref=f2e1021]: — Doe iets puur omdat het je vreugde geeft
+                  - listitem [ref=f2e1022]: — Geniet bewust van je vrienden en de groep
+              - generic [ref=f2e1023]:
+                - generic [ref=f2e1024]: December 2026
+                - generic [ref=f2e1025]: "4"
+                - generic [ref=f2e1026]: Grond en structuur
+                - generic [ref=f2e1027]: Persoonlijke Maand 4
+                - generic [ref=f2e1028]: De 4 brengt grond, structuur en fundament. Een maand om af te maken en stevigheid te bouwen onder wat je begonnen bent.
+                - list [ref=f2e1029]:
+                  - listitem [ref=f2e1030]: — Maak af waar je aan begonnen bent
+                  - listitem [ref=f2e1031]: — Breng orde aan, één ding tegelijk
+                  - listitem [ref=f2e1032]: — Bouw een stevig fundament onder je richting
+          - generic [ref=f2e1033]:
+            - generic [ref=f2e1034]: 13 — Verdieping
+            - heading "Waar ga je vanaf hier naartoe?" [level=2] [ref=f2e1035]:
+              - text: Waar ga je
+              - emphasis [ref=f2e1036]: vanaf hier
+              - text: naartoe?
+            - paragraph [ref=f2e1037]: Deze Blueprint is een begin. Wat je hebt gelezen is een momentopname van de energetische signatuur die je vanaf je eerste ademhaling met je meedraagt. Het is niet compleet en kan dat ook nooit zijn. Het leven blijft lagen toevoegen.
+            - paragraph [ref=f2e1038]: Dit document is niet bedoeld om in één keer te begrijpen. Laat het op je inwerken. Kom er de komende maanden op terug. Wat nu abstract voelt, kan over drie maanden precies de zin zijn die je nodig hebt, juist nu je in een jaar van nieuw begin staat.
+            - generic [ref=f2e1039]:
+              - generic [ref=f2e1040]:
+                - generic [ref=f2e1041]: Optie 01
+                - heading "Progressies en transits" [level=3] [ref=f2e1042]
+                - paragraph [ref=f2e1043]: Als deze Blueprint resoneerde, is een volgende stap om naar je secundaire progressies en de huidige planeetstanden ten opzichte van je geboortekaart te kijken. Dit laat zien welke thema's nu geactiveerd worden, en kan precies timen wanneer de energie voor je groei het sterkst in je voordeel werkt.
+              - generic [ref=f2e1044]:
+                - generic [ref=f2e1045]: Optie 02
+                - heading "Levensboom en 10 Sefirot" [level=3] [ref=f2e1046]
+                - paragraph [ref=f2e1047]: De Kabbalah-laag in deze Blueprint raakt de oppervlakte. De Levensboom met de tien Sefirot biedt een diepere kaart van hoe jouw ziel door lagen van manifestatie werkt, van bewustzijn naar de tastbare werkelijkheid die je wilt vormgeven.
+              - generic [ref=f2e1048]:
+                - generic [ref=f2e1049]: Optie 03
+                - heading "Human Design of Gene Keys" [level=3] [ref=f2e1050]
+                - paragraph [ref=f2e1051]: Human Design en Gene Keys zijn aanvullende systemen die overlappen met maar ook verschillen van astrologie en numerologie. Ze geven een extra laag informatie over je energetische type en hoe je het beste beslissingen neemt.
+            - heading "Hoe je hiervandaan verder gaat" [level=3] [ref=f2e1052]
+            - paragraph [ref=f2e1053]: Dit document is een startpunt. Wat je ermee doet, elke dag, in kleine momenten, is de echte blauwdruk. Er zijn vier bewegingen die je kunt maken.
+            - paragraph [ref=f2e1054]:
+              - strong [ref=f2e1055]: "Handelen:"
+              - text: kies één praktijk uit je Blueprint en doe die vandaag. Niet morgen, niet als je je er klaar voor voelt. Vandaag, klein, concreet. Eén beweging richting je Noordknoop is meer waard dan tien inzichten die je niet leeft.
+            - paragraph [ref=f2e1056]:
+              - strong [ref=f2e1057]: Contempleren
+              - text: is niet hetzelfde als denken. Denken gaat over oplossen; contempleren gaat over aanwezig zijn met wat er is. Neem één vraag uit sectie 10, niet om haar te beantwoorden. Draag haar een week met je mee en laat het leven je het antwoord tonen.
+            - paragraph [ref=f2e1058]:
+              - strong [ref=f2e1059]: "Blijf jezelf de juiste vragen stellen:"
+              - text: de vragen in dit document zijn niet bedoeld om één keer te lezen. Een vraag die vandaag niets doet, kan over drie maanden precies de zin zijn die alles verschuift. Kom terug, lees opnieuw, kijk wat er nu resoneert.
+            - paragraph [ref=f2e1060]:
+              - strong [ref=f2e1061]: Praat met een mens.
+              - text: "AI kan je spiegelen, maar een goed gesprek met iemand die je kent en je durft uit te dagen gaat verder: iemand die niet bevestigt wat je al weet, maar de vraag stelt die je liever vermijdt. De combinatie van dit document plus een levend gesprek is krachtiger dan elk van beide afzonderlijk."
+            - heading "Tot slot" [level=3] [ref=f2e1062]
+            - paragraph [ref=f2e1063]: Je kaart geeft geen oordeel, maar wel een spiegel. De richting waarin je ziel je uitnodigt te bewegen, van het persoonlijke naar de bijdrage aan het geheel, is precies de richting van je Noordknoop in Waterman in Huis 6, met Mars die daar al klaarstaat. Je draagt als Levenspad 9 een breed hart en de wijsheid van een oude ziel, en 2026 opent als Persoonlijk Jaar 1 een gloednieuwe cyclus.
+            - paragraph [ref=f2e1064]: "De ene knoop is vertrouwen: weten dat je meetelt door wat je geeft, niet door gezien te worden. De andere is loslaten: durven afsluiten wat af is, zodat er ruimte komt voor het nieuwe begin. Wat ontbreekt is niet de richting en niet de daadkracht, je hebt beide. Wat groeit is het vertrouwen dat je ertoe doet op het moment dat je geeft vanuit vrije keuze, en dat elke eerste stap genoeg is."
+            - heading "Bronnen, verdieping & volgende stappen" [level=3] [ref=f2e1065]
+            - paragraph [ref=f2e1066]: Dit document is het begin. Niet het einde. Hier zijn richtingen voor wie dieper wil gaan.
+            - paragraph [ref=f2e1067]: Aanvullende systemen om te verkennen
+            - generic [ref=f2e1068]:
+              - generic [ref=f2e1069]:
+                - strong [ref=f2e1070]: Westerse astrologie
+                - text: is de traditie waarop deze Blueprint is gebouwd.
+              - generic [ref=f2e1071]:
+                - strong [ref=f2e1072]: Human Design
+                - text: beschrijft je energetische type en beslisstrategie.
+              - generic [ref=f2e1073]:
+                - strong [ref=f2e1074]: Gene Keys
+                - text: is een poëtisch transformatiesysteem gebaseerd op de I Ching.
+              - generic [ref=f2e1075]:
+                - strong [ref=f2e1076]: Vedische astrologie (Jyotish)
+                - text: voegt karma, dharma en levensfasen toe.
+              - generic [ref=f2e1077]:
+                - strong [ref=f2e1078]: I Ching
+                - text: is een levend orakelsysteem dat de taal van flow spreekt.
+              - generic [ref=f2e1079]:
+                - strong [ref=f2e1080]: Kwantumfysica
+                - text: laat zien dat de waarnemer de werkelijkheid beïnvloedt.
+            - paragraph [ref=f2e1081]: Er zijn zoveel paden om te verdiepen en te herontdekken wie je werkelijk bent. Iedereen heeft hierin zijn eigen weg.
+            - paragraph [ref=f2e1082]: Hoe je met je Blueprint blijft werken
+            - paragraph [ref=f2e1083]: Lees hem niet in één keer. Lees een sectie. Zit ermee. Kom terug. Gebruik de reflectievragen als dagelijkse praktijk. Werk met je mandala. En gebruik de AI-prompts om het gesprek met jezelf gaande te houden.
+            - blockquote [ref=f2e1084]:
+              - text: Vibratie is jouw aantrekkingskracht. Bewustzijn is hoe je die vibratie leert kennen. En creatie is wat er ontstaat als je stopt met overleven en begint met leven.
+              - text: Je was nooit jezelf kwijt. Je bent op weg terug naar jezelf.
+            - paragraph [ref=f2e1085]: SZINN · Alignment Blueprint™
+            - paragraph [ref=f2e1086]: SZINN · Barry · Blueprint 2026 · Persoonlijk en vertrouwelijk
+          - contentinfo [ref=f2e1087]:
+            - img "SZINN" [ref=f2e1088]
+            - generic [ref=f2e1089]: "\"Remember who you are.\""
+            - paragraph [ref=f2e1090]:
+              - text: SZINN Alignment Blueprint™ · Barry · 30 juni 1971 · Hoogezand
+              - text: Gegenereerd 2026
+              - text: © 2026 Elly Elizabeth Korving · Alterego BV · Alle rechten voorbehouden · szinn.ai
+              - text: Dit document is persoonlijk en vertrouwelijk. Niets uit dit document mag worden verveelvoudigd zonder de uitdrukkelijke schriftelijke toestemming van Alterego BV.
+  - contentinfo [ref=e33]:
+    - generic [ref=e34]: SZINN
+    - paragraph [ref=e35]: © 2026 SZINN · Alterego BV · Alle rechten voorbehouden
+  - button "Companion" [ref=e36] [cursor=pointer]:
+    - generic [ref=e37]: ✦
+    - generic [ref=e38]: Companion
+  - dialog "SZINN Companion" [ref=e39]:
+    - generic [ref=e40]:
+      - button "Sluiten" [ref=e41] [cursor=pointer]: ×
+      - generic [ref=e42]: SZINN
+      - generic [ref=e43]: SZINN Companion
+      - generic [ref=e44]: Een rustige plek voor je vragen over je Blueprint
+    - generic [ref=e47]:
+      - generic [ref=e48]: Binnenkort beschikbaar
+      - generic [ref=e49]: De Companion wordt nu met zorg voorbereid. Heel binnenkort kun je hier een echt gesprek voeren over je Blueprint.
+    - generic [ref=e50]:
+      - generic [ref=e51]:
+        - textbox "Binnenkort kun je hier je vraag stellen…" [disabled] [ref=e52]
+        - button "Stuur" [disabled] [ref=e53]
+      - generic [ref=e54]: 🔒 Je gesprekken blijven altijd van jou.
