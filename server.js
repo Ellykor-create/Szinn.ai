@@ -302,6 +302,36 @@ app.get('/api/orders/:id', (req, res) => {
   res.json(toOrder(row));
 });
 
+// Directe PDF-download: rendert de blueprint-HTML on-the-fly naar een print-PDF
+// met alle kleuren (printBackground) en ingesloten afbeeldingen.
+app.get('/api/orders/:id/pdf', async (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  const row = db.prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').get(req.params.id, req.session.userId);
+  if (!row) return res.status(404).json({ error: 'Aanvraag niet gevonden' });
+
+  // Bron van de HTML: bij voorkeur het opgeslagen bestand op blueprint_url,
+  // anders de in de db bewaarde HTML.
+  let html = null;
+  if (row.blueprint_url) {
+    const file = path.join(ROOT, row.blueprint_url.replace(/^\//, '').split('?')[0]);
+    try { if (fs.existsSync(file)) html = fs.readFileSync(file, 'utf8'); } catch {}
+  }
+  if (!html && row.blueprint_html) html = row.blueprint_html;
+  if (!html) return res.status(404).json({ error: 'Blueprint nog niet beschikbaar' });
+
+  try {
+    const { generatePDF } = require('./lib/pdf');
+    const pdf = await generatePDF(html);
+    const name = (row.client_name || 'SZINN').replace(/[^\w\-]+/g, '-');
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="SZINN-Blueprint-${name}.pdf"`);
+    res.send(pdf);
+  } catch (err) {
+    console.error('PDF-generatie mislukt:', err.message);
+    res.status(500).json({ error: 'PDF kon niet worden gegenereerd. Is er een Chrome/Chromium beschikbaar? Zet eventueel CHROME_PATH.' });
+  }
+});
+
 // ── Gift codes ────────────────────────────────────────────────────────────────
 app.get('/api/gift/codes', (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });

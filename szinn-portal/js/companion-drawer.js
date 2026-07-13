@@ -14,8 +14,9 @@
     nl: {
       launch: 'Companion',
       title: 'SZINN Companion',
-      subtitle: 'Je thuiskomplek voor vragen over je Blueprint',
-      welcome: 'Welkom thuis. Straks kun je me hier alles vragen over je Blueprint — waar je jezelf in herkent, wat een sectie voor jóu betekent, of hoe je vandaag een kleine stap zet. Ik lees je kaart met je mee, rustig en zonder oordeel.',
+      subtitle: 'Een rustige plek voor je vragen over je Blueprint',
+      welcomeFirst: 'Leuk je te ontmoeten. Ik ben je Companion. Straks kun je me hier van alles vragen over je Blueprint: waar je jezelf in herkent, wat een stuk voor jou betekent, of welke kleine stap bij vandaag past. Ik denk rustig met je mee, zonder oordeel.',
+      welcomeReturn: 'Fijn je weer te spreken. Ik ben er zo weer voor je vragen over je Blueprint: waar je jezelf in herkent, wat een stuk voor jou betekent, of welke stap bij vandaag past. We pakken het rustig op, in jouw tempo.',
       soonBadge: 'Binnenkort beschikbaar',
       soonBody: 'De Companion wordt nu met zorg voorbereid. Heel binnenkort kun je hier een echt gesprek voeren over je Blueprint.',
       placeholder: 'Binnenkort kun je hier je vraag stellen…',
@@ -26,8 +27,9 @@
     en: {
       launch: 'Companion',
       title: 'SZINN Companion',
-      subtitle: 'A homecoming space for questions about your Blueprint',
-      welcome: 'Welcome home. Soon you can ask me anything about your Blueprint here — where you recognise yourself, what a section means for you, or how to take a small step today. I read your chart alongside you, gently and without judgement.',
+      subtitle: 'A calm place for your questions about your Blueprint',
+      welcomeFirst: 'Lovely to meet you. I am your Companion. Soon you can ask me anything about your Blueprint here: where you recognise yourself, what a part means for you, or which small step fits today. I think along with you, gently and without judgement.',
+      welcomeReturn: 'Good to talk again. Soon I will be here for your questions about your Blueprint: where you recognise yourself, what a part means for you, or which step fits today. We take it gently, at your pace.',
       soonBadge: 'Coming soon',
       soonBody: 'The Companion is being prepared with care. Very soon you will be able to have a real conversation about your Blueprint here.',
       placeholder: 'Soon you can ask your question here…',
@@ -101,7 +103,7 @@
       '<div class="szc-sub">' + T.subtitle + '</div>' +
     '</div>' +
     '<div class="szc-body">' +
-      '<div class="szc-bubble">' + T.welcome + '</div>' +
+      '<div class="szc-bubble" id="szc-greeting"></div>' +
       '<div class="szc-soon">' +
         '<span class="szc-soon-badge">' + T.soonBadge + '</span>' +
         '<div class="szc-soon-body">' + T.soonBody + '</div>' +
@@ -119,7 +121,15 @@
   document.body.appendChild(overlay);
   document.body.appendChild(drawer);
 
-  function open() { overlay.classList.add('open'); drawer.classList.add('open'); }
+  var greeting = drawer.querySelector('#szc-greeting');
+  function open() {
+    // Eerste keer: kennismaken. Daarna: fijn je weer te spreken.
+    var seen = false;
+    try { seen = localStorage.getItem('szinn_companion_seen') === '1'; } catch (e) {}
+    greeting.textContent = seen ? T.welcomeReturn : T.welcomeFirst;
+    try { localStorage.setItem('szinn_companion_seen', '1'); } catch (e) {}
+    overlay.classList.add('open'); drawer.classList.add('open');
+  }
   function close() { overlay.classList.remove('open'); drawer.classList.remove('open'); }
 
   launch.addEventListener('click', open);

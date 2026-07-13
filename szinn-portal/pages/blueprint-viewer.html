@@ -128,7 +128,7 @@
           <button class="btn" onclick="printBlueprint()" title="Printen">
             <span class="icon-print"></span>Print
           </button>
-          <button class="btn btn-primary" onclick="downloadPDF()" title="Download PDF">
+          <button class="btn btn-primary" id="pdfBtn" onclick="downloadPDF()" title="Download PDF">
             <span class="icon-download"></span>PDF
           </button>
         </div>
@@ -246,14 +246,35 @@
       document.getElementById('lang-toggle').textContent = lang === 'nl' ? 'EN' : 'NL';
     }
 
-    function downloadPDF() {
-      if (currentOrder && currentOrder.pdfAvailable) {
-        const url = `/api/orders/${orderId}/pdf?lang=${lang}`;
-        const w = window.open(url, '_blank');
-        if (!w) window.location.href = url; // popup geblokkeerd → directe download
-      } else {
-        // Nog geen kant-en-klare PDF: gebruik de print-dialoog ("Opslaan als PDF").
-        printBlueprint();
+    // Downloadt de PDF direct als bestand — met alle kleuren en afbeeldingen.
+    // De server rendert de blueprint-HTML naar een print-PDF (printBackground).
+    async function downloadPDF() {
+      const btn = document.getElementById('pdfBtn');
+      const label = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="icon-download"></span>PDF maken…';
+      try {
+        const resp = await fetch(`/api/orders/${orderId}/pdf?lang=${lang}`, { credentials: 'same-origin' });
+        if (!resp.ok) {
+          let msg = 'De PDF kon niet worden gemaakt.';
+          try { msg = (await resp.json()).error || msg; } catch (e) {}
+          throw new Error(msg);
+        }
+        const blob = await resp.blob();
+        const url = URL.createObjectURL(blob);
+        const name = ((currentOrder && currentOrder.clientName) || 'blueprint').replace(/[^\w\-]+/g, '-');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `SZINN-Blueprint-${name}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 4000);
+      } catch (e) {
+        alert(e.message || 'De PDF kon niet worden gemaakt.');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = label;
       }
     }
   </script>
