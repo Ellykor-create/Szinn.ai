@@ -56,6 +56,8 @@ tr:hover td { background: rgba(166,124,58,.03); }
 .badge-waiting    { background: #cfe2ff; color: #084298; }
 
 .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.status-select { font-size: 11px; padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; background: #fff; color: var(--ink); cursor: pointer; outline: none; }
+.status-select:focus { border-color: var(--gold); }
 
 /* Prompt modal */
 .modal-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.55); z-index: 200; align-items: flex-start; justify-content: center; padding: 32px 16px; overflow-y: auto; }
@@ -263,10 +265,35 @@ async function loadOrders() {
   renderOrders(orders);
 }
 
+const STATUS_LABELS = { questionnaire:'Vragenlijst', processing:'In behandeling', completed:'Klaar', failed:'Mislukt', waiting:'Wachtend' };
+function statusLabel(s) { return STATUS_LABELS[s] || s; }
+
 function statusBadge(s) {
-  const map = { processing:'In behandeling', completed:'Klaar', failed:'Mislukt', waiting:'Wachtend', questionnaire:'Vragenlijst' };
   const cls = { processing:'badge-processing', completed:'badge-completed', failed:'badge-failed' };
-  return `<span class="badge ${cls[s] || 'badge-waiting'}">${map[s] || s}</span>`;
+  return `<span class="badge ${cls[s] || 'badge-waiting'}">${statusLabel(s)}</span>`;
+}
+
+// Dropdown om de status handmatig te wijzigen (bijv. "In behandeling" → "Klaar").
+function statusSelect(o) {
+  const opts = ['questionnaire','processing','completed','failed']
+    .map(v => `<option value="${v}"${v === o.status ? ' selected' : ''}>${statusLabel(v)}</option>`).join('');
+  return `<select class="status-select" title="Status wijzigen" onchange="updateStatus('${o.id}', this.value)">${opts}</select>`;
+}
+
+async function updateStatus(orderId, status) {
+  if (status === 'completed' && !confirm('Deze aanvraag op "Klaar" zetten? De klant kan de blueprint daarna direct inzien.')) {
+    loadOrders(); return;
+  }
+  const r = await fetch(`/api/admin/order/${orderId}/status`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status })
+  });
+  const data = await r.json().catch(() => ({}));
+  if (r.ok && data.ok) {
+    showToast(`✓ Status → "${statusLabel(status)}"`);
+  } else {
+    showToast('Fout: ' + (data.error || r.status), true);
+  }
+  loadOrders();
 }
 
 function renderOrders(orders) {
@@ -288,7 +315,7 @@ function renderOrders(orders) {
       <td style="font-size:12px;color:var(--muted)">${o.email || '—'}</td>
       <td style="font-size:12px">${o.birth_date || '—'} ${o.birth_time ? '· ' + o.birth_time : ''}</td>
       <td style="font-size:11px;color:var(--muted)">${date}</td>
-      <td>${statusBadge(o.status)}${err}</td>
+      <td>${statusBadge(o.status)}${err}<div style="margin-top:6px">${statusSelect(o)}</div></td>
       <td>
         <div class="actions">
           ${canGenerate ? `<button class="btn btn-green btn-sm" onclick="regenerateOrder('${o.id}', '${o.status}')">⟳ ${o.status === 'failed' ? 'Herstart generatie' : 'Genereer'}</button>` : ''}

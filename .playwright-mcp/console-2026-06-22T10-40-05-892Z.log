@@ -1,4 +1,0 @@
-[      57ms] [WARNING] Allow attribute will take precedence over 'allowfullscreen'. @ http://localhost:3000/:615
-[  211401ms] [WARNING] An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing. @ about:blank:0
-[  211486ms] [WARNING] An iframe which has both allow-scripts and allow-same-origin for its sandbox attribute can escape its sandboxing. @ http://localhost:3000/szinn-portal/blueprints/sample-blueprint.html:0
-[  228829ms] [ERROR] Ignored call to 'print()'. The document is sandboxed, and the 'allow-modals' keyword is not set. @ http://localhost:3000/szinn-portal/pages/blueprint-viewer.html?id=ORD-2026-001:213

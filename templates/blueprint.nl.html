@@ -600,6 +600,7 @@ footer p{font-size:10.5px;color:var(--muted);line-height:1.9}
 // (sticky) navigatiebalk staat. Werkt zowel bij het scrollen van het venster
 // (losse pagina) als binnen de scrollende iframe in het portaal.
 (function(){
+  if(window.__szinnScrollspy) return; window.__szinnScrollspy=true;
   var links=[].slice.call(document.querySelectorAll('.nav-link[href^="#"]'));
   var items=links.map(function(l){return {l:l, sec:document.getElementById(l.getAttribute('href').slice(1))};})
                  .filter(function(x){return x.sec;});

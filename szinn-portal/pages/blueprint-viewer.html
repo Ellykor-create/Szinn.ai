@@ -174,7 +174,8 @@
   <script src="/szinn-portal/js/companion-drawer.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
-    const orderId = params.get('id');
+    // Onraadbaar view-token (?t=…). ?id= wordt nog geaccepteerd voor oude links.
+    const orderId = params.get('t') || params.get('id');
     let lang = params.get('lang') === 'en' ? 'en' : 'nl';
     let currentOrder = null;
 
@@ -212,6 +213,7 @@
           frame.style.display = 'block';
           // De iframe heeft een vaste hoogte en scrollt intern; daardoor blijft
           // de sticky navigatie van de blueprint in beeld en werkt de scrollspy.
+          injectScrollspy(frame);
         });
 
         frame.addEventListener('error', showError);
@@ -224,6 +226,42 @@
     function showError() {
       document.getElementById('viewer-loading').style.display = 'none';
       document.getElementById('viewer-error').classList.add('visible');
+    }
+
+    // Scrollspy voor ELKE blueprint — ook oudere die vóór deze functie zijn
+    // gegenereerd en het script nog niet ingebouwd hebben. We injecteren dezelfde
+    // logica in de iframe; de guard-vlag voorkomt dat het dubbel draait wanneer
+    // de blueprint het script al zelf meebrengt.
+    function injectScrollspy(frame) {
+      try {
+        const win = frame.contentWindow;
+        const doc = frame.contentDocument;
+        if (!win || !doc || win.__szinnScrollspy) return;
+        win.__szinnScrollspy = true;
+        const code = `(function(){
+          var links=[].slice.call(document.querySelectorAll('.nav-link[href^="#"]'));
+          var items=links.map(function(l){return {l:l, sec:document.getElementById(l.getAttribute('href').slice(1))};})
+                         .filter(function(x){return x.sec;});
+          if(!items.length) return;
+          var NAV_H=100;
+          function setActive(item){ links.forEach(function(l){l.classList.remove('active');}); if(item) item.l.classList.add('active'); }
+          function update(){
+            var scroller=document.scrollingElement||document.documentElement;
+            if((window.innerHeight+scroller.scrollTop)>=(scroller.scrollHeight-4)){ setActive(items[items.length-1]); return; }
+            var current=items[0];
+            for(var i=0;i<items.length;i++){ if(items[i].sec.getBoundingClientRect().top-NAV_H<=0) current=items[i]; }
+            setActive(current);
+          }
+          var ticking=false;
+          function onScroll(){ if(!ticking){ticking=true; requestAnimationFrame(function(){update();ticking=false;});} }
+          window.addEventListener('scroll',onScroll,{passive:true});
+          window.addEventListener('resize',onScroll,{passive:true});
+          update();
+        })();`;
+        const s = doc.createElement('script');
+        s.textContent = code;
+        (doc.body || doc.documentElement).appendChild(s);
+      } catch (e) { /* cross-origin of anders niet mogelijk: stil overslaan */ }
     }
 
     function printBlueprint() {
