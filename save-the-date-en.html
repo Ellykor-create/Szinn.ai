@@ -11,11 +11,12 @@
 <meta property="og:title" content="SZINN Alignment Blueprint — 22 August 2026">
 <meta property="og:description" content="On 22 August we launch the SZINN Alignment Blueprint. Not a prediction — a mirror.">
 <meta property="og:url" content="https://szinn.ai/en/save-the-date/">
-<meta property="og:image" content="https://szinn.ai/assets/Header_save-the-date.png">
-<meta property="og:image:width" content="1536">
-<meta property="og:image:height" content="1024">
+<meta property="og:image" content="https://szinn.ai/assets/szinn-save-the-date-share.jpg">
+<meta property="og:image:type" content="image/jpeg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://szinn.ai/assets/Header_save-the-date.png">
+<meta name="twitter:image" content="https://szinn.ai/assets/szinn-save-the-date-share.jpg">
 <meta name="theme-color" content="#FAFAF8">
 <meta name="author" content="Elly Elizabeth Korving">
 
@@ -90,18 +91,17 @@ nav.scrolled {
 /* ── HERO ── */
 .hero {
   margin-top: 58px;
-  padding: 40px 48px 0;
+  width: 100%;
+  line-height: 0;
+  overflow: hidden;
   background: var(--bg);
-  display: flex;
-  justify-content: center;
+  position: relative;
 }
 .hero-inner {
   width: 100%;
-  max-width: 1100px;
   line-height: 0;
   overflow: hidden;
   position: relative;
-  border-radius: 4px;
 }
 .hero img {
   width: 100%; max-width: 100%;
@@ -113,7 +113,6 @@ nav.scrolled {
   content: '';
   position: absolute; inset: 0;
   background:
-    linear-gradient(to right,  var(--bg) 0%, transparent 5%, transparent 95%, var(--bg) 100%),
     linear-gradient(to bottom, var(--bg) 0%, transparent 10%, transparent 74%, var(--bg) 100%);
   pointer-events: none;
   z-index: 1;
