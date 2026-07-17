@@ -74,11 +74,21 @@ try { db.exec(`ALTER TABLE orders ADD COLUMN full_birth_name TEXT DEFAULT NULL`)
 try { db.exec(`ALTER TABLE orders ADD COLUMN blueprint_language TEXT DEFAULT 'nl'`); } catch {}
 try { db.exec(`ALTER TABLE orders ADD COLUMN blueprint_html TEXT DEFAULT NULL`); } catch {}
 try { db.exec(`ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0`); } catch {}
+// Onraadbaar deel-/kijktoken per order. Zo staat het volgnummer (ORD-…) nooit
+// in een URL en kan niemand door een nummer te raden andermans blueprint openen.
+try { db.exec(`ALTER TABLE orders ADD COLUMN view_token TEXT`); } catch {}
 // Cadeau-velden op gift_codes (ontvanger, bericht, verzenddatum, status).
 ['recipient_email TEXT','recipient_name TEXT','message TEXT','send_date TEXT','lang TEXT DEFAULT \'nl\'',
  'status TEXT DEFAULT \'draft\'','sent_at TEXT','paid INTEGER DEFAULT 0'].forEach(coldef => {
   try { db.exec(`ALTER TABLE gift_codes ADD COLUMN ${coldef}`); } catch {}
 });
+
+// Beheerder-instellingen (o.a. de prompt-aanscherping), key/value.
+db.exec(`CREATE TABLE IF NOT EXISTS settings (
+  key        TEXT PRIMARY KEY,
+  value      TEXT,
+  updated_at TEXT
+);`);
 
 // ── Admin-account ───────────────────────────────────────────────────────────────
 // Zorgt dat er altijd één admin-account in de database staat (idempotent).
@@ -142,6 +152,58 @@ if (userCount === 0) {
   console.log('  demo@szinn.ai     / szinn2024  (3 aanvragen, gift code: SZINN-DEMO-2026)');
   console.log('  sara@voorbeeld.nl / szinn2024  (1 aanvraag)\n');
 }
+
+// ── Volledig gevuld demo-account ───────────────────────────────────────────────
+// Een account waarvan het dashboard NIET op "coming soon" staat: een voltooide
+// blueprint mét intake-data en teksten (Barry uit lib/demo-blueprint), zodat alle
+// blokken zich vullen. Idempotent: draait elke start, maakt niets dubbel.
+(function ensureFullDemo() {
+  try {
+    const demo   = require('./lib/demo-blueprint');
+    const email  = 'demo-plus@szinn.ai';
+    const orderId = 'ORD-DEMO-VOL';
+
+    let u = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(email);
+    if (!u) {
+      db.prepare('INSERT INTO users (email, password, name) VALUES (?, ?, ?)')
+        .run(email, bcrypt.hashSync('szinn2024', 10), demo.intake.clientName);
+      u = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(email);
+    }
+
+    if (!db.prepare('SELECT id FROM orders WHERE id = ?').get(orderId)) {
+      db.prepare(`INSERT INTO orders
+        (id, user_id, type, status, client_name, birth_date, birth_time, birth_location,
+         created_at, completed_at, blueprint_url, blueprint_language, full_birth_name, intake_data,
+         birth_lat, birth_lng, birth_tz,
+         alignment_score, astro_score, numerology_score, soul_direction_score, personal_year_score)
+        VALUES (?, ?, 'personal', 'completed', ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, 'nl', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+        .run(orderId, u.id, demo.intake.clientName, demo.intake.birthDate, demo.intake.birthTime,
+          `${demo.intake.birthCity}, ${demo.intake.birthCountry}`,
+          '/szinn-portal/blueprints/sample-blueprint.html', demo.intake.birthName,
+          JSON.stringify(demo.intake.raw || {}), demo.intake.lat, demo.intake.lng, demo.intake.tz,
+          78, 80, 82, 70, 74);
+    }
+
+    // Teksten op schijf zodat de companion-endpoint ze lokaal kan lezen
+    const dir = path.join(DATA_DIR, 'blueprints');
+    fs.mkdirSync(dir, { recursive: true });
+    const tf = path.join(dir, `${orderId}.texts.json`);
+    if (!fs.existsSync(tf)) fs.writeFileSync(tf, JSON.stringify({ orderId, nl: demo.texts, en: demo.texts }), 'utf8');
+
+    console.log(`✓ Volledig demo-account klaar: ${email} / szinn2024`);
+  } catch (e) { console.error('Volledig demo-account kon niet worden aangemaakt:', e.message); }
+})();
+
+// ── View-tokens backfillen ─────────────────────────────────────────────────────
+// Geef elke bestaande order zonder token een onraadbaar token, zodat alle
+// blueprint-links via ?t=<token> lopen i.p.v. via het volgnummer.
+(function backfillViewTokens() {
+  const rows = db.prepare('SELECT id FROM orders WHERE view_token IS NULL OR view_token = ?').all('');
+  if (!rows.length) return;
+  const upd = db.prepare('UPDATE orders SET view_token = ? WHERE id = ?');
+  for (const r of rows) upd.run(crypto.randomBytes(16).toString('hex'), r.id);
+  console.log(`✓ ${rows.length} view-token(s) toegekend aan bestaande orders`);
+})();
 
 // ── SQLite session store ───────────────────────────────────────────────────────
 class SQLiteStore extends session.Store {
@@ -277,6 +339,7 @@ app.get('/api/auth/me', (req, res) => {
 function toOrder(o) {
   return {
     id: o.id, type: o.type, status: o.status,
+    viewToken: o.view_token,
     clientName: o.client_name, birthDate: o.birth_date,
     birthTime: o.birth_time, birthLocation: o.birth_location,
     createdAt: o.created_at, completedAt: o.completed_at,
@@ -295,9 +358,17 @@ app.get('/api/orders', (req, res) => {
   res.json(rows.map(toOrder));
 });
 
+// Resolve op onraadbaar view_token (nieuw) óf op het volgnummer (backward
+// compat), altijd binnen de eigen account. Zo kan niemand met een geraden
+// nummer andermans blueprint openen.
+function findOwnOrder(idOrToken, userId) {
+  return db.prepare('SELECT * FROM orders WHERE (view_token = ? OR id = ?) AND user_id = ?')
+    .get(idOrToken, idOrToken, userId);
+}
+
 app.get('/api/orders/:id', (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
-  const row = db.prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').get(req.params.id, req.session.userId);
+  const row = findOwnOrder(req.params.id, req.session.userId);
   if (!row) return res.status(404).json({ error: 'Aanvraag niet gevonden' });
   res.json(toOrder(row));
 });
@@ -306,7 +377,7 @@ app.get('/api/orders/:id', (req, res) => {
 // met alle kleuren (printBackground) en ingesloten afbeeldingen.
 app.get('/api/orders/:id/pdf', async (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
-  const row = db.prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').get(req.params.id, req.session.userId);
+  const row = findOwnOrder(req.params.id, req.session.userId);
   if (!row) return res.status(404).json({ error: 'Aanvraag niet gevonden' });
 
   // Bron van de HTML: bij voorkeur het opgeslagen bestand op blueprint_url,
@@ -441,6 +512,170 @@ async function processScheduledGifts() {
 setInterval(() => { processScheduledGifts().catch(e => console.error(e.message)); }, 60 * 60 * 1000);
 setTimeout(() => { processScheduledGifts().catch(e => console.error(e.message)); }, 5000);
 
+// ── Companion-dashboarddata (pariteit met de live Netlify-functie) ────────────
+// Levert alle blokdata voor het dashboard: laag 1 (berekend) + laag 2 (teksten).
+// Teksten worden lokaal van schijf gelezen (DATA_DIR/blueprints/<id>.texts.json);
+// ontbreken ze, dan valt de dagduiding terug op vaste teksten.
+function readLocalTexts(orderId, lang) {
+  try {
+    const f = path.join(DATA_DIR, 'blueprints', `${orderId}.texts.json`);
+    if (!fs.existsSync(f)) return null;
+    const all = JSON.parse(fs.readFileSync(f, 'utf8'));
+    return all[lang] || all.nl || null;
+  } catch { return null; }
+}
+
+function companionContext(userId, langOverride) {
+  const orders = db.prepare('SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC').all(userId);
+  const order = orders.find(o => o.status === 'completed') || orders[0] || null;
+  if (!order || order.status !== 'completed') return { order };
+
+  const lang = langOverride === 'en' ? 'en'
+    : langOverride === 'nl' ? 'nl'
+    : (order.blueprint_language === 'en' ? 'en' : 'nl');
+  const texts = readLocalTexts(order.id, lang);
+
+  const { buildContext } = require('./lib/pipeline');
+  const { calcPersonalMonths, calcPersonalDay, DAY_INFO } = require('./lib/numerology');
+  const { currentSky } = require('./lib/astro');
+
+  const ctx = buildContext(order);
+  const now = new Date();
+  const pm = calcPersonalMonths(order.birth_date, now, 1)[0];
+  const pd = calcPersonalDay(pm.number, now.getDate());
+  const sky = currentSky(now);
+
+  const [, bm, bd] = order.birth_date.split('-').map(Number);
+  let solar = new Date(now.getFullYear(), bm - 1, bd);
+  if (solar < now) solar = new Date(now.getFullYear() + 1, bm - 1, bd);
+
+  return { order, ctx, texts, lang, now, pm, pd, sky, solar, dayInfo: DAY_INFO };
+}
+
+function cFmtPos(p) {
+  return p && p.sign !== '?'
+    ? { sign: p.sign, signEn: p.signEn, deg: p.deg, min: p.min, house: p.house || null, retro: !!p.retrograde }
+    : null;
+}
+const C_SIGN_EN = {
+  Ram: 'Aries', Stier: 'Taurus', Tweelingen: 'Gemini', Kreeft: 'Cancer',
+  Leeuw: 'Leo', Maagd: 'Virgo', Weegschaal: 'Libra', Schorpioen: 'Scorpio',
+  Boogschutter: 'Sagittarius', Steenbok: 'Capricorn', Waterman: 'Aquarius', Vissen: 'Pisces',
+};
+const cSignT = (lang, s) => (lang === 'en' ? (C_SIGN_EN[s] || s) : s);
+const C_DAY_INFO_EN = {
+  1: 'Day 1 carries a new beginning. Take the initiative yourself today.',
+  2: 'Day 2 asks for patience and cooperation. Listen and attune.',
+  3: 'Day 3 carries expression and joy. Share what lives inside you.',
+  4: 'Day 4 carries ground and structure. Build, organise, finish.',
+  5: 'Day 5 brings movement and change. Leave room for the unexpected.',
+  6: 'Day 6 is about care and harmony. Give attention to your people and your home.',
+  7: 'Day 7 asks for depth and stillness. Turn inward for a moment.',
+  8: 'Day 8 carries decisiveness and form. Act, complete.',
+  9: 'Day 9 closes. Let go of what is finished and be gentle.',
+  11: 'Master day 11: heightened intuition. Follow your feeling before you reason it away.',
+  22: 'Master day 22: build concretely on your greatest vision today.',
+};
+const C_PY_INFO_EN = {
+  1: { theme: 'New beginning',        energy: 'sowing, starting, choosing direction, taking initiative' },
+  2: { theme: 'Cooperation',          energy: 'patience, deepening relationships, listening, receiving' },
+  3: { theme: 'Expression & Joy',     energy: 'creativity, visibility, communicating, playing' },
+  4: { theme: 'Building & Structure', energy: 'hard work, laying foundations, discipline, order' },
+  5: { theme: 'Change',               energy: 'freedom, movement, new experiences, letting go' },
+  6: { theme: 'Responsibility',       energy: 'home, care, balance, relationships, being of service' },
+  7: { theme: 'Inner year',           energy: 'reflection, study, rest, spiritual deepening' },
+  8: { theme: 'Harvest & Power',      energy: 'material matters, business, reaping results, leadership' },
+  9: { theme: 'Completion & Release', energy: 'rounding off, forgiving, making room for the new' },
+};
+const C_LP_INFO_EN = {
+  1:{name:'Leader & Pioneer',challenge:'self-centredness'}, 2:{name:'Mediator & Partner',challenge:'dependency'},
+  3:{name:'Creative Expresser',challenge:'scattering'}, 4:{name:'Builder & Organiser',challenge:'rigidity'},
+  5:{name:'Freedom Seeker',challenge:'impatience'}, 6:{name:'Caregiver & Guardian',challenge:'perfectionism'},
+  7:{name:'Seeker & Philosopher',challenge:'isolation'}, 8:{name:'Material Master',challenge:'materialism'},
+  9:{name:'Humanitarian & Completer',challenge:'difficulty letting go'}, 11:{name:'Spiritual Lightbringer',challenge:'sensitivity'},
+  22:{name:'Master Builder',challenge:'perfectionism'}, 33:{name:'Master Teacher',challenge:'self-sacrifice'},
+};
+function cDayFromBlueprint(c) {
+  const t = c.texts || {};
+  const en = c.lang === 'en';
+  const dayIdx = Math.floor(c.now.getTime() / 86400000);
+  const questions = (t.reflection && t.reflection.questions) || [];
+  const giftNames = en
+    ? ['intuition', 'imagination', 'memory', 'reasoning', 'perception', 'willpower']
+    : ['intuïtie', 'verbeeldingskracht', 'geheugen', 'redeneren', 'waarneming', 'wilskracht'];
+  const g1 = giftNames[dayIdx % 6], g2 = giftNames[(dayIdx + 2) % 6];
+  const natalMoon = c.ctx.chart.planets.moon;
+  const py = c.ctx.numerology.personalYear;
+  const moonSign = cSignT(c.lang, c.sky.moon.sign);
+  const pyInfo = en ? (C_PY_INFO_EN[py] || C_PY_INFO_EN[9]) : c.ctx.numerology.personalYearInfo;
+  if (en) return {
+    thema: (t.summary && t.summary.oneLiner) || 'Your blueprint as a compass for today',
+    focus: (t.integration && t.integration.layers && t.integration.layers.focus) || 'Take one small, concrete step',
+    vraag: questions.length ? questions[dayIdx % questions.length] : 'What asks for your attention today?',
+    lucht: `The moon is in ${moonSign} today, ${c.sky.waxing ? 'waxing' : 'waning'}. Your own moon is in ${cSignT('en', natalMoon.sign)}: use today's energy without losing your own foundation.`,
+    numFocus: C_DAY_INFO_EN[c.pd] || C_DAY_INFO_EN[9],
+    numReminder: `Year ${py} asks for ${pyInfo.theme.toLowerCase()}: ${pyInfo.energy.toLowerCase()}.`,
+    gaven: `Today ${g1} and ${g2} light up. Lean consciously on these two capacities.`,
+  };
+  return {
+    thema: (t.summary && t.summary.oneLiner) || 'Jouw blueprint als kompas voor vandaag',
+    focus: (t.integration && t.integration.layers && t.integration.layers.focus) || 'Zet één kleine, concrete stap',
+    vraag: questions.length ? questions[dayIdx % questions.length] : 'Wat vraagt vandaag om jouw aandacht?',
+    lucht: `De maan staat vandaag in ${moonSign}, ${c.sky.waxing ? 'wassend' : 'afnemend'}. Jouw eigen maan staat in ${natalMoon.sign}: gebruik de energie van vandaag zonder je eigen basis te verliezen.`,
+    numFocus: c.dayInfo[c.pd] || c.dayInfo[9],
+    numReminder: `Jaar ${py} vraagt om ${(c.ctx.numerology.personalYearInfo.theme || '').toLowerCase()}: ${(c.ctx.numerology.personalYearInfo.energy || '').toLowerCase()}.`,
+    gaven: `Vandaag lichten ${g1} en ${g2} op. Leun bewust op deze twee vermogens.`,
+  };
+}
+
+app.get('/api/companion/blueprint', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  const c = companionContext(req.session.userId, req.query.lang);
+  if (!c.order) return res.json({ status: 'none' });
+  if (c.order.status !== 'completed') return res.json({ status: c.order.status, orderId: c.order.id, clientName: c.order.client_name });
+
+  const { generateMiniMandalaSVG } = require('./lib/mandala');
+  const P = c.ctx.chart.planets;
+  const n = c.ctx.numerology;
+  const en = c.lang === 'en';
+
+  res.json({
+    status: 'completed',
+    orderId: c.order.id,
+    viewToken: c.order.view_token,
+    lang: c.lang,
+    clientName: c.ctx.intake.clientName,
+    firstName: (c.ctx.intake.clientName || '').trim().split(/\s+/)[0],
+    birthDate: c.order.birth_date,
+    chart: {
+      sun: cFmtPos(P.sun), moon: cFmtPos(P.moon), ascendant: cFmtPos(P.ascendant),
+      northNode: cFmtPos(P.northNode), southNode: cFmtPos(P.southNode), chiron: cFmtPos(P.chiron),
+    },
+    numerology: (() => {
+      const lp = en ? (C_LP_INFO_EN[n.lifePath] || n.lifePathInfo) : n.lifePathInfo;
+      const py = en ? (C_PY_INFO_EN[n.personalYear] || n.personalYearInfo) : n.personalYearInfo;
+      return {
+        lifePath: n.lifePath, lifePathName: lp.name, lifePathShadow: lp.challenge,
+        personalYear: n.personalYear, personalYearTheme: py.theme, personalYearEnergy: py.energy,
+        personalMonth: c.pm.number, personalDay: c.pd,
+        expression: n.expression, soulUrge: n.soulUrge, personality: n.personality,
+      };
+    })(),
+    sky: {
+      moonSign: cSignT(c.lang, c.sky.moon.sign), waxing: c.sky.waxing,
+      nextNewMoon: c.sky.nextNewMoon ? { date: c.sky.nextNewMoon.date, sign: cSignT(c.lang, c.sky.nextNewMoon.sign) } : null,
+      nextFullMoon: c.sky.nextFullMoon ? { date: c.sky.nextFullMoon.date, sign: cSignT(c.lang, c.sky.nextFullMoon.sign) } : null,
+      solarReturn: { date: c.solar, sign: cSignT(c.lang, P.sun.sign) },
+    },
+    day: cDayFromBlueprint(c),
+    texts: c.texts,
+    mandala: generateMiniMandalaSVG(c.ctx.chart),
+    blueprintUrl: c.order.blueprint_url,
+    blueprintLanguages: (() => { try { return JSON.parse(c.order.blueprint_languages); } catch { return ['nl']; } })(),
+    pdfAvailable: !!c.order.pdf_available,
+  });
+});
+
 // ── AI Companion ──────────────────────────────────────────────────────────────
 app.post('/api/companion/chat', async (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
@@ -513,8 +748,8 @@ app.post('/api/intake/submit', async (req, res) => {
     INSERT INTO orders (
       id, user_id, type, status, client_name,
       birth_date, birth_time, birth_location, birth_lat, birth_lng, birth_tz,
-      full_birth_name, blueprint_language, intake_data, created_at
-    ) VALUES (?, ?, 'personal', 'processing', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      full_birth_name, blueprint_language, intake_data, view_token, created_at
+    ) VALUES (?, ?, 'personal', 'processing', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
   `).run(
     orderId, user.id, clientName,
     data.geboortedatum, data.geboortetijd || null,
@@ -522,7 +757,8 @@ app.post('/api/intake/submit', async (req, res) => {
     lat, lng, data.geboorte_tz || null,
     data.geboortenaam || clientName,
     data.blueprint_taal || 'nl',
-    JSON.stringify(data)
+    JSON.stringify(data),
+    crypto.randomBytes(16).toString('hex')
   );
 
   // Auto-login this user
@@ -756,6 +992,52 @@ app.post('/api/admin/save-blueprint', (req, res) => {
 
   console.log(`✓ Blueprint opgeslagen via admin: ${orderId}`);
   res.json({ ok: true, blueprintUrl: `/szinn-portal/blueprints/${orderId}.html` });
+});
+
+// ── Prompt-aanscherping (addendum) — pariteit met de live Netlify-functie ──────
+// Aanvullende schrijfinstructies die bij elke volgende generatie bovenop de
+// vaste basisprompt worden meegestuurd (lib/ai-texts.js verwerkt ze als een
+// apart systeemblok ná de gecachete basisprompt).
+app.get('/api/admin/prompt-settings', (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Geen toegang' });
+  const { SYSTEM } = require('./lib/ai-texts');
+  const row = db.prepare('SELECT value, updated_at FROM settings WHERE key = ?').get('promptAddendum');
+  res.json({ addendum: (row && row.value) || '', updatedAt: (row && row.updated_at) || null, basePrompt: SYSTEM });
+});
+
+app.post('/api/admin/prompt-settings', (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Geen toegang' });
+  const addendum = String((req.body && req.body.addendum) || '').slice(0, 8000);
+  db.prepare(`INSERT INTO settings (key, value, updated_at) VALUES ('promptAddendum', ?, CURRENT_TIMESTAMP)
+              ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP`).run(addendum);
+  res.json({ ok: true, length: addendum.length });
+});
+
+// ── Status van een aanvraag handmatig wijzigen ─────────────────────────────────
+// Zo kan de beheerder een blueprint die klaar is maar nog op "In behandeling"
+// staat, op "Klaar" zetten zodat de klant hem kan inzien.
+const ALLOWED_STATUSES = ['questionnaire', 'processing', 'completed', 'failed'];
+app.post('/api/admin/order/:orderId/status', (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Geen toegang' });
+  const status = String((req.body && req.body.status) || '').trim();
+  if (!ALLOWED_STATUSES.includes(status)) return res.status(400).json({ error: 'Onbekende status' });
+
+  const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.orderId);
+  if (!order) return res.status(404).json({ error: 'Aanvraag niet gevonden' });
+
+  // Op "Klaar" zetten mag alleen als er echt een blueprint klaarstaat, anders
+  // zou de klant een lege inkijkpagina te zien krijgen.
+  if (status === 'completed' && !order.blueprint_url && !order.blueprint_html) {
+    return res.status(400).json({ error: 'Er staat nog geen blueprint klaar voor deze aanvraag — op "Klaar" zetten zou de klant een lege pagina tonen. Sla eerst een blueprint op.' });
+  }
+
+  if (status === 'completed') {
+    db.prepare(`UPDATE orders SET status = 'completed', completed_at = COALESCE(completed_at, CURRENT_TIMESTAMP) WHERE id = ?`).run(order.id);
+  } else {
+    db.prepare('UPDATE orders SET status = ? WHERE id = ?').run(status, order.id);
+  }
+  console.log(`✓ Status gewijzigd via admin: ${order.id} → ${status}`);
+  res.json({ ok: true, status });
 });
 
 // Serve admin page

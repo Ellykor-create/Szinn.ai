@@ -16,10 +16,12 @@
   external_node_modules = ["@sparticuz/chromium", "puppeteer-core"]
   included_files = ["templates/*.html"]
 
-# De api-functie rendert de demo-blueprint bij het inloggen; de templates
-# moeten dus ook in dit function-pakket meegekopieerd worden.
+# De api-functie rendert de demo-blueprint bij het inloggen én maakt zo nodig
+# on-the-fly een PDF (terugval als de vooraf gegenereerde PDF ontbreekt).
+# Daarom moeten de templates mee én Chromium extern meegekopieerd worden.
 [functions."api"]
-  included_files = ["templates/*.html"]
+  included_files       = ["templates/*.html"]
+  external_node_modules = ["@sparticuz/chromium", "puppeteer-core"]
 
 # Ingeplande functie: verstuurt cadeau-e-mails op hun verzenddatum (dagelijks 09:00 UTC).
 [functions."process-gifts"]

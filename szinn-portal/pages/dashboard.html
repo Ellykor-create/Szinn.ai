@@ -181,6 +181,22 @@ svg{display:block}
 .btn-primary{background:linear-gradient(180deg,#B98C43,#93692C);color:#FBF6EC;border:none}
 .btn+.btn{margin-left:6px}
 
+/* Companion-uitleg (links) + cadeau-vierkant (rechts) in één rij */
+.cg-row{display:flex;gap:16px;align-items:stretch;margin-top:16px}
+.cg-row .aibar{margin-top:0;flex:1;min-width:0}
+/* Cadeau-vierkant — altijd zichtbaar, ook als de blueprint nog niet klaar is */
+.giftsquare{width:250px;flex-shrink:0;display:flex;flex-direction:column;justify-content:center;gap:5px;
+  padding:20px 22px;border-radius:16px;background:linear-gradient(135deg,#F3E7CC 0%,#E9D4A6 60%,#E1C892 100%);
+  border:1px solid var(--gold-soft);box-shadow:0 10px 26px rgba(150,120,70,.16);transition:transform .16s ease,box-shadow .16s ease}
+.giftsquare:hover{transform:translateY(-2px);box-shadow:0 16px 36px rgba(150,120,70,.24)}
+.giftsquare .gs-ic{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:20px;color:#FBF6EC;background:radial-gradient(circle at 38% 34%,#C9A96E,#8a6630);box-shadow:inset -3px -3px 8px rgba(90,66,26,.35);margin-bottom:4px}
+.giftsquare .gs-eyebrow{font-size:9px;letter-spacing:.20em;text-transform:uppercase;color:var(--gold-deep)}
+.giftsquare .gs-title{font-family:'Cormorant Garamond',serif;font-size:20px;color:#3a2f1d;line-height:1.15}
+.giftsquare .gs-btn{margin-top:9px;align-self:flex-start;background:linear-gradient(180deg,#B98C43,#93692C);color:#FBF6EC;
+  border-radius:20px;padding:9px 16px;font-size:12.5px;white-space:nowrap}
+@media(max-width:900px){.cg-row{flex-direction:column}.giftsquare{width:100%;flex-direction:row;align-items:center;gap:14px;flex-wrap:wrap}.giftsquare .gs-ic{margin-bottom:0}.giftsquare .gs-title{flex:1}.giftsquare .gs-btn{margin-top:0}}
+
 .needs-bp{display:none}
 .bp-ready .needs-bp{display:block}
 .bp-ready .cards4.needs-bp{display:grid}
@@ -309,11 +325,20 @@ svg{display:block}
       </div>
     </div>
 
-    <div class="aibar" id="begeleiding">
-      <div class="ai-ic"></div>
-      <div class="ai-tx" data-i18n-html="aiIntro"><b>SZINN Companion</b> &middot; ik lees je kaart en de stand van vandaag, en stem de dagduiding daarop af. Vraag me gerust iets.</div>
-      <button id="genBtn" data-i18n="btnRefresh">Vernieuw dagduiding</button>
-      <button id="chatBtn" data-i18n="btnChat">Praat met je Companion</button>
+    <div class="cg-row">
+      <div class="aibar" id="begeleiding">
+        <div class="ai-ic"></div>
+        <div class="ai-tx" data-i18n-html="aiIntro"><b>SZINN Companion</b> &middot; ik lees je kaart en de stand van vandaag, en stem de dagduiding daarop af. Vraag me gerust iets.</div>
+        <button id="genBtn" data-i18n="btnRefresh">Vernieuw dagduiding</button>
+        <button id="chatBtn" data-i18n="btnChat">Praat met je Companion</button>
+      </div>
+      <!-- Cadeau-vierkant, rechts naast de companion-uitleg -->
+      <a class="giftsquare" href="/cadeau">
+        <div class="gs-ic">&#10022;</div>
+        <div class="gs-eyebrow" data-i18n="gwEyebrow">Cadeau</div>
+        <div class="gs-title" data-i18n="gsTitle">Geef een Blueprint cadeau</div>
+        <span class="gs-btn" data-i18n="gwBtn">Cadeau geven &#8594;</span>
+      </a>
     </div>
     <div class="chat" id="chatBox">
       <div class="chatlog" id="chatLog"></div>
@@ -519,6 +544,7 @@ const I18N_EN = {
   mvLib:'Your blueprints', mvLibS:'orders and documents', bdgLib:'Library',
   btnSave:'Capture my day', btnSaveS:'Stored privately, visible only to you',
   footQ:'You were never lost, you were remembering.',
+  gwEyebrow:'Gift', gsTitle:'Give a Blueprint as a gift', gwBtn:'Give a gift →',
 };
 // Dynamische strings die in JS worden opgebouwd
 const T = LANG === 'en' ? {
@@ -669,7 +695,7 @@ function fillFromBlueprint(d) {
     set('kpZuid', trunc(strip(t.nodes.south), 170));
     set('kpNoord', trunc(strip(t.nodes.north), 170));
   }
-  $('lnkNodes').href = `/portaal/blueprint?id=${d.orderId}${langQ}`;
+  $('lnkNodes').href = `/portaal/blueprint?t=${d.viewToken}${langQ}`;
 
   // Mandala
   if (d.mandala) $('mandala').innerHTML = d.mandala;
@@ -696,8 +722,8 @@ function fillFromBlueprint(d) {
   $('cycRing').setAttribute('stroke-dasharray', `${(201 * N.personalYear / 9).toFixed(1)} 999`);
   set('cycTheme', `${N.personalYearTheme} · ${N.personalYearEnergy}`);
   set('cycText', t.numerology ? firstPara(t.numerology.pyBody) : N.personalYearEnergy);
-  $('lnkNum').href = `/portaal/blueprint?id=${d.orderId}${langQ}`;
-  $('lnkCal').href = `/portaal/blueprint?id=${d.orderId}${langQ}`;
+  $('lnkNum').href = `/portaal/blueprint?t=${d.viewToken}${langQ}`;
+  $('lnkCal').href = `/portaal/blueprint?t=${d.viewToken}${langQ}`;
 
   // Aankomende cycli (signs komen al in de juiste taal van de server)
   if (d.sky.nextNewMoon) { set('cmNew', `${T.newMoonIn} ${d.sky.nextNewMoon.sign}`); set('cmNewD', fmtD(d.sky.nextNewMoon.date)); }
@@ -726,8 +752,8 @@ function fillFromBlueprint(d) {
     set('reflectQ', t.reflection.questions[idx]);
   }
 
-  $('readmore').href = `/portaal/blueprint?id=${d.orderId}${langQ}`;
-  $('navBlueprint').href = `/portaal/blueprint?id=${d.orderId}${langQ}`;
+  $('readmore').href = `/portaal/blueprint?t=${d.viewToken}${langQ}`;
+  $('navBlueprint').href = `/portaal/blueprint?t=${d.viewToken}${langQ}`;
   restoreDay(); // sliders opnieuw toepassen nu ze bestaan
 }
 
@@ -810,10 +836,10 @@ function statusBadge(s) {
 function orderActions(o) {
   if (o.status === 'completed' && o.blueprintUrl) {
     const other = LANG === 'en'
-      ? ` <a href="/portaal/blueprint?id=${o.id}" class="btn">NL</a>`
-      : ((o.blueprintLanguages || []).includes('en') ? ` <a href="/portaal/blueprint?id=${o.id}&lang=en" class="btn">EN</a>` : '');
-    const pdf = o.pdfAvailable ? ` <a href="/api/orders/${o.id}/pdf?lang=${LANG}" class="btn">PDF</a>` : '';
-    return `<a href="/portaal/blueprint?id=${o.id}${langQ}" class="btn btn-primary">${T.actView}</a>${other}${pdf}`;
+      ? ` <a href="/portaal/blueprint?t=${o.viewToken}" class="btn">NL</a>`
+      : ((o.blueprintLanguages || []).includes('en') ? ` <a href="/portaal/blueprint?t=${o.viewToken}&lang=en" class="btn">EN</a>` : '');
+    const pdf = o.pdfAvailable ? ` <a href="/api/orders/${o.viewToken}/pdf?lang=${LANG}" class="btn">PDF</a>` : '';
+    return `<a href="/portaal/blueprint?t=${o.viewToken}${langQ}" class="btn btn-primary">${T.actView}</a>${other}${pdf}`;
   }
   if (o.status === 'questionnaire') return `<a href="/portaal/vragenlijst?id=${o.id}" class="btn btn-primary">${T.actFill}</a>`;
   if (o.status === 'processing' || o.status === 'generating') return `<span class="btn" style="cursor:default;opacity:.6">${T.actBusy}</span>`;

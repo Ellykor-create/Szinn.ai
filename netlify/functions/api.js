@@ -77,6 +77,7 @@ async function ensureDemoData(db) {
   const now = new Date().toISOString();
   const order = {
     id: DEMO_ORDER_ID, user_id: user.id, type: 'personal', status: 'completed',
+    view_token: crypto.randomBytes(16).toString('hex'),
     client_name: demo.intake.clientName, birth_date: demo.intake.birthDate,
     birth_time: demo.intake.birthTime,
     birth_location: `${demo.intake.birthCity}, ${demo.intake.birthCountry}`,
@@ -177,9 +178,21 @@ app.get('/api/auth/me', async (req, res) => {
 });
 
 // ── Orders ────────────────────────────────────────────────────────────────────
+// Kent elke order zonder view_token een onraadbaar token toe. Zo staat het
+// volgnummer (ORD-…) nooit in een URL en kan niemand door te raden andermans
+// blueprint openen. Retourneert of er iets is gewijzigd (dan saveDB nodig).
+function ensureTokens(db) {
+  let changed = false;
+  for (const o of db.orders || []) {
+    if (!o.view_token) { o.view_token = crypto.randomBytes(16).toString('hex'); changed = true; }
+  }
+  return changed;
+}
+
 function toOrder(o) {
   return {
     id: o.id, type: o.type, status: o.status,
+    viewToken: o.view_token,
     clientName: o.client_name, birthDate: o.birth_date,
     birthTime: o.birth_time, birthLocation: o.birth_location,
     createdAt: o.created_at, completedAt: o.completed_at,
@@ -198,6 +211,7 @@ function toOrder(o) {
 app.get('/api/orders', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
   const db = await loadDB();
+  if (ensureTokens(db)) await saveDB(db);
   const orders = db.orders.filter(o => o.user_id === req.auth.userId)
     .sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
   res.json(orders.map(toOrder));
@@ -309,6 +323,7 @@ const COMPANION_MODEL = () => process.env.COMPANION_MODEL || 'claude-sonnet-5';
 // blueprint-teksten uit de database (laag 2).
 async function companionContext(userId, langOverride) {
   const db = await loadDB();
+  if (ensureTokens(db)) await saveDB(db);
   const orders = db.orders.filter(o => o.user_id === userId)
     .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
   const order = orders.find(o => o.status === 'completed') || orders[0] || null;
@@ -456,6 +471,7 @@ app.get('/api/companion/blueprint', async (req, res) => {
   res.json({
     status: 'completed',
     orderId: c.order.id,
+    viewToken: c.order.view_token,
     lang: c.lang,
     clientName: c.ctx.intake.clientName,
     firstName: (c.ctx.intake.clientName || '').trim().split(/\s+/)[0],
@@ -630,6 +646,7 @@ app.post('/api/intake/submit', async (req, res) => {
   const orderId = `ORD-${new Date().getFullYear()}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
   const order = {
     id: orderId, user_id: user.id, type: 'personal', status: 'processing',
+    view_token: crypto.randomBytes(16).toString('hex'),
     client_name: clientName, birth_date: data.geboortedatum,
     birth_time: data.geboortetijd || null,
     birth_location: data.geboorteplaats_volledig || data.geboorteplaats || null,
@@ -678,10 +695,11 @@ app.post('/api/intake/submit', async (req, res) => {
 
 // ── Blueprint serve (via Netlify Blobs) ───────────────────────────────────────
 // Alleen de eigenaar (of admin) mag de blueprint zien.
-async function authorizedOrder(req, orderId) {
+async function authorizedOrder(req, idOrToken) {
   if (!req.auth) return null;
   const db = await loadDB();
-  const order = db.orders.find(o => o.id === orderId);
+  // Resolve op onraadbaar view_token (nieuw) óf op het volgnummer (oude links).
+  const order = db.orders.find(o => o.view_token === idOrToken || o.id === idOrToken);
   if (!order) return null;
   if (!req.auth.isAdmin && order.user_id !== req.auth.userId) return null;
   return order;
@@ -705,16 +723,43 @@ app.get('/szinn-portal/blueprints/:filename', async (req, res) => {
   res.status(404).send('<h1>Blueprint niet gevonden</h1>');
 });
 
-// PDF-download van de blueprint
+// PDF-download van de blueprint. Snelle route: de tijdens de pipeline vooraf
+// gegenereerde PDF. Ontbreekt die (oudere order, PDF-stap ooit gefaald, of de
+// demo), dan renderen we hem alsnog on-the-fly uit de opgeslagen HTML — zodat
+// de download altijd werkt, met alle kleuren en afbeeldingen.
 app.get('/api/orders/:id/pdf', async (req, res) => {
   const order = await authorizedOrder(req, req.params.id);
   if (!order) return res.status(403).json({ error: 'Geen toegang' });
-  const lang = req.query.lang === 'en' ? 'en' : 'nl';
-  const pdf = await blueprintStore().get(`${order.id}.${lang}.pdf`, { type: 'arrayBuffer' });
-  if (!pdf) return res.status(404).json({ error: 'PDF (nog) niet beschikbaar' });
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', `attachment; filename="SZINN-Blueprint-${order.id}-${lang}.pdf"`);
-  res.send(Buffer.from(pdf));
+  const lang  = req.query.lang === 'en' ? 'en' : 'nl';
+  const store = blueprintStore();
+  const name  = (order.client_name || order.id).replace(/[^\w\-]+/g, '-');
+
+  // 1) Vooraf gegenereerde PDF (snel)
+  const pregen = await store.get(`${order.id}.${lang}.pdf`, { type: 'arrayBuffer' });
+  if (pregen) {
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="SZINN-Blueprint-${name}.pdf"`);
+    return res.send(Buffer.from(pregen));
+  }
+
+  // 2) Terugval: on-demand renderen uit de opgeslagen blueprint-HTML
+  const html = (await store.get(`${order.id}.${lang}.html`))
+            || (lang === 'en' ? await store.get(`${order.id}.nl.html`) : null)
+            || (await store.get(order.id));
+  if (!html) return res.status(404).json({ error: 'Blueprint nog niet beschikbaar' });
+
+  try {
+    const { generatePDF } = require('../../lib/pdf');
+    const pdf = await generatePDF(html);
+    // Best effort: bewaar hem voor de volgende keer
+    try { await store.set(`${order.id}.${lang}.pdf`, pdf.buffer.slice(pdf.byteOffset, pdf.byteOffset + pdf.byteLength)); } catch {}
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="SZINN-Blueprint-${name}.pdf"`);
+    res.send(pdf);
+  } catch (err) {
+    console.error('On-demand PDF mislukt:', err.message);
+    res.status(500).json({ error: 'De PDF kon niet worden gemaakt. Probeer het zo nog eens.' });
+  }
 });
 
 // ── Admin ─────────────────────────────────────────────────────────────────────
@@ -887,6 +932,33 @@ app.post('/api/admin/save-blueprint', async (req, res) => {
 
   console.log(`Blueprint opgeslagen via admin: ${orderId}`);
   res.json({ ok: true, blueprintUrl: `/szinn-portal/blueprints/${orderId}.html` });
+});
+
+// ── Status van een aanvraag handmatig wijzigen ─────────────────────────────────
+// Zo kan de beheerder een blueprint die klaar is maar nog op "In behandeling"
+// staat, op "Klaar" zetten zodat de klant hem kan inzien.
+app.post('/api/admin/order/:orderId/status', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  const status = String(req.body?.status || '').trim();
+  const ALLOWED = ['questionnaire', 'processing', 'completed', 'failed'];
+  if (!ALLOWED.includes(status)) return res.status(400).json({ error: 'Onbekende status' });
+
+  const db    = await loadDB();
+  const order = db.orders.find(o => o.id === req.params.orderId);
+  if (!order) return res.status(404).json({ error: 'Aanvraag niet gevonden' });
+
+  // Op "Klaar" zetten mag alleen als er echt een blueprint klaarstaat.
+  if (status === 'completed' && !order.blueprint_url) {
+    return res.status(400).json({ error: 'Er staat nog geen blueprint klaar voor deze aanvraag — op "Klaar" zetten zou de klant een lege pagina tonen. Sla eerst een blueprint op.' });
+  }
+
+  order.status = status;
+  if (status === 'completed' && !order.completed_at) order.completed_at = new Date().toISOString();
+  if (status !== 'failed') order.generation_error = null;
+  await saveDB(db);
+
+  console.log(`Status gewijzigd via admin: ${order.id} → ${status}`);
+  res.json({ ok: true, status });
 });
 
 // ── Foutafhandelaar ─────────────────────────────────────────────────────────────
