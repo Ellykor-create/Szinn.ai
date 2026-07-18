@@ -693,7 +693,7 @@ p.center{text-align:center;}
     <p style="font-size:15.5px;color:rgba(245,237,216,.72);margin-bottom:22px;line-height:1.85;max-width:480px;">A fully personalised report based on your birth chart, numerology and Kabbalah. Receive clarity within 48 hours about who you are, where your strengths lie, and what sets you in motion.</p>
     <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;align-items:center;">
       <a href="#bestellen" class="btn btn-gold" style="font-size:12px;padding:14px 28px;letter-spacing:.12em;">Order your Blueprint &rarr;</a>
-      <span style="font-size:12px;color:rgba(245,237,216,.45);letter-spacing:.08em;">€39.90 &nbsp;·&nbsp; PDF + interactive HTML &nbsp;·&nbsp; Within 48 hours</span>
+      <span style="font-size:12px;color:rgba(245,237,216,.45);letter-spacing:.08em;">€49.90 &nbsp;·&nbsp; PDF + interactive HTML &nbsp;·&nbsp; Within 48 hours</span>
     </div>
     <div class="pills">
       <span class="pill lt">Astrology</span>
@@ -779,22 +779,22 @@ p.center{text-align:center;}
   <div class="inner">
     <div class="tag ct">How does it work?</div>
     <h2 style="text-align:center;">From <em>uncertainty to direction</em><br>in three steps</h2>
-    <div class="steps-grid">
-      <div class="step">
-        <div class="step-num">01</div>
-        <h3>Discover yourself</h3>
-        <p>Complete the intake form with your date of birth, birth time and place. The SZINN system analyses your unique energy, fully automatically.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">02</div>
-        <h3>Come into alignment</h3>
-        <p>Within 48 hours you receive your personal Blueprint. A complete report as interactive HTML and print PDF, reflecting you through three systems that have been used for centuries.</p>
-      </div>
-      <div class="step">
-        <div class="step-num">03</div>
-        <h3>Accelerate your growth</h3>
-        <p>Use the Blueprint as your daily navigation system. With ready-made AI prompts built around your chart data, a personal monthly calendar and journaling questions to go deeper than ever.</p>
-      </div>
+  </div>
+  <div class="steps-outer">
+    <div class="step-card">
+      <span class="sc-num">01</span>
+      <h3 class="sc-title">Discover yourself</h3>
+      <p class="sc-body">Complete the intake form with your date of birth, birth time and place. The SZINN system analyses your unique energy, fully automatically.</p>
+    </div>
+    <div class="step-card">
+      <span class="sc-num">02</span>
+      <h3 class="sc-title">Come into alignment</h3>
+      <p class="sc-body">Within 48 hours you receive your personal Blueprint. A complete report as interactive HTML and print PDF, reflecting you through three systems that have been used for centuries.</p>
+    </div>
+    <div class="step-card">
+      <span class="sc-num">03</span>
+      <h3 class="sc-title">Accelerate your growth</h3>
+      <p class="sc-body">Use the Blueprint as your daily navigation system. With ready-made AI prompts built around your chart data, a personal monthly calendar and journaling questions to go deeper than ever.</p>
     </div>
   </div>
 </section>
@@ -876,9 +876,11 @@ p.center{text-align:center;}
           <p>"Challenge yourself to turn something difficult into something simple."</p>
         </div>
         <p style="font-size:15px;line-height:1.85;color:var(--ink2);margin-bottom:12px;">Danillo is a software developer with a clear mission: to use his skills to help people move forward. Where code remains abstract to most, he sees it as an instrument to make something truly personal possible.</p>
-        <p style="font-size:15px;line-height:1.85;color:var(--ink2);">At SZINN he builds the system that translates astrology, numerology and Kabbalah into a personal blueprint, not as a prediction, but as recognition.</p>
+        <p style="font-size:15px;line-height:1.85;color:var(--ink2);margin-bottom:12px;">At SZINN he builds the system that translates astrology, numerology and Kabbalah into a personal blueprint, not as a prediction, but as recognition.</p>
+        <p style="font-size:15px;line-height:1.85;color:var(--ink2);">The fact that he runs his own tech company with a team at just 23 says everything about his approach: clear, driven, and always focused on what actually works.</p>
         <div class="founder-certs">
           <div class="founder-cert">Software Developer · SZINN Platform &amp; Blueprint pipeline</div>
+          <div class="founder-cert">Co-founder &amp; Lead Developer · UDefine</div>
           <div class="founder-cert">Technology in service of personal growth</div>
           <div class="founder-cert">Builder of the systems behind szinn.ai</div>
         </div>
@@ -1545,61 +1547,87 @@ section .inner>p, section .inner>.lead{max-width:640px;}
 
 
 <style id="szinn-steps-v2">
-/* ── STEPS REDESIGN: clean, light, Apple-ish ─────────────────────────────── */
+/* ── STEPS: clean high-end cards ─────────────────────────────────────────── */
 #hoe-het-werkt{background:var(--cream)!important;}
-#hoe-het-werkt .tag{color:var(--gold)!important;border-color:rgba(184,150,90,.3)!important;}
-#hoe-het-werkt h2{color:var(--ink)!important;}
+#hoe-het-werkt .inner{text-align:center;}
+#hoe-het-werkt h2{margin-bottom:52px!important;}
 
-.steps-grid{
+/* Outer container: max-width wider than .inner, centered */
+.steps-outer{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:0 48px;
-  margin-top:52px;
+  gap:20px;
+  max-width:960px;
+  margin:0 auto;
+  padding:0 24px;
 }
-.step{
-  padding:32px 0 0!important;
-  border:none!important;
-  border-top:1.5px solid rgba(184,150,90,.35)!important;
-  background:transparent!important;
-  box-shadow:none!important;
-}
-.step:hover{
-  transform:none!important;
-  box-shadow:none!important;
-}
-.step-num{
-  font-family:var(--sans)!important;
-  font-size:11px!important;
-  font-weight:600!important;
-  letter-spacing:.2em!important;
-  color:var(--gold)!important;
-  opacity:1!important;
-  margin-bottom:20px!important;
-  line-height:1!important;
-}
-.step h3{
-  color:var(--ink)!important;
-  margin-bottom:14px!important;
-  font-size:clamp(19px,1.9vw,24px)!important;
-  letter-spacing:-0.01em!important;
-}
-.step p{color:var(--soft)!important;line-height:1.85!important;font-size:14.5px!important;}
 
-/* Laptop readability: slightly wider text, better line-height */
+/* Card block */
+.step-card{
+  background:#fff;
+  border-top:2px solid rgba(184,150,90,.7);
+  padding:36px 30px 40px;
+  box-shadow:0 4px 24px rgba(0,0,0,.06),0 1px 4px rgba(0,0,0,.04);
+  display:block;
+  transition:transform .35s cubic-bezier(.25,.46,.45,.94),
+             box-shadow .35s ease!important;
+}
+.step-card:hover{
+  transform:translateY(-6px)!important;
+  box-shadow:0 16px 48px rgba(0,0,0,.1),0 4px 12px rgba(184,150,90,.14)!important;
+}
+
+/* Number label */
+.sc-num{
+  display:block;
+  font-family:var(--sans);
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.22em;
+  color:var(--gold);
+  margin-bottom:20px;
+}
+
+/* Title */
+.sc-title{
+  display:block;
+  font-family:var(--serif);
+  font-size:clamp(20px,1.9vw,26px);
+  font-weight:400;
+  letter-spacing:-0.01em;
+  color:var(--ink);
+  margin:0 0 14px;
+  line-height:1.25;
+}
+
+/* Body */
+.sc-body{
+  display:block;
+  font-size:14.5px;
+  line-height:1.85;
+  color:var(--soft);
+  margin:0;
+}
+
+/* Laptop */
+@media(min-width:768px) and (max-width:1279px){
+  .steps-outer{max-width:760px;gap:16px;padding:0 32px;}
+  .step-card{padding:28px 22px 32px;}
+  .sc-title{font-size:20px!important;}
+}
 
 /* Tablet: 1 column */
-@media(max-width:760px){
-  .steps-grid{grid-template-columns:1fr!important;gap:0!important;}
-  .step{padding:24px 0 28px!important;border-top:1px solid rgba(184,150,90,.3)!important;}
+@media(max-width:700px){
+  .steps-outer{grid-template-columns:1fr;max-width:520px;gap:12px;}
+  .step-card{padding:26px 22px 30px;}
 }
 
-/* ── COMPASS ICON ──────────────────────────────────────────────────────────── */
-.result-icon{
-  width:22px;height:22px;
-  margin-bottom:14px!important;
+/* Mobile */
+@media(max-width:480px){
+  .steps-outer{padding:0 16px;}
+  .step-card{padding:22px 18px 26px;}
+  .sc-title{font-size:19px!important;}
 }
-.result-icon svg{display:block;}
-
 </style>
 
 </style>
