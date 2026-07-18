@@ -799,20 +799,39 @@ p.center{text-align:center;}
   </div>
   <div class="steps-outer">
     <div class="step-card">
+      <div class="sc-icon-wrap"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="17" cy="17" r="14" stroke="#C9A96E" stroke-width="1.4"/>
+  <circle cx="17" cy="17" r="2.2" fill="#C9A96E"/>
+  <path d="M17 7.5v3.5M17 23v3.5M7.5 17H11M23 17h3.5" stroke="#C9A96E" stroke-width="1.3" stroke-linecap="round"/>
+  <path d="M17 10.5l2 6.5-2 2-2-2z" fill="#C9A96E" opacity=".75"/>
+</svg></div>
       <span class="sc-num">01</span>
       <h3 class="sc-title">Ontdek jezelf</h3>
       <p class="sc-body">Vul het intakeformulier in met je geboortedatum, geboortetijd en geboorteplaats. Het SZINN-systeem analyseert jouw unieke energie, volledig automatisch.</p>
     </div>
     <div class="step-card">
+      <div class="sc-icon-wrap"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect x="6" y="3" width="22" height="28" rx="2.5" stroke="#C9A96E" stroke-width="1.4"/>
+  <path d="M11 11h12M11 16h12M11 21h8" stroke="#C9A96E" stroke-width="1.3" stroke-linecap="round"/>
+  <circle cx="26" cy="27" r="5" fill="#F5F0E8" stroke="#C9A96E" stroke-width="1.2"/>
+  <path d="M26 24.5v5M23.5 27h5" stroke="#C9A96E" stroke-width="1.2" stroke-linecap="round"/>
+</svg></div>
       <span class="sc-num">02</span>
       <h3 class="sc-title">Kom in alignment</h3>
-      <p class="sc-body">Binnen 48 uur ontvang je jouw persoonlijke Blueprint. Een volledig rapport als interactieve HTML én als print-PDF, dat jou terugkaatst vanuit drie systemen die al eeuwen worden gebruikt.</p>
+      <p class="sc-body">Binnen enkele uren ontvang je jouw persoonlijke Blueprint. Een volledig rapport als interactieve HTML én als print-PDF, dat jou terugkaatst vanuit drie systemen die al eeuwen worden gebruikt.</p>
     </div>
     <div class="step-card">
+      <div class="sc-icon-wrap"><svg width="34" height="34" viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <path d="M5 27l8-9 6 5 10-13" stroke="#C9A96E" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M23 9h6v6" stroke="#C9A96E" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="13" cy="18" r="1.6" fill="#C9A96E"/>
+  <circle cx="21" cy="13" r="1.6" fill="#C9A96E"/>
+</svg></div>
       <span class="sc-num">03</span>
       <h3 class="sc-title">Versnel je groei</h3>
       <p class="sc-body">Gebruik de Blueprint als dagelijks navigatiesysteem. Met kant-en-klare AI-prompts op jouw chartdata, een persoonlijke maandkalender en journalingvragen ga je dieper dan je verwacht.</p>
     </div>
+  </div>
   </div>
 </section>
 
@@ -1316,7 +1335,7 @@ window.addEventListener('scroll',()=>{
   @keyframes szinn-hero-drift{from{transform:translateY(0);}to{transform:translateY(-56px);}}
 }
 
-/* ══ STEP CARDS: high-end white cards ════════════════════════════════════ */
+/* ══ STEP CARDS: Overstappen-inspired round cards ════════════════════════ */
 #hoe-het-werkt{overflow:hidden;background:#F8F5F0;}
 #hoe-het-werkt>.inner{max-width:760px;margin:0 auto;padding:0 28px;}
 .steps-outer{
@@ -1328,60 +1347,52 @@ window.addEventListener('scroll',()=>{
 }
 .step-card{
   background:#fff;
-  padding:44px 36px 52px;
+  padding:32px 28px 36px;
+  border-radius:14px;
   border:none!important;
-  box-shadow:none!important;
-  border-radius:0;
-  position:relative;
-  overflow:hidden;
-}
-/* Gold bar at top */
-.step-card::before{
-  content:'';
-  position:absolute;top:0;left:0;right:0;
-  height:3px;
-  background:linear-gradient(90deg,var(--gold) 0%,rgba(184,150,90,.2) 100%);
-}
-/* Large watermark number */
-.step-card:nth-child(1)::after{content:'01';}
-.step-card:nth-child(2)::after{content:'02';}
-.step-card:nth-child(3)::after{content:'03';}
-.step-card::after{
-  position:absolute;
-  bottom:-16px;right:20px;
-  font-family:var(--serif);
-  font-size:110px;font-weight:600;
-  color:var(--gold);opacity:.06;
-  line-height:1;pointer-events:none;user-select:none;
+  box-shadow:0 4px 20px rgba(0,0,0,.07),0 1px 4px rgba(0,0,0,.04)!important;
+  position:relative;overflow:hidden;
+  transition:transform .35s cubic-bezier(.25,.46,.45,.94),
+             box-shadow .35s ease!important;
 }
 .step-card:hover{
-  transform:translateY(-4px)!important;
-  box-shadow:0 16px 40px rgba(0,0,0,.08)!important;
-  z-index:1;
+  transform:translateY(-6px)!important;
+  box-shadow:0 16px 40px rgba(0,0,0,.11),0 4px 12px rgba(184,150,90,.14)!important;
+}
+.sc-icon-wrap{
+  width:56px;height:56px;
+  background:linear-gradient(135deg,rgba(201,169,110,.12),rgba(201,169,110,.06));
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:20px;
+  border:1px solid rgba(201,169,110,.2);
 }
 .sc-num{
   display:block;
   font-family:var(--sans);font-size:10px;font-weight:700;
   letter-spacing:.26em;text-transform:uppercase;
-  color:var(--gold);margin-bottom:22px;
+  color:var(--gold);margin-bottom:10px;
 }
 .sc-title{
   display:block;
   font-family:var(--serif);
-  font-size:clamp(20px,1.9vw,26px);
+  font-size:clamp(19px,1.8vw,24px);
   font-weight:400;letter-spacing:-0.01em;
-  color:var(--ink);margin:0 0 16px;line-height:1.25;
+  color:var(--ink);margin:0 0 14px;line-height:1.25;
 }
 .sc-body{
   display:block;
-  font-size:14.5px;line-height:1.88;color:var(--soft);margin:0;
+  font-size:14.5px;line-height:1.85;color:var(--soft);margin:0;
 }
 @media(max-width:700px){
-  .steps-outer{grid-template-columns:1fr;gap:1px;}
-  .step-card{padding:36px 24px 44px;}
+  .steps-outer{grid-template-columns:1fr;width:calc(100% - 32px);}
+  .step-card{padding:26px 22px 30px;}
 }
 @media(min-width:701px) and (max-width:1100px){
-  .step-card{padding:36px 26px 44px;}
+  .steps-outer{width:calc(100% - 40px);}
+  .step-card{padding:28px 22px 32px;}
+  .sc-title{font-size:19px!important;}
+}
   .sc-title{font-size:20px!important;}
 }
 
