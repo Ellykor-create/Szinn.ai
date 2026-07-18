@@ -727,6 +727,7 @@ p.center{text-align:center;}
 </section>
 
 <div class="gr2"></div>
+<div class="szinn-ticker" aria-hidden="true"><div class="szinn-tk-track"><span class="szinn-tk-inner">SZINN<span class="tk-dot">·</span>Alignment Blueprint™<span class="tk-dot">·</span>Astrologie<span class="tk-dot">·</span>Numerologie<span class="tk-dot">·</span>Kabbalah<span class="tk-dot">·</span>Heilige Geometrie<span class="tk-dot">·</span>Remember who you are<span class="tk-dot">·</span>Je was nooit verloren<span class="tk-dot">·</span>Jij bent de blauwdruk<span class="tk-dot">·</span></span><span class="szinn-tk-inner" aria-hidden="true">SZINN<span class="tk-dot">·</span>Alignment Blueprint™<span class="tk-dot">·</span>Astrologie<span class="tk-dot">·</span>Numerologie<span class="tk-dot">·</span>Kabbalah<span class="tk-dot">·</span>Heilige Geometrie<span class="tk-dot">·</span>Remember who you are<span class="tk-dot">·</span>Je was nooit verloren<span class="tk-dot">·</span>Jij bent de blauwdruk<span class="tk-dot">·</span></span></div></div>
 
 <!-- HET VERHAAL -->
 <section class="bg-cream pad" id="verhaal">
@@ -956,6 +957,18 @@ p.center{text-align:center;}
     
 
 <div class="gr"></div>
+<section class="szinn-fq">
+  <div class="szinn-fq-inner">
+    <span class="szinn-fq-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+    <p class="szinn-fq-text">Tijdens het lezen voelde ik heel veel herkenning. Het was echt een &lsquo;ken uzelf&rsquo;-moment. Ik zag patronen waarin ik vastloop, maar ook bevestiging van wat ik al goed doe &mdash; dat gaf me vertrouwen en rust. Wat het me heeft gebracht, is richting. En dat voelt ontzettend waardevol.</p>
+    <div class="szinn-fq-author">
+      <span class="szinn-fq-line"></span>
+      <span class="szinn-fq-name">Fiona Onos-le Feber</span>
+      <span class="szinn-fq-line"></span>
+    </div>
+  </div>
+</section>
+<div class="gr"></div>
 
 <!-- ERVARINGEN -->
 <section class="bg-white pad-sm" id="ervaringen">
@@ -1102,6 +1115,27 @@ p.center{text-align:center;}
   </div>
 </section>
 
+<div class="gr"></div>
+<section class="szinn-stats">
+  <div class="szinn-stats-inner">
+    <div class="stat-block">
+      <span class="stat-num" data-to="100" data-suffix="%">0%</span>
+      <span class="stat-lbl">Gepersonaliseerd</span>
+    </div>
+    <div class="stat-block">
+      <span class="stat-num" data-to="48" data-suffix=" uur">0</span>
+      <span class="stat-lbl">Levertijd</span>
+    </div>
+    <div class="stat-block">
+      <span class="stat-num" data-to="3" data-suffix="">0</span>
+      <span class="stat-lbl">Eeuwenoude systemen</span>
+    </div>
+    <div class="stat-block">
+      <span class="stat-num" data-to="13" data-suffix="">0</span>
+      <span class="stat-lbl">Secties per Blueprint</span>
+    </div>
+  </div>
+</section>
 <div class="gr"></div>
 
 <!-- FAQ -->
@@ -1432,6 +1466,173 @@ window.addEventListener('scroll',()=>{
 
 </style>
 
+<style id="szinn-visual">
+
+/* ══ 1. TICKER ═══════════════════════════════════════════════════════════ */
+.szinn-ticker{
+  background:#0D0A07;
+  padding:13px 0;
+  overflow:hidden;
+  border-top:1px solid rgba(184,150,90,.2);
+  border-bottom:1px solid rgba(184,150,90,.2);
+}
+.szinn-tk-track{
+  display:flex;
+  white-space:nowrap;
+  animation:szinn-tick 40s linear infinite;
+}
+.szinn-tk-inner{
+  font-family:var(--sans);
+  font-size:10px;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  color:var(--gold);
+  flex-shrink:0;
+  padding-right:0;
+}
+.tk-dot{opacity:.35;padding:0 18px;}
+@keyframes szinn-tick{
+  from{transform:translateX(0);}
+  to{transform:translateX(-50%);}
+}
+.szinn-ticker:hover .szinn-tk-track{animation-play-state:paused;}
+@media(prefers-reduced-motion:reduce){
+  .szinn-tk-track{animation:none;}
+}
+
+/* ══ 2. HERO ENTRANCE ════════════════════════════════════════════════════ */
+@keyframes szinn-up{
+  from{opacity:0;transform:translateY(22px);}
+  to{opacity:1;transform:translateY(0);}
+}
+.szinn-hero-live .hero-inner>*{opacity:0;}
+.szinn-hero-live .hero-inner>*:nth-child(1){animation:szinn-up .65s cubic-bezier(.25,.46,.45,.94) .1s forwards;}
+.szinn-hero-live .hero-inner>*:nth-child(2){animation:szinn-up .75s cubic-bezier(.25,.46,.45,.94) .38s forwards;}
+.szinn-hero-live .hero-inner>*:nth-child(3){animation:szinn-up .7s  cubic-bezier(.25,.46,.45,.94) .65s forwards;}
+.szinn-hero-live .hero-inner>*:nth-child(4){animation:szinn-up .7s  cubic-bezier(.25,.46,.45,.94) .88s forwards;}
+.szinn-hero-live .hero-inner>*:nth-child(5){animation:szinn-up .65s cubic-bezier(.25,.46,.45,.94) 1.1s forwards;}
+.szinn-hero-live .hero-inner>*:nth-child(6){animation:szinn-up .6s  cubic-bezier(.25,.46,.45,.94) 1.3s forwards;}
+.szinn-hero-live .hero-inner>*:nth-child(7){animation:szinn-up .55s cubic-bezier(.25,.46,.45,.94) 1.5s forwards;}
+
+/* ══ 3. FEATURED QUOTE ═══════════════════════════════════════════════════ */
+.szinn-fq{
+  background:var(--cream);
+  padding:88px 0;
+  text-align:center;
+  position:relative;
+  overflow:hidden;
+}
+.szinn-fq::before{
+  content:'C';
+  font-family:var(--serif);
+  font-size:240px;
+  line-height:.8;
+  color:var(--gold);
+  opacity:.08;
+  position:absolute;
+  top:24px;left:50%;
+  transform:translateX(-50%);
+  pointer-events:none;
+  user-select:none;
+}
+.szinn-fq-inner{
+  max-width:700px;
+  margin:0 auto;
+  padding:0 32px;
+  position:relative;
+  z-index:1;
+}
+.szinn-fq-stars{
+  font-size:13px;
+  letter-spacing:4px;
+  color:var(--gold);
+  margin-bottom:32px;
+  display:block;
+}
+.szinn-fq-text{
+  font-family:var(--serif);
+  font-size:clamp(17px,2.1vw,24px);
+  font-style:italic;
+  line-height:1.75;
+  color:var(--ink);
+  margin:0 0 36px;
+}
+.szinn-fq-author{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:18px;
+}
+.szinn-fq-line{
+  height:1px;width:52px;
+  background:rgba(184,150,90,.38);
+  flex-shrink:0;
+  display:block;
+}
+.szinn-fq-name{
+  font-family:var(--sans);
+  font-size:11px;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:var(--soft);
+}
+
+/* ══ 4. STATS BAR ════════════════════════════════════════════════════════ */
+.szinn-stats{
+  background:#0D0A07;
+  padding:72px 0;
+  border-top:1px solid rgba(184,150,90,.15);
+}
+.szinn-stats-inner{
+  max-width:860px;
+  margin:0 auto;
+  padding:0 28px;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:0;
+  align-items:start;
+}
+.stat-block{
+  text-align:center;
+  padding:0 20px;
+  position:relative;
+}
+.stat-block+.stat-block::before{
+  content:'';
+  position:absolute;
+  left:0;top:20%;height:60%;
+  width:1px;
+  background:rgba(184,150,90,.18);
+}
+.stat-num{
+  font-family:var(--serif);
+  font-size:clamp(40px,5vw,64px);
+  font-weight:300;
+  color:var(--gold);
+  line-height:1;
+  margin-bottom:12px;
+  display:block;
+  letter-spacing:-0.02em;
+}
+.stat-lbl{
+  font-family:var(--sans);
+  font-size:11px;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:rgba(245,237,216,.45);
+}
+@media(max-width:640px){
+  .szinn-stats-inner{grid-template-columns:repeat(2,1fr);gap:32px 0;}
+  .stat-block:nth-child(odd)::before{display:none;}
+  .szinn-fq::before{font-size:140px;}
+}
+@media(max-width:400px){
+  .szinn-stats-inner{grid-template-columns:1fr;}
+  .stat-block+.stat-block::before{display:none;}
+}
+
+</style>
+
 <!-- ╔══════════════════════════════════════════════════════╗ -->
 <!-- ║  SZINN HIGH-END POLISH — typography · motion · UX   ║ -->
 <!-- ╚══════════════════════════════════════════════════════╝ -->
@@ -1749,5 +1950,51 @@ ready(function(){
 })();
 </script>
 
+<script id="szinn-visual-js">
+(function(){
+'use strict';
+
+/* 1 — Hero entrance */
+function heroAnim(){
+  var hero = document.querySelector('.hero');
+  if(hero) hero.classList.add('szinn-hero-live');
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded', heroAnim);
+} else { heroAnim(); }
+
+/* 2 — Stats counter */
+function animCount(el, to, suffix, dur){
+  var start = performance.now();
+  function step(ts){
+    var p = Math.min((ts - start) / dur, 1);
+    var ease = p < .5 ? 2*p*p : -1+(4-2*p)*p;
+    var val = Math.round(ease * to);
+    el.textContent = (to === 100 ? val : val) + suffix;
+    if(p < 1) requestAnimationFrame(step);
+    else el.textContent = to + suffix;
+  }
+  requestAnimationFrame(step);
+}
+
+var statsSection = document.querySelector('.szinn-stats');
+if(statsSection){
+  var io2 = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.currentTarget.querySelectorAll('.stat-num').forEach(function(num){
+          var to = parseInt(num.dataset.to, 10);
+          var suf = num.dataset.suffix || '';
+          animCount(num, to, suf, 1800);
+        });
+        io2.unobserve(e.currentTarget);
+      }
+    });
+  },{threshold:.3});
+  io2.observe(statsSection);
+}
+
+})();
+</script>
 </body>
 </html>
