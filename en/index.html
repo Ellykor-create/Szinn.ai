@@ -1393,37 +1393,6 @@ window.addEventListener('scroll',()=>{
 
 <style id="szinn-visual">
 
-/* ══ 1. TICKER ═══════════════════════════════════════════════════════════ */
-.szinn-ticker{
-  background:#0D0A07;
-  padding:13px 0;
-  overflow:hidden;
-  border-top:1px solid rgba(184,150,90,.2);
-  border-bottom:1px solid rgba(184,150,90,.2);
-}
-.szinn-tk-track{
-  display:flex;
-  white-space:nowrap;
-  animation:szinn-tick 40s linear infinite;
-}
-.szinn-tk-inner{
-  font-family:var(--sans);
-  font-size:10px;
-  letter-spacing:.24em;
-  text-transform:uppercase;
-  color:var(--gold);
-  flex-shrink:0;
-  padding-right:0;
-}
-.tk-dot{opacity:.35;padding:0 18px;}
-@keyframes szinn-tick{
-  from{transform:translateX(0);}
-  to{transform:translateX(-50%);}
-}
-.szinn-ticker:hover .szinn-tk-track{animation-play-state:paused;}
-@media(prefers-reduced-motion:reduce){
-  .szinn-tk-track{animation:none;}
-}
 
 /* ══ 2. HERO ENTRANCE ════════════════════════════════════════════════════ */
 @keyframes szinn-up{
