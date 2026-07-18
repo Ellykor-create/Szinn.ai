@@ -460,6 +460,27 @@ p.center{text-align:center;}
   .btn-nav{padding:8px 14px;font-size:9px;letter-spacing:.14em;}
   .btn-login{display:none;}
 }
+
+/* HOE HET WERKT / RESULTATEN */
+.steps-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:40px;}
+.step{padding:28px 24px;border:1px solid rgba(184,150,90,.2);background:rgba(184,150,90,.04);position:relative;}
+.step-num{font-family:var(--serif);font-size:42px;font-weight:600;color:var(--gold);opacity:.22;line-height:1;margin-bottom:12px;}
+.step h3{font-family:var(--serif);font-size:18px;margin-bottom:10px;color:var(--ink);}
+.step p{font-size:14px;line-height:1.8;color:var(--soft);}
+.results-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:36px;}
+.result-item{padding:22px 20px;border-bottom:2px solid var(--gold);background:var(--white);}
+.result-icon{font-size:16px;color:var(--gold);margin-bottom:10px;}
+.result-item h4{font-family:var(--serif);font-size:17px;margin-bottom:8px;color:var(--ink);}
+.result-item p{font-size:13.5px;line-height:1.75;color:var(--soft);}
+.core-promise{background:linear-gradient(135deg,rgba(184,150,90,.12),rgba(184,150,90,.05));border-left:3px solid var(--gold);padding:24px 28px;margin:32px 0;font-family:var(--serif);font-size:17px;line-height:1.8;font-style:italic;color:var(--ink2);}
+@media(max-width:760px){
+  .steps-grid{grid-template-columns:1fr;}
+  .results-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:480px){
+  .results-grid{grid-template-columns:1fr;}
+}
+
 </style>
 
 <!-- JSON-LD Structured Data (worldwide SEO) -->
@@ -638,6 +659,7 @@ p.center{text-align:center;}
     <a href="#verhaal">Het Verhaal</a>
     <a href="#blueprint">De Blauwdruk</a>
     <a href="#szinn">SZINN Methode</a>
+    <a href="#hoe-het-werkt">Hoe het werkt</a>
     <a href="#founders">Founders</a>
     <a href="#bestellen">Bestellen</a>
     <a href="#ervaringen">Reviews</a>
@@ -683,9 +705,13 @@ p.center{text-align:center;}
         <span class="hero-szinn-sup">Alignment Blueprint™</span>
       </div>
     </div>
-    <h1 class="light">Dit is jouw <em>kompas.</em></h1>
-    <p style="font-family:'Cormorant Garamond',serif;font-size:17px;font-style:italic;color:rgba(245,237,216,.6);margin-bottom:20px;line-height:1.65;">Geboortekaart · Numerologie · Zielscorrectie</p>
-    <p style="font-size:15px;color:rgba(245,237,216,.55);margin-bottom:20px;font-style:italic;">Dit document is geen waarheid.<br>Het is een spiegel.</p>
+    <h1 class="light">Jouw Persoonlijke <em>Alignment Blueprint™</em></h1>
+    <p style="font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:rgba(245,237,216,.8);margin-bottom:14px;line-height:1.6;">Dit is jouw kompas.</p>
+    <p style="font-size:15.5px;color:rgba(245,237,216,.72);margin-bottom:22px;line-height:1.85;max-width:480px;">Een volledig persoonlijk rapport op basis van jouw geboortekaart, numerologie en Kabbalah. Ontvang binnen 48 uur duidelijkheid over wie je bent, waar je kracht ligt en wat jou in beweging brengt.</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px;align-items:center;">
+      <a href="#bestellen" class="btn btn-gold" style="font-size:12px;padding:14px 28px;letter-spacing:.12em;">Bestel jouw Blueprint &rarr;</a>
+      <span style="font-size:12px;color:rgba(245,237,216,.45);letter-spacing:.08em;">€39,90 &nbsp;·&nbsp; PDF + interactieve HTML &nbsp;·&nbsp; Binnen 48 uur</span>
+    </div>
     <div class="pills">
       <span class="pill lt">Astrologie</span>
       <span class="pill lt">Numerologie</span>
@@ -759,6 +785,78 @@ p.center{text-align:center;}
     <p>Het maakt je bewust van hoe jij werkt, van binnenuit. Van de man-energie en de vrouw-energie, het yin en yang in jezelf. Maar ook van je parasympathisch en sympathisch zenuwstelsel, van de beweging die je lichaam kent: van rust naar actie en terug. Van de beweging in het universum die van buiten én van binnen in jou aanwezig is. Van de adem die beide bewegingen draagt. En van creatie.</p>
     <div class="qb"><p>Het SZINN Blueprint laat je zien welke energie in jou dominant is, welke je minder gebruikt, en hoe je meer in balans kunt komen met je natuurlijke energetische profiel.</p></div>
     <p>De blauwdruk combineert astrologie, numerologie en Kabbalah niet als voorspelling, maar als <strong>spiegel van beweging, creatie, balans, verbinding en bewustzijn.</strong></p>
+  </div>
+</section>
+
+<div class="gr"></div>
+
+<!-- HOE HET WERKT -->
+<section class="bg-dark pad" id="hoe-het-werkt" style="background:#0D0A07;">
+  <div class="inner">
+    <div class="tag ct" style="color:var(--gold);border-color:rgba(184,150,90,.3);">Hoe werkt het?</div>
+    <h2 style="text-align:center;color:var(--cream);">Van <em>onrust naar richting</em><br>in drie stappen</h2>
+    <div class="steps-grid">
+      <div class="step" style="border-color:rgba(184,150,90,.25);background:rgba(255,255,255,.03);">
+        <div class="step-num">01</div>
+        <h3 style="color:var(--cream);">Ontdek jezelf</h3>
+        <p style="color:rgba(245,237,216,.6);">Vul het intakeformulier in met je geboortedatum, geboortetijd en geboorteplaats. Het SZINN-systeem analyseert jouw unieke energie — volledig automatisch.</p>
+      </div>
+      <div class="step" style="border-color:rgba(184,150,90,.25);background:rgba(255,255,255,.03);">
+        <div class="step-num">02</div>
+        <h3 style="color:var(--cream);">Kom in alignment</h3>
+        <p style="color:rgba(245,237,216,.6);">Binnen 48 uur ontvang je jouw persoonlijke Blueprint. Een volledig rapport — als interactieve HTML én als print-PDF — dat jou terugkaatst vanuit drie systemen die al eeuwen worden gebruikt.</p>
+      </div>
+      <div class="step" style="border-color:rgba(184,150,90,.25);background:rgba(255,255,255,.03);">
+        <div class="step-num">03</div>
+        <h3 style="color:var(--cream);">Versnel je groei</h3>
+        <p style="color:rgba(245,237,216,.6);">Gebruik de Blueprint als dagelijks navigatiesysteem. Met kant-en-klare AI-prompts op jouw chartdata, een persoonlijke maandkalender en journalingvragen ga je dieper dan je verwacht.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="gr"></div>
+
+<!-- WAT JIJ TERUGVINDT -->
+<section class="bg-cream pad" id="resultaten">
+  <div class="inner">
+    <div class="tag ct">Wat jij terugvindt</div>
+    <h2 style="text-align:center;">Van zoeken naar <em>herkennen</em></h2>
+    <div class="core-promise">
+      Wij helpen mensen opnieuw in alignment te komen met wie ze werkelijk zijn, zodat ze vanuit hun natuurlijke intelligentie betere keuzes maken, meer rust ervaren en met behulp van AI sneller groeien.
+    </div>
+    <div class="results-grid">
+      <div class="result-item">
+        <div class="result-icon">◈</div>
+        <h4>Meer rust</h4>
+        <p>Als je weet wie je bent, verdwijnt de noodzaak om jezelf te bewijzen aan de wereld om je heen.</p>
+      </div>
+      <div class="result-item">
+        <div class="result-icon">◈</div>
+        <h4>Betere keuzes</h4>
+        <p>Keuzes maken vanuit je eigen energetisch profiel, in plaats van vanuit verwachtingen van anderen.</p>
+      </div>
+      <div class="result-item">
+        <div class="result-icon">◈</div>
+        <h4>Duidelijke richting</h4>
+        <p>Weten waar je naartoe gaat. Niet als plan, maar als kompas dat van binnenuit wijst.</p>
+      </div>
+      <div class="result-item">
+        <div class="result-icon">◈</div>
+        <h4>Sneller leren met AI</h4>
+        <p>Kant-en-klare AI-prompts met jouw chartdata ingebakken, zodat je direct dieper kunt gaan.</p>
+      </div>
+      <div class="result-item">
+        <div class="result-icon">◈</div>
+        <h4>Zelfvertrouwen</h4>
+        <p>Niet omdat je beter bent geworden, maar omdat je jezelf eindelijk herkent zoals je altijd al was.</p>
+      </div>
+      <div class="result-item">
+        <div class="result-icon">◈</div>
+        <h4>Herkenning</h4>
+        <p>Het moment dat je leest en denkt: dit ben ik. Dat gevoel van "ja, dit klopt." Daar is dit voor gemaakt.</p>
+      </div>
+    </div>
   </div>
 </section>
 
@@ -1142,6 +1240,238 @@ window.addEventListener('scroll',()=>{
   sections.forEach(s=>{if(window.scrollY>=s.offsetTop-80)cur=s.id;});
   links.forEach(a=>{a.classList.toggle('active',a.getAttribute('href')==='#'+cur);});
 },{passive:true});
+</script>
+
+<!-- ╔══════════════════════════════════════════════════════╗ -->
+<!-- ║  SZINN HIGH-END POLISH — typography · motion · UX   ║ -->
+<!-- ╚══════════════════════════════════════════════════════╝ -->
+<style id="szinn-polish">
+
+/* ── 1. FLUID TYPOGRAPHY  (Apple: huge confident type, tight tracking) ─── */
+.hero-inner h1.light{
+  font-size:clamp(40px,6.8vw,78px)!important;
+  letter-spacing:-0.03em!important;
+  line-height:1.04!important;
+}
+.hero-inner p[style*="20px"]{
+  font-size:clamp(18px,2.2vw,24px)!important;
+  letter-spacing:-0.01em!important;
+}
+section h2{
+  font-size:clamp(28px,4.2vw,54px)!important;
+  letter-spacing:-0.02em!important;
+  line-height:1.12!important;
+}
+.step h3, .founder-card h3{
+  font-size:clamp(18px,2vw,24px)!important;
+  letter-spacing:-0.01em!important;
+}
+.tag{
+  font-size:10px!important;
+  letter-spacing:.24em!important;
+  display:inline-flex;
+  align-items:center;
+  padding:5px 14px!important;
+  border:1px solid rgba(184,150,90,.3);
+  background:rgba(184,150,90,.06);
+}
+
+/* ── 2. SECTION BREATHING (Apple: generous space, each section owns its screen) */
+.pad{padding:100px 0!important;}
+.pad-sm{padding:68px 0!important;}
+@media(max-width:768px){
+  .pad{padding:72px 0!important;}
+  .pad-sm{padding:52px 0!important;}
+}
+
+/* ── 3. DIVIDERS (gradient instead of solid line) ──────────────────────── */
+.gr,.gr2{
+  height:1px!important;border:none!important;margin:0!important;
+  background:linear-gradient(90deg,transparent 0%,rgba(184,150,90,.25) 40%,rgba(184,150,90,.25) 60%,transparent 100%)!important;
+}
+
+/* ── 4. NAV SCROLL STATE ────────────────────────────────────────────────── */
+nav{transition:height .4s cubic-bezier(.25,.46,.45,.94),
+              backdrop-filter .4s ease,
+              border-bottom-color .3s ease!important;}
+nav.szinn-scrolled{
+  height:52px!important;
+  backdrop-filter:blur(24px) saturate(180%)!important;
+  border-bottom-color:rgba(184,150,90,.28)!important;
+}
+.nav-links a{transition:color .22s ease!important;}
+.nav-links a:hover{color:var(--gold)!important;opacity:1!important;}
+
+/* ── 5. BUTTONS — subtle rise + glow ───────────────────────────────────── */
+.btn,.btn-gold,.btn-nav{
+  transition:transform .28s cubic-bezier(.25,.46,.45,.94),
+             box-shadow .28s ease,opacity .2s ease!important;
+}
+.btn:hover,.btn-gold:hover{
+  transform:translateY(-2px) scale(1.01)!important;
+  box-shadow:0 10px 30px rgba(184,150,90,.38)!important;
+}
+.btn-nav:hover{
+  transform:translateY(-1px)!important;
+  box-shadow:0 4px 18px rgba(184,150,90,.28)!important;
+}
+
+/* ── 6. CARD HOVER STATES ───────────────────────────────────────────────── */
+.founder-card{
+  transition:transform .38s cubic-bezier(.25,.46,.45,.94),
+             box-shadow .38s ease,border-color .28s ease!important;
+}
+.founder-card:hover{
+  transform:translateY(-8px)!important;
+  box-shadow:0 28px 60px rgba(0,0,0,.1),0 6px 18px rgba(184,150,90,.2)!important;
+  border-color:rgba(184,150,90,.55)!important;
+}
+.onderdeel{
+  transition:transform .32s cubic-bezier(.25,.46,.45,.94),
+             box-shadow .32s ease!important;
+}
+.onderdeel:hover{
+  transform:translateY(-5px)!important;
+  box-shadow:0 14px 36px rgba(0,0,0,.07),0 2px 8px rgba(184,150,90,.14)!important;
+}
+.result-item{
+  transition:transform .32s cubic-bezier(.25,.46,.45,.94),
+             box-shadow .32s ease!important;
+}
+.result-item:hover{
+  transform:translateY(-5px)!important;
+  box-shadow:0 12px 32px rgba(0,0,0,.08)!important;
+}
+.step{
+  transition:transform .32s cubic-bezier(.25,.46,.45,.94),
+             box-shadow .32s ease,border-color .28s ease!important;
+}
+.step:hover{
+  transform:translateY(-5px)!important;
+  box-shadow:0 14px 36px rgba(184,150,90,.14)!important;
+  border-color:rgba(184,150,90,.5)!important;
+}
+
+/* ── 7. QUOTE BLOCK REFINEMENT ──────────────────────────────────────────── */
+.qb{
+  border-left:2px solid rgba(184,150,90,.7)!important;
+  padding:4px 0 4px 28px!important;
+}
+
+/* ── 8. REVIEW CARD HOVERS ──────────────────────────────────────────────── */
+.szinn-review-card{
+  transition:transform .3s cubic-bezier(.25,.46,.45,.94),
+             box-shadow .3s ease!important;
+  cursor:default;
+}
+.szinn-review-card:hover{
+  transform:translateY(-5px)!important;
+  box-shadow:0 18px 44px rgba(0,0,0,.09),0 4px 12px rgba(184,150,90,.12)!important;
+}
+
+/* ── 9. SCROLL REVEAL ───────────────────────────────────────────────────── */
+.szinn-r{
+  opacity:0;
+  transform:translateY(26px);
+  will-change:opacity,transform;
+  transition:opacity .72s cubic-bezier(.25,.46,.45,.94),
+             transform .72s cubic-bezier(.25,.46,.45,.94);
+}
+.szinn-r.szinn-in{opacity:1!important;transform:translateY(0)!important;}
+
+/* ── 10. GOLD KEYFRAME on hero icon (subtle signature) ─────────────────── */
+@keyframes szinn-glow{
+  0%,100%{filter:drop-shadow(0 0 0px rgba(184,150,90,0))}
+  50%{filter:drop-shadow(0 0 10px rgba(184,150,90,.45))}
+}
+.hero-szinn-icon img{animation:szinn-glow 5s ease-in-out infinite;}
+
+/* ── 11. PROSE LINE-LENGTH (Apple: never full-width prose) ─────────────── */
+section .inner>p, section .inner>.lead{max-width:640px;}
+
+/* ── 12. REDUCED MOTION RESPECT ─────────────────────────────────────────── */
+@media(prefers-reduced-motion:reduce){
+  .szinn-r{opacity:1!important;transform:none!important;transition:none!important;}
+  .founder-card,.onderdeel,.step,.result-item,.btn,.btn-gold{transition:none!important;}
+  .hero-szinn-icon img{animation:none!important;}
+}
+
+</style>
+
+<script>
+(function(){
+'use strict';
+
+/* 1 ─ Nav shrink on scroll */
+var nav = document.getElementById('nav');
+if(nav){
+  window.addEventListener('scroll',function(){
+    nav.classList.toggle('szinn-scrolled', window.scrollY > 70);
+  },{passive:true});
+}
+
+/* 2 ─ Tag review cards with hover class */
+var erv = document.getElementById('ervaringen');
+if(erv){
+  erv.querySelectorAll('[style*="background:var(--cream)"][style*="border-top:2px"]')
+    .forEach(function(c){ c.classList.add('szinn-review-card'); });
+}
+
+/* 3 ─ Scroll reveal via IntersectionObserver */
+var SELECTORS = [
+  'section .tag','section h2','section h3',
+  'section .qb','section .lead',
+  '.onderdeel','.energie-item',
+  '.step','.result-item','.founder-card',
+  '.core-promise','.prijs-box'
+].join(',');
+
+function ready(fn){
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',fn);
+  else fn();
+}
+
+ready(function(){
+  var vh = window.innerHeight;
+  var els = document.querySelectorAll(SELECTORS);
+  var toWatch = [];
+
+  els.forEach(function(el){
+    var rect = el.getBoundingClientRect();
+    /* Skip elements already visible on page load */
+    if(rect.top < vh * 0.9) return;
+    el.classList.add('szinn-r');
+    toWatch.push(el);
+  });
+
+  /* Stagger children within grid containers */
+  var grids = document.querySelectorAll(
+    '.founders-grid,.results-grid,.steps-grid,.onderdelen,.energie-grid'
+  );
+  grids.forEach(function(grid){
+    var kids = Array.from(grid.children).filter(function(k){
+      return k.classList.contains('szinn-r');
+    });
+    kids.forEach(function(k,i){
+      k.style.transitionDelay = (i * 0.09) + 's';
+    });
+  });
+
+  if(!toWatch.length) return;
+
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('szinn-in');
+        io.unobserve(e.target);
+      }
+    });
+  },{threshold:0.1, rootMargin:'0px 0px -36px 0px'});
+
+  toWatch.forEach(function(el){ io.observe(el); });
+});
+
+})();
 </script>
 
 </body>
