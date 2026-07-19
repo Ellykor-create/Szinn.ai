@@ -27,10 +27,12 @@ html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
   --gold:   #C9A96E;
   --gold2:  #A8884A;
   --dark:   #0D0A07;
-  --dark2:  #1A1510;
   --cream:  #FBF7EF;
-  --muted:  rgba(251,247,239,.55);
-  --rule:   rgba(201,169,110,.18);
+  --ink:    #2A2218;
+  --ink2:   #4A3E30;
+  --muted:  #7A6A58;
+  --rule-d: rgba(201,169,110,.18);
+  --rule-l: rgba(168,136,74,.2);
   --serif:  'Cormorant Garamond', Georgia, serif;
   --sans:   'Jost', -apple-system, BlinkMacSystemFont, sans-serif;
 }
@@ -38,7 +40,6 @@ html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
 body{
   font-family:var(--sans);
   font-size:16px;line-height:1.7;
-  color:var(--cream);
   background:var(--dark);
   -webkit-font-smoothing:antialiased;
   overflow-x:hidden;
@@ -58,7 +59,7 @@ nav.scrolled{
   background:rgba(13,10,7,.92);
   backdrop-filter:blur(16px);
   -webkit-backdrop-filter:blur(16px);
-  border-bottom-color:var(--rule);
+  border-bottom-color:var(--rule-d);
 }
 .nav-brand{display:flex;align-items:center;gap:10px;text-decoration:none;}
 .nav-brand-name{
@@ -90,24 +91,33 @@ nav.scrolled{
   transition:transform 8s cubic-bezier(.25,.46,.45,.94);
 }
 .hero img.loaded{transform:scale(1.03);}
+/* Gradient: top dark, fades out bottom toward the intro section */
 .hero::after{
   content:'';
   position:absolute;inset:0;
   background:linear-gradient(
     to bottom,
-    rgba(13,10,7,.15) 0%,
-    transparent 30%,
-    transparent 55%,
-    rgba(13,10,7,.85) 100%
+    rgba(13,10,7,.2) 0%,
+    transparent 25%,
+    transparent 50%,
+    rgba(13,10,7,.6) 100%
   );
   pointer-events:none;
 }
 
-/* ── INTRO BLOCK ── */
+/* ── PAGE GRADIENT WRAPPER ── */
+/* Entire page goes dark → mid-tone → cream from top to bottom */
+.page-gradient{
+  /* no background — sections handle their own */
+}
+
+/* ── INTRO BLOCK — dark, fades to cream at bottom ── */
 .intro{
-  padding:64px 24px 56px;
+  padding:64px 24px 72px;
   text-align:center;
-  border-bottom:1px solid var(--rule);
+  background: linear-gradient(to bottom, #0D0A07 0%, #0D0A07 60%, #FBF7EF 100%);
+  border-bottom:none;
+  color:var(--cream);
 }
 .intro .eyebrow{
   font-size:10px;font-weight:500;
@@ -134,11 +144,11 @@ nav.scrolled{
 .event-row{
   display:flex;justify-content:center;gap:0;
   flex-wrap:wrap;
-  max-width:640px;margin:0 auto 0;
+  max-width:640px;margin:0 auto;
 }
 .event-item{
   padding:0 32px;
-  border-right:1px solid var(--rule);
+  border-right:1px solid rgba(201,169,110,.25);
   text-align:center;
 }
 .event-item:last-child{border-right:none;}
@@ -154,17 +164,18 @@ nav.scrolled{
   line-height:1.4;
 }
 
-/* ── FORM SECTION ── */
+/* ── FORM SECTION — cream background, dark text ── */
 .form-section{
-  padding:64px 24px 80px;
+  padding:72px 24px 88px;
   max-width:480px;
   margin:0 auto;
+  /* background set on wrapper */
 }
 .form-section .form-heading{
   font-family:var(--serif);
   font-size:clamp(28px,5vw,42px);
   font-weight:300;
-  color:var(--cream);
+  color:var(--ink);
   text-align:center;
   margin-bottom:8px;
   line-height:1.1;
@@ -176,7 +187,7 @@ nav.scrolled{
   margin-bottom:40px;
 }
 
-/* ── ENORMAIL OVERRIDES ── */
+/* ── ENORMAIL OVERRIDES — light mode ── */
 .c-enormail-webform__page,.c-enormail-webform{background:transparent!important;padding:0!important;}
 .c-enormail-webform__panelholder{padding:0!important;}
 .c-enormail-webform__panelwrapper,.c-enormail-webform__panelwrapper--default{max-width:100%!important;padding:0!important;}
@@ -187,12 +198,12 @@ nav.scrolled{
 .c-enormail-webform__form{background:transparent!important;padding:0!important;}
 .c-enormail-webform__form__inner{padding:0!important;}
 .c-enormail-webform__fields{padding:0!important;}
-.c-enormail-webform__fields__grid--fields{border-top:1px solid rgba(201,169,110,.2);}
+.c-enormail-webform__fields__grid--fields{border-top:1px solid rgba(74,62,48,.15);}
 .c-enormail-webform__label{
   font-family:var(--sans)!important;
   font-size:9px!important;font-weight:500!important;
   letter-spacing:.22em!important;text-transform:uppercase!important;
-  color:rgba(201,169,110,.7)!important;
+  color:var(--muted)!important;
   padding:20px 0 5px!important;display:block!important;
   line-height:1!important;margin-bottom:0!important;
 }
@@ -201,36 +212,36 @@ nav.scrolled{
 .c-enormail-webform__field,.form-control.c-enormail-webform__field{
   width:100%!important;padding:0 0 14px!important;
   font-family:var(--sans)!important;font-size:16px!important;font-weight:300!important;
-  color:var(--cream)!important;
+  color:var(--ink)!important;
   background:transparent!important;
-  border:none!important;border-bottom:1px solid rgba(201,169,110,.2)!important;
+  border:none!important;border-bottom:1px solid rgba(74,62,48,.18)!important;
   border-radius:0!important;outline:none!important;box-shadow:none!important;
   -webkit-appearance:none!important;height:auto!important;line-height:1.5!important;
   transition:border-color .25s!important;
 }
 .c-enormail-webform__field:focus,.form-control.c-enormail-webform__field:focus{
-  border-bottom-color:var(--gold)!important;box-shadow:none!important;background:transparent!important;
+  border-bottom-color:var(--ink)!important;box-shadow:none!important;background:transparent!important;
 }
-.c-enormail-webform__field::placeholder{color:rgba(251,247,239,.25)!important;font-size:15px!important;font-weight:300!important;opacity:1!important;}
+.c-enormail-webform__field::placeholder{color:rgba(74,62,48,.3)!important;font-size:15px!important;font-weight:300!important;opacity:1!important;}
 .c-enormail-webform__fields__grid--button{margin-top:36px!important;padding:0!important;}
 .c-enormail-webform__button,.btn.c-enormail-webform__button{
   width:100%!important;display:block!important;
   padding:16px 32px!important;
   font-family:var(--sans)!important;font-size:11px!important;font-weight:500!important;
   letter-spacing:.18em!important;text-transform:uppercase!important;
-  color:var(--dark)!important;
-  background:var(--gold)!important;
+  color:var(--cream)!important;
+  background:var(--ink)!important;
   border:none!important;border-radius:0!important;
   cursor:pointer!important;transition:background .25s!important;
   text-align:center!important;box-shadow:none!important;line-height:1.4!important;
 }
-.c-enormail-webform__button:hover{background:var(--gold2)!important;}
+.c-enormail-webform__button:hover{background:var(--ink2)!important;}
 .c-enormail-webform__button__loader{display:none!important;}
 .c-enormail-webform__optin--success .c-enormail-webform__text{padding:48px 0!important;text-align:center!important;}
 .c-enormail-webform__thankyouheading,.c-enormail-webform__thankyouheading p{
   font-family:var(--serif)!important;font-size:clamp(26px,5vw,38px)!important;
   font-weight:300!important;font-style:italic!important;
-  color:var(--cream)!important;text-align:center!important;
+  color:var(--ink)!important;text-align:center!important;
   line-height:1.2!important;margin-bottom:12px!important;
 }
 .c-enormail-webform__thankyouparagraph,.c-enormail-webform__thankyouparagraph p{
@@ -239,32 +250,32 @@ nav.scrolled{
 }
 .c-enormail-webform__footer,.c-enormail-webform__brand{display:none!important;}
 div[style*="position:absolute"]{position:absolute!important;left:-5000px!important;}
-.form-note{font-size:11.5px;color:rgba(251,247,239,.35);text-align:center;margin-top:16px;font-weight:300;line-height:1.5;}
+.form-note{font-size:11.5px;color:var(--muted);text-align:center;margin-top:16px;font-weight:300;line-height:1.5;}
 
-/* ── CLOSING LINE ── */
+/* ── CLOSING LINE — fully light ── */
 .closing{
   padding:56px 24px;
   text-align:center;
-  border-top:1px solid var(--rule);
+  background:transparent;
+  border-top:1px solid rgba(74,62,48,.12);
 }
 .closing-text{
   font-family:var(--serif);
-  font-size:clamp(20px,3.5vw,32px);
+  font-size:clamp(18px,3vw,28px);
   font-weight:300;font-style:italic;
-  color:rgba(251,247,239,.6);
-  letter-spacing:-.005em;
+  color:var(--muted);
 }
 
 /* ── FOOTER ── */
 footer{
   padding:28px 32px;
-  border-top:1px solid var(--rule);
+  border-top:1px solid rgba(74,62,48,.12);
   display:flex;align-items:center;justify-content:space-between;
   flex-wrap:wrap;gap:12px;
+  background:transparent;
 }
-.footer-brand{display:flex;align-items:center;gap:8px;}
-.footer-brand span{font-family:var(--serif);font-size:13px;font-weight:300;letter-spacing:.08em;color:rgba(251,247,239,.35);}
-footer p{font-size:11px;color:rgba(251,247,239,.2);margin:0;font-weight:300;}
+.footer-brand span{font-family:var(--serif);font-size:13px;font-weight:300;letter-spacing:.08em;color:var(--muted);}
+footer p{font-size:11px;color:rgba(74,62,48,.4);margin:0;font-weight:300;}
 
 /* ── REVEAL ── */
 .reveal{opacity:0;transform:translateY(18px);transition:opacity .7s ease,transform .7s ease;}
@@ -276,7 +287,7 @@ footer p{font-size:11px;color:rgba(251,247,239,.2);margin:0;font-weight:300;}
 @media(max-width:600px){
   nav{padding:0 20px;}
   .intro{padding:48px 20px 44px;}
-  .event-item{padding:0 18px;margin-bottom:0;}
+  .event-item{padding:0 18px;}
   .form-section{padding:48px 20px 64px;}
   footer{padding:22px 20px;flex-direction:column;align-items:flex-start;}
   .hero{max-height:60vh;}
@@ -301,6 +312,7 @@ footer p{font-size:11px;color:rgba(251,247,239,.2);margin:0;font-weight:300;}
        loading="eager" fetchpriority="high">
 </div>
 
+<div class="page-gradient">
 <!-- INTRO + EVENT DETAILS -->
 <section class="intro">
   <span class="eyebrow reveal">Bewaar de datum</span>
@@ -323,6 +335,7 @@ footer p{font-size:11px;color:rgba(251,247,239,.2);margin:0;font-weight:300;}
   </div>
 </section>
 
+<div style="background:#FBF7EF;">
 <!-- AANMELDEN -->
 <section class="form-section" id="inschrijven">
   <h2 class="form-heading reveal">Schrijf je in</h2>
@@ -399,7 +412,7 @@ footer p{font-size:11px;color:rgba(251,247,239,.2);margin:0;font-weight:300;}
 
 <!-- CLOSING -->
 <div class="closing">
-  <p class="closing-text">Je was nooit verloren, je was aan het herinneren.</p>
+  <p class="closing-text">Herinner wie je bent, Szinn.</p>
 </div>
 
 <!-- FOOTER -->
@@ -409,6 +422,8 @@ footer p{font-size:11px;color:rgba(251,247,239,.2);margin:0;font-weight:300;}
   </div>
   <p>© 2026 Elly Elizabeth Korving · Alterego BV · Alle rechten voorbehouden · szinn.ai</p>
 </footer>
+</div><!-- /cream wrapper -->
+</div><!-- /page-gradient -->
 
 <script src="https://embed.enormail.eu/assets/js/v2/embed.js"></script>
 <script>
