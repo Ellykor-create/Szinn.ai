@@ -316,7 +316,7 @@ app.post('/api/gift/process', async (req, res) => {
 });
 
 // ── AI Companion & dashboard-data ────────────────────────────────────────────
-const COMPANION_MODEL = () => process.env.COMPANION_MODEL || 'claude-sonnet-5';
+const COMPANION_MODEL = () => process.env.COMPANION_MODEL || 'claude-haiku-4-5';
 
 // Verzamelt alles wat het dashboard en de companion nodig hebben voor deze
 // gebruiker: laatste order, berekende kaart/getallen (laag 1) en de
