@@ -10,7 +10,7 @@ const jwt        = require('jsonwebtoken');
 const cookieLib  = require('cookie');
 const crypto     = require('crypto');
 const { blueprintStore, loadDB, saveDB } = require('../../lib/db');
-const { sendAccountEmail, sendDraftEmail, sendNewOrderEmail, sendGiftEmail, sendGiftConfirmationEmail } = require('../../lib/email');
+const { sendAccountEmail, sendDraftEmail, sendNewOrderEmail, sendGiftEmail, sendGiftConfirmationEmail, sendPasswordResetEmail } = require('../../lib/email');
 
 const app = express();
 app.use(express.json());
@@ -166,6 +166,33 @@ app.post('/api/auth/login', async (req, res) => {
 
 app.post('/api/auth/logout', (req, res) => {
   clearAuthCookie(res);
+  res.json({ ok: true });
+});
+
+// Wachtwoord vergeten: genereer een nieuw wachtwoord, sla het gehasht op en
+// mail het naar de gebruiker. Het antwoord is bewust altijd generiek (ok:true),
+// zodat we niet lekken welke e-mailadressen een account hebben. Het admin-account
+// is uitgesloten (dat wordt via ADMIN_PASSWORD beheerd).
+app.post('/api/auth/forgot-password', async (req, res) => {
+  const { email, lang } = req.body || {};
+  if (!email || !String(email).includes('@'))
+    return res.status(400).json({ error: 'Vul een geldig e-mailadres in' });
+
+  const normalized = String(email).trim().toLowerCase();
+  const db   = await loadDB();
+  const user = db.users.find(u => u.email.toLowerCase() === normalized);
+
+  if (user && !user.is_admin) {
+    const newPassword = crypto.randomBytes(5).toString('hex'); // 10 hex-tekens
+    user.password = bcrypt.hashSync(newPassword, 10);
+    await saveDB(db);
+    try {
+      await sendPasswordResetEmail({ to: user.email, name: user.name, newPassword, lang: lang === 'en' ? 'en' : 'nl' });
+    } catch (e) {
+      console.error('wachtwoord-reset mail mislukt:', e.message);
+      return res.status(500).json({ error: 'Kon de e-mail niet versturen. Probeer het later opnieuw.' });
+    }
+  }
   res.json({ ok: true });
 });
 

@@ -200,6 +200,22 @@
           </button>
         </form>
 
+        <button type="button" id="forgotLink"
+                style="display:block;margin:14px auto 0;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;font-size:13px;color:var(--gold);text-decoration:underline;letter-spacing:.02em;">Wachtwoord vergeten?</button>
+
+        <form id="forgot-form" autocomplete="on" style="display:none;margin-top:16px;">
+          <p id="tForgotIntro" style="font-size:13px;line-height:1.6;color:#6b6055;margin:0 0 12px;">Vul je e-mailadres in, dan sturen we je een nieuw wachtwoord.</p>
+          <div class="form-group" id="forgot-group">
+            <input type="email" id="forgot-email" class="form-input" placeholder="naam@voorbeeld.nl"
+                   autocomplete="email" required>
+          </div>
+          <button type="submit" class="btn btn-primary login-btn" id="forgot-btn">
+            <span id="forgot-btn-text">Stuur nieuw wachtwoord</span>
+            <span class="spinner" id="forgot-btn-spinner"></span>
+          </button>
+          <div class="login-error" id="forgot-msg" style="margin-top:12px;"></div>
+        </form>
+
         <div class="login-divider" id="tOr">of</div>
 
         <p class="login-footer" id="tFooter">
@@ -241,10 +257,67 @@
       if (loggedIn) window.location.href = '/portaal';
     });
 
+    // ── Teksten voor "wachtwoord vergeten" (NL/EN) ─────────────────────────
+    const FT = LANG === 'en'
+      ? { link: 'Forgot password?', intro: "Enter your email and we'll send you a new password.", btn: 'Send new password',
+          ok: 'If this email has an account, a new password is on its way. Check your inbox (and your spam folder).',
+          err: 'Something went wrong. Please try again.' }
+      : { link: 'Wachtwoord vergeten?', intro: 'Vul je e-mailadres in, dan sturen we je een nieuw wachtwoord.', btn: 'Stuur nieuw wachtwoord',
+          ok: 'Als dit e-mailadres een account heeft, is er een nieuw wachtwoord onderweg. Check je inbox (en je spam).',
+          err: 'Er ging iets mis. Probeer het opnieuw.' };
+    document.getElementById('forgotLink').textContent = FT.link;
+    document.getElementById('tForgotIntro').textContent = FT.intro;
+    document.getElementById('forgot-btn-text').textContent = FT.btn;
+    if (LANG === 'en') document.getElementById('forgot-email').placeholder = 'name@example.com';
+
     const form = document.getElementById('login-form');
     const errorEl = document.getElementById('login-error');
     const btnText = document.getElementById('btn-text');
     const btnSpinner = document.getElementById('btn-spinner');
+
+    // ── Wachtwoord vergeten: paneel tonen + nieuw wachtwoord aanvragen ──────
+    const forgotLink = document.getElementById('forgotLink');
+    const forgotForm = document.getElementById('forgot-form');
+    const forgotEmail = document.getElementById('forgot-email');
+    const forgotMsg = document.getElementById('forgot-msg');
+    const forgotBtnText = document.getElementById('forgot-btn-text');
+    const forgotBtnSpinner = document.getElementById('forgot-btn-spinner');
+
+    forgotLink.addEventListener('click', () => {
+      const show = forgotForm.style.display === 'none';
+      forgotForm.style.display = show ? 'block' : 'none';
+      forgotLink.style.display = show ? 'none' : 'block';
+      if (show) { forgotEmail.value = document.getElementById('email').value.trim(); forgotEmail.focus(); }
+    });
+
+    forgotForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      forgotMsg.classList.remove('visible');
+      const email = forgotEmail.value.trim();
+      forgotBtnText.style.display = 'none';
+      forgotBtnSpinner.classList.add('active');
+      try {
+        const r = await fetch('/api/auth/forgot-password', {
+          method: 'POST', credentials: 'same-origin',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, lang: LANG }),
+        });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(j.error || FT.err);
+        forgotMsg.textContent = FT.ok;
+        forgotMsg.style.color = '#3f7a4f';
+        forgotMsg.classList.add('visible');
+        document.getElementById('forgot-group').style.display = 'none';
+        document.getElementById('forgot-btn').style.display = 'none';
+        document.getElementById('tForgotIntro').style.display = 'none';
+      } catch (err) {
+        forgotMsg.textContent = err.message;
+        forgotMsg.style.color = '';
+        forgotMsg.classList.add('visible');
+        forgotBtnText.style.display = '';
+        forgotBtnSpinner.classList.remove('active');
+      }
+    });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
