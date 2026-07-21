@@ -1,0 +1,239 @@
+- generic [ref=e9]:
+  - navigation [ref=e10]:
+    - generic [ref=e11]: SZINN · Admin · Blueprint Beheer
+    - button "Uitloggen" [ref=e12] [cursor=pointer]
+  - generic [ref=e13]:
+    - generic [ref=e14]:
+      - heading "Aanvragen" [level=2] [ref=e15]
+      - button "↻ Vernieuwen" [active] [ref=e16] [cursor=pointer]
+    - generic [ref=e17]:
+      - strong [ref=e18]: "Werkwijze zonder API-kosten:"
+      - text: 1. Klik
+      - strong [ref=e19]: Genereer Prompt
+      - text: bij een aanvraag · 2. Kopieer de prompt en plak in
+      - strong [ref=e20]: claude.ai
+      - text: · 3. Kopieer de HTML die Claude teruggeeft · 4. Plak de HTML in het venster en klik
+      - strong [ref=e21]: Opslaan Blueprint
+    - generic [ref=e22]:
+      - heading "Prompt aanscherpen" [level=3] [ref=e23]
+      - paragraph [ref=e24]:
+        - text: Aanvullende schrijfinstructies die bij
+        - strong [ref=e25]: elke volgende blueprint-generatie
+        - text: (en hergeneratie) worden meegestuurd, bovenop de vaste basisprompt. Bij tegenstrijdigheid gaan jouw instructies vóór. Leeg laten = alleen de basisprompt.
+      - 'textbox "Bijv.: - Schrijf de introductie compacter, maximaal 2 alinea''s. - Vermijd het woord ''kosmisch''. - Sluit elke sectie af met één concrete, kleine actie voor vandaag." [ref=e26]':
+        - /placeholder: "Bijv.:\n- Schrijf de introductie compacter, maximaal 2 alinea's.\n- Vermijd het woord 'kosmisch'.\n- Sluit elke sectie af met één concrete, kleine actie voor vandaag."
+        - text: Kan je de 6 AI prompts in de blauwdruk zo maken dat er 3 met astrologie zijn en 3 over schaduwwerk gaan en paradigma's en patronen. Kan je de taal die je praat zo doen dat het niet te ingewikkeld is om te lezen en dat als de klant het leest begrijpt wat er gebeurd en ook zichzelf erin herkent. maar let op niets verzinnen of naar toe praten, het moet wel dubbel worden gecheckt en gecontroleerd zijn. De klanten vullen hun vragen in, het is aan jou (claude) om de match te maken met de astrologie, tikkun of numerology, wat wij doen (jij claude en ik elly) is dat we zichtbaar maken wat er is, mensen hebben zelf een keuze welke kant ze opgaan, de taal mag ook niet dwingend zijn er zit geen goed of slecht in, keuze en niet te spiritueel
+      - generic [ref=e27]:
+        - button "Opslaan" [ref=e28] [cursor=pointer]
+        - generic [ref=e29]: "Laatst gewijzigd: 6-7-2026, 12:03:56"
+      - group [ref=e30]:
+        - generic "Bekijk de vaste basisprompt (ter referentie, niet bewerkbaar)" [ref=e31] [cursor=pointer]
+    - table [ref=e33]:
+      - rowgroup [ref=e34]:
+        - row "ID Klant Email Geboortedatum Aangemaakt Status Acties" [ref=e35]:
+          - columnheader "ID" [ref=e36]
+          - columnheader "Klant" [ref=e37]
+          - columnheader "Email" [ref=e38]
+          - columnheader "Geboortedatum" [ref=e39]
+          - columnheader "Aangemaakt" [ref=e40]
+          - columnheader "Status" [ref=e41]
+          - columnheader "Acties" [ref=e42]
+      - rowgroup [ref=e43]:
+        - row "ORD-2026-31E6A0 Jolanda Eickhoff jolandaeickhoff@gmail.com 0970-03-17 · 05:00 20-07-2026, 10:48 In behandeling In behandeling ⟳ Genereer Prompt (handmatig) Bekijk Blueprint" [ref=e527]:
+          - cell "ORD-2026-31E6A0" [ref=e528]
+          - cell "Jolanda Eickhoff" [ref=e529]:
+            - strong [ref=e530]: Jolanda Eickhoff
+          - cell "jolandaeickhoff@gmail.com" [ref=e531]
+          - cell "0970-03-17 · 05:00" [ref=e532]
+          - cell "20-07-2026, 10:48" [ref=e533]
+          - cell "In behandeling In behandeling" [ref=e534]:
+            - generic [ref=e535]: In behandeling
+            - combobox "Status wijzigen" [ref=e537] [cursor=pointer]:
+              - option "Vragenlijst"
+              - option "In behandeling" [selected]
+              - option "Klaar"
+              - option "Mislukt"
+          - cell "⟳ Genereer Prompt (handmatig) Bekijk Blueprint" [ref=e538]:
+            - generic [ref=e539]:
+              - button "⟳ Genereer" [ref=e540] [cursor=pointer]
+              - button "Prompt (handmatig)" [ref=e541] [cursor=pointer]
+              - link "Bekijk Blueprint" [ref=e542] [cursor=pointer]:
+                - /url: /szinn-portal/blueprints/ORD-2026-31E6A0.html
+        - 'row "ORD-2026-B22E82 Elly Elizabeth Korving ellypiep@gmail.com 1973-10-25 · 23:30 18-07-2026, 22:47 Klaar 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"Your credit balance is too low to access the Anth Klaar ⟳ Genereer Prompt (handmatig) Bekijk Blueprint" [ref=e543]':
+          - cell "ORD-2026-B22E82" [ref=e544]
+          - cell "Elly Elizabeth Korving" [ref=e545]:
+            - strong [ref=e546]: Elly Elizabeth Korving
+          - cell "ellypiep@gmail.com" [ref=e547]
+          - cell "1973-10-25 · 23:30" [ref=e548]
+          - cell "18-07-2026, 22:47" [ref=e549]
+          - 'cell "Klaar 400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"Your credit balance is too low to access the Anth Klaar" [ref=e550]':
+            - generic [ref=e551]: Klaar
+            - 'generic "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits.\"},\"request_id\":\"req_011CdAC5XMyfu5F8WAZNh6mY\"}" [ref=e552]': "400 {\"type\":\"error\",\"error\":{\"type\":\"invalid_request_error\",\"message\":\"Your credit balance is too low to access the Anth"
+            - combobox "Status wijzigen" [ref=e554] [cursor=pointer]:
+              - option "Vragenlijst"
+              - option "In behandeling"
+              - option "Klaar" [selected]
+              - option "Mislukt"
+          - cell "⟳ Genereer Prompt (handmatig) Bekijk Blueprint" [ref=e555]:
+            - generic [ref=e556]:
+              - button "⟳ Genereer" [ref=e557] [cursor=pointer]
+              - button "Prompt (handmatig)" [ref=e558] [cursor=pointer]
+              - link "Bekijk Blueprint" [ref=e559] [cursor=pointer]:
+                - /url: /szinn-portal/blueprints/ORD-2026-B22E82.html
+        - row "ORD-2026-196D74 Elly Elizabeth Korving elly@alteregomarketing.com 1973-10-25 · 23:30 18-07-2026, 09:11 generating Vragenlijst ⟳ Genereer Prompt (handmatig)" [ref=e560]:
+          - cell "ORD-2026-196D74" [ref=e561]
+          - cell "Elly Elizabeth Korving" [ref=e562]:
+            - strong [ref=e563]: Elly Elizabeth Korving
+          - cell "elly@alteregomarketing.com" [ref=e564]
+          - cell "1973-10-25 · 23:30" [ref=e565]
+          - cell "18-07-2026, 09:11" [ref=e566]
+          - cell "generating Vragenlijst" [ref=e567]:
+            - generic [ref=e568]: generating
+            - combobox "Status wijzigen" [ref=e570] [cursor=pointer]:
+              - option "Vragenlijst" [selected]
+              - option "In behandeling"
+              - option "Klaar"
+              - option "Mislukt"
+          - cell "⟳ Genereer Prompt (handmatig)" [ref=e571]:
+            - generic [ref=e572]:
+              - button "⟳ Genereer" [ref=e573] [cursor=pointer]
+              - button "Prompt (handmatig)" [ref=e574] [cursor=pointer]
+        - row "ORD-2026-5923BD jeroen van der valk ellykorving@gmail.com 1971-10-27 · 10:10 06-07-2026, 10:16 In behandeling In behandeling ⟳ Genereer Prompt (handmatig) Bekijk Blueprint" [ref=e575]:
+          - cell "ORD-2026-5923BD" [ref=e576]
+          - cell "jeroen van der valk" [ref=e577]:
+            - strong [ref=e578]: jeroen van der valk
+          - cell "ellykorving@gmail.com" [ref=e579]
+          - cell "1971-10-27 · 10:10" [ref=e580]
+          - cell "06-07-2026, 10:16" [ref=e581]
+          - cell "In behandeling In behandeling" [ref=e582]:
+            - generic [ref=e583]: In behandeling
+            - combobox "Status wijzigen" [ref=e585] [cursor=pointer]:
+              - option "Vragenlijst"
+              - option "In behandeling" [selected]
+              - option "Klaar"
+              - option "Mislukt"
+          - cell "⟳ Genereer Prompt (handmatig) Bekijk Blueprint" [ref=e586]:
+            - generic [ref=e587]:
+              - button "⟳ Genereer" [ref=e588] [cursor=pointer]
+              - button "Prompt (handmatig)" [ref=e589] [cursor=pointer]
+              - link "Bekijk Blueprint" [ref=e590] [cursor=pointer]:
+                - /url: /szinn-portal/blueprints/ORD-2026-5923BD.html
+        - row "ORD-2026-39D34D Danann Thomas s.thomas@greatperformancegroup.com 2012-02-03 · 06:30 05-07-2026, 15:39 Klaar Klaar ⟳ Genereer Prompt (handmatig) Bekijk Blueprint" [ref=e591]:
+          - cell "ORD-2026-39D34D" [ref=e592]
+          - cell "Danann Thomas" [ref=e593]:
+            - strong [ref=e594]: Danann Thomas
+          - cell "s.thomas@greatperformancegroup.com" [ref=e595]
+          - cell "2012-02-03 · 06:30" [ref=e596]
+          - cell "05-07-2026, 15:39" [ref=e597]
+          - cell "Klaar Klaar" [ref=e598]:
+            - generic [ref=e599]: Klaar
+            - combobox "Status wijzigen" [ref=e601] [cursor=pointer]:
+              - option "Vragenlijst"
+              - option "In behandeling"
+              - option "Klaar" [selected]
+              - option "Mislukt"
+          - cell "⟳ Genereer Prompt (handmatig) Bekijk Blueprint" [ref=e602]:
+            - generic [ref=e603]:
+              - button "⟳ Genereer" [ref=e604] [cursor=pointer]
+              - button "Prompt (handmatig)" [ref=e605] [cursor=pointer]
+              - link "Bekijk Blueprint" [ref=e606] [cursor=pointer]:
+                - /url: /szinn-portal/blueprints/ORD-2026-39D34D.html
+        - row "ORD-2026-07B5EA Elly Elizabeth korving ellykorving@gmail.com 1973-10-25 · 23:30 05-07-2026, 14:09 Klaar Klaar ⟳ Genereer Prompt (handmatig) Bekijk Blueprint" [ref=e607]:
+          - cell "ORD-2026-07B5EA" [ref=e608]
+          - cell "Elly Elizabeth korving" [ref=e609]:
+            - strong [ref=e610]: Elly Elizabeth korving
+          - cell "ellykorving@gmail.com" [ref=e611]
+          - cell "1973-10-25 · 23:30" [ref=e612]
+          - cell "05-07-2026, 14:09" [ref=e613]
+          - cell "Klaar Klaar" [ref=e614]:
+            - generic [ref=e615]: Klaar
+            - combobox "Status wijzigen" [ref=e617] [cursor=pointer]:
+              - option "Vragenlijst"
+              - option "In behandeling"
+              - option "Klaar" [selected]
+              - option "Mislukt"
+          - cell "⟳ Genereer Prompt (handmatig) Bekijk Blueprint" [ref=e618]:
+            - generic [ref=e619]:
+              - button "⟳ Genereer" [ref=e620] [cursor=pointer]
+              - button "Prompt (handmatig)" [ref=e621] [cursor=pointer]
+              - link "Bekijk Blueprint" [ref=e622] [cursor=pointer]:
+                - /url: /szinn-portal/blueprints/ORD-2026-07B5EA.html
+        - row "ORD-2026-8FE4FA English Testcase test-en@szinn.ai 1985-11-22 · 14:15 05-07-2026, 12:15 Klaar Klaar ⟳ Genereer Prompt (handmatig) Bekijk Blueprint" [ref=e623]:
+          - cell "ORD-2026-8FE4FA" [ref=e624]
+          - cell "English Testcase" [ref=e625]:
+            - strong [ref=e626]: English Testcase
+          - cell "test-en@szinn.ai" [ref=e627]
+          - cell "1985-11-22 · 14:15" [ref=e628]
+          - cell "05-07-2026, 12:15" [ref=e629]
+          - cell "Klaar Klaar" [ref=e630]:
+            - generic [ref=e631]: Klaar
+            - combobox "Status wijzigen" [ref=e633] [cursor=pointer]:
+              - option "Vragenlijst"
+              - option "In behandeling"
+              - option "Klaar" [selected]
+              - option "Mislukt"
+          - cell "⟳ Genereer Prompt (handmatig) Bekijk Blueprint" [ref=e634]:
+            - generic [ref=e635]:
+              - button "⟳ Genereer" [ref=e636] [cursor=pointer]
+              - button "Prompt (handmatig)" [ref=e637] [cursor=pointer]
+              - link "Bekijk Blueprint" [ref=e638] [cursor=pointer]:
+                - /url: /szinn-portal/blueprints/ORD-2026-8FE4FA.html
+        - row "ORD-2026-066E08 Debug Test debug-test@szinn.ai 1990-05-15 · 08:30 04-07-2026, 18:53 Mislukt Order ORD-2026-066E08 niet gevonden Mislukt ⟳ Herstart generatie Prompt (handmatig)" [ref=e639]:
+          - cell "ORD-2026-066E08" [ref=e640]
+          - cell "Debug Test" [ref=e641]:
+            - strong [ref=e642]: Debug Test
+          - cell "debug-test@szinn.ai" [ref=e643]
+          - cell "1990-05-15 · 08:30" [ref=e644]
+          - cell "04-07-2026, 18:53" [ref=e645]
+          - cell "Mislukt Order ORD-2026-066E08 niet gevonden Mislukt" [ref=e646]:
+            - generic [ref=e647]: Mislukt
+            - generic "Order ORD-2026-066E08 niet gevonden" [ref=e648]
+            - combobox "Status wijzigen" [ref=e650] [cursor=pointer]:
+              - option "Vragenlijst"
+              - option "In behandeling"
+              - option "Klaar"
+              - option "Mislukt" [selected]
+          - cell "⟳ Herstart generatie Prompt (handmatig)" [ref=e651]:
+            - generic [ref=e652]:
+              - button "⟳ Herstart generatie" [ref=e653] [cursor=pointer]
+              - button "Prompt (handmatig)" [ref=e654] [cursor=pointer]
+        - row "ORD-2026-00A525 Danillo Kesteren danillo@udefine.nl 2002-09-24 · 20:15 04-07-2026, 18:34 Klaar Klaar ⟳ Genereer Prompt (handmatig) Bekijk Blueprint" [ref=e655]:
+          - cell "ORD-2026-00A525" [ref=e656]
+          - cell "Danillo Kesteren" [ref=e657]:
+            - strong [ref=e658]: Danillo Kesteren
+          - cell "danillo@udefine.nl" [ref=e659]
+          - cell "2002-09-24 · 20:15" [ref=e660]
+          - cell "04-07-2026, 18:34" [ref=e661]
+          - cell "Klaar Klaar" [ref=e662]:
+            - generic [ref=e663]: Klaar
+            - combobox "Status wijzigen" [ref=e665] [cursor=pointer]:
+              - option "Vragenlijst"
+              - option "In behandeling"
+              - option "Klaar" [selected]
+              - option "Mislukt"
+          - cell "⟳ Genereer Prompt (handmatig) Bekijk Blueprint" [ref=e666]:
+            - generic [ref=e667]:
+              - button "⟳ Genereer" [ref=e668] [cursor=pointer]
+              - button "Prompt (handmatig)" [ref=e669] [cursor=pointer]
+              - link "Bekijk Blueprint" [ref=e670] [cursor=pointer]:
+                - /url: /szinn-portal/blueprints/ORD-2026-00A525.html
+        - row "ORD-DEMO-0001 Barry demo@szinn.ai 1971-06-30 · 08:30 03-07-2026, 22:45 Klaar Klaar ⟳ Genereer Prompt (handmatig) Bekijk Blueprint" [ref=e671]:
+          - cell "ORD-DEMO-0001" [ref=e672]
+          - cell "Barry" [ref=e673]:
+            - strong [ref=e674]: Barry
+          - cell "demo@szinn.ai" [ref=e675]
+          - cell "1971-06-30 · 08:30" [ref=e676]
+          - cell "03-07-2026, 22:45" [ref=e677]
+          - cell "Klaar Klaar" [ref=e678]:
+            - generic [ref=e679]: Klaar
+            - combobox "Status wijzigen" [ref=e681] [cursor=pointer]:
+              - option "Vragenlijst"
+              - option "In behandeling"
+              - option "Klaar" [selected]
+              - option "Mislukt"
+          - cell "⟳ Genereer Prompt (handmatig) Bekijk Blueprint" [ref=e682]:
+            - generic [ref=e683]:
+              - button "⟳ Genereer" [ref=e684] [cursor=pointer]
+              - button "Prompt (handmatig)" [ref=e685] [cursor=pointer]
+              - link "Bekijk Blueprint" [ref=e686] [cursor=pointer]:
+                - /url: /szinn-portal/blueprints/ORD-DEMO-0001.html
