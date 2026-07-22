@@ -295,6 +295,127 @@ nav.scrolled{
 .partner-section p:last-child{margin-bottom:0;}
 .partner-section p strong{font-weight:500;color:var(--olive-d);}
 
+
+/* ── PROGRAMMA ── */
+.programma{
+  background:var(--white);
+  padding:64px 24px 60px;
+  border-top:1px solid var(--rule);
+}
+.programma-inner{max-width:600px;margin:0 auto;}
+.programma .kicker{
+  display:block;
+  font-size:9px;font-weight:500;
+  letter-spacing:.28em;text-transform:uppercase;
+  color:var(--olive-d);margin-bottom:16px;text-align:center;
+}
+.programma h3{
+  font-family:var(--serif);
+  font-size:clamp(24px,4.2vw,34px);
+  font-weight:400;line-height:1.25;
+  color:var(--ink);margin-bottom:14px;text-align:center;
+}
+.programma h3 em{font-style:italic;color:var(--olive-d);}
+.programma-intro{
+  font-size:15px;font-weight:300;line-height:1.9;
+  color:var(--ink2);text-align:center;
+  max-width:480px;margin:0 auto 38px;
+}
+
+.prog-list{display:flex;flex-direction:column;gap:0;}
+.prog-item{
+  display:flex;gap:18px;
+  padding:20px 0;
+  border-bottom:1px solid rgba(190,175,130,.18);
+}
+.prog-item:last-child{border-bottom:none;}
+.prog-num{
+  flex:0 0 30px;
+  font-family:var(--serif);
+  font-size:19px;font-weight:400;
+  color:var(--olive);
+  line-height:1.35;
+  padding-top:1px;
+}
+.prog-body{flex:1;}
+.prog-title{
+  font-family:var(--serif);
+  font-size:18px;font-weight:500;
+  color:var(--ink);
+  margin-bottom:5px;line-height:1.35;
+}
+.prog-desc{
+  font-size:14.5px;font-weight:300;
+  line-height:1.8;color:var(--ink2);
+}
+
+/* ── MEENEMEN ── */
+.meenemen{
+  background:var(--sand-l);
+  background-image:linear-gradient(165deg,#F6F2E8 0%,#EDE7D8 100%);
+  padding:60px 24px 58px;
+  border-top:1px solid var(--rule);
+  border-bottom:1px solid var(--rule);
+}
+.meenemen-inner{max-width:600px;margin:0 auto;}
+.meenemen .kicker{
+  display:block;
+  font-size:9px;font-weight:500;
+  letter-spacing:.28em;text-transform:uppercase;
+  color:var(--olive-d);margin-bottom:16px;text-align:center;
+}
+.meenemen h3{
+  font-family:var(--serif);
+  font-size:clamp(24px,4.2vw,34px);
+  font-weight:400;line-height:1.25;
+  color:var(--ink);margin-bottom:32px;text-align:center;
+}
+.meenemen h3 em{font-style:italic;color:var(--olive-d);}
+.mee-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:14px;
+}
+.mee-card{
+  background:var(--white);
+  border:1px solid rgba(181,160,58,.22);
+  border-top:2px solid var(--olive);
+  padding:22px 20px;
+}
+.mee-card-t{
+  font-family:var(--serif);
+  font-size:17px;font-weight:500;
+  color:var(--ink);margin-bottom:7px;line-height:1.3;
+}
+.mee-card-d{
+  font-size:13.5px;font-weight:300;
+  line-height:1.8;color:var(--ink2);
+}
+.mee-note{
+  margin-top:26px;
+  padding:20px 24px;
+  background:var(--white);
+  border-left:2px solid var(--olive);
+  text-align:left;
+}
+.mee-note p{
+  font-family:var(--serif);
+  font-size:18px;font-style:italic;font-weight:400;
+  line-height:1.6;color:#6D6242;margin:0;
+}
+
+@media(max-width:640px){
+  .programma{padding:48px 20px 44px;}
+  .meenemen{padding:46px 20px 44px;}
+  .prog-item{gap:14px;padding:17px 0;}
+  .prog-num{flex:0 0 24px;font-size:17px;}
+  .prog-title{font-size:16.5px;}
+  .prog-desc{font-size:14px;}
+  .mee-card{padding:19px 17px;}
+  .mee-note{padding:17px 18px;}
+  .mee-note p{font-size:16.5px;}
+}
+
 /* ── FORM SECTION ── */
 .form-wrap{
   background:var(--sand-l);
@@ -584,6 +705,20 @@ footer a{color:var(--olive-d);text-decoration:none;}
     <h3 class="reveal reveal-delay-1">Het eerste officiële<br>SZINN Guide Centre</h3>
     <p class="reveal reveal-delay-2">Dat betekent dat wij je niet alleen helpen tot rust te komen, maar je ook <strong>begeleiden bij de stappen die daarna komen</strong>.</p>
     <p class="reveal reveal-delay-2">Wat wij doen met jouw lichaam, doet SZINN met jouw patroon. Samen vormen ze één pad.</p>
+  </div>
+</section>
+
+
+<!-- DE MIDDAG -->
+<section class="programma">
+  <div class="programma-inner">
+    <span class="kicker reveal">De middag</span>
+    <h3 class="reveal">Twee uur, en je ziet <em>iets van jezelf</em></h3>
+    <p class="programma-intro reveal reveal-delay-1">Je zit er niet bij te kijken. Je hoort van mensen die je kent wat hun Blueprint losmaakte, en je ontdekt zelf wat jouw energie op dit moment doet.</p>
+
+    <div class="mee-note reveal reveal-delay-2" style="max-width:520px;margin:0 auto;">
+      <p>De vraag is niet of je iets nieuws over jezelf hoort. De vraag is wat je anders doet zodra je het ziet.</p>
+    </div>
   </div>
 </section>
 
