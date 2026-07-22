@@ -4,3 +4,4 @@ szinn.db
 blueprints/
 *.log
 .DS_Store
+.playwright-mcp/

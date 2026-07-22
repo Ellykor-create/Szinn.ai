@@ -1,6 +1,0 @@
-- generic [ref=e3]:
-  - heading "SZINN Admin" [level=1] [ref=e4]
-  - paragraph [ref=e5]: Blueprint Beheer · Inloggen
-  - textbox "E-mailadres (bijv. admin@szinn.ai)" [ref=e6]
-  - textbox "Wachtwoord" [ref=e7]
-  - button "Inloggen" [ref=e8] [cursor=pointer]
