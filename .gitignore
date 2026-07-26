@@ -4,4 +4,8 @@ szinn.db
 blueprints/
 *.log
 .DS_Store
+<<<<<<< Updated upstream
 .playwright-mcp/
+=======
+/.playwright-mcp
+>>>>>>> Stashed changes
