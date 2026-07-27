@@ -228,7 +228,6 @@ body.m-a [data-r]:not([data-r*="a"]){display:none}
 .st.on .pn{color:var(--ink);font-weight:500}
 .st .pa{font-size:8px;color:#b9ac93;display:block;margin-top:2px}
 .ring{width:120px;height:120px;margin:8px auto 12px;position:relative}
-.ring svg{transform:rotate(-90deg)}
 .events{list-style:none;margin-top:6px}
 .events li{display:flex;gap:12px;align-items:baseline;padding:10px 0;border-top:1px solid var(--line);font-size:13.5px}
 .events li:first-child{border-top:0}
@@ -666,9 +665,11 @@ body.m-a [data-r]:not([data-r*="a"]){display:none}
           <h3 id="cycTitle" style="font-size:22px;margin:0">&mdash;</h3>
           <div class="ring">
             <svg width="120" height="120" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r="52" fill="none" stroke="#E4DBC8" stroke-width="5"/>
-              <circle id="cycRing" cx="60" cy="60" r="52" fill="none" stroke="#A8884A" stroke-width="5" stroke-dasharray="0 999" stroke-linecap="round"/>
-              <text id="cycNum" x="60" y="58" text-anchor="middle" font-family="Cormorant Garamond" font-size="30" fill="#9A7B2E">&ndash;</text>
+              <g transform="rotate(-90 60 60)">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="#E4DBC8" stroke-width="5"/>
+                <circle id="cycRing" cx="60" cy="60" r="52" fill="none" stroke="#A8884A" stroke-width="5" stroke-dasharray="0 999" stroke-linecap="round"/>
+              </g>
+              <text id="cycNum" x="60" y="56" text-anchor="middle" dominant-baseline="middle" font-family="Cormorant Garamond" font-size="34" fill="#9A7B2E">&ndash;</text>
               <text x="60" y="76" text-anchor="middle" font-family="Jost" font-size="9" fill="#8A7860" letter-spacing="1.5">VAN 9</text>
             </svg>
           </div>

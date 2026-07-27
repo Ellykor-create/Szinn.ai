@@ -537,6 +537,8 @@ app.get('/api/companion/blueprint', async (req, res) => {
     clientName: c.ctx.intake.clientName,
     firstName: (c.ctx.intake.clientName || '').trim().split(/\s+/)[0],
     birthDate: c.order.birth_date,
+    birthTime: c.order.birth_time,
+    birthLocation: c.order.birth_location,
     chart: {
       sun: fmtPos(P.sun), moon: fmtPos(P.moon), ascendant: fmtPos(P.ascendant),
       northNode: fmtPos(P.northNode), southNode: fmtPos(P.southNode), chiron: fmtPos(P.chiron),
