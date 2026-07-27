@@ -23,9 +23,16 @@
   included_files       = ["templates/*.html"]
   external_node_modules = ["@sparticuz/chromium", "puppeteer-core"]
 
-# Ingeplande functie: verstuurt cadeau-e-mails op hun verzenddatum (dagelijks 09:00 UTC).
+# Ingeplande functie: verstuurt cadeau-e-mails op hun verzenddatum, om 00:01 UTC
+# (net na middernacht) zodat het cadeau op de gekozen datum aankomt.
 [functions."process-gifts"]
-  schedule = "0 9 * * *"
+  schedule = "1 0 * * *"
+
+# Ingeplande functie: dagelijkse WhatsApp-reading rond 12:00 NL-tijd. Draait op
+# 10:00 én 11:00 UTC; de functie stuurt alleen in het 12:xx-venster van Amsterdam
+# (DST-proof, precies één keer per dag).
+[functions."daily-whatsapp"]
+  schedule = "0 10,11 * * *"
 
 # ── Schone portal- en cadeau-URL's (geen .html) ──────────────────────────────
 [[redirects]]

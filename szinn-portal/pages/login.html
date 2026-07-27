@@ -7,7 +7,70 @@
   <link rel="stylesheet" href="/szinn-portal/css/variables.css">
   <link rel="stylesheet" href="/szinn-portal/css/global.css">
   <style>
+    /* ── Warme cream achtergrond met lichtstralen, botanische schaduw & mandala ── */
+    body {
+      background:
+        radial-gradient(120% 90% at 18% 8%, #FCF7EE 0%, #F6EFE1 42%, #EFE6D3 100%);
+      overflow: hidden;
+    }
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    /* Zachte lichtstralen linksboven */
+    .bg-rays {
+      position: absolute;
+      top: -20%;
+      left: -10%;
+      width: 70%;
+      height: 90%;
+      background: repeating-linear-gradient(
+        108deg,
+        rgba(255,255,255,0.55) 0px,
+        rgba(255,255,255,0.55) 2px,
+        rgba(255,255,255,0) 3px,
+        rgba(255,255,255,0) 34px
+      );
+      -webkit-mask-image: radial-gradient(60% 70% at 30% 20%, #000 0%, transparent 75%);
+              mask-image: radial-gradient(60% 70% at 30% 20%, #000 0%, transparent 75%);
+      opacity: 0.7;
+    }
+    /* Botanische silhouet-schaduw links */
+    .bg-botanical {
+      position: absolute;
+      bottom: -4%;
+      left: -2%;
+      width: 300px;
+      height: 88%;
+      color: #B49A6E;
+      opacity: 0.16;
+    }
+    .bg-botanical svg { width: 100%; height: 100%; }
+    /* Glinsterende sacred-geometry mandala rechts */
+    .bg-mandala {
+      position: absolute;
+      top: 50%;
+      right: -170px;
+      transform: translateY(-50%);
+      width: 620px;
+      height: 620px;
+    }
+    .bg-mandala svg { width: 100%; height: 100%; overflow: visible; }
+    .bg-mandala .fol circle {
+      fill: none;
+      stroke: #C9A96E;
+      stroke-width: 0.6;
+      opacity: 0.5;
+    }
+    .bg-mandala .spark { fill: #EBD6AB; }
+
+    /* ── Layout ── */
     .login-page {
+      position: relative;
+      z-index: 1;
       min-height: 100vh;
       display: flex;
       align-items: center;
@@ -17,71 +80,171 @@
 
     .login-container {
       width: 100%;
-      max-width: 420px;
+      max-width: 440px;
       animation: fadeUp 0.6s var(--ease) both;
     }
 
     .login-header {
       text-align: center;
-      margin-bottom: 40px;
+      margin-bottom: 34px;
     }
 
     .login-logo {
-      width: 56px;
-      height: 56px;
-      margin: 0 auto 20px;
-      filter: brightness(0.85);
+      width: 92px;
+      height: auto;
+      margin: 0 auto 18px;
     }
 
     .login-title {
       font-family: "Cormorant Garamond", serif;
-      font-size: 28px;
+      font-size: 42px;
       font-weight: 300;
-      color: var(--ink);
-      letter-spacing: 0.12em;
-      margin-bottom: 8px;
+      color: #7A5C2E;
+      letter-spacing: 0.34em;
+      text-indent: 0.34em;
+      margin-bottom: 10px;
     }
 
     .login-subtitle {
-      font-size: 13px;
+      font-size: 14px;
       color: var(--muted);
-      letter-spacing: 0.04em;
+      letter-spacing: 0.03em;
+    }
+
+    /* Sierlijk ruit-accent onder de titel */
+    .login-accent {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 22px auto 0;
+      color: var(--gold-light);
+    }
+    .login-accent::before,
+    .login-accent::after {
+      content: '';
+      width: 40px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-light));
+    }
+    .login-accent::after { transform: scaleX(-1); }
+    .login-accent span {
+      width: 6px;
+      height: 6px;
+      transform: rotate(45deg);
+      background: var(--gold-light);
     }
 
     .login-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: var(--r);
-      padding: 36px 32px;
-      box-shadow: var(--shadow-md);
+      background: rgba(252, 249, 243, 0.82);
+      -webkit-backdrop-filter: blur(8px);
+              backdrop-filter: blur(8px);
+      border: 1px solid rgba(201, 169, 110, 0.28);
+      border-radius: 18px;
+      padding: 40px 38px 34px;
+      box-shadow: 0 20px 60px rgba(122, 92, 46, 0.14);
     }
 
+    /* Labels: goud, uppercase, gespatieerd */
+    .login-card .form-label {
+      color: var(--gold);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      font-weight: 500;
+      margin-bottom: 10px;
+    }
+
+    /* Input met icoon(en) */
+    .input-wrap { position: relative; }
+    .input-wrap .form-input {
+      padding: 15px 16px 15px 46px;
+      background: rgba(255, 255, 255, 0.6);
+      border: 1px solid rgba(201, 169, 110, 0.35);
+      border-radius: 12px;
+      font-size: 15px;
+    }
+    .input-wrap.has-toggle .form-input { padding-right: 46px; }
+    .input-wrap .form-input:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(201, 169, 110, 0.14);
+    }
+    .input-wrap .i-lead,
+    .input-wrap .i-toggle {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--gold);
+      display: flex;
+    }
+    .input-wrap .i-lead { left: 16px; pointer-events: none; opacity: 0.85; }
+    .input-wrap .i-toggle {
+      right: 12px;
+      background: none;
+      border: none;
+      padding: 4px;
+      cursor: pointer;
+      color: var(--muted);
+    }
+    .input-wrap .i-toggle:hover { color: var(--gold); }
+    .input-wrap svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* Goud-gradient knop met pijl */
     .login-btn {
       width: 100%;
-      padding: 14px;
-      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 16px;
+      margin-top: 6px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(180deg, #D9B978 0%, #C6A263 48%, #B08A46 100%);
+      color: #FBF6EC;
+      font-size: 12px;
+      letter-spacing: 0.2em;
+      box-shadow: 0 8px 20px rgba(176, 138, 70, 0.32);
+      transition: filter var(--duration) var(--ease), transform var(--duration) var(--ease);
     }
+    .login-btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+    .login-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
     .login-error {
       display: none;
       padding: 10px 14px;
       background: rgba(198, 40, 40, 0.06);
       border: 1px solid rgba(198, 40, 40, 0.15);
-      border-radius: var(--r);
+      border-radius: 12px;
       color: var(--red);
       font-size: 12px;
       margin-bottom: 16px;
     }
     .login-error.visible { display: block; }
 
+    .forgot-link {
+      display: block;
+      margin: 18px auto 0;
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 14px;
+      color: var(--gold);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      letter-spacing: 0.02em;
+    }
+    .forgot-link:hover { color: var(--gold-light); }
+
     .login-divider {
       display: flex;
       align-items: center;
-      gap: 16px;
-      margin: 24px 0;
+      gap: 18px;
+      margin: 24px 0 18px;
       color: var(--muted);
-      font-size: 10px;
-      letter-spacing: 0.1em;
+      font-size: 11px;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
     }
     .login-divider::before,
@@ -89,38 +252,26 @@
       content: '';
       flex: 1;
       height: 1px;
-      background: var(--border);
+      background: rgba(201, 169, 110, 0.35);
     }
 
     .login-footer {
       text-align: center;
-      margin-top: 24px;
-      font-size: 12px;
+      font-size: 13px;
+      line-height: 1.6;
       color: var(--muted);
     }
-
-    .login-footer a {
-      color: var(--gold);
-    }
-
-    /* Gold top accent line */
-    .login-accent {
-      width: 40px;
-      height: 2px;
-      background: var(--gold);
-      margin: 0 auto 24px;
-    }
+    .login-footer a { color: var(--gold); }
 
     /* Loading spinner */
     .spinner {
       display: none;
       width: 18px;
       height: 18px;
-      border: 2px solid var(--cream);
+      border: 2px solid #FBF6EC;
       border-top-color: transparent;
       border-radius: 50%;
       animation: spin 0.6s linear infinite;
-      margin: 0 auto;
     }
     .spinner.active { display: inline-block; }
     @keyframes spin { to { transform: rotate(360deg); } }
@@ -128,41 +279,111 @@
     /* Topbar: terug naar szinn.ai + taalswitch */
     .login-topbar {
       position: absolute;
-      top: 18px;
-      left: 18px;
-      right: 18px;
+      top: 22px;
+      left: 26px;
+      right: 26px;
+      z-index: 2;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .back-link {
-      font-size: 12px;
+      font-size: 13px;
       color: var(--muted);
       text-decoration: none;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.02em;
     }
     .back-link:hover { color: var(--gold); }
     .langsw {
       display: flex;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(201, 169, 110, 0.4);
       border-radius: 20px;
       overflow: hidden;
-      background: var(--card);
+      background: rgba(252, 249, 243, 0.7);
     }
     .langsw button {
       border: none;
       background: transparent;
       font-family: inherit;
-      font-size: 11px;
+      font-size: 12px;
       letter-spacing: 0.08em;
-      padding: 6px 12px;
+      padding: 7px 15px;
       color: var(--muted);
       cursor: pointer;
     }
     .langsw button.on { background: var(--gold); color: #FBF6EC; }
+
+    @media (max-width: 560px) {
+      .bg-mandala { right: -280px; opacity: 0.7; }
+      .login-title { font-size: 34px; }
+    }
   </style>
 </head>
 <body>
+  <!-- Achtergrond: lichtstralen · botanische schaduw · glinsterende mandala -->
+  <div class="bg-layer" aria-hidden="true">
+    <div class="bg-rays"></div>
+    <div class="bg-botanical">
+      <svg viewBox="0 0 220 640" fill="none" stroke="currentColor" stroke-width="1.4"
+           stroke-linecap="round" stroke-linejoin="round">
+        <path d="M120 640 C90 520 70 420 80 300 C88 200 70 110 40 30"/>
+        <g fill="currentColor" stroke="none">
+          <path d="M80 300 C40 292 22 270 18 240 C58 244 78 264 80 300Z"/>
+          <path d="M80 300 C120 292 138 270 142 240 C102 244 82 264 80 300Z"/>
+          <path d="M84 380 C48 372 30 350 26 322 C64 326 82 346 84 380Z"/>
+          <path d="M84 380 C120 372 138 350 142 322 C104 326 86 346 84 380Z"/>
+          <path d="M92 460 C58 452 40 430 36 402 C72 406 90 426 92 460Z"/>
+          <path d="M92 460 C126 452 144 430 148 402 C112 406 94 426 92 460Z"/>
+          <path d="M60 210 C30 200 16 178 14 152 C46 158 60 180 60 210Z"/>
+          <path d="M60 210 C92 202 108 182 110 156 C78 160 62 180 60 210Z"/>
+        </g>
+      </svg>
+    </div>
+    <div class="bg-mandala">
+      <svg viewBox="0 0 324 324">
+        <defs>
+          <radialGradient id="folGlow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#F6E3BC" stop-opacity="0.9"/>
+            <stop offset="45%" stop-color="#EBD6AB" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#EBD6AB" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <circle cx="162" cy="162" r="230" fill="url(#folGlow)"/>
+        <g class="fol">
+          <circle cx="162.0" cy="162.0" r="54"/>
+          <circle cx="216.0" cy="162.0" r="54"/>
+          <circle cx="108.0" cy="162.0" r="54"/>
+          <circle cx="189.0" cy="208.8" r="54"/>
+          <circle cx="135.0" cy="208.8" r="54"/>
+          <circle cx="189.0" cy="115.2" r="54"/>
+          <circle cx="135.0" cy="115.2" r="54"/>
+          <circle cx="270.0" cy="162.0" r="54"/>
+          <circle cx="54.0" cy="162.0" r="54"/>
+          <circle cx="243.0" cy="208.8" r="54"/>
+          <circle cx="81.0" cy="208.8" r="54"/>
+          <circle cx="243.0" cy="115.2" r="54"/>
+          <circle cx="81.0" cy="115.2" r="54"/>
+          <circle cx="216.0" cy="255.5" r="54"/>
+          <circle cx="108.0" cy="255.5" r="54"/>
+          <circle cx="216.0" cy="68.5" r="54"/>
+          <circle cx="108.0" cy="68.5" r="54"/>
+          <circle cx="162.0" cy="255.5" r="54"/>
+          <circle cx="162.0" cy="68.5" r="54"/>
+          <circle cx="162" cy="162" r="162"/>
+          <circle cx="162" cy="162" r="181"/>
+        </g>
+        <g class="spark">
+          <circle cx="300" cy="70" r="2.4"/>
+          <circle cx="60" cy="250" r="2"/>
+          <circle cx="250" cy="300" r="1.8"/>
+          <circle cx="40" cy="120" r="1.6"/>
+          <circle cx="300" cy="230" r="2.2"/>
+          <circle cx="120" cy="30" r="1.6"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+
   <div class="login-topbar">
     <a class="back-link" href="https://szinn.ai" id="backLink">&#8592; Terug naar szinn.ai</a>
     <div class="langsw"><button data-l="nl">NL</button><button data-l="en">EN</button></div>
@@ -171,11 +392,11 @@
   <div class="login-page">
     <div class="login-container">
       <div class="login-header">
-        <img src="/szinn-portal/assets/img/logo-gold.png" alt="SZINN" class="login-logo"
-             onerror="this.style.display='none'">
-        <div class="login-accent"></div>
+        <img src="/szinn-portal/assets/img/logo-gold-transparent.png" alt="SZINN" class="login-logo"
+             onerror="this.onerror=null;this.src='/szinn-portal/assets/img/logo-gold.png'">
         <h1 class="login-title">SZINN</h1>
         <p class="login-subtitle" id="tSubtitle">Jouw persoonlijke Alignment Blueprint portaal</p>
+        <div class="login-accent"><span></span></div>
       </div>
 
       <div class="login-card">
@@ -184,24 +405,37 @@
         <form id="login-form" autocomplete="on">
           <div class="form-group">
             <label class="form-label" for="email" id="tEmail">E-mailadres</label>
-            <input type="email" id="email" class="form-input" placeholder="naam@voorbeeld.nl"
-                   autocomplete="email" required>
+            <div class="input-wrap">
+              <span class="i-lead" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+              </span>
+              <input type="email" id="email" class="form-input" placeholder="naam@voorbeeld.nl"
+                     autocomplete="email" required>
+            </div>
           </div>
 
           <div class="form-group">
             <label class="form-label" for="password" id="tPassword">Wachtwoord</label>
-            <input type="password" id="password" class="form-input" placeholder="••••••••"
-                   autocomplete="current-password" required>
+            <div class="input-wrap has-toggle">
+              <span class="i-lead" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>
+              </span>
+              <input type="password" id="password" class="form-input" placeholder="••••••••"
+                     autocomplete="current-password" required>
+              <button type="button" class="i-toggle" id="pwToggle" aria-label="Wachtwoord tonen">
+                <svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
           </div>
 
-          <button type="submit" class="btn btn-primary login-btn" id="login-btn">
+          <button type="submit" class="login-btn" id="login-btn">
             <span id="btn-text">Inloggen</span>
             <span class="spinner" id="btn-spinner"></span>
+            <svg id="btn-arrow" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
           </button>
         </form>
 
-        <button type="button" id="forgotLink"
-                style="display:block;margin:14px auto 0;background:none;border:none;padding:0;cursor:pointer;font-family:inherit;font-size:13px;color:var(--gold);text-decoration:underline;letter-spacing:.02em;">Wachtwoord vergeten?</button>
+        <button type="button" id="forgotLink" class="forgot-link">Wachtwoord vergeten?</button>
 
         <form id="forgot-form" autocomplete="on" style="display:none;margin-top:16px;">
           <p id="tForgotIntro" style="font-size:13px;line-height:1.6;color:#6b6055;margin:0 0 12px;">Vul je e-mailadres in, dan sturen we je een nieuw wachtwoord.</p>
@@ -274,6 +508,18 @@
     const errorEl = document.getElementById('login-error');
     const btnText = document.getElementById('btn-text');
     const btnSpinner = document.getElementById('btn-spinner');
+    const btnArrow = document.getElementById('btn-arrow');
+
+    // ── Wachtwoord tonen/verbergen ─────────────────────────────────────────
+    const pwToggle = document.getElementById('pwToggle');
+    const pwInput = document.getElementById('password');
+    pwToggle.addEventListener('click', () => {
+      const show = pwInput.type === 'password';
+      pwInput.type = show ? 'text' : 'password';
+      pwToggle.setAttribute('aria-label', show
+        ? (LANG === 'en' ? 'Hide password' : 'Wachtwoord verbergen')
+        : (LANG === 'en' ? 'Show password' : 'Wachtwoord tonen'));
+    });
 
     // ── Wachtwoord vergeten: paneel tonen + nieuw wachtwoord aanvragen ──────
     const forgotLink = document.getElementById('forgotLink');
@@ -327,6 +573,7 @@
       const password = document.getElementById('password').value;
 
       btnText.style.display = 'none';
+      btnArrow.style.display = 'none';
       btnSpinner.classList.add('active');
 
       try {
@@ -336,6 +583,7 @@
         errorEl.textContent = err.message;
         errorEl.classList.add('visible');
         btnText.style.display = '';
+        btnArrow.style.display = '';
         btnSpinner.classList.remove('active');
       }
     });

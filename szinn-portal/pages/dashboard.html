@@ -8,481 +8,889 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+/* ============ TOKENS ============ */
 :root{
-  --bg:#F7F2EA; --side:#EFE8DC; --panel:#FFFEFC; --panel2:#F6F0E6;
-  --line:#EDE5D5; --line2:#E4DBC8; --ink:#2c2622; --muted:#8a7860;
-  --gold:#A67C3A; --gold-soft:#C9A96E; --gold-deep:#8a6630;
+  --cream:#F9F5F0; --raised:#FBF7EF; --tint:#F6F1E8; --tint2:#F0EBE2;
+  --ink:#0D0A07; --soft:#2C2622; --muted:#8A7860;
+  --gold:#C9A96E; --gold-deep:#A8884A; --gold-print:#9A7B2E; --gold-soft:#C9A96E;
+  --line:#DDD9D2; --line2:#DDD9D2; --panel:#FBF7EF; --panel2:#F6F1E8;
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'Jost',sans-serif;
+  --shadow:0 2px 12px rgba(13,10,7,.05);
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html,body{background:var(--bg);color:var(--ink);font-family:'Jost',sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5}
-h1,h2,h3,h4{font-family:'Cormorant Garamond',serif;font-weight:500}
-a{text-decoration:none;color:inherit;cursor:pointer}
-svg{display:block}
-.eyebrow{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin-bottom:10px}
-.app{display:grid;grid-template-columns:236px 1fr;min-height:100vh}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);font-weight:300;background:var(--cream);color:var(--soft);font-size:15px;line-height:1.65}
+::selection{background:var(--gold);color:var(--ink)}
+img{display:block;max-width:100%}
+h1,h2,h3{font-family:var(--serif);font-weight:500;color:var(--ink)}
+a{color:var(--gold-print);text-decoration:none;cursor:pointer}
+a:hover{color:var(--gold-deep)}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--gold-deep);outline-offset:2px}
+.lbl{font-size:10.5px;font-weight:400;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+.lbl-gold{color:var(--gold-print)}
+.hairline{width:42px;height:1px;background:var(--gold);border:0}
+.more{display:inline-block;font-size:12px;letter-spacing:.06em;color:var(--gold-print)}
+.more:hover{color:var(--gold-deep)}
 
-/* sidebar */
-.sidebar{background:var(--side);border-right:1px solid var(--line2);padding:26px 18px 22px;display:flex;flex-direction:column;position:sticky;top:0;height:100vh}
-.brand{display:flex;flex-direction:column;align-items:center;text-align:center;padding:4px 0 8px}
-.brand .name{font-family:'Cormorant Garamond',serif;font-size:27px;letter-spacing:.30em;color:var(--gold);margin-top:8px;font-weight:600;padding-left:.30em}
-.brand .tag{font-size:8.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-top:4px}
-.nav{margin-top:26px;display:flex;flex-direction:column;gap:2px;flex:1}
-.nav-item{display:flex;align-items:center;gap:11px;padding:9px 13px;border-radius:11px;font-size:13.5px;color:#6f6450;transition:all .16s}
-.nav-item .ni{width:16px;height:16px;color:var(--gold-soft);flex-shrink:0}
-.nav-item:hover{background:#E2D9C6;color:var(--ink)}
-.nav-item.active{background:#F3EBD8;color:var(--ink);font-weight:500}
-.nav-item.active .ni{color:var(--gold)}
-.intention{margin-top:16px;background:#F2EAD8;border:1px solid var(--line2);border-radius:14px;padding:15px 15px 17px;text-align:center}
-.intention .il{font-size:8.5px;letter-spacing:.20em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
-.intention .iq{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:16px;color:var(--ink);line-height:1.34}
+/* ============ SHELL ============ */
+.shell{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh}
+.main{min-width:0}
+.wrap{max-width:1220px;margin:0 auto;padding:0 40px 90px}
 
-/* main */
-.main{padding:26px 40px 60px;max-width:1500px}
-.topbar{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;letter-spacing:.04em;flex-wrap:wrap}
-.topactions{margin-left:auto;display:flex;align-items:center;gap:8px}
-.tbtn{display:inline-flex;align-items:center;gap:6px;background:var(--panel);border:1px solid var(--line2);border-radius:20px;padding:7px 14px;font-family:'Jost';font-size:12px;color:var(--gold-deep);cursor:pointer;white-space:nowrap;transition:.15s}
-.tbtn:hover{background:#F0E6CE;border-color:var(--gold-soft)}
-.langsw{display:flex;border:1px solid var(--line2);border-radius:20px;overflow:hidden;background:var(--panel)}
-.langsw button{border:none;background:transparent;font-family:'Jost';font-size:11px;letter-spacing:.08em;padding:7px 12px;color:var(--muted);cursor:pointer;transition:.15s}
-.langsw button.on{background:var(--gold);color:#FBF6EC}
-.greet{font-size:44px;margin-top:6px;letter-spacing:.01em}
-.greet .sp{color:var(--gold-soft);font-size:26px;vertical-align:middle;margin-left:6px}
-.sub{color:var(--muted);font-size:15px;margin-top:2px}
-.astrorow{display:flex;gap:34px;margin-top:20px;flex-wrap:wrap}
-.astro{display:flex;gap:11px;align-items:flex-start}
-.astro .ic{font-size:19px;color:var(--gold);line-height:1}
-.astro .t{font-size:14.5px;font-weight:500}
-.astro .d{font-size:11.5px;color:var(--muted)}
+/* ============ SIDEBAR ============ */
+.side{background:var(--ink);border-right:1px solid rgba(201,169,110,.25);padding:36px 0 24px;position:sticky;top:0;height:100vh;display:flex;flex-direction:column}
+.side .brand{text-align:center;padding:0 24px 26px}
+.side .brand .wordmark{font-family:var(--serif);font-weight:500;font-size:21px;letter-spacing:.34em;margin:0 0 2px;color:var(--cream);padding-left:.34em}
+.side .brand .lbl{font-size:8.5px;letter-spacing:.3em;color:var(--gold)}
+.side nav{flex:1;padding:6px 14px;overflow-y:auto;scrollbar-width:none}
+.side nav::-webkit-scrollbar{display:none}
+.side nav a{display:flex;align-items:baseline;gap:10px;padding:9px 14px;margin:2px 0;border-radius:10px;color:#B9AF9F;font-size:13.5px;letter-spacing:.04em;border-left:2px solid transparent;transition:background .2s,color .2s}
+.side nav a .k{font-family:var(--serif);font-style:italic;font-size:14px;color:var(--gold);min-width:20px}
+.side nav a:hover{color:var(--cream);background:rgba(201,169,110,.12)}
+.side nav a.active{background:rgba(249,245,240,.07);color:var(--cream);border-left:2px solid var(--gold)}
+.side .quote{padding:14px 26px 18px;text-align:left}
+.side .quote p{font-family:var(--serif);font-style:italic;font-size:13.5px;line-height:1.55;color:#C9BFB0}
+.side .foot{padding:16px 24px 0;border-top:1px solid rgba(221,217,210,.15)}
+.side .foot .motto{display:block;text-align:center;font-size:9.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold)}
 
-.movement{display:flex;align-items:baseline;gap:16px;margin:44px 0 18px}
-.movement .m{font-family:'Cormorant Garamond',serif;font-size:30px;color:var(--gold-deep)}
-.movement .ml{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold)}
-.movement .ms{font-size:12.5px;color:var(--muted);font-style:italic}
-.movement .badge{margin-left:auto;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);border:1px solid var(--line2);border-radius:20px;padding:5px 13px}
+/* ============ MOBILE HEADER ============ */
+.mhead{display:none}
 
-.daycard{position:relative;border:1px solid var(--line2);border-radius:18px;overflow:hidden;background:var(--panel)}
-.daycard .bg{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.9}
-.daycard .veil{position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,254,252,.97) 0%,rgba(255,254,252,.86) 42%,rgba(255,254,252,.30) 100%)}
-.daycard .in{position:relative;padding:26px 30px}
-.daycard .dt{font-size:9.5px;letter-spacing:.20em;text-transform:uppercase;color:var(--gold)}
-.daycard h2{font-size:30px;margin:6px 0 18px}
-.dcgrid{display:flex;gap:60px;flex-wrap:wrap}
-.dcgrid .lab{font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
-.dcgrid .val{font-size:16px;max-width:340px}
-.dcq{border-top:1px solid var(--line);margin-top:18px;padding-top:16px}
-.readmore{display:inline-block;margin-top:16px;color:var(--gold-deep);font-size:13px}
+/* ============ TOPBAR ============ */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:22px 0 0;flex-wrap:wrap}
+.topbar .right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.langsw{display:flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;font-size:11px;letter-spacing:.14em}
+.langsw button{background:none;border:0;font-family:var(--sans);padding:6px 14px;color:var(--muted);cursor:pointer;transition:.2s}
+.langsw button.on{background:var(--gold-deep);color:var(--cream)}
+.ghost{font-family:var(--sans);font-size:12.5px;letter-spacing:.06em;color:var(--muted);background:none;border:1px solid var(--line);border-radius:10px;padding:6px 16px;cursor:pointer;transition:.2s}
+.ghost:hover{color:var(--soft);border-color:var(--gold)}
 
-.cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:16px}
-.card{background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:19px 18px}
-.card h3{font-size:21px;margin-bottom:4px}
-.card p{font-size:12.5px;color:#5f5647;margin-top:9px;line-height:1.55}
-.moon{display:flex;gap:12px;align-items:center;margin-top:6px}
-.moon .orb{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#fff,#EBDFC7 70%,#D9C7A2);box-shadow:inset -6px -4px 10px rgba(150,120,70,.25)}
-.moon .mt{font-size:17px;font-family:'Cormorant Garamond',serif}
-.moon .md{font-size:11px;color:var(--muted)}
-.nums{display:flex;gap:9px;margin-top:4px}
-.num{flex:1;background:var(--panel2);border:1px solid var(--line);border-radius:11px;padding:11px 6px;text-align:center}
-.num .n{font-family:'Cormorant Garamond',serif;font-size:26px;color:var(--gold-deep)}
-.num .l{font-size:7.5px;letter-spacing:.10em;text-transform:uppercase;color:var(--muted);margin-top:3px;line-height:1.25}
-.numnote{margin-top:14px}
-.numnote .k{color:var(--gold-deep);font-style:italic;font-size:12.5px}
-.numnote .v{font-size:12.5px;margin-bottom:8px}
-.knoop{display:flex;gap:14px;margin-top:4px}
-.knoop .kc{flex:1}
-.knoop .kl{font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;line-height:1.4}
-.knoop .kn{font-family:'Cormorant Garamond',serif;font-size:19px;margin-bottom:5px}
-.knoop .kp{font-size:11.5px;color:#5f5647;line-height:1.5}
-.knoop .arrow{align-self:center;color:var(--gold-soft);font-size:18px}
-.mandwrap{display:flex;justify-content:center;margin-top:2px}
-.mandwrap svg{width:170px;height:170px}
-.mandcap{font-size:11px;color:var(--muted);text-align:center;margin-top:8px;line-height:1.5}
+/* ============ RITUAL MODE SWITCH ============ */
+.modeswitch{position:relative;display:flex;border:1px solid var(--line);border-radius:99px;background:var(--raised);padding:3px;isolation:isolate}
+.modeswitch .pill{position:absolute;top:3px;bottom:3px;left:3px;width:calc((100% - 6px)/3);background:var(--gold-deep);border-radius:99px;transition:transform .32s cubic-bezier(.4,.05,.1,1);z-index:0}
+.modeswitch.m-o .pill{transform:translateX(0)}
+.modeswitch.m-v .pill{transform:translateX(100%)}
+.modeswitch.m-a .pill{transform:translateX(200%)}
+.mbtn{position:relative;z-index:1;flex:1;display:flex;align-items:center;justify-content:center;gap:6px;font-family:var(--sans);font-size:11px;letter-spacing:.1em;text-transform:uppercase;background:none;border:0;padding:7px 15px;color:var(--muted);cursor:pointer;transition:color .28s;white-space:nowrap}
+.mbtn .ic{font-size:12px}
+.mbtn.on{color:var(--cream)}
+.mbtn.sug::after{content:'';position:absolute;top:5px;right:9px;width:5px;height:5px;border-radius:50%;background:var(--gold)}
+/* sections appear/hide per mode with a soft fade */
+[data-r]{transition:opacity .4s ease}
+body.m-o [data-r]:not([data-r*="o"]),
+body.m-a [data-r]:not([data-r*="a"]){display:none}
 
-.cards3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
-.card h2{font-size:24px}
-.field{width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:11px 13px;font-family:'Jost';font-size:13px;color:var(--ink);margin-top:8px}
-.field:focus{outline:none;border-color:var(--gold-soft)}
-.choices{display:flex;gap:9px;margin-top:12px}
-.choice{flex:1;background:var(--panel2);border:1px solid var(--line2);border-radius:11px;padding:12px 6px;text-align:center;cursor:pointer;transition:.15s}
-.choice .ct{font-family:'Cormorant Garamond',serif;font-size:18px}
-.choice .cd{font-size:8px;color:var(--muted);letter-spacing:.04em;margin-top:2px}
-.choice.on,.choice:hover{background:#F0E6CE;border-color:var(--gold-soft)}
-.gifts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-top:12px}
-.gift{background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:12px 8px;text-align:center;font-size:12px;cursor:pointer;transition:.15s}
-.gift.on,.gift:hover{background:#F0E6CE;border-color:var(--gold-soft)}
-.hint{font-size:11px;color:var(--muted);margin-top:11px}
-.grat{counter-reset:g;margin-top:4px}
-.gline{display:flex;align-items:center;gap:10px;margin-top:9px}
-.gline .gn{color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:16px;width:14px}
-.gline input{flex:1;background:transparent;border:none;border-bottom:1px solid var(--line2);padding:7px 2px;font-family:'Jost';font-size:13px;color:var(--ink)}
-.gline input:focus{outline:none;border-color:var(--gold-soft)}
+/* ============ GREETING ============ */
+.greet-wrap{padding:34px 0 6px}
+.greet{font-size:clamp(30px,4vw,42px);line-height:1.1}
+.greet .star{color:var(--gold);font-size:.55em;vertical-align:.45em;margin-left:6px}
+.greet-wrap .sub{margin-top:8px;color:var(--muted);font-size:15px}
+.chips{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none;margin:22px 0 4px;padding-bottom:4px}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;background:var(--raised);border:1px solid var(--line);border-radius:12px;padding:10px 16px;min-width:150px}
+.chip b{display:block;font-weight:400;font-size:13px;color:var(--ink);letter-spacing:.02em}
+.chip i{font-style:normal;font-size:11.5px;color:var(--muted)}
 
-.phase{display:flex;align-items:center;gap:0;margin:14px 0 4px}
-.phase .st{flex:1;text-align:center;position:relative}
-.phase .dot{width:26px;height:26px;border-radius:50%;background:var(--panel2);border:1px solid var(--line2);margin:0 auto;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--gold-soft)}
-.phase .st.on .dot{background:var(--gold);color:#fff;border-color:var(--gold)}
-.phase .pn{font-size:9px;margin-top:6px;color:var(--muted)}
-.phase .pa{font-size:8px;color:#b9ac93}
-.phase .on .pn{color:var(--ink);font-weight:500}
-.ring{position:relative;width:76px;height:76px;margin-left:auto}
-.cycrow{display:flex;align-items:flex-start;gap:14px}
-.cyc-moment{display:flex;gap:11px;align-items:flex-start;margin-top:13px}
-.cyc-moment .cm{font-size:16px;color:var(--gold-soft)}
-.cyc-moment .cmt{font-size:13px;font-weight:500}
-.cyc-moment .cmd{font-size:11px;color:var(--muted)}
+/* ============ COLUMNS ============ */
+.body2{display:grid;grid-template-columns:minmax(0,1fr) 296px;gap:26px;align-items:start;margin-top:14px}
+.colA{min-width:0}
+.rail{min-width:0;display:flex;flex-direction:column;gap:14px}
 
-.shadow{background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:26px 30px;margin-top:16px}
-.shadow h2{font-size:26px;margin-bottom:8px}
-.shadow .lead{font-size:13px;color:#5f5647;max-width:760px;line-height:1.6}
-.shadgrid{display:grid;grid-template-columns:1fr 1fr;gap:34px 48px;margin-top:24px}
-.shad .sh-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
-.shad .sh-t{font-family:'Cormorant Garamond',serif;font-size:18px}
-.shad .sh-src{font-size:8.5px;letter-spacing:.10em;text-transform:uppercase;color:var(--gold);text-align:right;line-height:1.4;flex-shrink:0}
-.shad .sh-d{font-size:11.5px;color:#5f5647;margin-top:5px;line-height:1.5}
-.shad input[type=range]{width:100%;margin-top:14px;accent-color:var(--gold)}
-.shad .sh-lab{display:flex;justify-content:space-between;font-size:9.5px;color:var(--muted);margin-top:3px}
-.reflect{border-top:1px solid var(--line);margin-top:26px;padding-top:18px;display:flex;gap:26px}
-.reflect .rl{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);flex-shrink:0;width:120px;padding-top:2px}
-.reflect .rt{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;line-height:1.5}
+/* ============ SECTIONS & CARDS ============ */
+.sec{padding-top:52px}
+.sec:first-child{padding-top:8px}
+.sechead{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:18px}
+.sechead .l{display:flex;align-items:baseline;gap:14px;min-width:0}
+.sechead .word{font-family:var(--serif);font-size:26px;font-style:italic;color:var(--ink)}
+.sechead .lbl{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tag{font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-print);border:1px solid var(--gold);border-radius:99px;padding:4px 12px;white-space:nowrap;flex:0 0 auto}
+.card{background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:24px 26px;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:transform .25s ease,box-shadow .25s ease}
+.card:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(13,10,7,.08)}
+.card h3{font-size:21px;margin:6px 0 10px}
+.card p{font-size:14px}
+.card .lbl{display:block;margin-bottom:2px}
+.card .more{margin-top:auto;padding-top:12px}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.g3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
 
-.save{width:100%;margin-top:26px;background:linear-gradient(180deg,#B98C43,#93692C);color:#FBF6EC;border:none;border-radius:12px;padding:16px;font-family:'Jost';font-size:14px;letter-spacing:.04em;cursor:pointer}
-.save .ss{display:block;font-size:10px;color:#EAD9B6;margin-top:3px;letter-spacing:.02em}
-.foot{text-align:center;margin-top:26px;color:var(--muted)}
-.foot .fq{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15px;color:var(--ink)}
-.foot .fc{font-size:10px;margin-top:8px;letter-spacing:.02em}
+/* ============ HERO ============ */
+.hero{position:relative;border-radius:16px;overflow:hidden;border:1px solid var(--line);color:var(--cream);isolation:isolate}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);z-index:1}
+.hero .bg{position:absolute;inset:0;background:#1c150c url('/assets/szinn-hero.jpg') center/cover;z-index:-2}
+.hero .veil{position:absolute;inset:0;background:linear-gradient(100deg,rgba(13,10,7,.92) 34%,rgba(13,10,7,.6) 62%,rgba(13,10,7,.3));z-index:-1}
+.hero .in{padding:34px 36px 30px;max-width:720px}
+.hero .lbl{color:var(--gold)}
+.hero h2{color:var(--cream);font-size:clamp(24px,3vw,32px);margin:6px 0 18px}
+.hero .cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px}
+.hero .cols p{color:#EDE6DB;font-size:13.5px}
+.hero .vraag{margin-top:22px;padding-top:18px;border-top:1px solid rgba(201,169,110,.35)}
+.hero .vraag p{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--cream);line-height:1.45}
 
-/* AI companion */
-.aibar{display:flex;align-items:center;gap:12px;margin-top:16px;background:linear-gradient(90deg,#F3EBD8,#FBF6EC);border:1px solid var(--line2);border-radius:14px;padding:14px 18px}
-.aibar .ai-ic{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#F6E4B8,#C9A96E);flex-shrink:0}
-.aibar .ai-tx{font-size:12.5px;color:#5f5647}
-.aibar .ai-tx b{color:var(--gold-deep);font-weight:500}
-.aibar button{margin-left:auto;background:var(--panel);border:1px solid var(--gold-soft);color:var(--gold-deep);border-radius:20px;padding:8px 16px;font-family:'Jost';font-size:12px;cursor:pointer;white-space:nowrap}
-.aibar button:disabled{opacity:.5;cursor:default}
-.aibar button+button{margin-left:8px}
-.chat{margin-top:12px;background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:16px 18px;display:none}
+/* ============ BLUEPRINT CTA (in frequentie-slot) ============ */
+.bpcard{display:flex;align-items:center;gap:20px;background:var(--ink);border:1px solid rgba(201,169,110,.5);border-radius:16px;padding:22px 26px;margin-top:16px;color:#D8CFC2;position:relative;overflow:hidden;flex-wrap:wrap}
+.bpcard::before{content:'';position:absolute;top:0;left:24px;right:24px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.bpcard .seal{flex:0 0 auto;width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--ink);background:radial-gradient(circle at 38% 34%,#F6E4B8,#C9A96E 70%,#A8884A)}
+.bpcard .txt{flex:1;min-width:180px}
+.bpcard .lbl{color:var(--gold)}
+.bpcard b{display:block;font-family:var(--serif);font-weight:500;font-size:21px;color:var(--cream);margin:2px 0 4px}
+.bpcard p{font-size:13px;color:#C9BFB0}
+.bpcard .go{flex:0 0 auto;font-family:var(--sans);font-size:12.5px;letter-spacing:.08em;background:var(--gold-deep);color:var(--cream);border-radius:10px;padding:11px 20px;white-space:nowrap;transition:background .2s}
+.bpcard .go:hover{background:var(--gold-print);color:var(--cream)}
+
+/* ============ TECH-STRIP (Sin data) ============ */
+.tcard{background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:20px 20px 18px;position:relative;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.tcard::before{content:'';position:absolute;top:0;left:20px;right:20px;height:2px;background:var(--gold);border-radius:0 0 2px 2px;opacity:.7}
+.tcard .sys{font-family:var(--serif);font-size:18px;color:var(--ink);margin:4px 0 8px}
+.tcard p{font-size:13px}
+.tcard .more{margin-top:auto;padding-top:10px}
+.moon-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--gold);margin-right:7px;vertical-align:1px;animation:breath 6s ease-in-out infinite}
+@keyframes breath{0%,100%{transform:scale(1);opacity:.75}50%{transform:scale(1.35);opacity:1}}
+
+/* ============ NUMBER TILES ============ */
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:6px 0 12px}
+.tile{background:var(--tint);border:1px solid var(--line);border-radius:12px;text-align:center;padding:14px 4px 10px}
+.tile .n{font-family:var(--serif);font-size:32px;font-weight:500;color:var(--gold-print);line-height:1}
+.tile .l{font-size:8px;letter-spacing:.1em;margin-top:6px;text-transform:uppercase;color:var(--muted);line-height:1.25}
+.tile.hot{background:var(--raised);border-color:var(--gold)}
+.numnote .k{color:var(--gold-print);font-style:italic;font-size:12.5px}
+.numnote .v{font-size:13px;margin-bottom:8px}
+
+/* ============ NODES ============ */
+.nodes{display:grid;grid-template-columns:minmax(0,1fr) 24px minmax(0,1fr);gap:8px;align-items:start;margin-top:4px}
+.nodes .arrow{font-family:var(--serif);color:var(--gold-deep);font-size:20px;text-align:center;padding-top:22px}
+.node .kl{font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--gold-print);margin-bottom:5px;line-height:1.4}
+.node b{display:block;font-family:var(--serif);font-weight:500;font-size:17px;color:var(--ink);margin:0 0 4px}
+.node p{font-size:12.5px}
+
+/* ============ MOON ============ */
+.moonrow{display:flex;gap:12px;align-items:center;margin-top:2px}
+.moonrow .orb{width:44px;height:44px;border-radius:50%;background:radial-gradient(circle at 38% 34%,#fff,#EBDFC7 70%,#D9C7A2);box-shadow:inset 0 0 8px rgba(150,120,70,.25);flex:0 0 auto}
+.moonrow .mt{font-size:16px;font-family:var(--serif);color:var(--ink)}
+.moonrow .md{font-size:11.5px;color:var(--muted)}
+
+/* ============ MANDALA ============ */
+.mandwrap{display:flex;justify-content:center;margin:2px 0 8px}
+.mandwrap svg,.mandwrap img{max-width:180px;height:auto}
+.mandcap{font-size:11px;color:var(--muted);text-align:center;line-height:1.5}
+
+/* ============ COMPANION ============ */
+.aibar{display:flex;align-items:center;gap:14px;background:linear-gradient(90deg,var(--tint),var(--raised));border:1px solid var(--line);border-radius:14px;padding:16px 20px;margin-top:16px;flex-wrap:wrap;box-shadow:var(--shadow)}
+.ai-ic{width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#F6E4B8,#C9A96E);flex:0 0 auto}
+.ai-tx{font-size:12.5px;color:#5f5647;flex:1;min-width:180px}
+.ai-tx b{color:var(--gold-deep);font-weight:400}
+.aibar .abtn{background:var(--raised);border:1px solid var(--gold);color:var(--gold-deep);border-radius:20px;padding:9px 16px;font-family:var(--sans);font-size:12px;cursor:pointer;white-space:nowrap;transition:.2s}
+.aibar .abtn:hover{background:var(--tint)}
+.chat{display:none;margin-top:12px;background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
 .chat.open{display:block}
 .chatlog{max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:10px;margin-bottom:12px}
 .msg{font-size:13px;line-height:1.55;padding:10px 13px;border-radius:12px;max-width:82%}
-.msg.u{background:#F0E6CE;align-self:flex-end}
-.msg.a{background:var(--panel2);align-self:flex-start}
-.msg.a .who{font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:4px}
-.chatin{display:flex;gap:9px}
-.chatin input{flex:1;background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:11px 13px;font-family:'Jost';font-size:13px}
-.chatin input:focus{outline:none;border-color:var(--gold-soft)}
-.chatin button{background:linear-gradient(180deg,#B98C43,#93692C);color:#FBF6EC;border:none;border-radius:10px;padding:0 18px;cursor:pointer;font-family:'Jost';font-size:13px}
+.msg.u{background:var(--tint);align-self:flex-end}
+.msg.a{background:var(--tint2);align-self:flex-start}
+.msg.a .who{font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold-print);margin-bottom:4px}
+.chatform{display:flex;gap:8px}
+.chatform input{flex:1;background:var(--tint);border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-family:var(--sans);font-size:13px;color:var(--soft)}
+.chatform input:focus{outline:none;border-color:var(--gold)}
+.chatform button{background:var(--gold-deep);color:var(--cream);border:0;border-radius:10px;padding:0 18px;cursor:pointer;font-family:var(--sans);font-size:13px}
 
-/* aanvragen */
-.orders{margin-top:16px;display:flex;flex-direction:column;gap:10px}
-.order-card{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--panel);border:1px solid var(--line2);border-radius:14px;padding:16px 18px;flex-wrap:wrap}
-.order-name{font-family:'Cormorant Garamond',serif;font-size:19px}
+/* ============ SPIEGELKAMER ============ */
+.mirror{background:var(--ink);border-radius:18px;color:#D8CFC2;padding:40px 42px 38px;position:relative;overflow:hidden}
+.mirror .lbl{color:var(--gold)}
+.mirror h2{color:var(--cream);font-size:clamp(24px,3vw,30px);margin:8px 0 6px}
+.mirror .intro{max-width:640px;font-size:14px;color:#C9BFB0}
+.paradigma{background:rgba(249,245,240,.05);border:1px solid rgba(201,169,110,.35);border-radius:14px;padding:22px 24px;margin:26px 0 8px}
+.paradigma p.q{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--cream);margin:4px 0 12px}
+.paradigma ul{list-style:none}
+.paradigma li{font-size:13px;color:#C9BFB0;padding:7px 0;border-top:1px solid rgba(221,217,210,.12)}
+.paradigma li b{color:var(--gold);font-weight:400;font-family:var(--serif);font-style:italic;margin-right:8px}
+/* shadow cards injected by brain into #shadGrid */
+#shadGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:26px 40px;margin-top:26px}
+.shad .sh-top{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.shad .sh-t{font-family:var(--serif);font-weight:500;font-size:17px;color:var(--cream)}
+.shad .sh-src{font-size:9px;color:var(--gold);text-align:right;line-height:1.4;letter-spacing:.06em;text-transform:uppercase}
+.shad .sh-d{font-size:12.5px;color:#B9AF9F;margin:6px 0 12px;line-height:1.5}
+.shad input[type=range]{width:100%;appearance:none;height:2px;background:rgba(201,169,110,.4);border-radius:2px}
+.shad input[type=range]::-webkit-slider-thumb{appearance:none;width:16px;height:16px;border-radius:50%;background:var(--gold);border:2px solid var(--ink);cursor:pointer}
+.shad .sh-lab{display:flex;justify-content:space-between;font-size:10.5px;color:#8A7860;margin-top:7px}
+.mirror .slot{margin-top:30px;padding-top:22px;border-top:1px solid rgba(221,217,210,.15)}
+.mirror .slot .rl{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);display:block;margin-bottom:8px}
+.mirror .slot p.big{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--cream)}
+.mirror textarea{width:100%;margin-top:12px;background:rgba(249,245,240,.05);border:1px solid rgba(201,169,110,.35);border-radius:12px;padding:14px 16px;font-family:var(--sans);font-weight:300;font-size:14px;color:#EDE6DB;min-height:80px;resize:vertical}
+.mirror textarea::placeholder{color:#8A7860}
+
+/* ============ ZIN ============ */
+.path{display:grid;grid-template-columns:repeat(5,1fr);margin:20px 0 14px;position:relative}
+.path::before{content:'';position:absolute;top:6px;left:10%;right:10%;height:1px;background:var(--line)}
+.st{position:relative;text-align:center;padding:0 3px}
+.st .dot{width:14px;height:14px;border-radius:50%;background:var(--tint2);border:1px solid var(--line);margin:0 auto 8px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--gold)}
+.st.on .dot{background:var(--gold);border-color:var(--gold-deep);color:#fff}
+.st .pn{font-size:9px;letter-spacing:.06em;line-height:1.35;display:block;color:var(--muted)}
+.st.on .pn{color:var(--ink);font-weight:500}
+.st .pa{font-size:8px;color:#b9ac93;display:block;margin-top:2px}
+.ring{width:120px;height:120px;margin:8px auto 12px;position:relative}
+.ring svg{transform:rotate(-90deg)}
+.events{list-style:none;margin-top:6px}
+.events li{display:flex;gap:12px;align-items:baseline;padding:10px 0;border-top:1px solid var(--line);font-size:13.5px}
+.events li:first-child{border-top:0}
+.events .cm{font-size:16px;color:var(--gold-soft)}
+.events li .cmt{color:var(--ink);font-size:13.5px}
+.events li .cmd{color:var(--muted);font-size:11.5px}
+
+/* ============ ACTIE / FORMS ============ */
+.field{width:100%;background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-family:var(--sans);font-size:14px;color:var(--soft);margin-top:10px}
+.field:focus{outline:none;border-color:var(--gold)}
+.field::placeholder{color:var(--muted)}
+.choices{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.choice{flex:1;min-width:120px;background:var(--cream);border:1px solid var(--line);border-radius:11px;padding:11px 8px;text-align:center;cursor:pointer;transition:.15s}
+.choice .ct{font-family:var(--serif);font-size:18px;color:var(--ink)}
+.choice .cd{font-size:9px;color:var(--muted);letter-spacing:.03em;margin-top:2px}
+.choice.on,.choice:hover{border-color:var(--gold);background:var(--raised)}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.pill{font-size:12px;letter-spacing:.05em;border:1px solid var(--line);border-radius:99px;padding:7px 15px;color:var(--muted);background:var(--cream);cursor:pointer;transition:.15s}
+.pill.on,.pill:hover{border-color:var(--gold);color:var(--gold-print);background:var(--raised)}
+.grat{counter-reset:g;margin-top:6px}
+.gline{display:flex;align-items:center;gap:12px;margin-top:9px}
+.gline .gn{font-family:var(--serif);font-style:italic;color:var(--gold-print);font-size:17px;min-width:14px}
+.gline input{flex:1;min-width:0;background:none;border:0;border-bottom:1px solid var(--line);padding:9px 2px;font-family:var(--sans);font-size:14px;color:var(--soft)}
+.gline input::placeholder{color:var(--muted)}
+.gline input:focus{border-bottom-color:var(--gold);outline:none}
+.hint{font-size:11.5px;color:var(--muted);letter-spacing:.04em;margin-top:11px}
+.daybtn{display:inline-block;font-family:var(--sans);font-size:12.5px;letter-spacing:.08em;background:var(--gold-deep);color:var(--cream);border:0;border-radius:10px;padding:14px 26px;cursor:pointer;transition:background .2s;width:100%;text-align:center}
+.daybtn:hover{background:var(--gold-print)}
+.daybtn .ss{display:block;font-size:10px;color:#EAD9B6;margin-top:3px;letter-spacing:.02em}
+.uitslider input[type=range]{width:100%;appearance:none;-webkit-appearance:none;height:2px;background:var(--line);border-radius:2px;margin-top:16px}
+.uitslider input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--gold-deep);border:2px solid var(--raised);cursor:pointer}
+.uitslider input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--gold-deep);border:2px solid var(--raised);cursor:pointer}
+.uitslider .ends{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-top:7px}
+.uitslider .rq{font-family:var(--serif);font-style:italic;font-size:17px;color:var(--ink);margin-top:2px}
+
+/* ============ RITME ============ */
+.wkdays{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:8px;margin:16px 0 6px;text-align:center}
+.wkd .l{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.wkd .dots{display:flex;justify-content:center;gap:5px;margin-top:7px}
+.wkd .p{width:12px;height:12px;border-radius:50%;border:1px solid var(--line);background:var(--tint)}
+.wkd .p.f{background:var(--gold-deep);border-color:var(--gold-deep)}
+.wkd.today .l{color:var(--gold-print)}
+.wkd.fut .p{opacity:.45}
+.ritualbtns{display:flex;gap:12px}
+.daybtn.done{background:var(--tint);color:var(--gold-print);cursor:default}
+.wkd{cursor:pointer;border-radius:10px;padding:6px 2px;transition:background .15s}
+.wkd:hover{background:var(--tint)}
+.wkd.fut{cursor:default}.wkd.fut:hover{background:none}
+.wkd.has .l{color:var(--gold-print)}
+.mogrid{display:grid;grid-template-columns:repeat(16,minmax(0,1fr));gap:5px;margin:14px 0 8px}
+.mogrid .c{aspect-ratio:1;border-radius:4px;background:var(--gold-deep);border:1px solid var(--gold-deep)}
+.mogrid .c.h{background:linear-gradient(135deg,var(--gold-deep) 50%,var(--tint) 50%)}
+.mogrid .c.m{background:var(--tint2);border-color:var(--line)}
+.mogrid .c.fu{background:none;border:1px dashed var(--line)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:10.5px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+@media(max-width:620px){.mogrid{grid-template-columns:repeat(11,minmax(0,1fr))}}
+/* Instellingen: volledig-scherm overlay, herbruikt de bestaande kaarten */
+#settingsView{display:none;position:fixed;inset:0;z-index:70;background:var(--cream);overflow-y:auto;padding:0 40px 90px}
+#settingsView.open{display:block}
+#settingsView .wrap{max-width:760px;margin:0 auto}
+#settingsView .topbar{margin-bottom:26px}
+.gearbtn{font-size:16px;line-height:1;padding:6px 12px}
+@media(max-width:640px){#settingsView{padding:0 20px 60px}}
+.daymodal{display:none;position:fixed;inset:0;z-index:80;align-items:center;justify-content:center;padding:20px;background:rgba(13,10,7,.5)}
+.daymodal.open{display:flex}
+.daymodal .box{background:var(--raised);border:1px solid var(--line);border-radius:16px;max-width:440px;width:100%;padding:26px 28px;box-shadow:0 20px 60px rgba(13,10,7,.3);max-height:82vh;overflow:auto}
+.daymodal .box h3{margin:2px 0 4px}
+.daymodal .dm-close{float:right;background:none;border:0;font-size:22px;line-height:1;color:var(--muted);cursor:pointer}
+.daymodal dl{margin-top:16px}
+.daymodal dt{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold-print);font-weight:600;margin:16px 0 6px}
+.daymodal dt:first-child{margin-top:0}
+.daymodal dd{margin:0;font-size:14.5px;line-height:1.55;color:var(--soft);background:var(--tint2,#f3ede3);border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:10px;padding:11px 14px}
+.daymodal .empty{color:var(--muted);font-style:italic;margin-top:14px}
+.jhist{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.jrow{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;background:var(--tint2,#f3ede3);border:1px solid var(--line);border-radius:12px;padding:11px 14px;font-family:inherit;font-size:14px;color:var(--soft);cursor:pointer;transition:.15s}
+.jrow:hover{border-color:var(--gold);background:var(--raised)}
+.jrow .jmeta{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--gold-print)}
+.jback{background:none;border:0;color:var(--gold-deep);font-family:inherit;font-size:13px;cursor:pointer;padding:0;margin-bottom:10px}
+.daynote{font-size:13px;color:var(--muted);font-style:italic;padding:10px 2px}
+
+/* ============ ORDERS ============ */
+.orders{margin-top:6px;display:flex;flex-direction:column;gap:10px}
+.order-card{display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:16px 18px;flex-wrap:wrap;box-shadow:var(--shadow)}
+.order-name{font-family:var(--serif);font-size:19px;color:var(--ink)}
 .order-meta{display:flex;gap:12px;align-items:center;font-size:11px;color:var(--muted);margin-top:3px;flex-wrap:wrap}
-.badge{font-size:9px;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--line2);border-radius:20px;padding:3px 10px;color:var(--gold)}
-.badge-completed{background:#F0E6CE;border-color:var(--gold-soft)}
-.btn{display:inline-block;background:var(--panel2);border:1px solid var(--line2);border-radius:20px;padding:8px 16px;font-size:12px;color:var(--gold-deep)}
-.btn-primary{background:linear-gradient(180deg,#B98C43,#93692C);color:#FBF6EC;border:none}
+.badge{font-size:9px;letter-spacing:.14em;text-transform:uppercase;border:1px solid var(--line);border-radius:20px;padding:3px 10px;color:var(--gold-print)}
+.badge-completed{background:var(--tint);border-color:var(--gold)}
+.btn{display:inline-block;background:var(--tint);border:1px solid var(--line);border-radius:20px;padding:8px 16px;font-size:12px;color:var(--gold-deep)}
+.btn-primary{background:var(--gold-deep);color:var(--cream);border:0}
 .btn+.btn{margin-left:6px}
 
-/* Companion-uitleg (links) + cadeau-vierkant (rechts) in één rij */
-.cg-row{display:flex;gap:16px;align-items:stretch;margin-top:16px}
-.cg-row .aibar{margin-top:0;flex:1;min-width:0}
-/* Cadeau-vierkant — altijd zichtbaar, ook als de blueprint nog niet klaar is */
-.giftsquare{width:250px;flex-shrink:0;display:flex;flex-direction:column;justify-content:center;gap:5px;
-  padding:20px 22px;border-radius:16px;background:linear-gradient(135deg,#F3E7CC 0%,#E9D4A6 60%,#E1C892 100%);
-  border:1px solid var(--gold-soft);box-shadow:0 10px 26px rgba(150,120,70,.16);transition:transform .16s ease,box-shadow .16s ease}
-.giftsquare:hover{transform:translateY(-2px);box-shadow:0 16px 36px rgba(150,120,70,.24)}
-.giftsquare .gs-ic{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:20px;color:#FBF6EC;background:radial-gradient(circle at 38% 34%,#C9A96E,#8a6630);box-shadow:inset -3px -3px 8px rgba(90,66,26,.35);margin-bottom:4px}
-.giftsquare .gs-eyebrow{font-size:9px;letter-spacing:.20em;text-transform:uppercase;color:var(--gold-deep)}
-.giftsquare .gs-title{font-family:'Cormorant Garamond',serif;font-size:20px;color:#3a2f1d;line-height:1.15}
-.giftsquare .gs-btn{margin-top:9px;align-self:flex-start;background:linear-gradient(180deg,#B98C43,#93692C);color:#FBF6EC;
-  border-radius:20px;padding:9px 16px;font-size:12.5px;white-space:nowrap}
-@media(max-width:900px){.cg-row{flex-direction:column}.giftsquare{width:100%;flex-direction:row;align-items:center;gap:14px;flex-wrap:wrap}.giftsquare .gs-ic{margin-bottom:0}.giftsquare .gs-title{flex:1}.giftsquare .gs-btn{margin-top:0}}
+/* ============ NOTIFICATIES ============ */
+.notify label{display:flex;align-items:center;gap:10px;cursor:pointer;font-size:14px}
+.notify .field{max-width:280px;margin-left:26px}
+.notifybtn{margin-top:16px;background:var(--gold-deep);color:var(--cream);border:0;border-radius:10px;padding:12px 24px;font-family:var(--sans);font-size:13px;letter-spacing:.04em;cursor:pointer}
+.notifybtn:hover{background:var(--gold-print)}
+#notifyMsg{margin-top:10px;font-size:12.5px;color:var(--gold-print)}
 
-.needs-bp{display:none}
-.bp-ready .needs-bp{display:block}
-.bp-ready .cards4.needs-bp{display:grid}
-.bp-ready .cards3.needs-bp{display:grid}
-/* Coming soon: zolang de blueprint er niet is, blokken vervaagd tonen met label */
-.coming-soon .needs-bp{display:block;position:relative}
-.coming-soon .cards4.needs-bp,.coming-soon .cards3.needs-bp{display:grid}
-.coming-soon .needs-bp>*{filter:blur(3px) saturate(.6);opacity:.4;pointer-events:none;user-select:none}
-.coming-soon .needs-bp::after{content:var(--cs,"Binnenkort beschikbaar");position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Cormorant Garamond',serif;font-size:19px;letter-spacing:.06em;color:var(--gold-deep);background:rgba(255,254,252,.88);padding:10px 26px;border:1px solid var(--gold-soft);border-radius:30px;white-space:nowrap;z-index:5}
-.coming-soon .astrorow.needs-bp{display:flex}
-/* Ook companion, dagboek en opslaan vergrendelen tot het formulier is ingezonden */
-.coming-soon .aibar,.coming-soon .cards3:not(.needs-bp){position:relative}
-.coming-soon .aibar>*,.coming-soon .cards3:not(.needs-bp)>*,.coming-soon .save{filter:blur(3px) saturate(.6);opacity:.4;pointer-events:none;user-select:none}
-.coming-soon .aibar::after,.coming-soon .cards3:not(.needs-bp)::after{content:var(--cs,"Binnenkort beschikbaar");position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Cormorant Garamond',serif;font-size:19px;letter-spacing:.06em;color:var(--gold-deep);background:rgba(255,254,252,.88);padding:10px 26px;border:1px solid var(--gold-soft);border-radius:30px;white-space:nowrap;z-index:5}
+/* ============ RAIL CARDS ============ */
+.qcard{background:var(--raised);border:1px solid var(--line);border-radius:14px;padding:18px 20px;display:flex;flex-direction:column;gap:8px;position:relative;box-shadow:var(--shadow)}
+.qcard .lbl{display:block;letter-spacing:.13em;overflow-wrap:anywhere}
+.qcard.has-soon .lbl-gold{padding-right:88px}
+.qcard b{font-family:var(--serif);font-weight:500;font-size:17px;color:var(--ink)}
+.qcard p{font-size:12.5px}
+.soon{position:absolute;top:14px;right:16px;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--gold-print);border:1px solid var(--gold);border-radius:99px;padding:3px 10px;background:var(--raised)}
+.btn-gold{font-family:var(--sans);font-size:12px;letter-spacing:.08em;background:var(--gold-deep);color:var(--cream);border:0;border-radius:9px;padding:10px 16px;cursor:pointer;transition:background .2s;align-self:flex-start}
+.btn-gold:hover{background:var(--gold-print);color:var(--cream)}
+.rlist{list-style:none;margin-top:2px}
+.rlist li{display:flex;gap:10px;padding:9px 0;border-top:1px solid var(--line);align-items:baseline}
+.rlist li:first-child{border-top:0}
+.rlist li::before{content:'\2726';color:var(--gold);font-size:11px}
+.rlist b{display:block;font-family:var(--sans);font-weight:400;font-size:13.5px;color:var(--ink)}
+.rlist span{font-size:11.5px;color:var(--muted)}
+.qcard.giftd{background:var(--ink);border-color:rgba(201,169,110,.5)}
+.qcard.giftd b{color:var(--cream)}
+.qcard.giftd p{color:#C9BFB0}
+
+/* ============ CLOSE ============ */
+.close{margin-top:64px;text-align:center}
+.close p.sig{font-family:var(--serif);font-style:italic;font-size:19px;color:var(--ink);margin:0 0 6px}
+.close .wm2{font-family:var(--serif);font-size:14px;letter-spacing:.34em;color:var(--ink);padding-left:.34em}
+.close p.copy{font-size:11px;color:var(--muted);letter-spacing:.06em;margin-top:16px}
+
+/* ============ COMING-SOON / PENDING GATING ============ */
+.needs-bp{position:relative}
+#app:not(.bp-ready):not(.coming-soon) .needs-bp{visibility:hidden}
+.coming-soon .needs-bp>*{filter:blur(3px) saturate(.6);opacity:.45;pointer-events:none;user-select:none}
+.coming-soon .needs-bp::after{content:var(--cs,"Binnenkort beschikbaar");position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--serif);font-size:19px;letter-spacing:.06em;color:var(--gold-deep);background:rgba(249,245,240,.9);padding:10px 26px;border:1px solid var(--gold);border-radius:30px;white-space:nowrap;z-index:5}
 .coming-soon .chat{display:none!important}
-.pending-note{background:#F2EAD8;border:1px dashed var(--gold-soft);border-radius:14px;padding:18px 20px;margin-top:16px;font-size:13.5px;color:#5f5647;display:none}
-.pending-note .btn-continue{display:inline-block;margin-top:12px;background:linear-gradient(180deg,#B98C43,#93692C);color:#FBF6EC;border-radius:20px;padding:9px 20px;font-size:12.5px;letter-spacing:.03em}
-@media(max-width:1100px){
-  .cards4{grid-template-columns:1fr 1fr}
-  .cards3{grid-template-columns:1fr}
-  .shadgrid{grid-template-columns:1fr}
-  .app{grid-template-columns:1fr}
-  /* min-width:0: anders duwt de nowrap-chiprij de grid-kolom breder dan het scherm */
-  .sidebar,.main{min-width:0}
-  .sidebar{position:static;height:auto;padding:14px 16px 12px}
-  .brand{flex-direction:row;gap:10px;justify-content:center;text-align:left;padding:0}
-  .brand .name{font-size:20px;margin-top:0}
-  .brand .tag{display:none}
-  /* nav wordt een horizontaal scrollbare chip-rij, incl. Uitloggen */
-  .nav{flex-direction:row;overflow-x:auto;margin-top:12px;gap:6px;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-  .nav::-webkit-scrollbar{display:none}
-  .nav-item{white-space:nowrap;padding:7px 13px;border:1px solid var(--line2);border-radius:20px;font-size:12px;background:var(--panel)}
-  .intention{display:none}
-  .main{padding:22px}
+/* Zonder abonnement: dagelijkse duiding vervaagd; ontgrendelen via de hero-knop. */
+#app.locked .needs-sub{filter:blur(5px) saturate(.55);opacity:.5;pointer-events:none;user-select:none;transition:filter .25s,opacity .25s}
+.pending-note{background:var(--tint);border:1px solid var(--gold);border-radius:14px;padding:18px 20px;margin-top:16px;font-size:13.5px;color:#5f5647;display:none}
+.pending-note .btn-continue{display:inline-block;margin-top:12px;background:var(--gold-deep);color:var(--cream);border-radius:20px;padding:9px 20px;font-size:12.5px;letter-spacing:.03em}
+
+/* ============ REVEAL ============ */
+.rv{opacity:0;transform:translateY(14px);transition:opacity .7s ease,transform .7s ease}
+.rv.in{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){
+  .rv{opacity:1;transform:none;transition:none}
+  .moon-dot{animation:none}
+  .card,.card:hover{transform:none}
+  .modeswitch .pill{transition:none}
 }
-@media(max-width:700px){
-  .main{padding:16px 14px 44px}
-  .greet{font-size:30px}
-  .greet .sp{font-size:19px}
-  .sub{font-size:13.5px}
-  .astrorow{flex-direction:column;gap:14px;margin-top:16px}
-  .topactions{margin-left:0;width:100%;justify-content:flex-start}
-  .movement{flex-wrap:wrap;gap:10px;margin:30px 0 14px}
-  .movement .badge{margin-left:0}
-  .daycard .in{padding:20px 16px}
-  .daycard h2{font-size:24px}
-  .daycard .veil{background:linear-gradient(90deg,rgba(255,254,252,.97) 0%,rgba(255,254,252,.93) 60%,rgba(255,254,252,.75) 100%)}
-  .dcgrid{gap:18px}
-  .cards4{grid-template-columns:1fr}
-  .aibar{flex-wrap:wrap;gap:10px}
-  .aibar button{margin-left:0}
-  .aibar button+button{margin-left:0}
-  .chatlog{max-height:320px}
-  .msg{max-width:92%}
-  .shadow{padding:20px 16px}
-  .reflect{flex-direction:column;gap:8px}
-  .reflect .rl{width:auto}
-  .order-card{flex-direction:column;align-items:flex-start}
-  .gifts{grid-template-columns:1fr 1fr}
-  .choices{flex-direction:column}
+
+/* ============ RESPONSIVE ============ */
+@media(max-width:1280px){
+  .body2{grid-template-columns:1fr}
+  .rail{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+  .rail .qcard:first-child{grid-column:1/-1}
+}
+@media(max-width:1020px){
+  .g3{grid-template-columns:1fr}
+  .hero .cols{grid-template-columns:1fr}
+  .g2{grid-template-columns:1fr}
+}
+@media(max-width:820px){
+  .shell{display:block}
+  .side{display:none;position:fixed;inset:0 auto 0 0;z-index:50;height:100vh;width:min(300px,84vw);box-shadow:0 0 60px rgba(13,10,7,.5)}
+  .side.open{display:flex}
+  .scrim{display:none;position:fixed;inset:0;background:rgba(13,10,7,.45);z-index:40}
+  .scrim.on{display:block}
+  .mhead{display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:30;background:rgba(249,245,240,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);padding:12px 18px}
+  .mhead .wm-sm{font-family:var(--serif);letter-spacing:.3em;font-size:15px;color:var(--ink)}
+  .burger{background:none;border:0;cursor:pointer;padding:6px}
+  .burger span{display:block;width:20px;height:1.5px;background:var(--ink);margin:4.5px 0}
+  .wrap{padding:0 18px 120px}
+  .greet-wrap{padding-top:22px}
+  #shadGrid,.rail{grid-template-columns:1fr}
+  .mirror{padding:28px 22px 26px}
+  .hero .in{padding:24px 20px}
+  .nodes{grid-template-columns:1fr;gap:16px}
+  .nodes .arrow{display:none}
+}
+@media(max-width:560px){
+  .topbar{gap:10px}
+  .modeswitch{order:3;width:100%}
 }
 </style>
 </head>
 <body>
-<div class="app" id="app">
-  <aside class="sidebar">
+
+<header class="mhead">
+  <button class="burger" aria-label="Menu" onclick="toggleMenu(true)"><span></span><span></span><span></span></button>
+  <span class="wm-sm">SZINN</span>
+  <span style="width:32px"></span>
+</header>
+<div class="scrim" id="scrim" onclick="toggleMenu(false)"></div>
+
+<div class="shell" id="app">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="side" id="side">
     <div class="brand">
-      <img src="/szinn-portal/assets/img/logo-gold.png" alt="" style="width:34px;height:auto" onerror="this.style.display='none'">
-      <div class="name">SZINN</div>
-      <div class="tag">Alignment Blueprint</div>
+      <div class="wordmark">SZINN</div>
+      <div class="lbl">Alignment Blueprint</div>
     </div>
-    <nav class="nav">
-      <a class="nav-item active" href="#top"><span class="ni">&#9702;</span><span data-i18n="navDash">Dashboard</span></a>
-      <a class="nav-item" href="#vandaag"><span class="ni">&#9702;</span><span data-i18n="navToday">Vandaag</span></a>
-      <a class="nav-item" href="#schaduw"><span class="ni">&#9702;</span>Tikkun</a>
-      <a class="nav-item" href="#levenspad"><span class="ni">&#9702;</span><span data-i18n="navLifepath">Levenspad</span></a>
-      <a class="nav-item" href="#getallen"><span class="ni">&#9702;</span><span data-i18n="navNumbers">Getallen</span></a>
-      <a class="nav-item" href="#cycli"><span class="ni">&#9702;</span><span data-i18n="navCycles">Cycli</span></a>
-      <a class="nav-item" href="#begeleiding"><span class="ni">&#9702;</span><span data-i18n="navGuide">Begeleiding</span></a>
-      <a class="nav-item" href="#dagboek"><span class="ni">&#9702;</span><span data-i18n="navJournal">Dagboek</span></a>
-      <a class="nav-item" id="navBlueprint" href="#aanvragen"><span class="ni">&#9702;</span><span data-i18n="navLibrary">Bibliotheek</span></a>
-      <a class="nav-item" href="#aanvragen"><span class="ni">&#9702;</span><span data-i18n="navOrders">Aanvragen</span></a>
-      <a class="nav-item" href="/cadeau"><span class="ni">&#10022;</span><span data-i18n="navGift">Cadeau geven</span></a>
-      <a class="nav-item" href="#" onclick="SzinnAuth.logout(); return false;"><span class="ni">&#9702;</span><span data-i18n="navLogout">Uitloggen</span></a>
+    <nav>
+      <a href="#top" class="active"><span class="k">&middot;</span><span data-i18n="navDash">Dashboard</span></a>
+      <a href="#vandaag"><span class="k">&middot;</span><span data-i18n="navToday">Vandaag</span></a>
+      <a href="#sinn"><span class="k">&middot;</span>Tikkun</a>
+      <a href="#zin"><span class="k">&middot;</span><span data-i18n="navLifepath">Levenspad</span></a>
+      <a href="#sin"><span class="k">&middot;</span><span data-i18n="navNumbers">Getallen</span></a>
+      <a href="#zin"><span class="k">&middot;</span><span data-i18n="navCycles">Cycli</span></a>
+      <a href="#companion"><span class="k">&middot;</span><span data-i18n="navGuide">Begeleiding</span></a>
+      <a href="#actie"><span class="k">&middot;</span><span data-i18n="navJournal">Dagboek</span></a>
+      <a href="#aanvragen"><span class="k">&middot;</span><span data-i18n="navLibrary">Bibliotheek</span></a>
+      <a href="#aanvragen"><span class="k">&middot;</span><span data-i18n="navOrders">Aanvragen</span></a>
+      <a id="navBlueprint" href="#"><span class="k">&#10022;</span>Jouw blueprint</a>
+      <a href="/cadeau"><span class="k">&#10022;</span><span data-i18n="navGift">Cadeau geven</span></a>
     </nav>
-    <div class="intention">
-      <div class="il" data-i18n="intentToday">Intentie van vandaag</div>
-      <div class="iq" id="sideIntent">Eén echte stap is genoeg.</div>
+    <div class="quote">
+      <p id="sideIntent">E&eacute;n echte stap is genoeg.</p>
+    </div>
+    <div class="foot">
+      <span class="motto">Remember who you are</span>
     </div>
   </aside>
 
-  <main class="main" id="top">
-    <div class="topbar">&#128197;&nbsp; <span id="topDate">…</span>
-      <div class="topactions">
-        <a class="tbtn" href="https://szinn.ai">&#8592; szinn.ai</a>
+  <!-- ===== MAIN ===== -->
+  <main class="main">
+  <div class="wrap">
+    <div id="top"></div>
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <span class="lbl">&#128197;&nbsp;<span id="topDate">…</span></span>
+      <div class="right">
+        <div class="modeswitch m-v" id="modeswitch" role="tablist" aria-label="Ritueel">
+          <span class="pill" aria-hidden="true"></span>
+          <button class="mbtn" data-m="o" role="tab"><span class="ic">&#10022;</span>Ochtend</button>
+          <button class="mbtn on" data-m="v" role="tab" aria-selected="true">Volledig</button>
+          <button class="mbtn" data-m="a" role="tab"><span class="ic">&#9789;</span>Avond</button>
+        </div>
+        <a class="ghost" href="https://szinn.ai">&#8592; szinn.ai</a>
         <div class="langsw"><button id="langNL" data-l="nl">NL</button><button id="langEN" data-l="en">EN</button></div>
-        <button class="tbtn" id="logoutBtn" data-i18n="navLogout">Uitloggen</button>
+        <button class="ghost gearbtn" id="settingsBtn" title="Instellingen" aria-label="Instellingen">&#9881;</button>
+        <button class="ghost" id="logoutBtn" data-i18n="navLogout">Uitloggen</button>
       </div>
     </div>
-    <h1 class="greet"><span id="greetTxt">Welkom</span><span class="sp">&#10022;</span></h1>
-    <div class="sub" data-i18n="sub">Het universum is in beweging. Stem af op wat ertoe doet.</div>
-    <div class="astrorow needs-bp" style="display:flex">
-      <div class="astro"><div class="ic">&#9737;</div><div><div class="t" id="aSun">—</div><div class="d" data-i18n="dSun">Wie je in de kern bent</div></div></div>
-      <div class="astro"><div class="ic">&#9789;</div><div><div class="t" id="aMoon">—</div><div class="d" data-i18n="dMoon">Wat je van binnen nodig hebt</div></div></div>
-      <div class="astro"><div class="ic">&#8593;</div><div><div class="t" id="aAsc">—</div><div class="d" data-i18n="dAsc">Hoe je de wereld binnenkomt</div></div></div>
-    </div>
+
+    <!-- GREETING -->
+    <section class="greet-wrap">
+      <h1 class="greet"><span id="greetTxt">Welkom</span><span class="star">&#10022;</span></h1>
+      <div class="sub" data-i18n="sub">Het universum is in beweging. Stem af op wat ertoe doet.</div>
+      <div class="chips needs-bp">
+        <div class="chip"><b id="aSun">&mdash;</b><i data-i18n="dSun">Wie je in de kern bent</i></div>
+        <div class="chip"><b id="aMoon">&mdash;</b><i data-i18n="dMoon">Wat je van binnen nodig hebt</i></div>
+        <div class="chip"><b id="aAsc">&mdash;</b><i data-i18n="dAsc">Hoe je de wereld binnenkomt</i></div>
+        <div class="chip"><b id="aLP">&mdash;</b><i id="aLPd">&mdash;</i></div>
+        <div class="chip"><b id="aPY">&mdash;</b><i id="aPYd">&mdash;</i></div>
+      </div>
+    </section>
 
     <div class="pending-note" id="pendingNote"></div>
 
-    <!-- SIN -->
-    <div id="vandaag"></div>
-    <div class="movement"><div class="m">Sin</div><div><div class="ml" data-i18n="mvSin">Zien wat er is</div><div class="ms" data-i18n="mvSinS">wat de dag je laat zien</div></div><div class="badge" data-i18n="bdgSin">Herkenning</div></div>
+    <div class="body2">
+    <div class="colA">
 
-    <div class="daycard">
-      <div class="bg" style="background-image:url('/assets/szinn-hero.jpg')"></div>
-      <div class="veil"></div>
-      <div class="in">
-        <div class="dt" id="dcDate">Vandaag</div>
-        <h2 data-i18n="dayGlance">Vandaag in één oogopslag</h2>
-        <div class="dcgrid">
-          <div><div class="lab" data-i18n="labTheme">Thema</div><div class="val" id="dTheme">—</div></div>
-          <div><div class="lab" data-i18n="labFocus">Focus</div><div class="val" id="dFocus">—</div></div>
+    <!-- ===== HERO — VANDAAG IN ÉÉN OOGOPSLAG ===== -->
+    <section class="sec rv" id="vandaag" data-r="vo">
+      <div class="hero">
+        <div class="bg"></div><div class="veil"></div>
+        <div class="in">
+          <span class="lbl">SZINN &middot; <span id="dcDate">Vandaag</span></span>
+          <h2 data-i18n="dayGlance">Vandaag in &eacute;&eacute;n oogopslag</h2>
+          <div class="cols">
+            <div>
+              <span class="lbl" style="color:var(--gold)" data-i18n="labTheme">Thema</span>
+              <p id="dTheme">&mdash;</p>
+            </div>
+            <div>
+              <span class="lbl" style="color:var(--gold)" data-i18n="labFocus">Focus</span>
+              <p id="dFocus">&mdash;</p>
+            </div>
+          </div>
+          <div class="vraag">
+            <span class="lbl" style="color:var(--gold)" data-i18n="labQuestion">Vraag van de dag</span>
+            <p id="dQuestion">&mdash;</p>
+          </div>
+          <button class="daybtn" id="heroSub" style="display:none;margin-top:16px">Ontgrendel je dagelijkse duiding &mdash; &euro;20/mnd</button>
         </div>
-        <div class="dcq"><div class="lab" data-i18n="labQuestion">Vraag van de dag</div><div class="val" id="dQuestion">—</div></div>
-        <a class="readmore" id="readmore" data-i18n="readFull">Lees je volledige blueprint &#8594;</a>
       </div>
-    </div>
 
-    <div class="cg-row">
-      <div class="aibar" id="begeleiding">
-        <div class="ai-ic"></div>
-        <div class="ai-tx" data-i18n-html="aiIntro"><b>SZINN Companion</b> &middot; ik lees je kaart en de stand van vandaag, en stem de dagduiding daarop af. Vraag me gerust iets.</div>
-        <button id="genBtn" data-i18n="btnRefresh">Vernieuw dagduiding</button>
-        <button id="chatBtn" data-i18n="btnChat">Praat met je Companion</button>
+      <!-- BLUEPRINT (op de plek van de oude frequentie-balk) -->
+      <div class="bpcard">
+        <div class="seal">&#10022;</div>
+        <div class="txt">
+          <span class="lbl">Alignment Blueprint</span>
+          <b>Jouw volledige blueprint</b>
+          <p>Je kaart, getallen en levensrichting &mdash; volledig uitgewerkt en altijd bij de hand.</p>
+        </div>
+        <a class="go" id="readmore" href="#" data-i18n="readFull">Lees je volledige blueprint &#8594;</a>
       </div>
-      <!-- Cadeau-vierkant, rechts naast de companion-uitleg -->
-      <a class="giftsquare" href="/cadeau">
-        <div class="gs-ic">&#10022;</div>
-        <div class="gs-eyebrow" data-i18n="gwEyebrow">Cadeau</div>
-        <div class="gs-title" data-i18n="gsTitle">Geef een Blueprint cadeau</div>
-        <span class="gs-btn" data-i18n="gwBtn">Cadeau geven &#8594;</span>
+      <a class="bpcard" id="mandalaCard" href="/portaal/mandala" style="text-decoration:none">
+        <div class="seal">&#10039;</div>
+        <div class="txt">
+          <span class="lbl" data-i18n="eyeMand">Kern-essentie</span>
+          <b data-i18n="hMand">Jouw mandala</b>
+          <p data-i18n="mandCardP">Je Flower of Life met je planeten op hun exacte graden &mdash; in 3D.</p>
+        </div>
+        <span class="go" data-i18n="openMand">Open je mandala &#8594;</span>
       </a>
-    </div>
-    <div class="chat" id="chatBox">
-      <div class="chatlog" id="chatLog"></div>
-      <div class="chatin"><input id="chatIn" data-i18n-ph="chatPh" placeholder="Stel je Companion een vraag over vandaag, je kaart, je richting…"/><button id="chatSend" data-i18n="btnSend">Stuur</button></div>
-    </div>
+    </section>
 
-    <div class="cards4 needs-bp">
-      <div class="card">
-        <div class="eyebrow" data-i18n="eyeSky">Waar de hemel nu staat</div>
-        <h3 data-i18n="hSky">De lucht vandaag</h3>
-        <div class="moon"><div class="orb"></div><div><div class="mt" id="skyMoon">—</div><div class="md" id="skySub">—</div></div></div>
-        <p id="dSky">—</p>
+    <!-- ===== SIN ===== -->
+    <section class="sec rv" id="sin" data-r="vo">
+      <div class="sechead">
+        <div class="l"><span class="word">Sin</span><span class="lbl" data-i18n="mvSinS">Zien wat er is &middot; wat de dag je laat zien</span></div>
+        <span class="tag" data-i18n="bdgSin">Herkenning</span>
       </div>
-      <div class="card" id="getallen">
-        <div class="eyebrow" data-i18n="eyeNum">Wat de dag draagt</div>
-        <h3 data-i18n="hNum">Jouw getallen</h3>
-        <div class="nums">
-          <div class="num"><div class="n" id="nLP">—</div><div class="l" data-i18n="lLP">Levenspad</div></div>
-          <div class="num"><div class="n" id="nPY">—</div><div class="l" data-i18n="lPY">Persoonlijk jaar</div></div>
-          <div class="num"><div class="n" id="nPM">—</div><div class="l" data-i18n="lPM">Persoonlijke maand</div></div>
-          <div class="num"><div class="n" id="nPD">—</div><div class="l" data-i18n="lPD">Persoonlijke dag</div></div>
+      <div class="g2 needs-bp needs-sub">
+        <div class="card">
+          <span class="lbl lbl-gold" data-i18n="eyeSky">Waar de hemel nu staat</span>
+          <h3 data-i18n="hSky">De lucht vandaag</h3>
+          <p id="dSky">&mdash;</p>
         </div>
-        <div class="numnote" style="margin-top:14px">
-          <span class="k" data-i18n="kFocus">Focus vandaag</span><div class="v" id="dNumFocus">—</div>
-          <span class="k" data-i18n="kRem">Herinnering</span><div class="v" id="dNumRem">—</div>
+        <div class="card">
+          <span class="lbl lbl-gold" data-i18n="eyeNum">Wat de dag draagt</span>
+          <h3 data-i18n="hNum">Jouw getallen</h3>
+          <div class="tiles">
+            <div class="tile"><div class="n" id="nLP">&ndash;</div><div class="l" data-i18n="lLP">Levenspad</div></div>
+            <div class="tile"><div class="n" id="nPY">&ndash;</div><div class="l" data-i18n="lPY">Pers. jaar</div></div>
+            <div class="tile"><div class="n" id="nPM">&ndash;</div><div class="l" data-i18n="lPM">Pers. maand</div></div>
+            <div class="tile hot"><div class="n" id="nPD">&ndash;</div><div class="l" data-i18n="lPD">Pers. dag</div></div>
+          </div>
+          <div class="numnote">
+            <span class="k" data-i18n="kFocus">Focus vandaag</span><div class="v" id="dNumFocus">&mdash;</div>
+            <span class="k" data-i18n="kRem">Herinnering</span><div class="v" id="dNumRem">&mdash;</div>
+          </div>
         </div>
       </div>
-      <div class="card">
-        <div class="eyebrow" data-i18n="eyeNodes">Jouw groei-as</div>
+      <div class="card needs-bp needs-sub" style="margin-top:14px">
+        <span class="lbl lbl-gold" data-i18n="eyeNodes">Jouw groei-as</span>
         <h3 data-i18n="hNodes">Noord- &amp; Zuidknoop</h3>
-        <div class="knoop">
-          <div class="kc"><div class="kl" data-i18n-html="klSouth">Zuidknoop &middot;<br>waar je vandaan komt</div><div class="kn" id="knZuid">—</div><div class="kp" id="kpZuid">—</div></div>
+        <div class="nodes">
+          <div class="node">
+            <div class="kl" data-i18n-html="klSouth">Zuidknoop &middot;<br>waar je vandaan komt</div>
+            <b id="knZuid">&mdash;</b><p id="kpZuid">&mdash;</p>
+          </div>
           <div class="arrow">&#8594;</div>
-          <div class="kc"><div class="kl" data-i18n-html="klNorth">Noordknoop &middot;<br>waar je heen gaat</div><div class="kn" id="knNoord">—</div><div class="kp" id="kpNoord">—</div></div>
+          <div class="node">
+            <div class="kl" data-i18n-html="klNorth">Noordknoop &middot;<br>waar je heen gaat</div>
+            <b id="knNoord">&mdash;</b><p id="kpNoord">&mdash;</p>
+          </div>
         </div>
-        <a class="readmore" style="font-size:12px" id="lnkNodes" data-i18n="lnkNodes">Verken je knopen &#8594;</a>
+        <a class="more" id="lnkNodes" href="#" data-i18n="lnkNodes">Verken je knopen &#8594;</a>
       </div>
-      <div class="card">
-        <div class="eyebrow" data-i18n="eyeMand">Kern-essentie</div>
-        <h3 data-i18n="hMand">Jouw mandala</h3>
-        <div class="mandwrap" id="mandala"></div>
-        <div class="mandcap" id="mandCap">Flower of Life, jouw planeten op hun exacte graden.</div>
-      </div>
-    </div>
 
-    <!-- SINN -->
-    <div id="dagboek"></div>
-    <div class="movement"><div class="m">Sinn</div><div><div class="ml" data-i18n="mvSinn">Voelen en richten</div><div class="ms" data-i18n="mvSinnS">wat jij in de dag brengt</div></div><div class="badge" data-i18n="bdgSinn">Helderheid</div></div>
+      <!-- COMPANION -->
+      <div class="needs-bp needs-sub" id="companion">
+        <div class="aibar">
+          <div class="ai-ic"></div>
+          <div class="ai-tx" data-i18n-html="aiIntro"><b>SZINN Companion</b> &middot; ik lees jouw kaart en de lucht van vandaag, en stem de dagduiding daarop af. Vraag me gerust iets.</div>
+          <button class="abtn" id="genBtn" data-i18n="btnRefresh">Vernieuw dagduiding</button>
+        </div>
+      </div>
+    </section>
 
-    <div class="cards3" style="display:grid">
-      <div class="card">
-        <div class="eyebrow" data-i18n="eyeEnergy">De energie die je kiest</div>
-        <h2 data-i18n="hIntent">Stel je intentie</h2>
-        <p style="margin-top:8px" data-i18n="pIntent">Je energie kiezen en je intentie zetten zijn één beweging. Kies waarmee je vandaag voorop wilt gaan.</p>
-        <div class="choices">
-          <div class="choice" data-e="Sin"><div class="ct">Sin</div><div class="cd" data-i18n="chSin">structuur &middot; kracht &middot; richting</div></div>
-          <div class="choice" data-e="Sinn"><div class="ct">Sinn</div><div class="cd" data-i18n="chSinn">gevoel &middot; intuïtie &middot; afstemming</div></div>
-          <div class="choice" data-e="Zin"><div class="ct">Zin</div><div class="cd" data-i18n="chZin">vreugde &middot; vrijheid &middot; creatie</div></div>
-        </div>
-        <div class="eyebrow" style="margin-top:16px" data-i18n="eyeMyIntent">Mijn intentie voor vandaag</div>
-        <input class="field" id="fIntent" data-i18n-ph="phIntent" placeholder="Vandaag wil ik…"/>
-        <div class="eyebrow" style="margin-top:12px" data-i18n="eyeFeel">In één woord, hoe voel je je nu?</div>
-        <input class="field" id="fFeel" data-i18n-ph="phFeel" placeholder="bijv. rustig, vol, helder, moe…"/>
+    <!-- ===== SINN — SPIEGELKAMER (avond) ===== -->
+    <section class="sec rv" id="sinn" data-r="va">
+      <div class="sechead">
+        <div class="l"><span class="word">Sinn</span><span class="lbl" data-i18n="mvSinnS">wat jij in de dag brengt</span></div>
+        <span class="tag" data-i18n="bdgSinn">Helderheid</span>
       </div>
-      <div class="card">
-        <div class="eyebrow" data-i18n="eyeGifts">Vermogens die je kunt inzetten</div>
-        <h2 data-i18n="hGifts">Jouw gaven</h2>
-        <p style="margin-top:8px" id="dGifts">Zes innerlijke vermogens om op te leunen.</p>
-        <div class="gifts">
-          <div class="gift" data-i18n="g1">Intuïtie</div><div class="gift" data-i18n="g2">Verbeeldingskracht</div><div class="gift" data-i18n="g3">Geheugen</div>
-          <div class="gift" data-i18n="g4">Waarneming</div><div class="gift" data-i18n="g5">Redeneren</div><div class="gift" data-i18n="g6">Wilskracht</div>
+      <div class="mirror needs-bp needs-sub">
+        <span class="lbl">De spiegelkamer</span>
+        <h2 data-i18n="hShadow">Jouw schaduwkanten</h2>
+        <p class="intro" data-i18n="leadShadow">Elke schaduw is de keerzijde van een echte gave en draagt informatie. Beweeg elke schuif om te markeren hoe sterk zij vandaag speelde, en hoe helder je haar zag.</p>
+        <div class="paradigma">
+          <span class="lbl">Paradigma-check</span>
+          <p class="q" id="paradigmaQ">Welke overtuiging stuurde vandaag je keuzes?</p>
+          <ul>
+            <li><b>Herken</b> Wat dacht je te moeten weten voordat je mocht beginnen?</li>
+            <li><b>Toets</b> Is dat waar, of is het een oud verhaal?</li>
+            <li><b>Kies</b> Welke gedachte past bij wie je aan het worden bent?</li>
+          </ul>
         </div>
-        <div class="hint" data-i18n="hintGift">Tik op de gave waar je vandaag op wilt leunen.</div>
+        <div id="shadGrid"></div>
+        <div class="slot">
+          <span class="rl" data-i18n="rlSee">Om helder te zien</span>
+          <p class="big" id="reflectQ">Als een van deze opkomt, pauzeer en vraag: wat bescherm ik, en wat heb ik nu echt nodig?</p>
+          <textarea id="eNote" placeholder="Welke schaduwkant kwam ik vandaag tegen, en wat liet die me zien?"></textarea>
+        </div>
       </div>
-      <div class="card">
-        <div class="eyebrow" data-i18n="eyeThree">Drie dingen</div>
-        <h2 data-i18n="hGrat">Waar ben je dankbaar voor</h2>
-        <div class="grat">
+    </section>
+
+    <!-- ===== UITCHECKEN (dagafsluiting) ===== -->
+    <section class="sec rv" id="uitchecken" data-r="va">
+      <div class="sechead">
+        <div class="l"><span class="word">Uitchecken</span><span class="lbl" data-i18n="mvUit">de dag sluiten &middot; twee minuten</span></div>
+        <span class="tag" data-i18n="tagAvond">Avond</span>
+      </div>
+      <div class="g2">
+        <div class="card grat">
+          <span class="lbl" data-i18n="eyeUitGrat">Avond &middot; drie dingen</span>
+          <h3 data-i18n="hUitGrat">Waar ben je vandaag dankbaar voor</h3>
+          <div class="gline"><span class="gn">1</span><input id="eg1"/></div>
+          <div class="gline"><span class="gn">2</span><input id="eg2"/></div>
+          <div class="gline"><span class="gn">3</span><input id="eg3"/></div>
+          <div class="hint" data-i18n="hintUitGrat">Dankbaarheid verschuift je energie sneller dan bijna iets anders. Klein mag.</div>
+        </div>
+        <div class="card uitslider">
+          <span class="lbl" data-i18n="eyeUitBack">Terugblik</span>
+          <h3 data-i18n="hUitBack">Hoe helder werd het vandaag</h3>
+          <div class="rq" data-i18n="uitQ">Waar bouw je nog aan andermans waarheid, terwijl je eigen nieuwsgierigheid de richting al weet?</div>
+          <input type="range" min="0" max="10" value="6" id="uClarity" aria-label="Helderheid vandaag">
+          <div class="ends"><span data-i18n="uitLow">Nog wolkig</span><span data-i18n="uitHigh">Helder</span></div>
+          <div style="margin-top:20px"><button class="daybtn" id="enddayU" data-i18n="btnEnd">Sluit de dag &#9789;</button></div>
+        </div>
+      </div>
+    </section>
+    <!-- ===== ZIN ===== -->
+    <section class="sec rv" id="zin" data-r="v">
+      <div class="sechead">
+        <div class="l"><span class="word">Zin</span><span class="lbl" data-i18n="mvZinS">wat je draagt en oogst</span></div>
+        <span class="tag" data-i18n="bdgZin">Integratie</span>
+      </div>
+      <div class="g3 needs-bp">
+        <div class="card">
+          <span class="lbl" id="lpEyebrow">Jouw levenspad</span>
+          <h3 data-i18n="hLP">Levenspad-overzicht</h3>
+          <div class="path" id="phaseRow">
+            <div class="st" data-min="0"><div class="dot">&#10022;</div><span class="pn" data-i18n="ph1">Fundament</span><span class="pa">0&ndash;28</span></div>
+            <div class="st" data-min="29"><div class="dot"></div><span class="pn" data-i18n="ph2">Expansie</span><span class="pa">29&ndash;36</span></div>
+            <div class="st" data-min="37"><div class="dot"></div><span class="pn" data-i18n="ph3">Bijdrage</span><span class="pa">37&ndash;45</span></div>
+            <div class="st" data-min="46"><div class="dot"></div><span class="pn" data-i18n="ph4">Meesterschap</span><span class="pa">46&ndash;54</span></div>
+            <div class="st" data-min="55"><div class="dot"></div><span class="pn" data-i18n="ph5">Nalatenschap</span><span class="pa">55+</span></div>
+          </div>
+          <p id="lpText" style="margin-top:6px">&mdash;</p>
+        </div>
+        <div class="card" style="text-align:center">
+          <span class="lbl" data-i18n="eyeCyc">9-jaarscyclus</span>
+          <h3 data-i18n="hCyc">Huidige cyclus</h3>
+          <h3 id="cycTitle" style="font-size:22px;margin:0">&mdash;</h3>
+          <div class="ring">
+            <svg width="120" height="120" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="52" fill="none" stroke="#E4DBC8" stroke-width="5"/>
+              <circle id="cycRing" cx="60" cy="60" r="52" fill="none" stroke="#A8884A" stroke-width="5" stroke-dasharray="0 999" stroke-linecap="round"/>
+              <text id="cycNum" x="60" y="58" text-anchor="middle" font-family="Cormorant Garamond" font-size="30" fill="#9A7B2E">&ndash;</text>
+              <text x="60" y="76" text-anchor="middle" font-family="Jost" font-size="9" fill="#8A7860" letter-spacing="1.5">VAN 9</text>
+            </svg>
+          </div>
+          <p id="cycText" style="text-align:left">&mdash;</p>
+          <div id="cycTheme" style="font-size:12px;color:var(--muted);margin-top:6px"></div>
+          <a class="more" id="lnkNum" href="#" data-i18n="lnkBP">Bekijk in je blueprint &#8594;</a>
+        </div>
+        <div class="card">
+          <span class="lbl" data-i18n="eyeUpcoming">Aankomende cycli</span>
+          <h3 data-i18n="hUpcoming">Wat eraan komt</h3>
+          <ul class="events">
+            <li><span class="cm">&#9789;</span><div><div class="cmt" id="cmNew">Nieuwe maan</div><div class="cmd" id="cmNewD">&mdash;</div></div></li>
+            <li><span class="cm">&#9789;</span><div><div class="cmt" id="cmFull">Volle maan</div><div class="cmd" id="cmFullD">&mdash;</div></div></li>
+            <li><span class="cm">&#10022;</span><div><div class="cmt" id="cmSolar">Zonne-terugkeer</div><div class="cmd" id="cmSolarD">&mdash;</div></div></li>
+          </ul>
+          <a class="more" id="lnkCal" href="#" data-i18n="lnkCal">Bekijk je persoonlijke kalender &#8594;</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ACTIE (ochtend) ===== -->
+    <section class="sec rv" id="actie" data-r="vo">
+      <div class="sechead">
+        <div class="l"><span class="word">Actie</span><span class="lbl">intentie &middot; dankbaarheid</span></div>
+        <span class="tag">Richting</span>
+      </div>
+      <div class="g3 needs-bp">
+        <div class="card">
+          <span class="lbl" data-i18n="eyeEnergy">De energie die je kiest</span>
+          <h3 data-i18n="hIntent">Stel je intentie</h3>
+          <div class="choices">
+            <div class="choice" data-e="Sin"><div class="ct">Sin</div><div class="cd" data-i18n="chSin">structuur &middot; richting</div></div>
+            <div class="choice" data-e="Sinn"><div class="ct">Sinn</div><div class="cd" data-i18n="chSinn">gevoel &middot; afstemming</div></div>
+            <div class="choice" data-e="Zin"><div class="ct">Zin</div><div class="cd" data-i18n="chZin">vreugde &middot; creatie</div></div>
+          </div>
+          <input class="field" id="fIntent" data-i18n-ph="phIntent" placeholder="Vandaag wil ik&hellip;">
+          <input class="field" id="fFeel" data-i18n-ph="phFeel" placeholder="In &eacute;&eacute;n woord, hoe voel je je nu?">
+        </div>
+        <div class="card">
+          <span class="lbl" data-i18n="eyeGifts">Vermogens die je kunt inzetten</span>
+          <h3 data-i18n="hGifts">Jouw gaven</h3>
+          <div class="pills">
+            <span class="pill gift" data-i18n="g1">Intu&iuml;tie</span>
+            <span class="pill gift" data-i18n="g2">Verbeeldingskracht</span>
+            <span class="pill gift" data-i18n="g3">Geheugen</span>
+            <span class="pill gift" data-i18n="g4">Waarneming</span>
+            <span class="pill gift" data-i18n="g5">Redeneren</span>
+            <span class="pill gift" data-i18n="g6">Wilskracht</span>
+          </div>
+          <div class="hint" id="dGifts" data-i18n="hintGift">Tik de gave aan waar je vandaag op wilt leunen.</div>
+        </div>
+        <div class="card grat">
+          <span class="lbl" data-i18n="eyeThree">Drie dingen</span>
+          <h3 data-i18n="hGrat">Waar ben je dankbaar voor</h3>
           <div class="gline"><span class="gn">1</span><input id="g1"/></div>
           <div class="gline"><span class="gn">2</span><input id="g2"/></div>
           <div class="gline"><span class="gn">3</span><input id="g3"/></div>
+          <div class="hint" data-i18n="hintGrat">Dankbaarheid verschuift je energie sneller dan bijna iets anders. Klein mag.</div>
         </div>
-        <div class="hint" data-i18n="hintGrat">Dankbaarheid verschuift je energie sneller dan bijna iets anders. Klein mag.</div>
       </div>
-    </div>
+      <div class="ritualbtns" style="margin-top:16px">
+        <button class="daybtn" id="startday" data-r="vo" data-i18n="btnStart">Start je dag &#10022;</button>
+      </div>
+      <div class="daynote" id="startnote" data-r="vo" data-i18n="dayOpen">Je ochtend wordt vanzelf bewaard terwijl je invult &#10022;</div>
+    </section>
 
-    <!-- ZIN -->
-    <div id="levenspad"></div>
-    <div class="movement"><div class="m">Zin</div><div><div class="ml" data-i18n="mvZin">Waar je staat</div><div class="ms" data-i18n="mvZinS">wat je draagt en oogst</div></div><div class="badge" data-i18n="bdgZin">Integratie</div></div>
-
-    <div class="cards3 needs-bp">
-      <div class="card">
-        <div class="eyebrow" id="lpEyebrow">Jouw levenspad</div>
-        <h2 data-i18n="hLP">Levenspad-overzicht</h2>
-        <div class="phase" id="phaseRow">
-          <div class="st" data-min="0"><div class="dot">&#10022;</div><div class="pn" data-i18n="ph1">Fundament</div><div class="pa">0&ndash;28</div></div>
-          <div class="st" data-min="29"><div class="dot"></div><div class="pn" data-i18n="ph2">Expansie</div><div class="pa">29&ndash;36</div></div>
-          <div class="st" data-min="37"><div class="dot"></div><div class="pn" data-i18n="ph3">Bijdrage</div><div class="pa">37&ndash;45</div></div>
-          <div class="st" data-min="46"><div class="dot"></div><div class="pn" data-i18n="ph4">Meesterschap</div><div class="pa">46&ndash;54</div></div>
-          <div class="st" data-min="55"><div class="dot"></div><div class="pn" data-i18n="ph5">Nalatenschap</div><div class="pa">55+</div></div>
+    <!-- ===== RITME (week) ===== -->
+    <section class="sec rv" id="week" data-r="v">
+      <div class="sechead">
+        <div class="l"><span class="word">Cycli</span><span class="lbl">verder kijken dan vandaag</span></div>
+        <span class="tag">Overzicht</span>
+      </div>
+      <div class="card" style="margin-bottom:14px">
+        <span class="lbl">Jouw ritme</span>
+        <h3 data-i18n="hRitme">Wat je deze week en maand hebt ingevuld</h3>
+        <div class="wkdays" id="wkdays"></div>
+        <p style="font-size:12.5px;color:var(--muted)" data-i18n="sumNote">Tik op een stip om te zien wat je schreef.</p>
+        <div class="mogrid" id="mogrid" aria-label="Deze maand"></div>
+        <div class="legend">
+          <span><i style="background:var(--gold-deep)"></i><span data-i18n="lgBoth">Ochtend en avond</span></span>
+          <span><i style="background:linear-gradient(135deg,var(--gold-deep) 50%,var(--tint) 50%)"></i><span data-i18n="lgOne">&Eacute;&eacute;n van twee</span></span>
+          <span><i style="background:var(--tint2);border:1px solid var(--line)"></i><span data-i18n="lgSkip">Overgeslagen</span></span>
+          <span><i style="border:1px dashed var(--line)"></i><span data-i18n="lgTogo">Nog te gaan</span></span>
         </div>
-        <p style="margin-top:12px" id="lpText">—</p>
+        <p style="margin-top:12px;font-size:13px"><span id="ritmeCounts"></span> <a class="more" href="#" id="openJournal" data-i18n="lgOpen">Open je dagboek &#8594;</a></p>
+        <div id="ritmeSummary" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:13.5px;line-height:1.55;color:var(--soft);font-style:italic" hidden></div>
       </div>
-      <div class="card" id="cycli">
-        <div class="eyebrow" data-i18n="eyeCyc">9-jaarscyclus</div>
-        <div class="cycrow"><div><h2 data-i18n="hCyc">Huidige cyclus</h2><h3 style="font-size:26px;margin-top:2px" id="cycTitle">—</h3></div>
-          <div class="ring"><svg viewBox="0 0 76 76"><circle cx="38" cy="38" r="32" fill="none" stroke="#E4DBC8" stroke-width="3"/><circle id="cycRing" cx="38" cy="38" r="32" fill="none" stroke="#A67C3A" stroke-width="3" stroke-dasharray="0 999" stroke-linecap="round" transform="rotate(-90 38 38)"/><text id="cycNum" x="38" y="35" text-anchor="middle" font-family="Cormorant Garamond" font-size="17" fill="#8a6630">–</text><text x="38" y="50" text-anchor="middle" font-family="Jost" font-size="8" fill="#8a7860" letter-spacing="1">VAN 9</text></svg></div></div>
-        <div class="eyebrow" style="margin-top:12px" id="cycTheme">—</div>
-        <p style="margin-top:8px" id="cycText">—</p>
-        <a class="readmore" style="font-size:12px" id="lnkNum" data-i18n="lnkBP">Bekijk in je blueprint &#8594;</a>
+      <div class="g2">
+        <div class="card">
+          <span class="lbl" id="wkRange"></span>
+          <h3 data-i18n="hThisWeek">Deze week</h3>
+          <div id="weekText"><p style="color:var(--muted)" data-i18n="cyWeekEmpty">Zodra je blueprint klaarstaat lees je hier hoe de week zich rond jouw kaart beweegt.</p></div>
+        </div>
+        <div class="card">
+          <span class="lbl" id="moLabel"></span>
+          <h3 data-i18n="hThisMonth">Deze maand</h3>
+          <div id="monthText"><p style="color:var(--muted)" data-i18n="cyMonthEmpty">Hier verschijnt je maandvooruitblik: nieuwe en volle manen op jouw huizen.</p></div>
+        </div>
       </div>
-      <div class="card">
-        <div class="eyebrow" data-i18n="eyeUpcoming">Aankomende cycli</div>
-        <h2 data-i18n="hUpcoming">Wat eraan komt</h2>
-        <div class="cyc-moment"><div class="cm">&#9789;</div><div><div class="cmt" id="cmNew">Nieuwe maan</div><div class="cmd" id="cmNewD">—</div></div></div>
-        <div class="cyc-moment"><div class="cm">&#9789;</div><div><div class="cmt" id="cmFull">Volle maan</div><div class="cmd" id="cmFullD">—</div></div></div>
-        <div class="cyc-moment"><div class="cm">&#10022;</div><div><div class="cmt" id="cmSolar">Zonne-terugkeer</div><div class="cmd" id="cmSolarD">—</div></div></div>
-        <a class="readmore" style="font-size:12px" id="lnkCal" data-i18n="lnkCal">Bekijk je persoonlijke kalender &#8594;</a>
+    </section>
+
+    <!-- ===== BIBLIOTHEEK / AANVRAGEN ===== -->
+    <section class="sec rv" id="aanvragen" data-r="v">
+      <div class="sechead">
+        <div class="l"><span class="word">&#10022;</span><span class="lbl" data-i18n="mvLibS">aanvragen en documenten</span></div>
+        <span class="tag" data-i18n="bdgLib">Bibliotheek</span>
       </div>
+      <div class="orders" id="ordersGrid"></div>
+    </section>
+
+    </div><!-- /colA -->
+
+    <!-- ===== RAIL ===== -->
+    <aside class="rail rv" aria-label="Snel naar">
+      <div class="qcard has-soon">
+        <span class="soon">Binnenkort</span>
+        <span class="lbl lbl-gold">SZINN Frequency Blueprint</span>
+        <b>Jouw klank, op maat</b>
+        <p>Een gepersonaliseerde Frequency Blueprint: phi-harmonische audio afgestemd op jouw kaart en getallen.</p>
+        <button class="btn-gold">Zet me op de lijst</button>
+      </div>
+      <div class="qcard">
+        <span class="lbl lbl-gold">Mijn SZINN Guide</span>
+        <ul class="rlist">
+          <li><div><b>Mijn Blueprint</b><span>Jouw volledige blauwdruk</span></div></li>
+          <li><div><b>Persoonlijke consulten</b><span>Plan een 1-op-1 sessie</span></div></li>
+          <li><div><b>Mijn downloads</b><span>Meditaties, gidsen en tools</span></div><span class="badge">Binnenkort</span></li>
+        </ul>
+        <a class="more" href="#aanvragen">Naar mijn guide &#8594;</a>
+      </div>
+      <div class="qcard">
+        <span class="lbl lbl-gold">Ritme &amp; herinneringen</span>
+        <b>Blijf afgestemd</b>
+        <p>Stel in het meldingenblok in hoe je elke dag een seintje krijgt.</p>
+        <a class="more" href="#" data-open-settings>Naar instellingen &#8594;</a>
+      </div>
+      <div class="qcard giftd">
+        <span class="lbl" style="color:var(--gold)" data-i18n="gwEyebrow">Cadeau</span>
+        <b data-i18n="gsTitle">Geef een Blueprint cadeau</b>
+        <p>Een uniek cadeau dat inzicht, richting en transformatie brengt.</p>
+        <a class="btn-gold" href="/cadeau" data-i18n="gwBtn">Cadeau geven &#8594;</a>
+      </div>
+    </aside>
+
+    </div><!-- /body2 -->
+
+    <!-- ===== CLOSE ===== -->
+    <div class="close rv">
+      <p class="sig" data-i18n="footQ">Je bent nooit verdwaald geweest, je was jezelf aan het herinneren.</p>
+      <div class="wm2">SZINN</div>
+      <hr class="hairline" style="margin:16px auto">
+      <p class="copy" id="footLine">SZINN &middot; Companion Dashboard &middot; &copy; <span id="footYear"></span> Elly Elizabeth Korving &middot; Alterego BV &middot; szinn.ai</p>
     </div>
 
-    <div class="shadow needs-bp" id="schaduw">
-      <div class="eyebrow" data-i18n="eyeShadow">De andere kant van je gaven</div>
-      <h2 data-i18n="hShadow">Jouw schaduwkanten</h2>
-      <div class="lead" data-i18n="leadShadow">Dit zijn geen gebreken om te repareren. Elke schaduw is de keerzijde van een echte gave en draagt informatie. Beweeg elke slider om te markeren hoeveel het je vandaag vasthield, en hoe helder je het zag.</div>
-      <div class="shadgrid" id="shadGrid"></div>
-      <div class="reflect"><div class="rl" data-i18n="rlSee">Om het helder te zien</div><div class="rt" id="reflectQ">Als een van deze opkomt, pauzeer en vraag: wat bescherm ik, en wat heb ik nu echt nodig?</div></div>
-    </div>
-
-    <!-- Aanvragen -->
-    <div id="aanvragen"></div>
-    <div class="movement"><div class="m">&#10022;</div><div><div class="ml" data-i18n="mvLib">Jouw blueprints</div><div class="ms" data-i18n="mvLibS">aanvragen en documenten</div></div><div class="badge" data-i18n="bdgLib">Bibliotheek</div></div>
-    <div class="orders" id="ordersGrid"></div>
-
-    <button class="save" id="saveBtn"><span data-i18n="btnSave">Leg mijn dag vast</span><span class="ss" data-i18n="btnSaveS">Privé bewaard, alleen voor jou zichtbaar</span></button>
-    <div class="foot">
-      <div class="fq" data-i18n="footQ">Je was nooit verloren, je was aan het herinneren.</div>
-      <div class="fc" id="footLine">SZINN &middot; Companion Dashboard &middot; &copy; <span id="footYear"></span> Elly Elizabeth Korving &middot; Alterego BV &middot; Alle rechten voorbehouden &middot; szinn.ai</div>
-    </div>
+  </div>
   </main>
 </div>
 
+<!-- ===== INSTELLINGEN (aparte pagina) ===== -->
+<div id="settingsView" role="region" aria-label="Instellingen">
+  <div class="wrap">
+    <div class="topbar">
+      <span class="lbl">&#9881;&nbsp;<span data-i18n="hSettings">Instellingen</span></span>
+      <div class="right">
+        <button class="ghost" id="settingsBack" data-i18n="btnBack">&#8592; Terug naar dashboard</button>
+      </div>
+    </div>
+
+    <!-- ===== MELDINGEN ===== -->
+    <section class="sec" id="meldingen">
+      <div class="sechead">
+        <div class="l"><span class="word">&#9993;</span><span class="lbl" data-i18n="mvNotifyS">hoe wil je je dagelijkse reading ontvangen</span></div>
+        <span class="tag" data-i18n="bdgNotify">Instellingen</span>
+      </div>
+      <div class="card notify" style="max-width:640px">
+        <span class="lbl" data-i18n="eyeNotify">Dagelijkse reading</span>
+        <h3 data-i18n="hNotify">Meldingen</h3>
+        <p data-i18n="pNotify">Kies hoe je elke dag een seintje krijgt dat je reading klaarstaat.</p>
+        <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+          <label><input type="radio" name="notifyChannel" value="whatsapp"><span data-i18n="optWhatsapp">Via WhatsApp</span></label>
+          <input class="field" id="notifyPhone" type="tel" style="display:none" data-i18n-ph="phNotifyPhone" placeholder="Telefoonnummer, bijv. +31 6 12345678"/>
+          <label><input type="radio" name="notifyChannel" value="email"><span data-i18n="optEmail">Via e-mail</span> <span id="notifyEmail" style="opacity:.6;font-size:13px"></span></label>
+          <label><input type="radio" name="notifyChannel" value="off"><span data-i18n="optOff">Geen meldingen</span></label>
+        </div>
+        <button class="notifybtn" id="notifySave" data-i18n="btnNotifySave">Voorkeur opslaan</button>
+        <div id="notifyMsg"></div>
+      </div>
+
+      <!-- Abonnement: daily dashboard + WhatsApp-reminders + companion -->
+      <div class="card notify" id="subCard" style="max-width:640px;margin-top:18px">
+        <span class="lbl" id="subEyebrow">Abonnement</span>
+        <h3 id="subTitle">SZINN Daily &amp; Companion</h3>
+        <p id="subDesc">Elke dag een duiding die met je meebeweegt, reminders via WhatsApp of e-mail en onbeperkt in gesprek met je Companion — €20 per maand, maandelijks opzegbaar.</p>
+        <div id="subStatus" style="margin-top:12px;font-size:14px;color:var(--gold,#A67C3A)"></div>
+        <button class="notifybtn" id="subBtn">Abonnement afsluiten — €20/mnd</button>
+        <div id="subMsg" style="margin-top:8px;font-size:13px"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<div class="daymodal" id="dayModal" role="dialog" aria-modal="true">
+  <div class="box">
+    <button class="dm-close" id="dmClose" aria-label="Sluiten">&times;</button>
+    <span class="lbl" id="dmDate"></span>
+    <div id="dmBody"></div>
+  </div>
+</div>
+<div class="daymodal" id="confirmModal" role="dialog" aria-modal="true">
+  <div class="box" style="max-width:400px;text-align:center">
+    <h3 id="cfTitle" style="margin:0"></h3>
+    <p id="cfBody" style="color:var(--soft);margin-top:10px;font-size:14px;line-height:1.6"></p>
+    <div style="display:flex;gap:10px;margin-top:22px">
+      <button class="btn" id="cfCancel" style="flex:1;padding:12px"></button>
+      <button class="btn btn-primary" id="cfOk" style="flex:1;padding:12px"></button>
+    </div>
+  </div>
+</div>
 <script src="/szinn-portal/js/auth.js"></script>
 <script src="/szinn-portal/js/api.js"></script>
+<!-- Taalkeuze vóór de companion-drawer, zodat die in het Engels antwoordt als de EN-switch aan staat. -->
+<script>window.SZINN_LANG = (localStorage.getItem('szinn_lang') === 'en') ? 'en' : 'nl';</script>
 <script src="/szinn-portal/js/companion-drawer.js"></script>
 <script>
 // ─────────────────────────────────────────────────────────────────────────────
@@ -504,11 +912,11 @@ const fmtD = (d) => new Date(d).toLocaleDateString(LOCALE, { day: 'numeric', mon
 // Vertalingen voor alle vaste teksten; NL staat al in de HTML.
 const I18N_EN = {
   navDash:'Dashboard', navToday:'Today', navLifepath:'Life path', navNumbers:'Numbers', navCycles:'Cycles',
-  navGuide:'Guidance', navJournal:'Journal', navLibrary:'Library', navOrders:'Orders', navGift:'Give a gift', navLogout:'Log out',
+  navGuide:'Guidance', navJournal:'Journal', navLibrary:'Library', navOrders:'Orders', navNotify:'Notifications', navGift:'Give a gift', navLogout:'Log out',
   intentToday:"Today's intention",
   sub:'The universe is in motion. Attune to what matters.',
   dSun:'Who you are at the core', dMoon:'What you need inside', dAsc:'How you enter the world',
-  mvSin:'Seeing what is', mvSinS:'what the day shows you', bdgSin:'Recognition',
+  mvSin:'Seeing what is', mvSinS:'Seeing what is · what the day shows you', bdgSin:'Recognition',
   dayGlance:'Today at a glance', labTheme:'Theme', labFocus:'Focus', labQuestion:'Question of the day',
   readFull:'Read your full blueprint →',
   aiIntro:'<b>SZINN Companion</b> · I read your chart and today\'s sky, and attune the daily reading to it. Feel free to ask me anything.',
@@ -522,6 +930,7 @@ const I18N_EN = {
   klSouth:'South Node ·<br>where you come from', klNorth:'North Node ·<br>where you are heading',
   lnkNodes:'Explore your nodes →',
   eyeMand:'Core essence', hMand:'Your mandala',
+  mandCardP:'Your Flower of Life with your planets at their exact degrees — in 3D.', openMand:'Open your mandala →',
   mvSinn:'Feeling and directing', mvSinnS:'what you bring to the day', bdgSinn:'Clarity',
   eyeEnergy:'The energy you choose', hIntent:'Set your intention',
   pIntent:'Choosing your energy and setting your intention are one movement. Choose what you want to lead with today.',
@@ -543,8 +952,28 @@ const I18N_EN = {
   rlSee:'To see it clearly',
   mvLib:'Your blueprints', mvLibS:'orders and documents', bdgLib:'Library',
   btnSave:'Capture my day', btnSaveS:'Stored privately, visible only to you',
+  btnStart:'Start your day ✦', btnEnd:'Close the day ☽',
+  sumNote:'Tap a dot to see what you wrote.',
+  hRitme:'What you filled in this week and month',
+  lgBoth:'Morning and evening', lgOne:'One of two', lgSkip:'Skipped', lgTogo:'Still to come', lgOpen:'Open your journal →',
+  hThisWeek:'This week', hThisMonth:'This month',
+  cyWeekEmpty:'Once your blueprint is ready, you\'ll read here how the week moves around your chart.',
+  cyMonthEmpty:'Your monthly outlook appears here: new and full moons on your houses.',
+  hSettings:'Settings', btnBack:'← Back to dashboard',
   footQ:'You were never lost, you were remembering.',
   gwEyebrow:'Gift', gsTitle:'Give a Blueprint as a gift', gwBtn:'Give a gift →',
+  mvNotify:'Notifications', mvNotifyS:'how you want to receive your daily reading', bdgNotify:'Settings',
+  eyeNotify:'Daily reading', hNotify:'Notifications',
+  pNotify:'Choose how you get a nudge each day that your reading is ready.',
+  optWhatsapp:'Via WhatsApp', optEmail:'Via email', optOff:'No notifications',
+  phNotifyPhone:'Phone number, e.g. +31 6 12345678', btnNotifySave:'Save preference',
+  dayOpen:'Your morning saves itself as you fill it in ✦',
+  mvUit:'closing the day · two minutes', tagAvond:'Evening',
+  eyeUitGrat:'Evening · three things', hUitGrat:'What are you grateful for today',
+  hintUitGrat:'Gratitude shifts your energy faster than almost anything. Small counts.',
+  eyeUitBack:'Looking back', hUitBack:'How clear did it become today',
+  uitQ:'Where are you still building on someone else\'s truth, while your own curiosity already knows the way?',
+  uitLow:'Still cloudy', uitHigh:'Clear',
 };
 // Dynamische strings die in JS worden opgebouwd
 const T = LANG === 'en' ? {
@@ -565,6 +994,11 @@ const T = LANG === 'en' ? {
   shLPd:(shadow)=>`The flip side of your life path is ${shadow}. Recognising it is enough; you don't have to fix it.`,
   shWork:'Your shadow work', shInt:'Integration',
   attuning:'Attuning…', saved:'Saved ✓ Visible only to you.',
+  btnStart:'Start your day ✦', btnStartDone:'Your day is open ✦ · until tonight',
+  btnEnd:'Close the day ☽', btnEndDone:'The day is closed ☽ · until tomorrow',
+  sumIntent:'Intention', sumFeel:'Feeling', sumEnergy:'Energy', sumGrat:'Grateful for',
+  sumGifts:'Powers', sumReflect:'Reflection', sumAM:'morning', sumPM:'evening',
+  sumEmpty:'Nothing saved on this day.', sumNote:'Tap a dot to see what you wrote.', sumNoteLbl:'Note',
   chatHello:'I\'m here. You can ask me about today, your chart, or where you are heading.',
   chatErr:'I can\'t attune right now. Try again in a moment.',
   ordersNone:'No orders yet. Place your first order at <a href="https://szinn.ai" style="color:var(--gold-deep)">szinn.ai</a>.',
@@ -573,6 +1007,7 @@ const T = LANG === 'en' ? {
   actView:'View blueprint', actFill:'Fill in questionnaire',
   actBusy:'Being composed — this can take several hours', actFail:'Taking longer than expected — we are on it',
   reflectDefault:'When one of these comes up, pause and ask: what am I protecting, and what do I really need right now?',
+  notifyPick:'Choose an option first.', notifySaved:'Preference saved ✓', notifyErr:'Could not save. Try again.',
 } : {
   greetN:'Goedenacht', greetM:'Goedemorgen', greetA:'Goedemiddag', greetE:'Goedenavond',
   sunIn:'Zon in', moonIn:'Maan in', asc:'Ascendant', house:'Huis',
@@ -591,6 +1026,11 @@ const T = LANG === 'en' ? {
   shLPd:(shadow)=>`De keerzijde van jouw levenspad is ${shadow}. Herkennen is genoeg; je hoeft het niet op te lossen.`,
   shWork:'Jouw schaduwwerk', shInt:'Integratie',
   attuning:'Even afstemmen…', saved:'Bewaard ✓ Alleen voor jou zichtbaar.',
+  btnStart:'Start je dag ✦', btnStartDone:'Je dag is geopend ✦ · tot vanavond',
+  btnEnd:'Sluit de dag ☽', btnEndDone:'De dag is gesloten ☽ · tot morgen',
+  sumIntent:'Intentie', sumFeel:'Gevoel', sumEnergy:'Energie', sumGrat:'Dankbaar voor',
+  sumGifts:'Vermogens', sumReflect:'Terugblik', sumAM:'ochtend', sumPM:'avond',
+  sumEmpty:'Niets bewaard op deze dag.', sumNote:'Tik op een stip om te zien wat je schreef.', sumNoteLbl:'Notitie',
   chatHello:'Ik ben er. Je kunt me iets vragen over vandaag, over je kaart, of over waar je naartoe beweegt.',
   chatErr:'Ik kan nu even niet afstemmen. Probeer het zo nog eens.',
   ordersNone:'Nog geen aanvragen. Plaats je eerste bestelling op <a href="https://szinn.ai" style="color:var(--gold-deep)">szinn.ai</a>.',
@@ -599,6 +1039,7 @@ const T = LANG === 'en' ? {
   actView:'Blueprint bekijken', actFill:'Vragenlijst invullen',
   actBusy:'Wordt samengesteld — dit kan een aantal uur duren', actFail:'Duurt langer dan verwacht — we zijn ermee bezig',
   reflectDefault:'Als een van deze opkomt, pauzeer en vraag: wat bescherm ik, en wat heb ik nu echt nodig?',
+  notifyPick:'Kies eerst een optie.', notifySaved:'Voorkeur opgeslagen ✓', notifyErr:'Opslaan mislukt. Probeer opnieuw.',
 };
 // Teken-naam in de juiste taal (payload bevat sign + signEn)
 const sn = (p) => p ? (LANG === 'en' ? (p.signEn || p.sign) : p.sign) : '';
@@ -617,12 +1058,38 @@ function applyLang() {
   set('reflectQ', T.reflectDefault);
 }
 applyLang();
+// Paradigma-vraag rouleert per dag zodat de "vaste" stukken echt elke dag meebewegen.
+(function rotateParadigma() {
+  const qs = LANG === 'en' ? [
+    'Which belief steered your choices today?',
+    'What did you think you had to know before you were allowed to begin?',
+    'Which "should" did you follow today without questioning it?',
+    'What story about yourself did you take as fact today?',
+    'Which rule did you obey today that no one actually set?',
+  ] : [
+    'Welke overtuiging stuurde vandaag je keuzes?',
+    'Wat dacht je te moeten weten voordat je mocht beginnen?',
+    'Welke "moet" volgde je vandaag zonder hem te toetsen?',
+    'Welk verhaal over jezelf nam je vandaag als feit?',
+    'Welke regel gehoorzaamde je vandaag die niemand echt stelde?',
+  ];
+  set('paradigmaQ', qs[Math.floor(Date.now() / 86400000) % qs.length]);
+})();
 document.querySelectorAll('.langsw button').forEach(b => b.addEventListener('click', () => {
   if (b.dataset.l === LANG) return;
   localStorage.setItem('szinn_lang', b.dataset.l);
   location.reload();
 }));
 $('logoutBtn').addEventListener('click', () => SzinnAuth.logout());
+
+// ── Instellingen (aparte weergave, overlay over het dashboard) ───────────────
+const settingsView = $('settingsView');
+const openSettings = () => { settingsView.classList.add('open'); document.body.style.overflow = 'hidden'; };
+const closeSettings = () => { settingsView.classList.remove('open'); document.body.style.overflow = ''; };
+$('settingsBtn').addEventListener('click', openSettings);
+$('settingsBack').addEventListener('click', closeSettings);
+document.querySelectorAll('[data-open-settings]').forEach(a => a.addEventListener('click', e => { e.preventDefault(); openSettings(); }));
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && settingsView.classList.contains('open')) closeSettings(); });
 
 SzinnAuth.requireAuth().then(ok => { if (ok) init(); });
 
@@ -638,7 +1105,11 @@ async function init() {
   set('greetTxt', `${greet}, ${user.name.split(' ')[0]}`);
 
   loadOrders();
+  loadNotifications();
+  await hydrateJournal();
   restoreDay();
+  renderWeek();
+  loadRitmeSummary();
 
   try {
     const res = await fetch(`/api/companion/blueprint?lang=${LANG}`, { credentials: 'same-origin' });
@@ -653,7 +1124,60 @@ async function init() {
   } catch (e) { showPending('error'); }
 }
 
+// Ritme-overzicht: tellingen + AI-samenvatting van het dagboek (server-side).
+// Niet kritisch — faalt stil als de companion/endpoint niet beschikbaar is.
+async function loadRitmeSummary() {
+  const box = document.getElementById('ritmeSummary');
+  const counts = document.getElementById('ritmeCounts');
+  try {
+    const r = await fetch(`/api/companion/journal-summary?lang=${LANG}`, { credentials: 'same-origin' });
+    if (!r.ok) return;
+    const d = await r.json();
+    if (counts && d.days) counts.textContent = LANG === 'en'
+      ? `${d.morningCount} mornings · ${d.eveningCount} evenings checked in.`
+      : `${d.morningCount} ochtenden · ${d.eveningCount} avonden ingecheckt.`;
+    if (box && d.summary) { box.textContent = d.summary; box.hidden = false; }
+  } catch (e) { /* stil */ }
+}
+
 function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+
+// ── Meldingen (WhatsApp / e-mail / uit) ──────────────────────────────────────
+const notifyPhoneRow = () => $('notifyPhone');
+function syncNotifyPhone() {
+  const wa = document.querySelector('input[name="notifyChannel"]:checked')?.value === 'whatsapp';
+  notifyPhoneRow().style.display = wa ? 'block' : 'none';
+}
+document.querySelectorAll('input[name="notifyChannel"]').forEach(r => r.addEventListener('change', syncNotifyPhone));
+
+async function loadNotifications() {
+  try {
+    const res = await fetch('/api/settings/notifications', { credentials: 'same-origin' });
+    if (!res.ok) return;
+    const d = await res.json();
+    const radio = document.querySelector(`input[name="notifyChannel"][value="${d.channel}"]`);
+    if (radio) radio.checked = true;
+    if (d.phone) notifyPhoneRow().value = d.phone;      // voorgevuld uit de database
+    if (d.email) set('notifyEmail', `(${d.email})`);
+    syncNotifyPhone();
+  } catch {}
+}
+
+$('notifySave').addEventListener('click', async () => {
+  const channel = document.querySelector('input[name="notifyChannel"]:checked')?.value;
+  if (!channel) { $('notifyMsg').textContent = T.notifyPick; return; }
+  $('notifySave').disabled = true;
+  try {
+    const res = await fetch('/api/settings/notifications', {
+      method: 'POST', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ channel, phone: notifyPhoneRow().value })
+    });
+    const d = await res.json();
+    $('notifyMsg').textContent = res.ok ? T.notifySaved : (d.error || T.notifyErr);
+  } catch { $('notifyMsg').textContent = T.notifyErr; }
+  $('notifySave').disabled = false;
+});
 
 function showPending(status) {
   const note = $('pendingNote');
@@ -676,9 +1200,14 @@ function fillFromBlueprint(d) {
   if (C.sun) set('aSun', `${T.sunIn} ${sn(C.sun)}${C.sun.house ? ` · ${T.house} ` + C.sun.house : ''}`);
   if (C.moon) set('aMoon', `${T.moonIn} ${sn(C.moon)}${C.moon.house ? ` · ${T.house} ` + C.moon.house : ''}`);
   if (C.ascendant) set('aAsc', `${sn(C.ascendant)} ${T.asc}`);
+  if (N.lifePath != null) { set('aLP', `${LANG === 'en' ? 'Life path' : 'Levenspad'} ${N.lifePath}`); set('aLPd', N.lifePathName); }
+  if (N.personalYear != null) { set('aPY', `${LANG === 'en' ? 'Personal Year' : 'Persoonlijk Jaar'} ${N.personalYear}`); set('aPYd', N.personalYearTheme || N.personalYearEnergy); }
 
-  // Dagduiding (deterministisch uit blueprint; AI-knop vernieuwt)
+  // Dagduiding (deterministisch uit blueprint; AI-knop vernieuwt).
+  // Zonder abonnement stuurt de server day:null mee → toon de uitnodiging.
+  SUBSCRIBED = d.subscribed !== false;
   applyDay(d.day);
+  if (!SUBSCRIBED) showDayUpsell();
 
   // De lucht vandaag (moonSign komt al in de juiste taal van de server)
   set('skyMoon', `${T.moonToday} ${d.sky.moonSign}`);
@@ -696,10 +1225,6 @@ function fillFromBlueprint(d) {
     set('kpNoord', trunc(strip(t.nodes.north), 170));
   }
   $('lnkNodes').href = `/portaal/blueprint?t=${d.viewToken}${langQ}`;
-
-  // Mandala
-  if (d.mandala) $('mandala').innerHTML = d.mandala;
-  if (C.northNode) set('mandCap', T.mandCap(sn(C.northNode)));
 
   // Gaven-regel
   if (d.day && d.day.gaven) set('dGifts', d.day.gaven);
@@ -729,6 +1254,13 @@ function fillFromBlueprint(d) {
   if (d.sky.nextNewMoon) { set('cmNew', `${T.newMoonIn} ${d.sky.nextNewMoon.sign}`); set('cmNewD', fmtD(d.sky.nextNewMoon.date)); }
   if (d.sky.nextFullMoon) { set('cmFull', `${T.fullMoonIn} ${d.sky.nextFullMoon.sign}`); set('cmFullD', fmtD(d.sky.nextFullMoon.date)); }
   if (d.sky.solarReturn) { set('cmSolar', `${T.solarReturn} · ${d.sky.solarReturn.sign}`); set('cmSolarD', fmtD(d.sky.solarReturn.date)); }
+  // Cycli-kaarten "Deze week / Deze maand": gevuld uit de eerstvolgende manen (echte data)
+  if (d.sky.nextFullMoon) set('weekText', LANG === 'en'
+    ? `The full moon in ${d.sky.nextFullMoon.sign} falls on ${fmtD(d.sky.nextFullMoon.date)} — what you are refining now becomes visible.`
+    : `De volle maan in ${d.sky.nextFullMoon.sign} valt op ${fmtD(d.sky.nextFullMoon.date)} — wat je nu verfijnt wordt dan zichtbaar.`);
+  if (d.sky.nextNewMoon) set('monthText', LANG === 'en'
+    ? `The new moon in ${d.sky.nextNewMoon.sign} falls on ${fmtD(d.sky.nextNewMoon.date)}: a fresh start to give something new its first form.`
+    : `De nieuwe maan in ${d.sky.nextNewMoon.sign} valt op ${fmtD(d.sky.nextNewMoon.date)}: een frisse start om iets nieuws zijn eerste vorm te geven.`);
 
   // Schaduwkanten — rechtstreeks uit de blueprint-teksten
   const cards = [];
@@ -765,8 +1297,127 @@ function applyDay(day) {
   set('sideIntent', day.focus || day.thema);
 }
 
+// ── Abonnement (€20/mnd): daily + WhatsApp-reminders + companion ────────────
+let SUBSCRIBED = true;
+function showDayUpsell() {
+  document.getElementById('app').classList.add('locked');   // dagelijkse blokken vervagen
+  set('dTheme', LANG === 'en' ? 'Unlock your daily guidance' : 'Ontgrendel je dagelijkse duiding');
+  set('dFocus', LANG === 'en'
+    ? 'Your daily reading, WhatsApp reminders and the Companion are part of the SZINN subscription — €20 per month, cancel monthly.'
+    : 'Je dagelijkse duiding, WhatsApp-reminders en de Companion horen bij het SZINN-abonnement — €20 per maand, maandelijks opzegbaar.');
+  set('dQuestion', LANG === 'en' ? 'One tap unlocks everything below.' : 'Eén tik ontgrendelt alles hieronder.');
+  const hb = $('heroSub');
+  if (hb) { hb.style.display = ''; hb.textContent = LANG === 'en' ? 'Unlock your daily guidance — €20/month' : 'Ontgrendel je dagelijkse duiding — €20/mnd'; }
+}
+function unlockDashboard() {
+  document.getElementById('app').classList.remove('locked');
+  const hb = $('heroSub'); if (hb) hb.style.display = 'none';
+}
+// Nette bevestigings-modal (nooit een browser-alert/confirm).
+function confirmModal({ title, body, ok, cancel }) {
+  return new Promise(resolve => {
+    const m = $('confirmModal');
+    set('cfTitle', title); set('cfBody', body);
+    $('cfOk').textContent = ok || (LANG === 'en' ? 'Confirm' : 'Bevestigen');
+    $('cfCancel').textContent = cancel || (LANG === 'en' ? 'Cancel' : 'Annuleren');
+    const done = (v) => { m.classList.remove('open'); $('cfOk').onclick = null; $('cfCancel').onclick = null; m.onclick = null; resolve(v); };
+    $('cfOk').onclick = () => done(true);
+    $('cfCancel').onclick = () => done(false);
+    m.onclick = (e) => { if (e.target.id === 'confirmModal') done(false); };
+    m.classList.add('open');
+  });
+}
+// Eén tik-abonneren, maar eerst een "weet je het zeker?"-bevestiging.
+async function confirmSubscribe(btn) {
+  const ok = await confirmModal({
+    title: LANG === 'en' ? 'Start your subscription?' : 'Abonnement starten?',
+    body: LANG === 'en'
+      ? '€20 per month, cancel monthly. You will be taken to the secure payment page.'
+      : '€20 per maand, maandelijks opzegbaar. Je gaat door naar de beveiligde betaalpagina.',
+    ok: LANG === 'en' ? 'Yes, subscribe' : 'Ja, abonneren',
+  });
+  if (ok) startSubscription(btn);
+}
+async function startSubscription(btn) {
+  if (btn) btn.disabled = true;
+  try {
+    const r = await fetch('/api/subscription/checkout', { method: 'POST', credentials: 'same-origin' });
+    const j = await r.json();
+    if (j.url) { location.href = j.url; return; }
+    $('subMsg').textContent = j.error || (LANG === 'en' ? 'Something went wrong.' : 'Er ging iets mis.');
+  } catch (e) { $('subMsg').textContent = LANG === 'en' ? 'Something went wrong.' : 'Er ging iets mis.'; }
+  if (btn) btn.disabled = false;
+}
+async function loadSubscription() {
+  if (LANG === 'en') {
+    set('subEyebrow', 'Subscription');
+    set('subDesc', 'A reading that moves with you every day, reminders via WhatsApp or email and unlimited conversations with your Companion — €20 per month, cancel monthly.');
+  }
+  try {
+    const r = await fetch('/api/subscription/status', { credentials: 'same-origin' });
+    if (!r.ok) return;
+    const s = await r.json();
+    const btn = $('subBtn');
+    if (s.active) {
+      SUBSCRIBED = true;
+      unlockDashboard();
+      if (s.status && s.cancelAtPeriodEnd) {
+        set('subStatus', (LANG === 'en' ? 'Cancelled — active until ' : 'Opgezegd — nog actief tot ') + (s.currentPeriodEnd ? fmtD(s.currentPeriodEnd) : ''));
+        btn.style.display = 'none';
+      } else if (s.status) {
+        set('subStatus', LANG === 'en' ? 'Your subscription is active. Thank you!' : 'Je abonnement is actief. Dank je wel!');
+        btn.textContent = LANG === 'en' ? 'Cancel subscription' : 'Abonnement opzeggen';
+        btn.dataset.mode = 'cancel';
+      } else {
+        // actief zonder eigen abonnement (bijv. demo-account): geen knop nodig
+        btn.style.display = 'none';
+      }
+    } else {
+      set('subStatus', '');
+      btn.textContent = LANG === 'en' ? 'Subscribe — €20/month' : 'Abonnement afsluiten — €20/mnd';
+      btn.dataset.mode = 'subscribe';
+    }
+  } catch (e) { /* kaart blijft in standaardstand */ }
+}
+$('subBtn').addEventListener('click', async function () {
+  if (this.dataset.mode === 'cancel') {
+    const ok = await confirmModal({
+      title: LANG === 'en' ? 'Cancel subscription?' : 'Abonnement opzeggen?',
+      body: LANG === 'en' ? 'Your subscription stays active until the end of the paid period.' : 'Je abonnement blijft actief tot het einde van de betaalde periode.',
+      ok: LANG === 'en' ? 'Yes, cancel' : 'Ja, opzeggen',
+      cancel: LANG === 'en' ? 'Keep it' : 'Behouden',
+    });
+    if (!ok) return;
+    this.disabled = true;
+    try {
+      const r = await fetch('/api/subscription/cancel', { method: 'POST', credentials: 'same-origin' });
+      const j = await r.json();
+      $('subMsg').textContent = r.ok ? '' : (j.error || '');
+    } catch (e) {}
+    this.disabled = false;
+    loadSubscription();
+    return;
+  }
+  confirmSubscribe(this);
+});
+// Terug van Stripe (?sub_session=…): abonnement bevestigen, URL opschonen.
+(async function () {
+  const q = new URLSearchParams(location.search);
+  const sid = q.get('sub_session');
+  if (sid) {
+    try {
+      await fetch('/api/subscription/confirm', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ session_id: sid }) });
+    } catch (e) {}
+    history.replaceState(null, '', location.pathname + location.hash);
+    openSettings();   // toon de abonnement-bevestiging (subkaart staat nu bij instellingen)
+  }
+  loadSubscription();
+})();
+
 // ── Dagduiding vernieuwen via de server (AI met blueprint-fallback) ─────────
+$('heroSub').addEventListener('click', function () { confirmSubscribe(this); });
 $('genBtn').addEventListener('click', async function () {
+  if (!SUBSCRIBED) return confirmSubscribe(this);
   const b = this; b.disabled = true; const old = b.textContent; b.textContent = T.attuning;
   try {
     const r = await fetch('/api/companion/day', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ lang: LANG }) });
@@ -776,34 +1427,8 @@ $('genBtn').addEventListener('click', async function () {
   b.textContent = old; b.disabled = false;
 });
 
-// ── Gesprek met de Companion (server-side, kent jouw kaart) ─────────────────
-const chatBox = $('chatBox'), chatLog = $('chatLog');
-let history = [];
-$('chatBtn').addEventListener('click', () => {
-  chatBox.classList.toggle('open');
-  if (chatLog.childElementCount === 0) addMsg('a', T.chatHello);
-});
-function addMsg(role, txt) {
-  const div = document.createElement('div'); div.className = 'msg ' + role;
-  if (role === 'a') { const w = document.createElement('div'); w.className = 'who'; w.textContent = 'Companion'; div.appendChild(w); }
-  div.appendChild(document.createTextNode(txt));
-  chatLog.appendChild(div); chatLog.scrollTop = chatLog.scrollHeight; return div;
-}
-async function send() {
-  const inp = $('chatIn'); const q = inp.value.trim(); if (!q) return;
-  inp.value = ''; addMsg('u', q); history.push({ role: 'user', content: q });
-  const ph = addMsg('a', '…');
-  try {
-    const r = await fetch('/api/companion/chat', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: history, lang: LANG }) });
-    const j = await r.json();
-    const ans = j.content || j.error || T.chatErr;
-    ph.lastChild.textContent = ans;
-    history.push({ role: 'assistant', content: ans });
-  } catch (e) { ph.lastChild.textContent = T.chatErr; }
-  chatLog.scrollTop = chatLog.scrollHeight;
-}
-$('chatSend').addEventListener('click', send);
-$('chatIn').addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+// Gesprek met de Companion loopt nu volledig via de zwevende Companion-pil
+// (companion-drawer.js) — dezelfde /api/companion/*-endpoints, één ingang.
 
 // ── Aanvragen / bibliotheek ──────────────────────────────────────────────────
 async function loadOrders() {
@@ -849,36 +1474,257 @@ function orderActions(o) {
 function escapeHtml(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 
 // ── Dagboek: privé in deze browser bewaard ───────────────────────────────────
-const dayKey = () => `szinn_${userId}_${new Date().toISOString().slice(0, 10)}`;
+const isoOf = (d) => { const t = new Date(d.getTime() - d.getTimezoneOffset() * 60000); return t.toISOString().slice(0, 10); };
+const dayKey = () => `szinn_${userId}_${isoOf(new Date())}`;
 document.querySelectorAll('.choice').forEach(c => c.addEventListener('click', () => {
   document.querySelectorAll('.choice').forEach(x => x.classList.remove('on'));
-  c.classList.add('on'); saveDay();
+  c.classList.add('on'); touchMorning();
 }));
-document.querySelectorAll('.gift').forEach(g => g.addEventListener('click', () => { g.classList.toggle('on'); saveDay(); }));
-$('saveBtn').addEventListener('click', function () {
-  saveDay();
-  this.querySelector('.ss').textContent = T.saved;
+document.querySelectorAll('.gift').forEach(g => g.addEventListener('click', () => { g.classList.toggle('on'); touchMorning(); }));
+// Ochtend-velden: bij typen lokaal bewaren, bij verlaten (change/blur) ook naar de server.
+['fIntent','fFeel','g1','g2','g3'].forEach(id => { const el = $(id); if (!el) return;
+  el.addEventListener('input', saveDay);
+  el.addEventListener('change', touchMorning);
 });
+// De ochtend gaat vanzelf "open" zodra je iets invult; de avond sluit je bewust af.
+let _amPushT = null;
+function markDone(btn, text) { if (btn && !btn.classList.contains('done')) { btn.classList.add('done'); btn.textContent = text; } }
+function touchMorning() {
+  const rec = saveDay();
+  rec.am = true; rec.ts = new Date().toISOString();
+  try { localStorage.setItem(dayKey(), JSON.stringify(rec)); } catch (e) {}
+  markDone($('startday'), T.btnStartDone); // invullen opent de dag vanzelf
+  renderWeek();
+  clearTimeout(_amPushT);            // ponytail: 600ms debounce, upgrade to per-field dirty-tracking only if pushes get chatty
+  _amPushT = setTimeout(() => pushJournal('am', rec), 600);
+}
+// Ochtend "start de dag" / avond "sluit de dag": markeren am/pm en bewaren.
+function markRitual(part, btn, doneText) {
+  const rec = saveDay();
+  rec[part] = true; rec.ts = new Date().toISOString();
+  try { localStorage.setItem(dayKey(), JSON.stringify(rec)); } catch (e) {}
+  markDone(btn, doneText);
+  pushJournal(part, rec);
+  renderWeek();
+}
+var _startday = $('startday'); if (_startday) _startday.addEventListener('click', function () { if (!this.classList.contains('done')) markRitual('am', this, T.btnStartDone); });
+var _enddayU = $('enddayU'); if (_enddayU) _enddayU.addEventListener('click', function () { if (!this.classList.contains('done')) markRitual('pm', this, T.btnEndDone); });
+
 function saveDay() {
+  let prev = {}; try { prev = JSON.parse(localStorage.getItem(dayKey())) || {}; } catch (e) {}
   const data = {
+    ...prev,
     intent: $('fIntent').value, feel: $('fFeel').value,
     g: [$('g1').value, $('g2').value, $('g3').value],
     energy: (document.querySelector('.choice.on') || {}).dataset ? document.querySelector('.choice.on').dataset.e : null,
     gifts: [...document.querySelectorAll('.gift.on')].map(x => x.textContent),
     sliders: [...document.querySelectorAll('#shadGrid input[type=range]')].map(s => s.value),
+    note: $('eNote') ? $('eNote').value : (prev.note || ''),
+    egrat: $('eg1') ? [$('eg1').value, $('eg2').value, $('eg3').value] : (prev.egrat || []),
+    clarity: $('uClarity') ? Number($('uClarity').value) : (prev.clarity != null ? prev.clarity : null),
   };
   try { localStorage.setItem(dayKey(), JSON.stringify(data)); } catch (e) {}
+  renderWeek();
+  return data;
+}
+// Server-dagboek: elke ritueelknop bewaart z'n helft op je account; bij het laden
+// spiegelen we het account terug naar de localStorage-cache zodat weekoverzicht en
+// popup ook op een ander apparaat kloppen. Faalt stil: de cache blijft leidend.
+function pushJournal(part, rec) {
+  const body = { date: isoOf(new Date()) };
+  body[part === 'am' ? 'morning' : 'evening'] = part === 'am'
+    ? { intention: rec.intent || '', feeling: rec.feel || '', energy: rec.energy || '', powers: rec.gifts || [], gratitude: rec.g || [] }
+    : { shadows: (rec.sliders || []).map(Number), note: rec.note || '', gratitude: (rec.egrat || []).filter(Boolean), clarity: rec.clarity != null ? rec.clarity : null };
+  fetch('/api/journal', { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).catch(() => {});
+}
+async function hydrateJournal() {
+  if (!userId) return;
+  let entries = {};
+  try { const r = await fetch('/api/journal', { credentials: 'same-origin' }); if (!r.ok) return; entries = (await r.json()).entries || {}; } catch (e) { return; }
+  for (const iso in entries) {
+    const e = entries[iso], m = e.morning, ev = e.evening;
+    const flat = {
+      intent: (m && m.intention) || '', feel: (m && m.feeling) || '', energy: (m && m.energy) || '',
+      gifts: (m && m.powers) || [], g: (m && m.gratitude) || [],
+      sliders: (ev && ev.shadows) || [], note: (ev && ev.note) || '',
+      egrat: (ev && ev.gratitude) || [], clarity: (ev && ev.clarity != null) ? ev.clarity : null,
+      am: !!m, pm: !!ev,
+    };
+    try { localStorage.setItem(`szinn_${userId}_${iso}`, JSON.stringify(flat)); } catch (e2) {}
+  }
 }
 function restoreDay() {
   let d = null;
   try { d = JSON.parse(localStorage.getItem(dayKey())); } catch (e) {}
   if (!d) return;
   $('fIntent').value = d.intent || ''; $('fFeel').value = d.feel || '';
+  if ($('eNote')) $('eNote').value = d.note || '';
   if (d.g) { $('g1').value = d.g[0] || ''; $('g2').value = d.g[1] || ''; $('g3').value = d.g[2] || ''; }
   if (d.energy) document.querySelectorAll('.choice').forEach(c => c.classList.toggle('on', c.dataset.e === d.energy));
   if (d.gifts) document.querySelectorAll('.gift').forEach(g => g.classList.toggle('on', d.gifts.includes(g.textContent)));
   if (d.sliders) document.querySelectorAll('#shadGrid input[type=range]').forEach((s, i) => { if (d.sliders[i] != null) s.value = d.sliders[i]; });
+  if (d.egrat && $('eg1')) { $('eg1').value = d.egrat[0] || ''; $('eg2').value = d.egrat[1] || ''; $('eg3').value = d.egrat[2] || ''; }
+  if (d.clarity != null && $('uClarity')) $('uClarity').value = d.clarity;
+  if (d.am) markDone($('startday'), T.btnStartDone);
+  if (d.pm) markDone($('enddayU'), T.btnEndDone);
 }
+
+// ── Weekoverzicht: gevuld uit bewaarde dagen, dag aanklikbaar voor samenvatting ─
+function renderWeek() {
+  const wrap = $('wkdays'); if (!wrap || !userId) return;
+  const now = new Date(), todayIso = isoOf(now);
+  const monday = new Date(now); monday.setDate(now.getDate() - ((now.getDay() + 6) % 7));
+  let html = '';
+  for (let i = 0; i < 7; i++) {
+    const day = new Date(monday); day.setDate(monday.getDate() + i);
+    const iso = isoOf(day);
+    let rec = null; try { rec = JSON.parse(localStorage.getItem(`szinn_${userId}_${iso}`)); } catch (e) {}
+    const isToday = iso === todayIso, isFut = iso > todayIso;
+    const lbl = capitalize(day.toLocaleDateString(LOCALE, { weekday: 'short' }).replace('.', ''));
+    const cls = ['wkd']; if (isToday) cls.push('today'); if (isFut) cls.push('fut'); if (rec && (rec.am || rec.pm)) cls.push('has');
+    html += `<div class="${cls.join(' ')}" data-iso="${iso}"><span class="l">${lbl}</span>` +
+      `<div class="dots"><span class="p${rec && rec.am ? ' f' : ''}"></span><span class="p${rec && rec.pm ? ' f' : ''}"></span></div></div>`;
+  }
+  wrap.innerHTML = html;
+  wrap.querySelectorAll('.wkd:not(.fut)').forEach(el => el.addEventListener('click', () => openDaySummary(el.dataset.iso)));
+
+  // Weeklabel (ma t/m zo) + maandlabel
+  const sunday = new Date(monday); sunday.setDate(monday.getDate() + 6);
+  const dm = { day: 'numeric', month: 'long' };
+  set('wkRange', `${monday.toLocaleDateString(LOCALE, { day: 'numeric' })} ${LANG === 'en' ? 'to' : 't/m'} ${sunday.toLocaleDateString(LOCALE, dm)}`);
+  set('moLabel', capitalize(now.toLocaleDateString(LOCALE, { month: 'long', year: 'numeric' })));
+
+  // Maandraster: één cel per dag, gevuld uit bewaarde dagen (zelfde bron als de week)
+  const grid = $('mogrid'); if (grid) {
+    const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+    let mo = '';
+    for (let d = 1; d <= daysInMonth; d++) {
+      const iso = isoOf(new Date(now.getFullYear(), now.getMonth(), d));
+      let rec = null; try { rec = JSON.parse(localStorage.getItem(`szinn_${userId}_${iso}`)); } catch (e) {}
+      let c = 'c';
+      if (iso > todayIso) c += ' fu';
+      else if (rec && rec.am && rec.pm) c += '';
+      else if (rec && (rec.am || rec.pm)) c += ' h';
+      else c += ' m';
+      mo += `<span class="${c}"></span>`;
+    }
+    grid.innerHTML = mo;
+    grid.setAttribute('aria-label', now.toLocaleDateString(LOCALE, { month: 'long' }));
+  }
+}
+function openDaySummary(iso, fromHistory) {
+  let d = null; try { d = JSON.parse(localStorage.getItem(`szinn_${userId}_${iso}`)); } catch (e) {}
+  const dateObj = new Date(iso + 'T12:00:00');
+  const parts = []; if (d && d.am) parts.push(T.sumAM); if (d && d.pm) parts.push(T.sumPM);
+  const title = capitalize(dateObj.toLocaleDateString(LOCALE, { weekday: 'long', day: 'numeric', month: 'long' }));
+  $('dmDate').textContent = title + (parts.length ? ' · ' + parts.join(' & ') : '');
+  const rows = [];
+  const push = (lbl, v) => { if (v && String(v).trim()) rows.push(`<dt>${lbl}</dt><dd>${escapeHtml(v)}</dd>`); };
+  if (d) {
+    push(T.sumIntent, d.intent); push(T.sumFeel, d.feel); push(T.sumEnergy, d.energy);
+    const g = (d.g || []).filter(x => x && x.trim());
+    if (g.length) rows.push(`<dt>${T.sumGrat}</dt><dd>${g.map(escapeHtml).join(' · ')}</dd>`);
+    if ((d.gifts || []).length) rows.push(`<dt>${T.sumGifts}</dt><dd>${d.gifts.map(escapeHtml).join(' · ')}</dd>`);
+    const sl = (d.sliders || []).filter(x => x != null && x !== '');
+    if (sl.length) rows.push(`<dt>${T.sumReflect}</dt><dd>${sl.join(' · ')}</dd>`);
+    push(T.sumNoteLbl, d.note);
+  }
+  const back = fromHistory ? `<button class="jback" id="dmBack">← ${LANG === 'en' ? 'All days' : 'Alle dagen'}</button>` : '';
+  $('dmBody').innerHTML = back + (rows.length ? `<dl>${rows.join('')}</dl>` : `<p class="empty">${T.sumEmpty}</p>`);
+  if (fromHistory) $('dmBack').addEventListener('click', openJournalHistory);
+  $('dayModal').classList.add('open');
+}
+// "Open je dagboek": popup met alle dagen die je hebt ingevuld, terug in de tijd.
+function openJournalHistory() {
+  const prefix = `szinn_${userId}_`;
+  const days = [];
+  for (let k = 0; k < localStorage.length; k++) {
+    const key = localStorage.key(k);
+    if (!key || key.indexOf(prefix) !== 0) continue;
+    const iso = key.slice(prefix.length);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso)) continue;
+    let rec = null; try { rec = JSON.parse(localStorage.getItem(key)); } catch (e) {}
+    if (rec && (rec.am || rec.pm)) days.push(iso);
+  }
+  days.sort().reverse();
+  $('dmDate').textContent = LANG === 'en' ? 'Your journal' : 'Je dagboek';
+  if (!days.length) {
+    $('dmBody').innerHTML = `<p class="empty">${LANG === 'en' ? 'No journal entries yet.' : 'Nog geen dagboeknotities.'}</p>`;
+  } else {
+    $('dmBody').innerHTML = `<div class="jhist">` + days.map(iso => {
+      const dObj = new Date(iso + 'T12:00:00');
+      let rec = {}; try { rec = JSON.parse(localStorage.getItem(prefix + iso)) || {}; } catch (e) {}
+      const parts = []; if (rec.am) parts.push(T.sumAM); if (rec.pm) parts.push(T.sumPM);
+      const lbl = capitalize(dObj.toLocaleDateString(LOCALE, { weekday: 'long', day: 'numeric', month: 'long' }));
+      return `<button class="jrow" data-iso="${iso}"><span>${lbl}</span><span class="jmeta">${parts.join(' & ')}</span></button>`;
+    }).join('') + `</div>`;
+    $('dmBody').querySelectorAll('.jrow').forEach(b => b.addEventListener('click', () => openDaySummary(b.dataset.iso, true)));
+  }
+  $('dayModal').classList.add('open');
+}
+$('openJournal').addEventListener('click', (e) => { e.preventDefault(); openJournalHistory(); });
+$('dmClose').addEventListener('click', () => $('dayModal').classList.remove('open'));
+$('dayModal').addEventListener('click', (e) => { if (e.target.id === 'dayModal') $('dayModal').classList.remove('open'); });
+
+// ── UI: mobiel menu ──────────────────────────────────────────────────────────
+function toggleMenu(open){
+  document.getElementById('side').classList.toggle('open', open);
+  document.getElementById('scrim').classList.toggle('on', open);
+}
+document.querySelectorAll('.side nav a').forEach(a => a.addEventListener('click', () => toggleMenu(false)));
+
+// ── UI: ritueelmodus (ochtend / volledig / avond) ────────────────────────────
+(function(){
+  const sw = document.getElementById('modeswitch');
+  const KEY = 'szinn_mode';
+  function apply(m){
+    document.body.classList.toggle('m-o', m === 'o');
+    document.body.classList.toggle('m-a', m === 'a');
+    sw.classList.remove('m-o','m-v','m-a'); sw.classList.add('m-' + m);
+    sw.querySelectorAll('.mbtn').forEach(b => {
+      const on = b.dataset.m === m;
+      b.classList.toggle('on', on);
+      b.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    document.querySelectorAll('.rv').forEach(el => { if (el.offsetParent !== null) el.classList.add('in'); });
+  }
+  sw.querySelectorAll('.mbtn').forEach(b => b.addEventListener('click', () => {
+    try { localStorage.setItem(KEY, b.dataset.m); } catch(e){}
+    apply(b.dataset.m);
+  }));
+  let start = 'v';
+  try { start = localStorage.getItem(KEY) || 'v'; } catch(e){}
+  apply(start);
+  const sug = new Date().getHours() < 14 ? 'o' : 'a';
+  const sugBtn = sw.querySelector('.mbtn[data-m="' + sug + '"]');
+  if (sugBtn && start === 'v') sugBtn.classList.add('sug');
+})();
+
+// ── UI: reveal on scroll ─────────────────────────────────────────────────────
+(function(){
+  const io = new IntersectionObserver((es) => {
+    es.forEach(e => { if (e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: .08 });
+  document.querySelectorAll('.rv').forEach(el => io.observe(el));
+})();
+
+// ── UI: scroll-spy in de zijbalk ─────────────────────────────────────────────
+(function(){
+  const links = [...document.querySelectorAll('.side nav a[href^="#"]')].filter(a => a.getAttribute('href').length > 1);
+  const map = {};
+  links.forEach(a => { const s = document.querySelector(a.getAttribute('href')); if (s) (map[s.id] = map[s.id] || []).push(a); });
+  const secs = Object.keys(map).map(id => document.getElementById(id)).filter(Boolean);
+  if (!secs.length) return;
+  const spy = new IntersectionObserver((es) => {
+    es.forEach(e => {
+      if (e.isIntersecting){
+        links.forEach(l => l.classList.remove('active'));
+        (map[e.target.id] || []).forEach(l => l.classList.add('active'));
+      }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px' });
+  secs.forEach(s => spy.observe(s));
+})();
 </script>
 </body>
 </html>

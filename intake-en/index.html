@@ -4,6 +4,33 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SZINN Alignment Blueprint · Intake</title>
+<!-- Payment gate: the intake is only accessible after payment (or with a gift
+     code). The page stays hidden until the server confirms access; otherwise
+     redirect to the payment link. Real enforcement lives on the server
+     (/api/intake/submit refuses without a verified payment). -->
+<style id="szinn-gate-style">html{visibility:hidden}</style>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search);
+  fetch('/api/intake/access', {
+    method: 'POST', credentials: 'same-origin',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ session_id: q.get('session_id') || null, code: q.get('code') || null }),
+  }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+    .then(function (x) {
+      if (x.ok && x.j.ok) {
+        var s = document.getElementById('szinn-gate-style');
+        if (s) s.remove();
+      } else {
+        location.replace((x.j && x.j.payLink) || 'https://buy.stripe.com/fZu9AL8g20KT5xgdpO0kE00');
+      }
+    })
+    .catch(function () { // API unreachable: better to show than lock out a paying customer
+      var s = document.getElementById('szinn-gate-style');
+      if (s) s.remove();
+    });
+})();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -631,10 +658,20 @@
 
     <div class="field" id="field-email">
       <label class="field-label" data-nl="E-mailadres" data-en="Email address">Email address</label>
-      <input type="email" id="email" 
+      <input type="email" id="email"
              data-placeholder-nl="jouw@email.nl" data-placeholder-en="your@email.com"
              placeholder="your@email.com" autocomplete="email">
       <span class="err-msg">Please enter a valid email address</span>
+    </div>
+
+    <div class="field" id="field-telefoon">
+      <label class="field-label" data-nl="Telefoonnummer (optioneel)" data-en="Phone number (optional)">Phone number (optional)</label>
+      <p class="field-hint"
+         data-nl="Alleen als je je dagelijkse SZINN-reading via WhatsApp wilt ontvangen. Rond 12:00 krijg je een berichtje met een sneak-peek van vandaag."
+         data-en="Only if you'd like your daily SZINN reading via WhatsApp. Around noon you'll get a message with today's sneak peek.">Only if you'd like your daily SZINN reading via WhatsApp. Around noon you'll get a message with today's sneak peek.</p>
+      <input type="tel" id="telefoon"
+             data-placeholder-nl="Bijv. 0612345678" data-placeholder-en="E.g. +31612345678"
+             placeholder="E.g. +31612345678" autocomplete="tel">
     </div>
 
     <hr class="rule">
@@ -1343,6 +1380,7 @@ function collect() {
     timestamp: new Date().toISOString(),
     language: lang,
     voornaam: v('voornaam'), achternaam: v('achternaam'), geboortenaam: v('geboortenaam'), email: v('email'),
+    telefoon: v('telefoon'),
     geboortedatum: v('geboortedatum'), geboortetijd: v('geboortetijd'),
     geboorteland: v('geboorteland'), geboorteplaats: v('geboorteplaats'),
     geboorteplaats_volledig: v('geboorteplaats_volledig'),
@@ -1506,6 +1544,7 @@ function setupBirthplace() {
 /* ── Tussentijds opslaan (concept in je account) ────────────────────────── */
 const FIELD_KEYS = {
   voornaam: 'voornaam', achternaam: 'achternaam', geboortenaam: 'geboortenaam', email: 'email',
+  telefoon: 'telefoon',
   geboortedatum: 'geboortedatum', geboortetijd: 'geboortetijd',
   geboorteland: 'geboorteland', geboorteplaats: 'geboorteplaats',
   'blueprint-taal': 'blueprint_taal',

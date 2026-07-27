@@ -77,6 +77,7 @@
           <div class="mock-note" id="mockNote" style="display:none">
             Testmodus: er is nog geen Stripe-sleutel ingesteld, dus de betaling wordt gesimuleerd. Zodra <code>STRIPE_SECRET_KEY</code> is ingevuld, gaat deze knop naar de echte Stripe-betaalpagina.
           </div>
+          <p class="err-msg" id="payErr" style="display:none;color:#b4462e;font-size:13px;margin-top:10px"></p>
         </div>
 
         <!-- Stap 2: ontvanger + verzenddatum -->
@@ -135,6 +136,7 @@
 
     const $ = id => document.getElementById(id);
     let paidToken = null;
+    const showPayErr = (msg) => { const e = $('payErr'); e.textContent = msg; e.style.display = 'block'; };
 
     function step(n) {
       [0,1,2].forEach(i => {
@@ -149,6 +151,15 @@
       const today = new Date().toISOString().slice(0, 10);
       const d = $('sendDate');
       d.value = today; d.min = today;
+    })();
+
+    // Terug van Stripe (?gift_session=…): betaling gelukt → door naar de ontvanger-stap.
+    (function () {
+      const sid = new URLSearchParams(location.search).get('gift_session');
+      if (!sid) return;
+      paidToken = sid;
+      history.replaceState(null, '', location.pathname);
+      step(1);
     })();
 
     // Stap 1 → betaling
@@ -166,8 +177,8 @@
           setTimeout(() => step(1), 500);
           return;
         }
-        alert(data.error || 'Betaling kon niet worden gestart.');
-      } catch (e) { alert('Er ging iets mis. Probeer het opnieuw.'); }
+        showPayErr(data.error || 'Betaling kon niet worden gestart.');
+      } catch (e) { showPayErr('Er ging iets mis. Probeer het opnieuw.'); }
       $('btnPay').disabled = false;
       $('btnPay').textContent = 'Ga naar betaling →';
     });

@@ -247,7 +247,9 @@ app.get('/api/orders', async (req, res) => {
 app.get('/api/orders/:id', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
   const db    = await loadDB();
-  const order = db.orders.find(o => o.id === req.params.id && o.user_id === req.auth.userId);
+  // De viewer opent met ?t=<view_token>; oude links gebruiken nog het volgnummer.
+  // Resolve op beide, net als de blueprint-serve-route (authorizedOrder).
+  const order = db.orders.find(o => (o.view_token === req.params.id || o.id === req.params.id) && o.user_id === req.auth.userId);
   if (!order) return res.status(404).json({ error: 'Aanvraag niet gevonden' });
   res.json(toOrder(order));
 });
@@ -272,12 +274,20 @@ app.post('/api/gift/generate', async (req, res) => {
 
 // ── Cadeau-flow: betaling (mock) → ontvanger + datum → (ingeplande) mail ──────
 const GIFT_PRICE_EUR = process.env.GIFT_PRICE_EUR || '49,90';
+const GIFT_PRICE_CENTS = parseInt(process.env.GIFT_PRICE_CENTS || '4990', 10);
 
-app.post('/api/gift/checkout', (req, res) => {
+app.post('/api/gift/checkout', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
-  if (process.env.STRIPE_SECRET_KEY) {
-    // TODO: echte Stripe Checkout Session; success_url → /cadeau?paid=1
-    return res.status(501).json({ error: 'Stripe nog niet ingesteld.' });
+  if (stripeConfigured()) {
+    const db = await loadDB();
+    const user = db.users.find(u => u.id === req.auth.userId);
+    try {
+      const session = await createGiftCheckout({ email: user?.email, userId: req.auth.userId, baseUrl: SITE_URL, priceCents: GIFT_PRICE_CENTS });
+      return res.json({ url: session.url });
+    } catch (e) {
+      console.error('cadeau-checkout mislukt:', e.message);
+      return res.status(500).json({ error: 'Kon de betaalpagina niet openen. Probeer het later opnieuw.' });
+    }
   }
   res.json({ mock: true, price: GIFT_PRICE_EUR, paidToken: 'mock-' + crypto.randomBytes(6).toString('hex') });
 });
@@ -287,11 +297,19 @@ function giftIsDue(sendDate) {
   return sendDate <= new Date().toISOString().slice(0, 10);
 }
 
+// Echte betaling verifiëren: betaald, hoort bij dit account, nog niet gebruikt.
+async function verifyGiftPayment(db, sid, userId) {
+  if (!sid) return false;
+  if ((db.usedCheckoutSessions || []).includes(sid)) return false;
+  try {
+    const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(sid)}`);
+    return s.payment_status === 'paid' && String(s.client_reference_id) === String(userId);
+  } catch (e) { console.error('cadeaubetaling verifiëren mislukt:', e.message); return false; }
+}
+
 app.post('/api/gift/create', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
   const { recipientEmail, recipientName, message, sendDate, lang, paidToken } = req.body || {};
-  if (!process.env.STRIPE_SECRET_KEY && !String(paidToken || '').startsWith('mock-'))
-    return res.status(402).json({ error: 'Betaling niet bevestigd.' });
   if (!recipientEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail))
     return res.status(400).json({ error: 'Vul een geldig e-mailadres van de ontvanger in.' });
   if (sendDate && !/^\d{4}-\d{2}-\d{2}$/.test(sendDate))
@@ -299,6 +317,12 @@ app.post('/api/gift/create', async (req, res) => {
 
   const language = lang === 'en' ? 'en' : 'nl';
   const db = await loadDB();
+  if (stripeConfigured()) {
+    if (!(await verifyGiftPayment(db, paidToken, req.auth.userId)))
+      return res.status(402).json({ error: 'Betaling niet bevestigd.' });
+  } else if (!String(paidToken || '').startsWith('mock-')) {
+    return res.status(402).json({ error: 'Betaling niet bevestigd.' });
+  }
   const sender = db.users.find(u => u.id === req.auth.userId);
   const part = crypto.randomBytes(3).toString('hex').toUpperCase();
   const code = `SZINN-${part.slice(0, 4)}-${part.slice(4)}`;
@@ -310,6 +334,11 @@ app.post('/api/gift/create', async (req, res) => {
     paid: true, created_at: new Date().toISOString(), sent_at: null,
   };
   db.giftCodes.push(entry);
+  // Echte betaalsessie eenmalig markeren zodat dezelfde betaling geen tweede cadeau oplevert.
+  if (stripeConfigured() && paidToken) {
+    db.usedCheckoutSessions = db.usedCheckoutSessions || [];
+    if (!db.usedCheckoutSessions.includes(paidToken)) db.usedCheckoutSessions.push(paidToken);
+  }
 
   if (due) {
     try {
@@ -343,7 +372,7 @@ app.post('/api/gift/process', async (req, res) => {
 });
 
 // ── AI Companion & dashboard-data ────────────────────────────────────────────
-const COMPANION_MODEL = () => process.env.COMPANION_MODEL || 'claude-haiku-4-5';
+const { companionChat, companionConfigured, companionTurn, emptyCompanionState } = require('../../lib/companion-llm');
 
 // Verzamelt alles wat het dashboard en de companion nodig hebben voor deze
 // gebruiker: laatste order, berekende kaart/getallen (laag 1) en de
@@ -475,7 +504,7 @@ Toon: warm, gegrond, helder, nooit zweverig, geen new-age clichés. Spreek aan m
 Je REKENT NOOIT zelf astrologie of numerologie. Gebruik uitsluitend deze vaste, geverifieerde gegevens en verzin niets nieuws:
 Zon ${line(P.sun)}; Maan ${line(P.moon)}; Ascendant ${line(P.ascendant)}; Noordknoop ${line(P.northNode)}; Zuidknoop ${line(P.southNode)}; Chiron ${line(P.chiron)}.
 Levenspad ${n.lifePath}; Persoonlijk Jaar ${n.personalYear} (${n.personalYearInfo.theme}); Persoonlijke Maand ${c.pm.number}; Persoonlijke Dag ${c.pd}.
-Vandaag: maan in ${c.sky.moon.sign}, ${c.sky.waxing ? 'wassend' : 'afnemend'}. Datum: ${c.now.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}.${c.lang === 'en' ? '\nIMPORTANT: The user uses the English dashboard. Reply entirely in English (use English zodiac sign names), while keeping the same warm, grounded tone.' : ''}`;
+Vandaag: maan in ${c.sky.moon.sign}, ${c.sky.waxing ? 'wassend' : 'afnemend'}. Datum: ${c.now.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}.${c.texts && c.texts.summary && c.texts.summary.oneLiner ? `\nKern van de blueprint: ${c.texts.summary.oneLiner}` : ''}${c.lang === 'en' ? '\nIMPORTANT: The user uses the English dashboard. Reply entirely in English (use English zodiac sign names), while keeping the same warm, grounded tone.' : ''}`;
 }
 
 // Alle blueprint-data voor de dashboardblokken
@@ -495,7 +524,12 @@ app.get('/api/companion/blueprint', async (req, res) => {
   const P = c.ctx.chart.planets;
   const n = c.ctx.numerology;
 
+  // De dagelijks veranderende duiding hoort bij het abonnement; de blueprint
+  // zelf (eenmalig gekocht) blijft altijd zichtbaar.
+  const subscribed = await hasSubscriptionAccess(await loadDB(), req);
+
   res.json({
+    subscribed,
     status: 'completed',
     orderId: c.order.id,
     viewToken: c.order.view_token,
@@ -524,7 +558,7 @@ app.get('/api/companion/blueprint', async (req, res) => {
       nextFullMoon: c.sky.nextFullMoon ? { date: c.sky.nextFullMoon.date, sign: signT(c.lang, c.sky.nextFullMoon.sign) } : null,
       solarReturn: { date: c.solar, sign: signT(c.lang, P.sun.sign) },
     },
-    day: dayFromBlueprint(c),
+    day: subscribed ? dayFromBlueprint(c) : null,
     texts: c.texts,
     mandala: generateMiniMandalaSVG(c.ctx.chart),
     blueprintUrl: c.order.blueprint_url,
@@ -536,15 +570,17 @@ app.get('/api/companion/blueprint', async (req, res) => {
 // Dagduiding vernieuwen: AI-versie met de blueprint-fallback als vangnet
 app.post('/api/companion/day', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  // Dagelijkse duiding is onderdeel van het abonnement.
+  if (!(await hasSubscriptionAccess(await loadDB(), req)))
+    return res.status(402).json({ error: 'De dagelijkse duiding hoort bij het SZINN-abonnement.', subscribe: true });
+
   const c = await companionContext(req.auth.userId, req.body?.lang || req.query.lang);
   if (!c.ctx) return res.status(400).json({ error: 'Nog geen voltooide blueprint' });
 
   const fallback = dayFromBlueprint(c);
-  if (!process.env.ANTHROPIC_API_KEY) return res.json({ source: 'blueprint', ...fallback });
+  if (!companionConfigured()) return res.json({ source: 'blueprint', ...fallback });
 
   try {
-    const Anthropic = require('@anthropic-ai/sdk');
-    const client = new (Anthropic.default || Anthropic)({ apiKey: process.env.ANTHROPIC_API_KEY });
     const str = { type: 'string' };
     const schema = {
       type: 'object', additionalProperties: false,
@@ -554,50 +590,294 @@ app.post('/api/companion/day', async (req, res) => {
     const userPrompt = c.lang === 'en'
       ? `Generate today's daily reading in ENGLISH, fully grounded in the fixed data. Fields: thema (short powerful sentence), focus (one concrete small step), vraag (one reflection question), lucht (2-3 sentences about today's moon linked to the natal moon), numFocus (1 sentence for Personal Day ${c.pd}), numReminder (1 sentence for Personal Year ${c.ctx.numerology.personalYear}), gaven (1 sentence: which 2 of the six gifts light up today and why).`
       : `Genereer de dagduiding voor vandaag, volledig gegrond in de vaste gegevens. Velden: thema (korte krachtige zin), focus (één concrete kleine stap), vraag (één reflectievraag), lucht (2-3 zinnen over de maanstand vandaag gekoppeld aan de geboortemaan), numFocus (1 zin bij Persoonlijke Dag ${c.pd}), numReminder (1 zin bij Persoonlijk Jaar ${c.ctx.numerology.personalYear}), gaven (1 zin: welke 2 van de zes gaven vandaag oplichten en waarom).`;
-    const response = await client.messages.create({
-      model: COMPANION_MODEL(), max_tokens: 700,
+    const reading = await companionChat({
       system: companionSystem(c),
       messages: [{ role: 'user', content: userPrompt }],
-      output_config: { format: { type: 'json_schema', schema } },
+      maxTokens: 700,
+      jsonSchema: schema,
     });
-    const txt = response.content.filter(b => b.type === 'text').map(b => b.text).join('');
-    res.json({ source: 'ai', ...JSON.parse(txt) });
+    res.json({ source: 'ai', ...reading });
   } catch (err) {
     console.error('companion/day AI-fout:', err.message);
     res.json({ source: 'blueprint', ...fallback });
   }
 });
 
-// Gesprek met de Companion (kent de kaart en blueprint van de gebruiker)
+// Gesprek met de Companion (kent de kaart en blueprint van de gebruiker).
+// De geschiedenis en het samengevatte geheugen leven per account op de server
+// (user.companion), zodat een nieuwe sessie naadloos verdergaat waar de vorige
+// ophield — de client stuurt alleen het nieuwste bericht.
 app.post('/api/companion/chat', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return res.json({ content: 'De Companion is nog niet geactiveerd. Stel ANTHROPIC_API_KEY in via Netlify → Site settings → Environment variables.' });
+  if (!companionConfigured()) return res.json({ content: 'De Companion is nog niet geactiveerd. Stel COMPANION_API_KEY (Gemini) in via Netlify → Site settings → Environment variables.' });
 
-  const { messages, lang } = req.body;
-  if (!messages?.length) return res.status(400).json({ error: 'Geen berichten' });
+  const lang = (req.body?.lang === 'en') ? 'en' : 'nl';
+  // Nieuw formaat: { message }. Oude clients sturen { messages: [...] } — pak daaruit de laatste gebruikersbeurt.
+  const userMessage = String(req.body?.message
+    || (Array.isArray(req.body?.messages) ? [...req.body.messages].reverse().find(m => m.role === 'user')?.content : '')
+    || '').trim().slice(0, 4000);
+  if (!userMessage) return res.status(400).json({ error: 'Geen bericht' });
+
+  // De companion hoort bij het abonnement.
+  if (!(await hasSubscriptionAccess(await loadDB(), req)))
+    return res.status(402).json({ error: 'De Companion hoort bij het SZINN-abonnement.', subscribe: true });
 
   let system = lang === 'en'
     ? 'You are the SZINN AI Companion — warm, clear, practical. No bullet points. Write flowing sentences in English.'
     : 'Je bent de SZINN AI Companion — warm, helder, praktisch. Spreek de gebruiker aan met jij/jouw. Geen bullet points. Schrijf vloeiende zinnen.';
+  let intakeRaw = null, name = null;
   try {
     const c = await companionContext(req.auth.userId, lang);
-    if (c.ctx) system = companionSystem(c);
+    if (c.ctx) { system = companionSystem(c); intakeRaw = c.ctx.intake.raw; name = c.ctx.intake.clientName; }
   } catch (e) { /* generieke system prompt volstaat */ }
 
+  const db = await loadDB();
+  const user = db.users.find(u => u.id === req.auth.userId);
+  if (!user) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
+  user.companion = user.companion || emptyCompanionState();
+
   try {
-    const Anthropic = require('@anthropic-ai/sdk');
-    const client = new (Anthropic.default || Anthropic)({ apiKey });
-    const response = await client.messages.create({
-      model: COMPANION_MODEL(), max_tokens: 800,
-      system,
-      messages: messages.map(m => ({ role: m.role, content: m.content })),
-    });
-    res.json({ content: response.content.filter(b => b.type === 'text').map(b => b.text).join('') });
+    const content = await companionTurn({ state: user.companion, userMessage, baseSystem: system, name, intakeRaw, lang });
+    await saveDB(db);
+    res.json({ content });
   } catch (err) {
     console.error('companion/chat fout:', err.message);
     res.status(500).json({ error: 'AI Companion tijdelijk niet beschikbaar.' });
   }
+});
+
+// Gespreksgeschiedenis voor het dashboard: zo gaat een nieuwe sessie verder
+// waar de vorige ophield i.p.v. met een leeg venster.
+app.get('/api/companion/history', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const db = await loadDB();
+  const user = db.users.find(u => u.id === req.auth.userId);
+  res.json({ messages: (user?.companion?.messages || []).slice(-30) });
+});
+
+// ── Intake-toegang: alleen na betaling (of met cadeaucode) ───────────────────
+// De betaallink (buy.stripe.com) stuurt na betaling door naar
+// /intake?session_id={CHECKOUT_SESSION_ID}; die sessie verifiëren we bij Stripe.
+// Toegang wordt daarna 24 uur vastgehouden in een eigen JWT-cookie, zodat de
+// gebruiker rustig kan invullen (en een concept later kan afmaken).
+const {
+  stripeReq, stripeConfigured,
+  createSubscriptionCheckout, createGiftCheckout, summarizeSub, subIsActive, refreshSubIfStale, cancelSubscription,
+} = require('../../lib/stripe');
+const INTAKE_PAY_LINK = process.env.INTAKE_PAY_LINK || 'https://buy.stripe.com/fZu9AL8g20KT5xgdpO0kE00';
+
+function setIntakeCookie(res, payload) {
+  const token = jwt.sign({ intake: true, ...payload }, JWT_SECRET, { expiresIn: '24h' });
+  // Naast het auth-cookie: intake-toegang staat los van ingelogd zijn.
+  const prev = res.getHeader('Set-Cookie');
+  const cookie = cookieLib.serialize('szinn_intake', token, { httpOnly: true, sameSite: 'lax', secure: true, maxAge: 86400, path: '/' });
+  res.setHeader('Set-Cookie', prev ? [].concat(prev, cookie) : cookie);
+}
+
+// Wie mag de intake in? { ok, sid?, code? } — sid/code gaan mee zodat de
+// submit ze als 'gebruikt' kan markeren (één intake per betaling/cadeau).
+async function intakeAccess(req, db, { sessionId, code } = {}) {
+  if (req.auth?.isAdmin) return { ok: true };
+  if (req.auth) {
+    const u = db.users.find(u => u.id === req.auth.userId);
+    if (u?.intake_draft) return { ok: true }; // had al toegang: concept staat klaar
+  }
+  const cookies = cookieLib.parse(req.headers.cookie || '');
+  if (cookies.szinn_intake) {
+    try {
+      const t = jwt.verify(cookies.szinn_intake, JWT_SECRET);
+      const sidUsed = t.sid && (db.usedCheckoutSessions || []).includes(t.sid);
+      const codeUsed = t.code && (db.giftCodes || []).find(c => c.code === t.code)?.redeemed_at;
+      if (t.intake && !sidUsed && !codeUsed)
+        return { ok: true, sid: t.sid || null, code: t.code || null };
+    } catch {}
+  }
+  if (sessionId && stripeConfigured()) {
+    if ((db.usedCheckoutSessions || []).includes(sessionId)) return { ok: false };
+    try {
+      const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(sessionId)}`);
+      if (s.payment_status === 'paid') return { ok: true, sid: sessionId, fresh: true };
+    } catch (e) { console.error('checkout-sessie verifiëren mislukt:', e.message); }
+  }
+  if (code) {
+    const g = (db.giftCodes || []).find(c => c.code === String(code).trim().toUpperCase());
+    if (g && !g.redeemed_at) return { ok: true, code: g.code, fresh: true };
+  }
+  // Zonder Stripe-sleutel (lokaal ontwikkelen) niet blokkeren.
+  if (!stripeConfigured()) return { ok: true };
+  return { ok: false };
+}
+
+// Poortwachter voor de intake-pagina: verifieert betaling/cadeaucode en zet
+// bij succes het toegangscookie. De pagina zelf roept dit aan vóór hij toont.
+app.post('/api/intake/access', async (req, res) => {
+  const db = await loadDB();
+  const access = await intakeAccess(req, db, {
+    sessionId: req.body?.session_id || null,
+    code: req.body?.code || null,
+  });
+  if (!access.ok) return res.status(402).json({ ok: false, payLink: INTAKE_PAY_LINK });
+  if (access.fresh) setIntakeCookie(res, { sid: access.sid || null, code: access.code || null });
+  res.json({ ok: true });
+});
+
+// ── Dagboek: dagstart & dagafsluiting (kalender + popup in het dashboard) ─────
+// Eén entry per gebruiker per dag in user.journal ('YYYY-MM-DD' → entry);
+// merge/validatie in lib/journal.js (gedeeld met server.js).
+const { DATE_RE, mergeJournalEntry } = require('../../lib/journal');
+
+app.get('/api/journal', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const db = await loadDB();
+  const user = db.users.find(u => u.id === req.auth.userId);
+  res.json({ entries: (user && user.journal) || {} });
+});
+
+app.post('/api/journal', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const date = String(req.body?.date || '');
+  if (!DATE_RE.test(date)) return res.status(400).json({ error: 'Ongeldige datum' });
+  const db = await loadDB();
+  const user = db.users.find(u => u.id === req.auth.userId);
+  if (!user) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
+  user.journal = user.journal || {};
+  user.journal[date] = mergeJournalEntry(user.journal[date], req.body);
+  // Cap: bewaar de laatste 200 dagen (het dashboard kijkt hooguit maanden terug).
+  const keys = Object.keys(user.journal).sort();
+  while (keys.length > 200) delete user.journal[keys.shift()];
+  await saveDB(db);
+  res.json({ ok: true, date, entry: user.journal[date] });
+});
+
+// Korte AI-samenvatting van het dagboek (ochtend + avond) van de gebruiker, plus
+// tellingen voor het ritme-overzicht op het dashboard. Valt zonder AI-sleutel
+// terug op een simpele telling. ponytail: alleen op de Netlify-api toegevoegd;
+// server.js (lokaal) heeft geen companionChat — daar degradeert de UI naar de telling.
+app.get('/api/companion/journal-summary', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const lang = req.query.lang === 'en' ? 'en' : 'nl';
+  const db = await loadDB();
+  const user = db.users.find(u => u.id === req.auth.userId);
+  const journal = (user && user.journal) || {};
+  const dates = Object.keys(journal).sort().slice(-21);
+  if (!dates.length) return res.json({ summary: null, morningCount: 0, eveningCount: 0, days: 0 });
+
+  let morningCount = 0, eveningCount = 0;
+  const lines = dates.map(d => {
+    const e = journal[d] || {};
+    if (e.morning) morningCount++;
+    if (e.evening) eveningCount++;
+    const m = e.morning ? `ochtend — intentie: ${e.morning.intention || '-'}; gevoel: ${e.morning.feeling || '-'}; dankbaar: ${(e.morning.gratitude || []).join(', ') || '-'}` : '';
+    const ev = e.evening ? `avond — helderheid: ${e.evening.clarity ?? '-'}/10; dankbaar: ${(e.evening.gratitude || []).join(', ') || '-'}; notitie: ${e.evening.note || '-'}` : '';
+    return `${d}: ${[m, ev].filter(Boolean).join(' | ')}`;
+  }).join('\n');
+  const counts = { morningCount, eveningCount, days: dates.length };
+
+  if (!companionConfigured()) {
+    return res.json({
+      summary: lang === 'en'
+        ? `You checked in on ${morningCount} mornings and ${eveningCount} evenings across your last ${dates.length} logged days.`
+        : `Je checkte de afgelopen ${dates.length} genoteerde dagen ${morningCount} ochtenden en ${eveningCount} avonden in.`,
+      ...counts,
+    });
+  }
+  try {
+    const system = lang === 'en'
+      ? 'You are the SZINN AI Companion. Warm, clear, practical. Given a journal, write ONE short paragraph (max 3 sentences) reflecting the pattern and tone across the days. Speak to the user with you/your. No bullet points.'
+      : 'Je bent de SZINN AI Companion. Warm, helder, praktisch. Schrijf op basis van het dagboek ÉÉN korte alinea (max 3 zinnen) die het patroon en de toon over de dagen weerspiegelt. Spreek de gebruiker aan met jij/jouw. Geen bullet points.';
+    const out = await companionChat({
+      system,
+      messages: [{ role: 'user', content: (lang === 'en' ? 'My recent journal:\n' : 'Mijn recente dagboek:\n') + lines }],
+      maxTokens: 300,
+      jsonSchema: { type: 'object', additionalProperties: false, properties: { summary: { type: 'string' } }, required: ['summary'] },
+    });
+    res.json({ summary: out.summary, ...counts });
+  } catch (err) {
+    console.error('journal-summary AI-fout:', err.message);
+    res.json({ summary: null, ...counts });
+  }
+});
+
+// ── Abonnement €20/mnd: daily dashboard + WhatsApp-reminders + companion ─────
+// Afsluiten vanuit het dashboard: wij maken een Stripe Checkout-sessie
+// (mode=subscription) aan; Stripe maakt product/prijs/klant zelf aan.
+const SITE_URL = (process.env.URL || 'https://szinn.ai').replace(/\/+$/, '');
+
+// Actuele status voor deze gebruiker; ververst hooguit één keer per dag bij
+// Stripe (geen webhook nodig) en slaat het resultaat terug op.
+async function userSubscription(db, user) {
+  if (!user?.subscription?.id) return null;
+  try {
+    const fresh = await refreshSubIfStale(user.subscription);
+    if (fresh !== user.subscription) { user.subscription = fresh; await saveDB(db); }
+  } catch (e) { console.error('abonnement verversen mislukt:', e.message); }
+  return user.subscription;
+}
+
+// Wie mag de betaalde companion-/daily-functies gebruiken?
+// Admin en demo-accounts altijd; zonder Stripe-sleutel (lokaal) niet blokkeren.
+async function hasSubscriptionAccess(db, req) {
+  if (!stripeConfigured()) return true;
+  if (req.auth?.isAdmin) return true;
+  const user = db.users.find(u => u.id === req.auth.userId);
+  if (!user) return false;
+  if (user.email.toLowerCase() === DEMO_EMAIL || user.email.toLowerCase() === 'demo-plus@szinn.ai') return true;
+  return subIsActive(await userSubscription(db, user));
+}
+
+app.post('/api/subscription/checkout', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  if (!stripeConfigured()) return res.status(501).json({ error: 'Stripe nog niet ingesteld (STRIPE_SECRET_KEY).' });
+  const db = await loadDB();
+  const user = db.users.find(u => u.id === req.auth.userId);
+  if (!user) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
+  if (subIsActive(await userSubscription(db, user)))
+    return res.status(400).json({ error: 'Je hebt al een lopend abonnement.' });
+  const session = await createSubscriptionCheckout({ email: user.email, userId: user.id, baseUrl: SITE_URL });
+  res.json({ url: session.url });
+});
+
+// Terug van Stripe (success_url bevat ?sub_session=…): sessie verifiëren en
+// het abonnement aan het account koppelen.
+app.post('/api/subscription/confirm', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const sid = String(req.body?.session_id || '').trim();
+  if (!sid) return res.status(400).json({ error: 'session_id verplicht' });
+  const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(sid)}`);
+  if (s.mode !== 'subscription' || !s.subscription || String(s.client_reference_id) !== String(req.auth.userId))
+    return res.status(400).json({ error: 'Deze betaalsessie hoort niet bij dit account.' });
+  const sub = await stripeReq('GET', `/subscriptions/${s.subscription}`);
+  const db = await loadDB();
+  const user = db.users.find(u => u.id === req.auth.userId);
+  if (!user) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
+  user.subscription = summarizeSub(sub);
+  await saveDB(db);
+  res.json({ ok: true, active: subIsActive(user.subscription) });
+});
+
+app.get('/api/subscription/status', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const db = await loadDB();
+  const user = db.users.find(u => u.id === req.auth.userId);
+  const sub = user ? await userSubscription(db, user) : null;
+  res.json({
+    active: subIsActive(sub) || await hasSubscriptionAccess(db, req),
+    status: sub?.status || null,
+    cancelAtPeriodEnd: !!sub?.cancel_at_period_end,
+    currentPeriodEnd: sub?.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null,
+    configured: stripeConfigured(),
+  });
+});
+
+app.post('/api/subscription/cancel', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const db = await loadDB();
+  const user = db.users.find(u => u.id === req.auth.userId);
+  if (!user?.subscription?.id) return res.status(400).json({ error: 'Geen lopend abonnement' });
+  const sub = await cancelSubscription(user.subscription.id);
+  user.subscription = summarizeSub(sub);
+  await saveDB(db);
+  res.json({ ok: true, cancelAtPeriodEnd: true, currentPeriodEnd: sub.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null });
 });
 
 // ── Intake concept (tussentijds opslaan) ─────────────────────────────────────
@@ -605,6 +885,15 @@ app.post('/api/companion/chat', async (req, res) => {
 // er één aangemaakt (met mail + inloggegevens). Een bestaand e-mailadres van
 // iemand die níét is ingelogd wordt geweigerd: anders zou je andermans account
 // kunnen vullen of overnemen.
+// Telefoon → kaal internationaal formaat voor WhatsApp (Meta wil geen + of spaties).
+// NL-centrisch: leidende 0 wordt 31. ponytail: enkel NL/E.164, uitbreiden zodra nodig.
+function normalizePhone(raw) {
+  if (!raw) return null;
+  let d = String(raw).replace(/[^\d]/g, '');
+  if (d.startsWith('0')) d = '31' + d.slice(1);
+  return d.length >= 10 ? d : null;
+}
+
 app.post('/api/intake/draft', async (req, res) => {
   const data = req.body || {};
   const db   = await loadDB();
@@ -629,6 +918,8 @@ app.post('/api/intake/draft', async (req, res) => {
     console.log(`Nieuw account via concept-opslag: ${user.email}`);
   }
 
+  const draftPhone = normalizePhone(data.telefoon || data.phone);
+  if (draftPhone) user.phone = draftPhone;
   user.intake_draft = { data, updated_at: new Date().toISOString() };
   await saveDB(db);
 
@@ -655,6 +946,10 @@ app.post('/api/intake/submit', async (req, res) => {
   if (!data.email || !data.geboortedatum) return res.status(400).json({ error: 'Email en geboortedatum zijn verplicht' });
 
   const db         = await loadDB();
+
+  // Betaalpoort: alleen met geverifieerde betaling of cadeaucode (zie intakeAccess).
+  const access = await intakeAccess(req, db, { sessionId: data.stripe_session_id || null, code: data.gift_code || null });
+  if (!access.ok) return res.status(402).json({ error: 'Deze aanvraag vereist eerst een betaling.', payLink: INTAKE_PAY_LINK });
   const clientName = `${data.voornaam || ''} ${data.achternaam || ''}`.trim();
   let user         = db.users.find(u => u.email.toLowerCase() === data.email.trim().toLowerCase());
   let tempPassword = null;
@@ -669,6 +964,9 @@ app.post('/api/intake/submit', async (req, res) => {
     db.users.push(user);
     console.log(`Nieuw account: ${user.email} / ${tempPassword}`);
   }
+
+  const submitPhone = normalizePhone(data.telefoon || data.phone);
+  if (submitPhone) user.phone = submitPhone;
 
   const orderId = `ORD-${new Date().getFullYear()}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
   const order = {
@@ -689,6 +987,15 @@ app.post('/api/intake/submit', async (req, res) => {
   db.orders.push(order);
   // Concept opruimen: het formulier is nu definitief ingestuurd
   if (user.intake_draft) user.intake_draft = null;
+  // Betaling/cadeaucode verzilveren: één intake per betaling.
+  if (access.sid) {
+    db.usedCheckoutSessions = db.usedCheckoutSessions || [];
+    db.usedCheckoutSessions.push(access.sid);
+  }
+  if (access.code) {
+    const g = (db.giftCodes || []).find(c => c.code === access.code);
+    if (g) { g.redeemed_at = new Date().toISOString(); g.redeemed_order = orderId; }
+  }
   await saveDB(db);
 
   // Mail 1: account + wachtwoord (of "nieuwe blueprint in je bestaande account")

@@ -1,3 +1,7 @@
+// Lokaal: lees .env in (o.a. COMPANION_API_KEY). No-op op Netlify/Railway,
+// waar env-vars uit het dashboard komen en er geen .env-bestand staat.
+try { process.loadEnvFile(); } catch {}
+
 const express = require('express');
 const session = require('express-session');
 const { DatabaseSync } = require('node:sqlite');
@@ -8,7 +12,7 @@ const crypto = require('crypto');
 const { sendGiftEmail, sendGiftConfirmationEmail } = require('./lib/email');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 301;
 const ROOT = __dirname;
 
 // DATA_DIR: writable persistent directory (set to /data on Railway with volume)
@@ -74,6 +78,36 @@ try { db.exec(`ALTER TABLE orders ADD COLUMN full_birth_name TEXT DEFAULT NULL`)
 try { db.exec(`ALTER TABLE orders ADD COLUMN blueprint_language TEXT DEFAULT 'nl'`); } catch {}
 try { db.exec(`ALTER TABLE orders ADD COLUMN blueprint_html TEXT DEFAULT NULL`); } catch {}
 try { db.exec(`ALTER TABLE users ADD COLUMN is_admin INTEGER DEFAULT 0`); } catch {}
+// Telefoonnummer voor de dagelijkse WhatsApp-reading (kaal internationaal, bv. 31612345678).
+try { db.exec(`ALTER TABLE users ADD COLUMN phone TEXT DEFAULT NULL`); } catch {}
+// Companion-geheugen per account: { memory, messages, turns } als JSON.
+db.exec(`CREATE TABLE IF NOT EXISTS companion_state (
+  user_id INTEGER PRIMARY KEY,
+  state TEXT NOT NULL,
+  updated_at TEXT DEFAULT (CURRENT_TIMESTAMP)
+)`);
+// Dagboek: dagstart/dagafsluiting per gebruiker per dag ({ morning, evening } als JSON).
+db.exec(`CREATE TABLE IF NOT EXISTS journal_entries (
+  user_id INTEGER NOT NULL,
+  date TEXT NOT NULL,
+  data TEXT NOT NULL,
+  updated_at TEXT DEFAULT (CURRENT_TIMESTAMP),
+  PRIMARY KEY (user_id, date)
+)`);
+// Intake-betaalpoort: welke Stripe checkout-sessies al een intake opleverden
+// (één intake per betaling) en wanneer een cadeaucode is verzilverd.
+db.exec(`CREATE TABLE IF NOT EXISTS used_checkout_sessions (
+  sid TEXT PRIMARY KEY,
+  order_id TEXT,
+  used_at TEXT DEFAULT (CURRENT_TIMESTAMP)
+)`);
+try { db.exec(`ALTER TABLE gift_codes ADD COLUMN redeemed_at TEXT DEFAULT NULL`); } catch {}
+try { db.exec(`ALTER TABLE gift_codes ADD COLUMN redeemed_order TEXT DEFAULT NULL`); } catch {}
+// Abonnement €20/mnd: compacte Stripe-samenvatting als JSON per gebruiker.
+try { db.exec(`ALTER TABLE users ADD COLUMN subscription TEXT DEFAULT NULL`); } catch {}
+// Meldingsvoorkeur: 'whatsapp' | 'email' | 'off'. Default 'off' zodat niemand
+// ongevraagd berichten krijgt; de gebruiker kiest expliciet in zijn instellingen.
+try { db.exec(`ALTER TABLE users ADD COLUMN notify_channel TEXT DEFAULT 'off'`); } catch {}
 // Onraadbaar deel-/kijktoken per order. Zo staat het volgnummer (ORD-…) nooit
 // in een URL en kan niemand door een nummer te raden andermans blueprint openen.
 try { db.exec(`ALTER TABLE orders ADD COLUMN view_token TEXT`); } catch {}
@@ -283,6 +317,7 @@ const PAGE_ALIASES = {
   '/portaal/inloggen': 'szinn-portal/pages/login.html',
   '/portaal/vragenlijst': 'szinn-portal/pages/questionnaire.html',
   '/portaal/blueprint': 'szinn-portal/pages/blueprint-viewer.html',
+  '/portaal/mandala': 'szinn-portal/pages/mandala.html',
   '/cadeau': 'szinn-portal/pages/gift.html',
 };
 app.get(Object.keys(PAGE_ALIASES), (req, res) => {
@@ -302,6 +337,7 @@ app.use((req, res, next) => {
       '/szinn-portal/pages/login': '/portaal/inloggen',
       '/szinn-portal/pages/questionnaire': '/portaal/vragenlijst',
       '/szinn-portal/pages/blueprint-viewer': '/portaal/blueprint',
+      '/szinn-portal/pages/mandala': '/portaal/mandala',
       '/szinn-portal/pages/gift': '/cadeau',
     };
     if (map[clean]) clean = map[clean];
@@ -333,6 +369,30 @@ app.get('/api/auth/me', (req, res) => {
   const user = db.prepare('SELECT id, email, name FROM users WHERE id = ?').get(req.session.userId);
   if (!user) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
   res.json({ ...user, initials: user.name.substring(0,2).toUpperCase() });
+});
+
+// ── Meldingsvoorkeur (WhatsApp / e-mail / uit) ────────────────────────────────
+// Het nummer wordt voorgevuld met wat al in de database staat (users.phone);
+// de gebruiker hoeft het maar één keer in te vullen.
+app.get('/api/settings/notifications', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  const u = db.prepare('SELECT email, phone, notify_channel FROM users WHERE id = ?').get(req.session.userId);
+  if (!u) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
+  res.json({ channel: u.notify_channel || 'off', phone: u.phone || '', email: u.email });
+});
+
+app.post('/api/settings/notifications', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  const channel = String(req.body.channel || '').trim();
+  if (!['whatsapp', 'email', 'off'].includes(channel))
+    return res.status(400).json({ error: 'Ongeldige keuze' });
+  // Kaal internationaal nummer: alleen cijfers, bv. 31612345678.
+  const phone = String(req.body.phone || '').replace(/[^\d]/g, '');
+  if (channel === 'whatsapp' && phone.length < 8)
+    return res.status(400).json({ error: 'Vul een geldig telefoonnummer in (met landcode, bijv. 316…)' });
+  db.prepare('UPDATE users SET notify_channel = ?, phone = ? WHERE id = ?')
+    .run(channel, phone || null, req.session.userId);
+  res.json({ ok: true, channel, phone });
 });
 
 // ── Orders ────────────────────────────────────────────────────────────────────
@@ -425,21 +485,37 @@ app.post('/api/gift/generate', (req, res) => {
 // Betaling: nu een mock (bouw-nu-koppel-Stripe-later). Zodra STRIPE_SECRET_KEY
 // bestaat, maak hier een Stripe Checkout Session en geef session.url terug.
 const GIFT_PRICE_EUR = process.env.GIFT_PRICE_EUR || '49,90';
+const GIFT_PRICE_CENTS = parseInt(process.env.GIFT_PRICE_CENTS || '4990', 10);
 
 function newGiftCode() {
   const part = crypto.randomBytes(3).toString('hex').toUpperCase();
   return `SZINN-${part.slice(0, 4)}-${part.slice(4, 8)}`;
 }
 
-app.post('/api/gift/checkout', (req, res) => {
+// Echte betaling verifiëren: sessie is betaald, hoort bij dit account en is nog niet gebruikt.
+async function verifyGiftPayment(sid, userId) {
+  if (!sid) return false;
+  if (db.prepare('SELECT sid FROM used_checkout_sessions WHERE sid = ?').get(sid)) return false;
+  try {
+    const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(sid)}`);
+    return s.payment_status === 'paid' && String(s.client_reference_id) === String(userId);
+  } catch (e) { console.error('cadeaubetaling verifiëren mislukt:', e.message); return false; }
+}
+
+app.post('/api/gift/checkout', async (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
-  const stripeKey = process.env.STRIPE_SECRET_KEY;
-  if (stripeKey) {
-    // TODO: echte Stripe Checkout Session aanmaken en session.url teruggeven.
-    // const stripe = require('stripe')(stripeKey); ... success_url: SITE/cadeau?paid=1
-    return res.status(501).json({ error: 'Stripe nog niet ingesteld — vul STRIPE_SECRET_KEY in.' });
+  if (stripeConfigured()) {
+    const user = db.prepare('SELECT email FROM users WHERE id = ?').get(req.session.userId);
+    const baseUrl = process.env.SITE_URL || `${req.protocol}://${req.get('host')}`;
+    try {
+      const session = await createGiftCheckout({ email: user?.email, userId: req.session.userId, baseUrl, priceCents: GIFT_PRICE_CENTS });
+      return res.json({ url: session.url });
+    } catch (e) {
+      console.error('cadeau-checkout mislukt:', e.message);
+      return res.status(500).json({ error: 'Kon de betaalpagina niet openen. Probeer het later opnieuw.' });
+    }
   }
-  // Mock: geen echte betaling. De front-end simuleert de betaalstap.
+  // Geen sleutel (lokaal/test): mock-betaling. De front-end simuleert de betaalstap.
   res.json({ mock: true, price: GIFT_PRICE_EUR, paidToken: 'mock-' + crypto.randomBytes(6).toString('hex') });
 });
 
@@ -454,8 +530,12 @@ app.post('/api/gift/create', async (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
   const { recipientEmail, recipientName, message, sendDate, lang, paidToken } = req.body || {};
 
-  if (!process.env.STRIPE_SECRET_KEY && !String(paidToken || '').startsWith('mock-'))
+  if (stripeConfigured()) {
+    if (!(await verifyGiftPayment(paidToken, req.session.userId)))
+      return res.status(402).json({ error: 'Betaling niet bevestigd.' });
+  } else if (!String(paidToken || '').startsWith('mock-')) {
     return res.status(402).json({ error: 'Betaling niet bevestigd.' });
+  }
   if (!recipientEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail))
     return res.status(400).json({ error: 'Vul een geldig e-mailadres van de ontvanger in.' });
   if (sendDate && !/^\d{4}-\d{2}-\d{2}$/.test(sendDate))
@@ -474,6 +554,9 @@ app.post('/api/gift/create', async (req, res) => {
     (recipientName || '').trim() || null, (message || '').trim() || null,
     sendDate || null, language, status
   );
+  // Echte betaalsessie eenmalig markeren zodat dezelfde betaling geen tweede cadeau oplevert.
+  if (stripeConfigured() && paidToken)
+    db.prepare('INSERT OR IGNORE INTO used_checkout_sessions (sid, order_id) VALUES (?, ?)').run(paidToken, code);
 
   if (sendNow) {
     try {
@@ -511,6 +594,57 @@ async function processScheduledGifts() {
 // Elk uur controleren (en één keer bij de start).
 setInterval(() => { processScheduledGifts().catch(e => console.error(e.message)); }, 60 * 60 * 1000);
 setTimeout(() => { processScheduledGifts().catch(e => console.error(e.message)); }, 5000);
+
+// ── Dagelijkse WhatsApp-reading (rond 12:00 NL-tijd) ──────────────────────────
+// Stuurt elke gebruiker met een voltooide blueprint én telefoonnummer een appje
+// dat de dagelijkse reading klaarstaat, met een mini sneak-peek (thema + focus)
+// uit dezelfde berekening als het dashboard (cDayFromBlueprint).
+async function sendDailyReadings() {
+  // Uur in Europe/Amsterdam — server draait mogelijk op UTC, dus niet op lokale tijd vertrouwen.
+  const hourNL = Number(new Intl.DateTimeFormat('nl-NL', { timeZone: 'Europe/Amsterdam', hour: '2-digit', hour12: false }).format(new Date()));
+  if (hourNL !== 12) return;
+
+  // Eén keer per dag: dedupe op datum via de settings-tabel.
+  const today = new Date().toISOString().slice(0, 10);
+  const sent = db.prepare(`SELECT value FROM settings WHERE key='daily_wa_sent'`).get();
+  if (sent?.value === today) return;
+  db.prepare(`INSERT INTO settings (key, value, updated_at) VALUES ('daily_wa_sent', ?, CURRENT_TIMESTAMP)
+              ON CONFLICT(key) DO UPDATE SET value=excluded.value, updated_at=CURRENT_TIMESTAMP`).run(today);
+
+  const { sendWhatsApp } = require('./lib/whatsapp');
+  const { sendDailyReadingEmail } = require('./lib/email');
+  // Alleen wie 'whatsapp' of 'email' als voorkeur koos; 'off' krijgt niets.
+  const recipients = db.prepare(`
+    SELECT DISTINCT u.id, u.name, u.email, u.phone, u.notify_channel FROM users u
+    JOIN orders o ON o.user_id = u.id
+    WHERE o.status='completed' AND u.notify_channel IN ('whatsapp','email')`).all();
+
+  for (const u of recipients) {
+    try {
+      // Dagelijkse reminders horen bij het abonnement (demo-accounts uitgezonderd).
+      if (stripeConfigured() && !DEMO_SUB_EMAILS.includes(u.email.toLowerCase())
+          && !subIsActive(await userSubscription(u.id))) continue;
+      const c = companionContext(u.id);
+      if (!c.order || c.order.status !== 'completed') continue;
+      const day = cDayFromBlueprint(c);
+      const firstName = (u.name || '').trim().split(/\s+/)[0] || (c.lang === 'en' ? 'there' : 'daar');
+      if (u.notify_channel === 'whatsapp') {
+        if (!u.phone) continue; // WhatsApp gekozen maar geen nummer → overslaan
+        await sendWhatsApp({ to: u.phone, lang: c.lang, params: [firstName, day.thema, day.focus] });
+        console.log(`✓ Dagelijkse reading-app verstuurd → ${u.phone}`);
+      } else {
+        await sendDailyReadingEmail({ to: u.email, name: u.name, theme: day.thema, focus: day.focus, lang: c.lang });
+        console.log(`✓ Dagelijkse reading-mail verstuurd → ${u.email}`);
+      }
+    } catch (err) {
+      console.error(`Dagelijkse reading voor user ${u.id} mislukt:`, err.message);
+    }
+  }
+}
+// Elk uur checken; alleen het tikje in het 12e uur (NL) verstuurt. ponytail: uur-resolutie
+// (niet klok-uitgelijnd op 12:00 sharp) volstaat voor een dagelijks appje.
+setInterval(() => { sendDailyReadings().catch(e => console.error(e.message)); }, 60 * 60 * 1000);
+setTimeout(() => { sendDailyReadings().catch(e => console.error(e.message)); }, 8000);
 
 // ── Companion-dashboarddata (pariteit met de live Netlify-functie) ────────────
 // Levert alle blokdata voor het dashboard: laag 1 (berekend) + laag 2 (teksten).
@@ -628,7 +762,7 @@ function cDayFromBlueprint(c) {
   };
 }
 
-app.get('/api/companion/blueprint', (req, res) => {
+app.get('/api/companion/blueprint', async (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
   const c = companionContext(req.session.userId, req.query.lang);
   if (!c.order) return res.json({ status: 'none' });
@@ -639,7 +773,12 @@ app.get('/api/companion/blueprint', (req, res) => {
   const n = c.ctx.numerology;
   const en = c.lang === 'en';
 
+  // De dagelijks veranderende duiding hoort bij het abonnement; de blueprint
+  // zelf (eenmalig gekocht) blijft altijd zichtbaar.
+  const subscribed = await hasSubscriptionAccess(req);
+
   res.json({
+    subscribed,
     status: 'completed',
     orderId: c.order.id,
     viewToken: c.order.view_token,
@@ -667,7 +806,7 @@ app.get('/api/companion/blueprint', (req, res) => {
       nextFullMoon: c.sky.nextFullMoon ? { date: c.sky.nextFullMoon.date, sign: cSignT(c.lang, c.sky.nextFullMoon.sign) } : null,
       solarReturn: { date: c.solar, sign: cSignT(c.lang, P.sun.sign) },
     },
-    day: cDayFromBlueprint(c),
+    day: subscribed ? cDayFromBlueprint(c) : null,
     texts: c.texts,
     mandala: generateMiniMandalaSVG(c.ctx.chart),
     blueprintUrl: c.order.blueprint_url,
@@ -676,45 +815,239 @@ app.get('/api/companion/blueprint', (req, res) => {
   });
 });
 
-// ── AI Companion ──────────────────────────────────────────────────────────────
+// ── Dagboek: dagstart & dagafsluiting (kalender + popup in het dashboard) ─────
+const { DATE_RE, mergeJournalEntry } = require('./lib/journal');
+
+app.get('/api/journal', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  // Laatste 120 dagen volstaat voor week-/maandoverzicht én popup.
+  const rows = db.prepare('SELECT date, data FROM journal_entries WHERE user_id = ? ORDER BY date DESC LIMIT 120')
+    .all(req.session.userId);
+  const entries = {};
+  for (const r of rows) { try { entries[r.date] = JSON.parse(r.data); } catch {} }
+  res.json({ entries });
+});
+
+app.post('/api/journal', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  const date = String(req.body?.date || '');
+  if (!DATE_RE.test(date)) return res.status(400).json({ error: 'Ongeldige datum' });
+  const row = db.prepare('SELECT data FROM journal_entries WHERE user_id = ? AND date = ?')
+    .get(req.session.userId, date);
+  let entry = null;
+  try { entry = row ? JSON.parse(row.data) : null; } catch {}
+  entry = mergeJournalEntry(entry, req.body);
+  db.prepare(`INSERT INTO journal_entries (user_id, date, data, updated_at) VALUES (?, ?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(user_id, date) DO UPDATE SET data = excluded.data, updated_at = CURRENT_TIMESTAMP`)
+    .run(req.session.userId, date, JSON.stringify(entry));
+  res.json({ ok: true, date, entry });
+});
+
+// ── Abonnement €20/mnd (pariteit met de live Netlify-functie) ─────────────────
+// Daily dashboard + WhatsApp-reminders + companion. Afsluiten vanuit het
+// dashboard via een Stripe Checkout-sessie; status wordt hooguit één keer per
+// dag bij Stripe ververst (geen webhook nodig).
+const {
+  createSubscriptionCheckout, createGiftCheckout, summarizeSub, subIsActive, refreshSubIfStale, cancelSubscription,
+} = require('./lib/stripe');
+const DEMO_SUB_EMAILS = ['demo@szinn.ai', 'demo-plus@szinn.ai', 'sara@voorbeeld.nl'];
+
+function getUserSub(userId) {
+  const row = db.prepare('SELECT subscription FROM users WHERE id = ?').get(userId);
+  try { return row?.subscription ? JSON.parse(row.subscription) : null; } catch { return null; }
+}
+function setUserSub(userId, sub) {
+  db.prepare('UPDATE users SET subscription = ? WHERE id = ?').run(sub ? JSON.stringify(sub) : null, userId);
+}
+async function userSubscription(userId) {
+  const sub = getUserSub(userId);
+  if (!sub?.id) return null;
+  try {
+    const fresh = await refreshSubIfStale(sub);
+    if (fresh !== sub) setUserSub(userId, fresh);
+    return fresh;
+  } catch (e) { console.error('abonnement verversen mislukt:', e.message); return sub; }
+}
+// Admin en demo-accounts altijd; zonder Stripe-sleutel (lokaal) niet blokkeren.
+async function hasSubscriptionAccess(req) {
+  if (!stripeConfigured()) return true;
+  if (req.session.isAdmin) return true;
+  const u = db.prepare('SELECT email FROM users WHERE id = ?').get(req.session.userId);
+  if (!u) return false;
+  if (DEMO_SUB_EMAILS.includes(u.email.toLowerCase())) return true;
+  return subIsActive(await userSubscription(req.session.userId));
+}
+
+app.post('/api/subscription/checkout', async (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  if (!stripeConfigured()) return res.status(501).json({ error: 'Stripe nog niet ingesteld (STRIPE_SECRET_KEY).' });
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.session.userId);
+  if (!user) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
+  if (subIsActive(await userSubscription(user.id)))
+    return res.status(400).json({ error: 'Je hebt al een lopend abonnement.' });
+  const baseUrl = process.env.SITE_URL || `${req.protocol}://${req.get('host')}`;
+  try {
+    const session = await createSubscriptionCheckout({ email: user.email, userId: user.id, baseUrl });
+    res.json({ url: session.url });
+  } catch (e) {
+    console.error('abonnement-checkout mislukt:', e.message);
+    res.status(500).json({ error: 'Kon de betaalpagina niet openen. Probeer het later opnieuw.' });
+  }
+});
+
+app.post('/api/subscription/confirm', async (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  const sid = String(req.body?.session_id || '').trim();
+  if (!sid) return res.status(400).json({ error: 'session_id verplicht' });
+  try {
+    const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(sid)}`);
+    if (s.mode !== 'subscription' || !s.subscription || String(s.client_reference_id) !== String(req.session.userId))
+      return res.status(400).json({ error: 'Deze betaalsessie hoort niet bij dit account.' });
+    const sub = summarizeSub(await stripeReq('GET', `/subscriptions/${s.subscription}`));
+    setUserSub(req.session.userId, sub);
+    res.json({ ok: true, active: subIsActive(sub) });
+  } catch (e) {
+    console.error('abonnement bevestigen mislukt:', e.message);
+    res.status(500).json({ error: 'Kon het abonnement niet bevestigen.' });
+  }
+});
+
+app.get('/api/subscription/status', async (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  const sub = await userSubscription(req.session.userId);
+  res.json({
+    active: subIsActive(sub) || await hasSubscriptionAccess(req),
+    status: sub?.status || null,
+    cancelAtPeriodEnd: !!sub?.cancel_at_period_end,
+    currentPeriodEnd: sub?.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null,
+    configured: stripeConfigured(),
+  });
+});
+
+app.post('/api/subscription/cancel', async (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  const sub = getUserSub(req.session.userId);
+  if (!sub?.id) return res.status(400).json({ error: 'Geen lopend abonnement' });
+  try {
+    const updated = summarizeSub(await cancelSubscription(sub.id));
+    setUserSub(req.session.userId, updated);
+    res.json({ ok: true, cancelAtPeriodEnd: true, currentPeriodEnd: updated.current_period_end ? new Date(updated.current_period_end * 1000).toISOString() : null });
+  } catch (e) {
+    console.error('abonnement opzeggen mislukt:', e.message);
+    res.status(500).json({ error: 'Kon het abonnement niet opzeggen.' });
+  }
+});
+
+// ── AI Companion (pariteit met de live Netlify-functie) ───────────────────────
+// Zelfde vaste basisprompt als api.js: geverifieerde kaart- en getalgegevens,
+// zodat de companion nooit zelf rekent of verzint.
+function cCompanionSystem(c) {
+  const P = c.ctx.chart.planets;
+  const n = c.ctx.numerology;
+  const line = (p) => `${p.sign} ${p.deg}°${String(p.min).padStart(2, '0')}'${p.house ? ` (Huis ${p.house})` : ''}`;
+  return `Je bent de SZINN Companion, de ingebouwde begeleider in het dagelijkse dashboard van ${c.ctx.intake.clientName}.
+Toon: warm, gegrond, helder, nooit zweverig, geen new-age clichés. Spreek aan met jij/jouw, nooit u. Geen voorspellingen, geen medische, psychologische of financiële claims. Je bent een spiegel, geen orakel. ${c.ctx.intake.clientName} is altijd de enige expert over zichzelf.
+Je REKENT NOOIT zelf astrologie of numerologie. Gebruik uitsluitend deze vaste, geverifieerde gegevens en verzin niets nieuws:
+Zon ${line(P.sun)}; Maan ${line(P.moon)}; Ascendant ${line(P.ascendant)}; Noordknoop ${line(P.northNode)}; Zuidknoop ${line(P.southNode)}; Chiron ${line(P.chiron)}.
+Levenspad ${n.lifePath}; Persoonlijk Jaar ${n.personalYear} (${n.personalYearInfo.theme}); Persoonlijke Maand ${c.pm.number}; Persoonlijke Dag ${c.pd}.
+Vandaag: maan in ${c.sky.moon.sign}, ${c.sky.waxing ? 'wassend' : 'afnemend'}. Datum: ${c.now.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}.${c.texts && c.texts.summary && c.texts.summary.oneLiner ? `\nKern van de blueprint: ${c.texts.summary.oneLiner}` : ''}${c.lang === 'en' ? '\nIMPORTANT: The user uses the English dashboard. Reply entirely in English (use English zodiac sign names), while keeping the same warm, grounded tone.' : ''}`;
+}
+
+// Geschiedenis + samengevat geheugen per account, zodat een nieuwe sessie
+// naadloos verdergaat. State als JSON in companion_state (SQLite).
+function loadCompanionState(userId) {
+  const row = db.prepare('SELECT state FROM companion_state WHERE user_id = ?').get(userId);
+  try { return row ? JSON.parse(row.state) : null; } catch { return null; }
+}
+function saveCompanionState(userId, state) {
+  db.prepare(`INSERT INTO companion_state (user_id, state, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP)
+    ON CONFLICT(user_id) DO UPDATE SET state=excluded.state, updated_at=CURRENT_TIMESTAMP`)
+    .run(userId, JSON.stringify(state));
+}
+
 app.post('/api/companion/chat', async (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) {
+  const { companionConfigured, companionTurn, emptyCompanionState } = require('./lib/companion-llm');
+  if (!companionConfigured()) {
     return res.json({
-      content: 'De AI Companion is beschikbaar zodra een ANTHROPIC_API_KEY is geconfigureerd. Start de server met: ANTHROPIC_API_KEY=sk-... npm start'
+      content: 'De AI Companion is beschikbaar zodra een COMPANION_API_KEY (Gemini) is geconfigureerd. Start de server met: COMPANION_API_KEY=... npm start'
     });
   }
 
-  const { messages, orderId } = req.body;
-  if (!messages?.length) return res.status(400).json({ error: 'Geen berichten' });
+  const lang = (req.body?.lang === 'en') ? 'en' : 'nl';
+  // Nieuw formaat: { message }. Oude clients sturen { messages: [...] } — pak daaruit de laatste gebruikersbeurt.
+  const userMessage = String(req.body?.message
+    || (Array.isArray(req.body?.messages) ? [...req.body.messages].reverse().find(m => m.role === 'user')?.content : '')
+    || '').trim().slice(0, 4000);
+  if (!userMessage) return res.status(400).json({ error: 'Geen bericht' });
 
-  // Build context from user's blueprint
-  let blueprintContext = '';
-  if (orderId) {
-    const order = db.prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').get(orderId, req.session.userId);
-    if (order?.scores) {
-      blueprintContext = `\n\nBlueprint context: ${order.client_name}, geboren ${order.birth_date}. Scores: Alignment ${order.alignment_score}%, Astrologie ${order.astro_score}%, Numerologie ${order.numerology_score}%, Soul Direction ${order.soul_direction_score}%, Personal Year ${order.personal_year_score}%.`;
-    }
-  }
+  // De companion hoort bij het abonnement.
+  if (!(await hasSubscriptionAccess(req)))
+    return res.status(402).json({ error: 'De Companion hoort bij het SZINN-abonnement.', subscribe: true });
 
+  let system = lang === 'en'
+    ? 'You are the SZINN AI Companion — warm, clear, practical. No bullet points. Write flowing sentences in English.'
+    : 'Je bent de SZINN AI Companion — warm, helder, praktisch. Spreek de gebruiker aan met jij/jouw. Geen bullet points. Schrijf vloeiende zinnen.';
+  let intakeRaw = null, name = null;
   try {
-    const Anthropic = require('@anthropic-ai/sdk');
-    const client = new Anthropic.default({ apiKey });
+    const c = companionContext(req.session.userId, lang);
+    if (c.ctx) { system = cCompanionSystem(c); intakeRaw = c.ctx.intake.raw; name = c.ctx.intake.clientName; }
+  } catch (e) { /* generieke system prompt volstaat */ }
 
-    const response = await client.messages.create({
-      model: 'claude-sonnet-4-6',
-      max_tokens: 800,
-      system: `Je bent de SZINN AI Companion — een warm, helder en praktisch begeleider die SZINN Blueprint gebruikers helpt hun document te begrijpen en toe te passen. Je toon is uitnodigend, nooit oordelend. Je spreekt de gebruiker aan met 'jij' en 'jouw'. Geen new-age clichés. Geen bullet points. Schrijf in vloeiende zinnen. Geef concrete, persoonlijke antwoorden.${blueprintContext}`,
-      messages: messages.map(m => ({ role: m.role, content: m.content }))
-    });
-
-    res.json({ content: response.content[0].text });
+  const state = loadCompanionState(req.session.userId) || emptyCompanionState();
+  try {
+    const content = await companionTurn({ state, userMessage, baseSystem: system, name, intakeRaw, lang });
+    saveCompanionState(req.session.userId, state);
+    res.json({ content });
   } catch (err) {
     console.error('Companion API error:', err.message);
     res.status(500).json({ error: 'De AI Companion is tijdelijk niet beschikbaar.' });
   }
+});
+
+// Gespreksgeschiedenis voor het dashboard (nieuwe sessie gaat verder waar de vorige ophield).
+app.get('/api/companion/history', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  const state = loadCompanionState(req.session.userId);
+  res.json({ messages: (state?.messages || []).slice(-30) });
+});
+
+// ── Intake-toegang: alleen na betaling of met cadeaucode (pariteit Netlify) ───
+// De betaallink stuurt na betaling door naar /intake?session_id={CHECKOUT_SESSION_ID};
+// die sessie verifiëren we bij Stripe en houden we vast in de server-sessie.
+const { stripeReq, stripeConfigured } = require('./lib/stripe');
+const INTAKE_PAY_LINK = process.env.INTAKE_PAY_LINK || 'https://buy.stripe.com/fZu9AL8g20KT5xgdpO0kE00';
+
+async function intakeAccess(req, { sessionId, code } = {}) {
+  if (req.session.isAdmin) return { ok: true };
+  const held = req.session.intakeAccess;
+  if (held) {
+    const sidUsed = held.sid && db.prepare('SELECT sid FROM used_checkout_sessions WHERE sid = ?').get(held.sid);
+    const codeUsed = held.code && db.prepare('SELECT redeemed_at FROM gift_codes WHERE code = ?').get(held.code)?.redeemed_at;
+    if (!sidUsed && !codeUsed) return { ok: true, sid: held.sid || null, code: held.code || null };
+  }
+  if (sessionId && stripeConfigured()) {
+    if (db.prepare('SELECT sid FROM used_checkout_sessions WHERE sid = ?').get(sessionId)) return { ok: false };
+    try {
+      const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(sessionId)}`);
+      if (s.payment_status === 'paid') return { ok: true, sid: sessionId, fresh: true };
+    } catch (e) { console.error('checkout-sessie verifiëren mislukt:', e.message); }
+  }
+  if (code) {
+    const g = db.prepare('SELECT * FROM gift_codes WHERE code = ?').get(String(code).trim().toUpperCase());
+    if (g && !g.redeemed_at) return { ok: true, code: g.code, fresh: true };
+  }
+  // Zonder Stripe-sleutel (lokaal ontwikkelen) niet blokkeren.
+  if (!stripeConfigured()) return { ok: true };
+  return { ok: false };
+}
+
+app.post('/api/intake/access', async (req, res) => {
+  const access = await intakeAccess(req, { sessionId: req.body?.session_id || null, code: req.body?.code || null });
+  if (!access.ok) return res.status(402).json({ ok: false, payLink: INTAKE_PAY_LINK });
+  if (access.fresh) req.session.intakeAccess = { sid: access.sid || null, code: access.code || null };
+  res.json({ ok: true });
 });
 
 // ── Intake submit ─────────────────────────────────────────────────────────────
@@ -723,6 +1056,10 @@ app.post('/api/intake/submit', async (req, res) => {
   if (!data.email || !data.geboortedatum) {
     return res.status(400).json({ error: 'Email en geboortedatum zijn verplicht' });
   }
+
+  // Betaalpoort: alleen met geverifieerde betaling of cadeaucode.
+  const access = await intakeAccess(req, { sessionId: data.stripe_session_id || null, code: data.gift_code || null });
+  if (!access.ok) return res.status(402).json({ error: 'Deze aanvraag vereist eerst een betaling.', payLink: INTAKE_PAY_LINK });
 
   // Find or create user
   let user = db.prepare('SELECT * FROM users WHERE LOWER(email) = LOWER(?)').get(data.email.trim());
@@ -760,6 +1097,10 @@ app.post('/api/intake/submit', async (req, res) => {
     JSON.stringify(data),
     crypto.randomBytes(16).toString('hex')
   );
+
+  // Betaling/cadeaucode verzilveren: één intake per betaling.
+  if (access.sid) db.prepare('INSERT OR IGNORE INTO used_checkout_sessions (sid, order_id) VALUES (?, ?)').run(access.sid, orderId);
+  if (access.code) db.prepare('UPDATE gift_codes SET redeemed_at = CURRENT_TIMESTAMP, redeemed_order = ? WHERE code = ?').run(orderId, access.code);
 
   // Auto-login this user
   req.session.userId = user.id;

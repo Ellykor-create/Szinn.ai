@@ -15,6 +15,11 @@
   // pagina, maar naast de inhoud — blueprint links, gesprek rechts.
   var DOCKED = !!window.SZINN_COMPANION_DOCK;
 
+  // Live-modus: de Companion voert nu echte gesprekken via /api/companion/*.
+  // Zet window.SZINN_COMPANION_LIVE = false om terug te vallen op de
+  // "binnenkort beschikbaar"-weergave — de coming-soon-code blijft bewaard.
+  var LIVE = window.SZINN_COMPANION_LIVE !== false;
+
   var T = {
     nl: {
       launch: 'Companion',
@@ -25,6 +30,9 @@
       soonBadge: 'Binnenkort beschikbaar',
       soonBody: 'De Companion wordt nu met zorg voorbereid. Heel binnenkort kun je hier een echt gesprek voeren over je Blueprint.',
       placeholder: 'Binnenkort kun je hier je vraag stellen…',
+      liveWelcome: 'Fijn dat je er bent. Ik ben je Companion. Stel me gerust je vragen over je Blueprint — waar je jezelf in herkent, wat een stuk voor jou betekent, of welke kleine stap bij vandaag past. Ik denk rustig met je mee, zonder oordeel.',
+      askPlaceholder: 'Stel je vraag over je Blueprint…',
+      errMsg: 'De Companion is even niet bereikbaar. Probeer het zo weer.',
       send: 'Stuur',
       close: 'Sluiten',
       hint: 'Je gesprekken blijven altijd van jou.',
@@ -38,6 +46,9 @@
       soonBadge: 'Coming soon',
       soonBody: 'The Companion is being prepared with care. Very soon you will be able to have a real conversation about your Blueprint here.',
       placeholder: 'Soon you can ask your question here…',
+      liveWelcome: 'Good to have you here. I am your Companion. Feel free to ask me anything about your Blueprint — where you recognise yourself, what a part means for you, or which small step fits today. I think along with you, gently and without judgement.',
+      askPlaceholder: 'Ask your question about your Blueprint…',
+      errMsg: 'The Companion is briefly unavailable. Please try again shortly.',
       send: 'Send',
       close: 'Close',
       hint: 'Your conversations always remain yours.',
@@ -81,6 +92,13 @@
   '.szc-inrow input::placeholder{color:#a99b82}' +
   '.szc-inrow button{background:linear-gradient(180deg,#C9A96E,#A67C3A);color:#FFFDF8;border:none;border-radius:12px;' +
     'padding:0 18px;height:42px;font-family:"Jost",sans-serif;font-size:13px;cursor:not-allowed}' +
+  '.szc-inrow.szc-live{opacity:1}' +
+  '.szc-inrow.szc-live input{color:#2c2622}' +
+  '.szc-inrow.szc-live button{cursor:pointer}' +
+  '.szc-inrow.szc-live button:hover{filter:brightness(1.06)}' +
+  '.szc-msgs{display:flex;flex-direction:column;gap:12px;margin-top:16px}' +
+  '.szc-bubble.szc-me{margin-left:auto;background:linear-gradient(135deg,#C9A96E,#A67C3A);color:#FFFDF8;' +
+    'border-color:transparent;border-radius:16px 16px 4px 16px}' +
   '.szc-lock{display:flex;align-items:center;gap:6px;justify-content:center;font-size:11px;color:#a08a63;margin-top:10px}' +
   '@media(max-width:600px){.szc-launch{right:14px;bottom:14px}.szc-drawer{width:100vw;max-width:100vw}}';
 
@@ -100,6 +118,27 @@
   drawer.className = 'szc-drawer';
   drawer.setAttribute('role', 'dialog');
   drawer.setAttribute('aria-label', T.title);
+  // Body & voet verschillen per modus. Coming-soon (below) blijft bewaard zodat
+  // de Companion later met één vlag weer op "binnenkort" gezet kan worden.
+  var bodyInner = LIVE
+    ? '<div class="szc-bubble" id="szc-greeting"></div>' +
+      '<div class="szc-msgs" id="szc-msgs"></div>'
+    : '<div class="szc-bubble" id="szc-greeting"></div>' +
+      '<div class="szc-soon">' +
+        '<span class="szc-soon-badge">' + T.soonBadge + '</span>' +
+        '<div class="szc-soon-body">' + T.soonBody + '</div>' +
+      '</div>';
+
+  var footInner = LIVE
+    ? '<div class="szc-inrow szc-live">' +
+        '<input type="text" id="szc-input" placeholder="' + T.askPlaceholder + '">' +
+        '<button type="button" id="szc-send">' + T.send + '</button>' +
+      '</div>'
+    : '<div class="szc-inrow">' +
+        '<input type="text" placeholder="' + T.placeholder + '" disabled>' +
+        '<button type="button" disabled>' + T.send + '</button>' +
+      '</div>';
+
   drawer.innerHTML = '' +
     '<div class="szc-head">' +
       '<button class="szc-close" aria-label="' + T.close + '">×</button>' +
@@ -107,18 +146,9 @@
       '<div class="szc-title">' + T.title + '</div>' +
       '<div class="szc-sub">' + T.subtitle + '</div>' +
     '</div>' +
-    '<div class="szc-body">' +
-      '<div class="szc-bubble" id="szc-greeting"></div>' +
-      '<div class="szc-soon">' +
-        '<span class="szc-soon-badge">' + T.soonBadge + '</span>' +
-        '<div class="szc-soon-body">' + T.soonBody + '</div>' +
-      '</div>' +
-    '</div>' +
+    '<div class="szc-body">' + bodyInner + '</div>' +
     '<div class="szc-foot">' +
-      '<div class="szc-inrow">' +
-        '<input type="text" placeholder="' + T.placeholder + '" disabled>' +
-        '<button type="button" disabled>' + T.send + '</button>' +
-      '</div>' +
+      footInner +
       '<div class="szc-lock">🔒 ' + T.hint + '</div>' +
     '</div>';
 
@@ -127,12 +157,14 @@
   document.body.appendChild(drawer);
 
   var greeting = drawer.querySelector('#szc-greeting');
+  var afterOpen = function () {}; // in LIVE-modus: geschiedenis laden
   function open() {
     // Eerste keer: kennismaken. Daarna: fijn je weer te spreken.
     var seen = false;
     try { seen = localStorage.getItem('szinn_companion_seen') === '1'; } catch (e) {}
-    greeting.textContent = seen ? T.welcomeReturn : T.welcomeFirst;
+    greeting.textContent = LIVE ? T.liveWelcome : (seen ? T.welcomeReturn : T.welcomeFirst);
     try { localStorage.setItem('szinn_companion_seen', '1'); } catch (e) {}
+    afterOpen();
     // Docken kan alleen als er ruimte naast de inhoud is; op smalle schermen
     // valt het paneel terug op de overlay-weergave.
     var dock = DOCKED && window.innerWidth > 820;
@@ -156,4 +188,54 @@
 
   // Zodat andere knoppen (bv. bestaande "Praat met je Companion") het paneel kunnen openen.
   window.SzinnCompanion = { open: open, close: close };
+
+  // ── Live gesprek: hergebruikt de bestaande /api/companion/*-endpoints ────────
+  if (LIVE) {
+    var body = drawer.querySelector('.szc-body');
+    var msgs = drawer.querySelector('#szc-msgs');
+    var input = drawer.querySelector('#szc-input');
+    var sendBtn = drawer.querySelector('#szc-send');
+    var historyLoaded = false;
+
+    var bubble = function (role, text) {
+      var b = document.createElement('div');
+      b.className = 'szc-bubble' + (role === 'user' ? ' szc-me' : '');
+      b.textContent = text;
+      msgs.appendChild(b);
+      body.scrollTop = body.scrollHeight;
+      return b;
+    };
+
+    // Geschiedenis leeft server-side per account: een nieuwe sessie gaat verder
+    // waar de vorige ophield.
+    afterOpen = function () {
+      if (historyLoaded) return;
+      historyLoaded = true;
+      fetch('/api/companion/history', { credentials: 'same-origin' })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          (j.messages || []).forEach(function (m) { bubble(m.role === 'user' ? 'user' : 'assistant', m.content); });
+        })
+        .catch(function () { /* geen geschiedenis is geen ramp */ });
+    };
+
+    var send = function () {
+      var q = (input.value || '').trim();
+      if (!q) return;
+      input.value = '';
+      bubble('user', q);
+      var ph = bubble('assistant', '…');
+      fetch('/api/companion/chat', {
+        method: 'POST', credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: q, lang: lang }),
+      })
+        .then(function (r) { return r.json(); })
+        .then(function (j) { ph.textContent = j.content || j.error || T.errMsg; })
+        .catch(function () { ph.textContent = T.errMsg; });
+    };
+
+    sendBtn.addEventListener('click', send);
+    input.addEventListener('keydown', function (e) { if (e.key === 'Enter') send(); });
+  }
 })();
