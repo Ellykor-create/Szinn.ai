@@ -484,8 +484,8 @@ app.post('/api/gift/generate', (req, res) => {
 // ── Cadeau-flow: betaling → ontvanger + verzenddatum → (ingeplande) mail ──────
 // Betaling: nu een mock (bouw-nu-koppel-Stripe-later). Zodra STRIPE_SECRET_KEY
 // bestaat, maak hier een Stripe Checkout Session en geef session.url terug.
-const GIFT_PRICE_EUR = process.env.GIFT_PRICE_EUR || '49,90';
-const GIFT_PRICE_CENTS = parseInt(process.env.GIFT_PRICE_CENTS || '4990', 10);
+const GIFT_PRICE_EUR = process.env.GIFT_PRICE_EUR || '39,90';
+const GIFT_PRICE_CENTS = parseInt(process.env.GIFT_PRICE_CENTS || '3990', 10);
 
 function newGiftCode() {
   const part = crypto.randomBytes(3).toString('hex').toUpperCase();

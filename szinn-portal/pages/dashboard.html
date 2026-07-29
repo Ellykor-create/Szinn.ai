@@ -508,7 +508,7 @@ body.m-a [data-r]:not([data-r*="a"]){display:none}
             <span class="lbl" style="color:var(--gold)" data-i18n="labQuestion">Vraag van de dag</span>
             <p id="dQuestion">&mdash;</p>
           </div>
-          <button class="daybtn" id="heroSub" style="display:none;margin-top:16px">Ontgrendel je dagelijkse duiding &mdash; &euro;20/mnd</button>
+          <button class="daybtn" id="heroSub" style="display:none;margin-top:16px">Ontgrendel je dagelijkse duiding &mdash; &euro;13,90/mnd</button>
         </div>
       </div>
 
@@ -862,9 +862,9 @@ body.m-a [data-r]:not([data-r*="a"]){display:none}
       <div class="card notify" id="subCard" style="max-width:640px;margin-top:18px">
         <span class="lbl" id="subEyebrow">Abonnement</span>
         <h3 id="subTitle">SZINN Daily &amp; Companion</h3>
-        <p id="subDesc">Elke dag een duiding die met je meebeweegt, reminders via WhatsApp of e-mail en onbeperkt in gesprek met je Companion — €20 per maand, maandelijks opzegbaar.</p>
+        <p id="subDesc">Elke dag een duiding die met je meebeweegt, reminders via WhatsApp of e-mail en 20 gesprekken per maand met je Companion — €13,90 per maand, maandelijks opzegbaar.</p>
         <div id="subStatus" style="margin-top:12px;font-size:14px;color:var(--gold,#A67C3A)"></div>
-        <button class="notifybtn" id="subBtn">Abonnement afsluiten — €20/mnd</button>
+        <button class="notifybtn" id="subBtn">Abonnement afsluiten — €13,90/mnd</button>
         <div id="subMsg" style="margin-top:8px;font-size:13px"></div>
       </div>
     </section>
@@ -1298,17 +1298,17 @@ function applyDay(day) {
   set('sideIntent', day.focus || day.thema);
 }
 
-// ── Abonnement (€20/mnd): daily + WhatsApp-reminders + companion ────────────
+// ── Abonnement (€13,90/mnd): daily + WhatsApp-reminders + companion ──────────
 let SUBSCRIBED = true;
 function showDayUpsell() {
   document.getElementById('app').classList.add('locked');   // dagelijkse blokken vervagen
   set('dTheme', LANG === 'en' ? 'Unlock your daily guidance' : 'Ontgrendel je dagelijkse duiding');
   set('dFocus', LANG === 'en'
-    ? 'Your daily reading, WhatsApp reminders and the Companion are part of the SZINN subscription — €20 per month, cancel monthly.'
-    : 'Je dagelijkse duiding, WhatsApp-reminders en de Companion horen bij het SZINN-abonnement — €20 per maand, maandelijks opzegbaar.');
+    ? 'Your daily reading, WhatsApp reminders and the Companion are part of the SZINN subscription — €13.90 per month, cancel monthly.'
+    : 'Je dagelijkse duiding, WhatsApp-reminders en de Companion horen bij het SZINN-abonnement — €13,90 per maand, maandelijks opzegbaar.');
   set('dQuestion', LANG === 'en' ? 'One tap unlocks everything below.' : 'Eén tik ontgrendelt alles hieronder.');
   const hb = $('heroSub');
-  if (hb) { hb.style.display = ''; hb.textContent = LANG === 'en' ? 'Unlock your daily guidance — €20/month' : 'Ontgrendel je dagelijkse duiding — €20/mnd'; }
+  if (hb) { hb.style.display = ''; hb.textContent = LANG === 'en' ? 'Unlock your daily guidance — €13.90/month' : 'Ontgrendel je dagelijkse duiding — €13,90/mnd'; }
 }
 function unlockDashboard() {
   document.getElementById('app').classList.remove('locked');
@@ -1333,8 +1333,8 @@ async function confirmSubscribe(btn) {
   const ok = await confirmModal({
     title: LANG === 'en' ? 'Start your subscription?' : 'Abonnement starten?',
     body: LANG === 'en'
-      ? '€20 per month, cancel monthly. You will be taken to the secure payment page.'
-      : '€20 per maand, maandelijks opzegbaar. Je gaat door naar de beveiligde betaalpagina.',
+      ? '€13.90 per month, cancel monthly. You will be taken to the secure payment page.'
+      : '€13,90 per maand, maandelijks opzegbaar. Je gaat door naar de beveiligde betaalpagina.',
     ok: LANG === 'en' ? 'Yes, subscribe' : 'Ja, abonneren',
   });
   if (ok) startSubscription(btn);
@@ -1352,7 +1352,7 @@ async function startSubscription(btn) {
 async function loadSubscription() {
   if (LANG === 'en') {
     set('subEyebrow', 'Subscription');
-    set('subDesc', 'A reading that moves with you every day, reminders via WhatsApp or email and unlimited conversations with your Companion — €20 per month, cancel monthly.');
+    set('subDesc', 'A reading that moves with you every day, reminders via WhatsApp or email and 20 Companion conversations a month — €13.90 per month, cancel monthly.');
   }
   try {
     const r = await fetch('/api/subscription/status', { credentials: 'same-origin' });
@@ -1374,8 +1374,13 @@ async function loadSubscription() {
         btn.style.display = 'none';
       }
     } else {
-      set('subStatus', '');
-      btn.textContent = LANG === 'en' ? 'Subscribe — €20/month' : 'Abonnement afsluiten — €20/mnd';
+      // Tijdens de proefperiode: toon resterende dagen i.p.v. een lege status.
+      set('subStatus', s.trial
+        ? (LANG === 'en'
+            ? `Trial period — ${s.trialDaysLeft} ${s.trialDaysLeft === 1 ? 'day' : 'days'} left. Subscribe to keep your daily reading and Companion.`
+            : `Proefperiode — nog ${s.trialDaysLeft} ${s.trialDaysLeft === 1 ? 'dag' : 'dagen'}. Neem het abonnement om je dagelijkse duiding en Companion te behouden.`)
+        : '');
+      btn.textContent = LANG === 'en' ? 'Subscribe — €13.90/month' : 'Abonnement afsluiten — €13,90/mnd';
       btn.dataset.mode = 'subscribe';
     }
   } catch (e) { /* kaart blijft in standaardstand */ }

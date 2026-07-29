@@ -273,8 +273,8 @@ app.post('/api/gift/generate', async (req, res) => {
 });
 
 // ── Cadeau-flow: betaling (mock) → ontvanger + datum → (ingeplande) mail ──────
-const GIFT_PRICE_EUR = process.env.GIFT_PRICE_EUR || '49,90';
-const GIFT_PRICE_CENTS = parseInt(process.env.GIFT_PRICE_CENTS || '4990', 10);
+const GIFT_PRICE_EUR = process.env.GIFT_PRICE_EUR || '39,90';
+const GIFT_PRICE_CENTS = parseInt(process.env.GIFT_PRICE_CENTS || '3990', 10);
 
 app.post('/api/gift/checkout', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
@@ -524,12 +524,18 @@ app.get('/api/companion/blueprint', async (req, res) => {
   const P = c.ctx.chart.planets;
   const n = c.ctx.numerology;
 
-  // De dagelijks veranderende duiding hoort bij het abonnement; de blueprint
-  // zelf (eenmalig gekocht) blijft altijd zichtbaar.
-  const subscribed = await hasSubscriptionAccess(await loadDB(), req);
+  // De dagelijks veranderende duiding hoort bij dashboard-toegang (proef of
+  // abonnement); de blueprint zelf (eenmalig gekocht) blijft altijd zichtbaar.
+  const acc = await accessState(await loadDB(), req);
+  const subscribed = acc.dashboardOpen;
 
   res.json({
     subscribed,
+    paid: acc.paid,
+    trial: acc.trial,
+    trialDaysLeft: acc.trialDaysLeft,
+    companionLimit: Number.isFinite(acc.companionLimit) ? acc.companionLimit : null,
+    companionLeft: Number.isFinite(acc.companionLeft) ? acc.companionLeft : null,
     status: 'completed',
     orderId: c.order.id,
     viewToken: c.order.view_token,
@@ -572,9 +578,12 @@ app.get('/api/companion/blueprint', async (req, res) => {
 // Dagduiding vernieuwen: AI-versie met de blueprint-fallback als vangnet
 app.post('/api/companion/day', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
-  // Dagelijkse duiding is onderdeel van het abonnement.
-  if (!(await hasSubscriptionAccess(await loadDB(), req)))
-    return res.status(402).json({ error: 'De dagelijkse duiding hoort bij het SZINN-abonnement.', subscribe: true });
+  // Dagelijkse duiding hoort bij dashboard-toegang (proef of abonnement).
+  const dayLang = (req.body?.lang === 'en' || req.query.lang === 'en') ? 'en' : 'nl';
+  if (!(await accessState(await loadDB(), req)).dashboardOpen)
+    return res.status(402).json({ error: dayLang === 'en'
+      ? 'Your 11-day trial has ended. Subscribe (€13.90/month) for your daily reading.'
+      : 'Je proefperiode van 11 dagen is voorbij. Neem het abonnement (€13,90/mnd) voor je dagelijkse duiding.', subscribe: true });
 
   const c = await companionContext(req.auth.userId, req.body?.lang || req.query.lang);
   if (!c.ctx) return res.status(400).json({ error: 'Nog geen voltooide blueprint' });
@@ -620,9 +629,21 @@ app.post('/api/companion/chat', async (req, res) => {
     || '').trim().slice(0, 4000);
   if (!userMessage) return res.status(400).json({ error: 'Geen bericht' });
 
-  // De companion hoort bij het abonnement.
-  if (!(await hasSubscriptionAccess(await loadDB(), req)))
-    return res.status(402).json({ error: 'De Companion hoort bij het SZINN-abonnement.', subscribe: true });
+  // Companion hoort bij dashboard-toegang (proef of abonnement), met een
+  // vragenlimiet per account: 3 tijdens de proef, 20 per maand met abonnement.
+  const db  = await loadDB();
+  const acc = await accessState(db, req);
+  if (!acc.dashboardOpen)
+    return res.status(402).json({ error: lang === 'en'
+      ? 'Your 11-day trial has ended. Subscribe (€13.90/month) to keep talking with your Companion.'
+      : 'Je proefperiode van 11 dagen is voorbij. Neem het abonnement (€13,90/mnd) om verder te praten met je Companion.', subscribe: true });
+  if (acc.companionLeft <= 0)
+    return res.status(429).json({ error: acc.paid
+      ? (lang === 'en' ? `You've reached your ${SUB_COMPANION_LIMIT} Companion questions for this month. They renew next month.`
+                       : `Je hebt je ${SUB_COMPANION_LIMIT} Companion-vragen voor deze maand bereikt. Ze vernieuwen volgende maand.`)
+      : (lang === 'en' ? `You've used your ${TRIAL_COMPANION_LIMIT} trial questions. Subscribe (€13.90/month) for ${SUB_COMPANION_LIMIT} questions a month.`
+                       : `Je hebt je ${TRIAL_COMPANION_LIMIT} proefvragen gebruikt. Neem het abonnement (€13,90/mnd) voor ${SUB_COMPANION_LIMIT} vragen per maand.`),
+      subscribe: !acc.paid, limitReached: true });
 
   let system = lang === 'en'
     ? 'You are the SZINN AI Companion — warm, clear, practical. No bullet points. Write flowing sentences in English.'
@@ -633,15 +654,15 @@ app.post('/api/companion/chat', async (req, res) => {
     if (c.ctx) { system = companionSystem(c); intakeRaw = c.ctx.intake.raw; name = c.ctx.intake.clientName; }
   } catch (e) { /* generieke system prompt volstaat */ }
 
-  const db = await loadDB();
-  const user = db.users.find(u => u.id === req.auth.userId);
+  const user = acc.user; // al geladen bij de toegangscheck hierboven
   if (!user) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
   user.companion = user.companion || emptyCompanionState();
 
   try {
     const content = await companionTurn({ state: user.companion, userMessage, baseSystem: system, name, intakeRaw, lang });
+    bumpCompanionUsage(user, acc.paid); // teller +1 na een gelukte beurt
     await saveDB(db);
-    res.json({ content });
+    res.json({ content, companionLeft: Number.isFinite(acc.companionLeft) ? acc.companionLeft - 1 : null });
   } catch (err) {
     console.error('companion/chat fout:', err.message);
     res.status(500).json({ error: 'AI Companion tijdelijk niet beschikbaar.' });
@@ -827,6 +848,67 @@ async function hasSubscriptionAccess(db, req) {
   return subIsActive(await userSubscription(db, user));
 }
 
+// ── Proefperiode (11 dagen) + Companion-quota ────────────────────────────────
+// Nieuw account → 11 dagen gratis dashboard-toegang; daarna alleen met een
+// abonnement (€13,90/mnd). Companion: 3 vragen in de proef (totaal), 20 per
+// maand met abonnement. Alles per account bijgehouden in user.companion_usage.
+const TRIAL_DAYS             = parseInt(process.env.TRIAL_DAYS || '11', 10);
+const TRIAL_COMPANION_LIMIT  = parseInt(process.env.TRIAL_COMPANION_LIMIT || '3', 10);
+const SUB_COMPANION_LIMIT    = parseInt(process.env.SUB_COMPANION_LIMIT || '20', 10);
+
+function trialDaysLeft(user) {
+  if (!user?.created_at) return 0;
+  const elapsedDays = (Date.now() - new Date(user.created_at).getTime()) / 86400000;
+  return Math.max(0, Math.ceil(TRIAL_DAYS - elapsedDays));
+}
+function currentMonthKey(d = new Date()) {
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+}
+// Lees-only: hoeveel Companion-vragen zijn al gebruikt in het lopende venster.
+function companionUsedAndLimit(user, paid) {
+  const u = user.companion_usage || {};
+  if (paid) {
+    const used = (u.month === currentMonthKey()) ? (u.monthCount || 0) : 0; // maandwissel = reset
+    return { used, limit: SUB_COMPANION_LIMIT };
+  }
+  return { used: u.trial || 0, limit: TRIAL_COMPANION_LIMIT };
+}
+// Muteert de teller na een gelukte Companion-beurt (caller doet saveDB).
+function bumpCompanionUsage(user, paid) {
+  const u = user.companion_usage || (user.companion_usage = { trial: 0, month: null, monthCount: 0 });
+  if (paid) {
+    const mk = currentMonthKey();
+    if (u.month !== mk) { u.month = mk; u.monthCount = 0; }
+    u.monthCount = (u.monthCount || 0) + 1;
+  } else {
+    u.trial = (u.trial || 0) + 1;
+  }
+}
+
+// Centrale toegangsstatus voor dashboard + Companion.
+//   unlimited → admin/demo of geen Stripe-sleutel (lokaal): alles open
+//   paid      → lopend abonnement (20 vragen/maand)
+//   trial     → binnen de 11-daagse proef (3 vragen totaal, dashboard open)
+//   anders    → dashboard op slot, companion uit tot er wordt geabonneerd
+async function accessState(db, req) {
+  const user = req.auth ? db.users.find(u => u.id === req.auth.userId) : null;
+  const unlimited = !stripeConfigured() || !!req.auth?.isAdmin ||
+    (!!user && (user.email.toLowerCase() === DEMO_EMAIL || user.email.toLowerCase() === 'demo-plus@szinn.ai'));
+  if (!user) {
+    return { user: null, paid: false, trial: false, unlimited, dashboardOpen: unlimited,
+      trialDaysLeft: 0, companionUsed: 0, companionLimit: unlimited ? Infinity : 0, companionLeft: unlimited ? Infinity : 0 };
+  }
+  const paid  = subIsActive(await userSubscription(db, user));
+  const left  = trialDaysLeft(user);
+  const trial = !paid && left > 0;
+  const dashboardOpen = unlimited || paid || trial;
+  const { used, limit } = companionUsedAndLimit(user, paid);
+  const companionLimit = unlimited ? Infinity : (dashboardOpen ? limit : 0);
+  const companionLeft  = unlimited ? Infinity : Math.max(0, companionLimit - used);
+  return { user, paid, trial, unlimited, dashboardOpen, trialDaysLeft: left,
+    companionUsed: used, companionLimit, companionLeft };
+}
+
 app.post('/api/subscription/checkout', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
   if (!stripeConfigured()) return res.status(501).json({ error: 'Stripe nog niet ingesteld (STRIPE_SECRET_KEY).' });
@@ -862,12 +944,16 @@ app.get('/api/subscription/status', async (req, res) => {
   const db = await loadDB();
   const user = db.users.find(u => u.id === req.auth.userId);
   const sub = user ? await userSubscription(db, user) : null;
+  const acc = await accessState(db, req);
   res.json({
     active: subIsActive(sub) || await hasSubscriptionAccess(db, req),
     status: sub?.status || null,
     cancelAtPeriodEnd: !!sub?.cancel_at_period_end,
     currentPeriodEnd: sub?.current_period_end ? new Date(sub.current_period_end * 1000).toISOString() : null,
     configured: stripeConfigured(),
+    trial: acc.trial,
+    trialDaysLeft: acc.trialDaysLeft,
+    paid: acc.paid,
   });
 });
 
@@ -1315,3 +1401,27 @@ module.exports.handler = async (event, context) => {
   return serverlessHandler(event, context);
 };
 module.exports.app = app;   // t.b.v. lokale tests; Netlify gebruikt alleen .handler
+module.exports._quota = { trialDaysLeft, currentMonthKey, companionUsedAndLimit, bumpCompanionUsage,
+  TRIAL_DAYS, TRIAL_COMPANION_LIMIT, SUB_COMPANION_LIMIT };
+
+// Zelf-check (offline, geen Blobs/Stripe): node netlify/functions/api.js
+if (require.main === module) {
+  const assert = require('node:assert');
+  const dayMs = 86400000;
+  const iso = (ms) => new Date(Date.now() - ms).toISOString();
+  // Proefperiode: vers account → volle TRIAL_DAYS; verlopen → 0.
+  assert.strictEqual(trialDaysLeft({ created_at: iso(0) }), TRIAL_DAYS);
+  assert.strictEqual(trialDaysLeft({ created_at: iso((TRIAL_DAYS + 1) * dayMs) }), 0);
+  assert.strictEqual(trialDaysLeft({}), 0);
+  // Companion-quota lezen: proef telt totaal, abonnement per maand (stale = reset).
+  assert.deepStrictEqual(companionUsedAndLimit({ companion_usage: { trial: 2 } }, false), { used: 2, limit: TRIAL_COMPANION_LIMIT });
+  assert.deepStrictEqual(companionUsedAndLimit({ companion_usage: { month: currentMonthKey(), monthCount: 5 } }, true), { used: 5, limit: SUB_COMPANION_LIMIT });
+  assert.deepStrictEqual(companionUsedAndLimit({ companion_usage: { month: '1999-01', monthCount: 9 } }, true), { used: 0, limit: SUB_COMPANION_LIMIT });
+  // Ophogen: proef +1 op trial; abonnement start verse maand op 1.
+  const t = { companion_usage: { trial: 0, month: null, monthCount: 0 } };
+  bumpCompanionUsage(t, false); assert.strictEqual(t.companion_usage.trial, 1);
+  const p = {}; bumpCompanionUsage(p, true);
+  assert.strictEqual(p.companion_usage.month, currentMonthKey());
+  assert.strictEqual(p.companion_usage.monthCount, 1);
+  console.log('api quota self-check ok');
+}

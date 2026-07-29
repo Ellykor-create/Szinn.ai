@@ -206,6 +206,18 @@
       return b;
     };
 
+    // Typt het antwoord teken voor teken, alsof de Companion het intikt.
+    var typeInto = function (el, text) {
+      el.textContent = '';
+      var i = 0;
+      (function step() {
+        if (i >= text.length) return;
+        el.textContent += text.charAt(i++);
+        body.scrollTop = body.scrollHeight;
+        setTimeout(step, 18);
+      })();
+    };
+
     // Geschiedenis leeft server-side per account: een nieuwe sessie gaat verder
     // waar de vorige ophield.
     afterOpen = function () {
@@ -231,8 +243,8 @@
         body: JSON.stringify({ message: q, lang: lang }),
       })
         .then(function (r) { return r.json(); })
-        .then(function (j) { ph.textContent = j.content || j.error || T.errMsg; })
-        .catch(function () { ph.textContent = T.errMsg; });
+        .then(function (j) { typeInto(ph, j.content || j.error || T.errMsg); })
+        .catch(function () { typeInto(ph, T.errMsg); });
     };
 
     sendBtn.addEventListener('click', send);

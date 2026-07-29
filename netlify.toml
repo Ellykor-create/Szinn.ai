@@ -52,6 +52,10 @@
   to = "/szinn-portal/pages/blueprint-viewer.html"
   status = 200
 [[redirects]]
+  from = "/portaal/mandala"
+  to = "/szinn-portal/pages/mandala.html"
+  status = 200
+[[redirects]]
   from = "/cadeau"
   to = "/szinn-portal/pages/gift.html"
   status = 200
