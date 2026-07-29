@@ -615,15 +615,18 @@ async function sendDailyReadings() {
   const { sendDailyReadingEmail } = require('./lib/email');
   // Alleen wie 'whatsapp' of 'email' als voorkeur koos; 'off' krijgt niets.
   const recipients = db.prepare(`
-    SELECT DISTINCT u.id, u.name, u.email, u.phone, u.notify_channel FROM users u
+    SELECT DISTINCT u.id, u.name, u.email, u.phone, u.notify_channel, u.created_at FROM users u
     JOIN orders o ON o.user_id = u.id
     WHERE o.status='completed' AND u.notify_channel IN ('whatsapp','email')`).all();
 
+  const TRIAL_DAYS = parseInt(process.env.TRIAL_DAYS || '11', 10);
   for (const u of recipients) {
     try {
-      // Dagelijkse reminders horen bij het abonnement (demo-accounts uitgezonderd).
+      // Reminders horen bij dashboard-toegang: lopend abonnement óf 11-daagse
+      // proef (demo-accounts uitgezonderd).
+      const inTrial = u.created_at && (Date.now() - new Date(u.created_at).getTime()) / 86400000 < TRIAL_DAYS;
       if (stripeConfigured() && !DEMO_SUB_EMAILS.includes(u.email.toLowerCase())
-          && !subIsActive(await userSubscription(u.id))) continue;
+          && !subIsActive(await userSubscription(u.id)) && !inTrial) continue;
       const c = companionContext(u.id);
       if (!c.order || c.order.status !== 'completed') continue;
       const day = cDayFromBlueprint(c);

@@ -1,7 +1,8 @@
 'use strict';
-// Ingeplande functie: stuurt elke gebruiker met een voltooide blueprint én
-// telefoonnummer rond 12:00 NL-tijd een WhatsApp dat de dagelijkse reading
-// klaarstaat, met een mini sneak-peek (thema + focus) uit de blueprint-teksten.
+// Ingeplande functie: stuurt elke gebruiker met een voltooide blueprint rond
+// 12:00 NL-tijd een dagelijkse reading-reminder via het gekozen kanaal
+// (WhatsApp of e-mail), met een mini sneak-peek (thema + focus) uit de
+// blueprint-teksten. Toegang: proef (11 dagen) of lopend abonnement.
 // Netlify-tegenhanger van de setInterval-job in server.js.
 //
 // Netlify-cron draait op UTC en kent geen tijdzone. We plannen 10:00 én 11:00
@@ -10,7 +11,16 @@
 
 const { loadDB, blueprintStore } = require('../../lib/db');
 const { sendWhatsApp } = require('../../lib/whatsapp');
+const { sendDailyReadingEmail } = require('../../lib/email');
 const { subIsActive, stripeConfigured } = require('../../lib/stripe');
+
+// Proefperiode: verse accounts krijgen TRIAL_DAYS gratis dashboard + reminders
+// (gelijk aan api.js). Daarna alleen nog met een lopend abonnement.
+const TRIAL_DAYS = parseInt(process.env.TRIAL_DAYS || '11', 10);
+function withinTrial(createdAt) {
+  if (!createdAt) return false;
+  return (Date.now() - new Date(createdAt).getTime()) / 86400000 < TRIAL_DAYS;
+}
 
 const FALLBACK = {
   nl: { thema: 'Jouw blueprint als kompas voor vandaag', focus: 'Zet één kleine, concrete stap' },
@@ -35,10 +45,17 @@ exports.handler = async () => {
 
   let sent = 0;
   for (const u of db.users || []) {
-    if (!u.phone) continue;
     const order = completedByUser.get(u.id);
     if (!order) continue;
-    if (stripeConfigured() && !DEMO_EMAILS.includes((u.email || '').toLowerCase()) && !subIsActive(u.subscription)) continue;
+    // Toegang: demo, lopend abonnement, óf binnen de 11-daagse proef. Zonder
+    // Stripe-sleutel (lokaal) niet blokkeren.
+    const hasAccess = !stripeConfigured() || DEMO_EMAILS.includes((u.email || '').toLowerCase())
+      || subIsActive(u.subscription) || withinTrial(u.created_at);
+    if (!hasAccess) continue;
+    // Kanaalkeuze: onbekend/leeg valt terug op WhatsApp mits er een nummer is.
+    const channel = u.notify_channel || (u.phone ? 'whatsapp' : 'off');
+    if (channel === 'off') continue;
+    if (channel === 'whatsapp' && !u.phone) continue;
     try {
       const lang = order.blueprint_language === 'en' ? 'en' : 'nl';
       const textsAll = await blueprintStore().get(`${order.id}.texts.json`, { type: 'json' });
@@ -47,7 +64,12 @@ exports.handler = async () => {
       const thema = (t.summary && t.summary.oneLiner) || fb.thema;
       const focus = (t.integration && t.integration.layers && t.integration.layers.focus) || fb.focus;
       const firstName = (u.name || order.client_name || '').trim().split(/\s+/)[0] || (lang === 'en' ? 'there' : 'daar');
-      await sendWhatsApp({ to: u.phone, lang, params: [firstName, thema, focus] });
+      if (channel === 'email') {
+        if (!u.email) continue;
+        await sendDailyReadingEmail({ to: u.email, name: u.name, theme: thema, focus, lang });
+      } else {
+        await sendWhatsApp({ to: u.phone, lang, params: [firstName, thema, focus] });
+      }
       sent++;
     } catch (err) {
       console.error(`daily-whatsapp voor user ${u.id} mislukt:`, err.message);

@@ -678,7 +678,41 @@ app.get('/api/companion/history', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
   const db = await loadDB();
   const user = db.users.find(u => u.id === req.auth.userId);
-  res.json({ messages: (user?.companion?.messages || []).slice(-30) });
+  // Quota mee zodat de drawer tijdens de proef "nog X van 3 vragen" kan tonen.
+  const acc = await accessState(db, req);
+  res.json({
+    messages: (user?.companion?.messages || []).slice(-30),
+    trial: acc.trial, paid: acc.paid,
+    companionLeft: Number.isFinite(acc.companionLeft) ? acc.companionLeft : null,
+    companionLimit: Number.isFinite(acc.companionLimit) ? acc.companionLimit : null,
+  });
+});
+
+// ── Meldingsvoorkeur (WhatsApp / e-mail / uit) voor de dagelijkse reminder ────
+// Het nummer wordt voorgevuld met wat al bij het account staat (users.phone).
+app.get('/api/settings/notifications', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const db = await loadDB();
+  const u = db.users.find(u => u.id === req.auth.userId);
+  if (!u) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
+  res.json({ channel: u.notify_channel || 'off', phone: u.phone || '', email: u.email });
+});
+
+app.post('/api/settings/notifications', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const channel = String(req.body?.channel || '').trim();
+  if (!['whatsapp', 'email', 'off'].includes(channel))
+    return res.status(400).json({ error: 'Ongeldige keuze' });
+  const phone = normalizePhone(req.body?.phone);
+  if (channel === 'whatsapp' && (!phone || phone.replace(/\D/g, '').length < 8))
+    return res.status(400).json({ error: 'Vul een geldig telefoonnummer in (met landcode, bijv. 316…)' });
+  const db = await loadDB();
+  const u = db.users.find(u => u.id === req.auth.userId);
+  if (!u) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
+  u.notify_channel = channel;
+  if (phone) u.phone = phone;
+  await saveDB(db);
+  res.json({ ok: true, channel, phone: u.phone || '' });
 });
 
 // ── Intake-toegang: alleen na betaling (of met cadeaucode) ───────────────────

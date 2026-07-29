@@ -36,6 +36,8 @@
       send: 'Stuur',
       close: 'Sluiten',
       hint: 'Je gesprekken blijven altijd van jou.',
+      trialNote: 'Proefperiode — nog {n} van {limit} gratis Companion-vragen. Daarna hoort de Companion bij het abonnement (€13,90/mnd).',
+      trialNoteDone: 'Proefperiode — je {limit} gratis Companion-vragen zijn op. Neem het abonnement (€13,90/mnd) om verder te praten.',
     },
     en: {
       launch: 'Companion',
@@ -52,6 +54,8 @@
       send: 'Send',
       close: 'Close',
       hint: 'Your conversations always remain yours.',
+      trialNote: 'Trial — {n} of {limit} free Companion questions left. After that the Companion is part of the subscription (€13.90/month).',
+      trialNoteDone: 'Trial — your {limit} free Companion questions are used up. Subscribe (€13.90/month) to keep talking.',
     },
   }[lang];
 
@@ -78,6 +82,8 @@
     'color:#6b5a3e;border-radius:50%;font-size:17px;line-height:1;cursor:pointer;transition:.15s}' +
   '.szc-close:hover{background:rgba(166,124,58,.2)}' +
   '.szc-body{flex:1;overflow-y:auto;padding:18px 22px}' +
+  '.szc-trialnote{margin:10px 0 4px;padding:9px 13px;border:1px solid rgba(166,124,58,.28);border-radius:12px;' +
+    'background:rgba(201,169,110,.12);font-size:11.5px;line-height:1.5;color:#7a6533}' +
   '.szc-bubble{background:#F6F0E6;border:1px solid rgba(166,124,58,.16);border-radius:16px 16px 16px 4px;' +
     'padding:14px 16px;font-size:13.5px;line-height:1.7;color:#3a332a;max-width:92%}' +
   '.szc-soon{margin-top:18px;text-align:center;padding:18px 16px;border:1px dashed rgba(166,124,58,.4);' +
@@ -122,6 +128,7 @@
   // de Companion later met één vlag weer op "binnenkort" gezet kan worden.
   var bodyInner = LIVE
     ? '<div class="szc-bubble" id="szc-greeting"></div>' +
+      '<div class="szc-trialnote" id="szc-trialnote" style="display:none"></div>' +
       '<div class="szc-msgs" id="szc-msgs"></div>'
     : '<div class="szc-bubble" id="szc-greeting"></div>' +
       '<div class="szc-soon">' +
@@ -218,6 +225,17 @@
       })();
     };
 
+    // Proefmelding: "nog X van 3 gratis vragen" — alleen tijdens de proef.
+    var trialActive = false, trialLimit = null;
+    var renderTrialNote = function (trial, left, limit) {
+      var el = drawer.querySelector('#szc-trialnote');
+      if (!el) return;
+      if (!trial || limit == null || left == null) { el.style.display = 'none'; return; }
+      el.textContent = (left > 0 ? T.trialNote : T.trialNoteDone)
+        .replace('{n}', left).replace('{limit}', limit);
+      el.style.display = 'block';
+    };
+
     // Geschiedenis leeft server-side per account: een nieuwe sessie gaat verder
     // waar de vorige ophield.
     afterOpen = function () {
@@ -227,6 +245,8 @@
         .then(function (r) { return r.json(); })
         .then(function (j) {
           (j.messages || []).forEach(function (m) { bubble(m.role === 'user' ? 'user' : 'assistant', m.content); });
+          trialActive = !!j.trial; trialLimit = j.companionLimit;
+          renderTrialNote(trialActive, j.companionLeft, trialLimit);
         })
         .catch(function () { /* geen geschiedenis is geen ramp */ });
     };
@@ -243,7 +263,11 @@
         body: JSON.stringify({ message: q, lang: lang }),
       })
         .then(function (r) { return r.json(); })
-        .then(function (j) { typeInto(ph, j.content || j.error || T.errMsg); })
+        .then(function (j) {
+          typeInto(ph, j.content || j.error || T.errMsg);
+          // Teller bijwerken na een gelukte beurt (server telt af).
+          if (trialActive && typeof j.companionLeft === 'number') renderTrialNote(true, j.companionLeft, trialLimit);
+        })
         .catch(function () { typeInto(ph, T.errMsg); });
     };
 
