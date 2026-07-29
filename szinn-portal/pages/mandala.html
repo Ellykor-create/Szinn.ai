@@ -2486,6 +2486,8 @@ refreshLayerButtons();
       if(name){
         var lbl = document.getElementById('hdrName');
         if(lbl) lbl.innerHTML = (LANG === 'en' ? 'Your mandala &middot; ' : 'Jouw mandala &middot; ') + name;
+        var av = document.querySelector('.acct .avatar.avatar-you');
+        if(av) av.textContent = (d.clientName || name).substring(0,2).toUpperCase();
       }
       var parts = [];
       if(d.birthDate){

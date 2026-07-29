@@ -289,6 +289,9 @@ app.post('/api/gift/checkout', async (req, res) => {
       return res.status(500).json({ error: 'Kon de betaalpagina niet openen. Probeer het later opnieuw.' });
     }
   }
+  // Fail-closed in productie: zonder Stripe-sleutel mag niemand gratis langs de
+  // betaalstap. Mock (doorlopen zonder betalen) alleen lokaal, niet op Netlify.
+  if (process.env.NETLIFY) return res.status(503).json({ error: 'Betalen is tijdelijk niet beschikbaar. Stel STRIPE_SECRET_KEY in en probeer opnieuw.' });
   res.json({ mock: true, price: GIFT_PRICE_EUR, paidToken: 'mock-' + crypto.randomBytes(6).toString('hex') });
 });
 
