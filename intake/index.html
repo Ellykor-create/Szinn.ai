@@ -1695,7 +1695,8 @@ document.addEventListener('DOMContentLoaded', function() {
   setLang('nl');
   setupBirthplace();
   setupDraft();
-  restoreDraft();
+  // restoreDraft() bewust uitgeschakeld: het formulier opent altijd volledig leeg
+  // en laadt geen opgeslagen concept meer automatisch in.
   show(0);
 });
 </script>
