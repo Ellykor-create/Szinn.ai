@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calculate your Personal Year · free numerology | SZINN</title>
+<meta name="description" content="Calculate your Personal Year for free using classical numerology. Only your date of birth is needed. See where you stand in your nine-year cycle, plus your twelve Personal Months.">
+<link rel="alternate" hreflang="nl" href="https://szinn.ai/persoonlijk-jaar">
+<link rel="alternate" hreflang="en" href="https://szinn.ai/en/personal-year">
+<link rel="alternate" hreflang="x-default" href="https://szinn.ai/en/personal-year">
+<meta name="robots" content="index, follow">
+<meta property="og:site_name" content="SZINN">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://szinn.ai/en/personal-year">
+<meta property="og:title" content="Your Personal Year · SZINN">
+<meta property="og:description" content="Calculate your Personal Year for free using classical numerology. See where you stand in your nine-year cycle.">
+<meta property="og:image" content="https://szinn.ai/assets/og-personal-year.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://szinn.ai/en/personal-year">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --cream:#F9F5F0; --white:#FFFFFF; --gold:#A8884A; --gold-l:#C9A96E;
+  --ink:#0D0A07; --ink2:#4A423A; --line:rgba(168,136,74,.20);
+  --slate:#39485C; --slate-soft:#6A7A90; --slate-bg:#F1F2F5;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--ink);font-family:'Jost',system-ui,sans-serif;font-weight:300;font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased}
+.wrap{max-width:680px;margin:0 auto;padding:0 24px}
+h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;line-height:1.15;letter-spacing:.01em}
+h1{font-size:clamp(38px,8vw,62px)}
+h2{font-size:clamp(26px,5vw,34px)}
+h3{font-size:21px}
+em{font-style:italic;color:var(--gold)}
+p{margin-bottom:18px;color:var(--ink2)}
+.tag{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:400;margin-bottom:18px}
+
+header{padding:34px 0 0;text-align:center}
+.logo{font-family:'Cormorant Garamond',serif;font-size:23px;letter-spacing:.42em;color:var(--gold);text-decoration:none;display:inline-block;text-indent:.42em}
+
+.hero{padding:52px 0 40px;text-align:center}
+.hero p{max-width:480px;margin:20px auto 0;font-size:16.5px}
+
+.card{background:var(--white);border:1px solid var(--line);padding:32px 26px;margin-bottom:8px}
+label{display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.fields{display:grid;grid-template-columns:1fr 1.5fr 1.2fr;gap:12px}
+select,input{width:100%;padding:13px 12px;border:1px solid var(--line);background:var(--cream);font-family:'Jost',sans-serif;font-weight:300;font-size:16px;color:var(--ink);border-radius:0;-webkit-appearance:none;appearance:none}
+select:focus,input:focus{outline:2px solid var(--gold);outline-offset:-2px}
+.btn{display:block;width:100%;margin-top:20px;padding:16px;background:var(--ink);color:var(--cream);border:1px solid var(--ink);font-family:'Jost',sans-serif;font-weight:400;font-size:13px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;transition:background .25s,color .25s}
+.btn:hover{background:var(--gold);border-color:var(--gold)}
+.btn:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.err{color:#9A3B1F;font-size:14px;margin-top:12px;display:none}
+
+.ring-wrap{text-align:center;padding:8px 0 4px}
+svg.ring{width:min(300px,80vw);height:auto;overflow:visible}
+.ring-dot{fill:var(--white);stroke:var(--line);stroke-width:1}
+.ring-num{font-family:'Jost',sans-serif;font-size:11px;fill:var(--ink2);text-anchor:middle;dominant-baseline:central}
+.ring-active{fill:var(--gold);stroke:var(--gold)}
+.ring-active-num{fill:var(--white);font-weight:400}
+.ring-path{fill:none;stroke:var(--line);stroke-width:1}
+.ring-center{font-family:'Cormorant Garamond',serif;font-size:56px;fill:var(--ink);text-anchor:middle;dominant-baseline:central}
+.ring-master{stroke:var(--gold-l);stroke-width:1;fill:none;stroke-dasharray:2 4}
+
+#result{display:none}
+.result-head{text-align:center;padding:44px 0 10px}
+.kw{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,6vw,42px);font-style:italic;color:var(--gold);margin-top:6px}
+.calc{font-size:13px;letter-spacing:.06em;color:var(--ink2);opacity:.85;margin-top:20px;font-variant-numeric:tabular-nums}
+.calc span{color:var(--gold)}
+.teaser{font-size:17.5px;line-height:1.85;margin-top:26px}
+
+.gate{background:var(--white);border:1px solid var(--line);padding:32px 26px;margin-top:36px;text-align:center}
+.gate h3{margin-bottom:12px}
+.gate p{font-size:15px;margin-bottom:22px}
+.gate .row{display:grid;gap:12px}
+.consent{font-size:12.5px;line-height:1.6;color:var(--ink2);opacity:.8;margin-top:14px}
+.consent a{color:var(--gold)}
+
+#full{display:none;padding-top:14px}
+.divider{height:1px;background:var(--line);margin:46px 0}
+.q{border-left:2px solid var(--gold-l);padding:4px 0 4px 20px;margin-bottom:16px;font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--ink);line-height:1.45}
+.months{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:24px}
+.m{background:var(--white);padding:16px 15px}
+.m.now{background:#FDF9F2;box-shadow:inset 0 0 0 1px var(--gold-l)}
+.m-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.m-name{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink2)}
+.m-num{font-family:'Cormorant Garamond',serif;font-size:27px;color:var(--gold)}
+.m-txt{font-size:13.5px;line-height:1.6;color:var(--ink2);margin-top:6px}
+.m.now .m-name{color:var(--gold)}
+
+.cta{background:var(--ink);color:var(--cream);padding:46px 26px;margin-top:52px;text-align:center}
+.cta h2{color:var(--cream)}
+.cta p{color:rgba(249,245,240,.72);max-width:420px;margin:16px auto 26px;font-size:15.5px}
+.cta a{display:inline-block;padding:15px 34px;border:1px solid var(--gold-l);color:var(--gold-l);text-decoration:none;font-size:12px;letter-spacing:.22em;text-transform:uppercase;transition:background .25s,color .25s}
+.cta a:hover{background:var(--gold-l);color:var(--ink)}
+
+footer{padding:44px 0 54px;text-align:center;font-size:12px;letter-spacing:.05em;color:var(--ink2);opacity:.7;line-height:1.9}
+.sig{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:var(--gold);opacity:1;margin-bottom:20px}
+
+.extras{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:34px}
+.ex{background:var(--white);padding:24px 22px}
+.ex-h{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
+.ex p{font-size:14.5px;line-height:1.75;margin:0}
+.ex-q p{font-family:'Cormorant Garamond',serif;font-size:20px;line-height:1.5;font-style:italic;color:var(--ink)}
+.ex-f{background:var(--slate-bg);color:var(--slate)}
+.ex-f .ex-h{color:var(--slate-soft);margin-bottom:0}
+.ex-f p{color:var(--slate)}
+.ex-top{display:flex;align-items:center;gap:13px;margin-bottom:14px}
+.geo-wrap{flex:0 0 auto;color:var(--slate);display:block}
+.geo-wrap svg{width:38px;height:38px;display:block}
+@media(max-width:600px){.extras{grid-template-columns:1fr}}
+
+.seo{background:var(--white);border-top:1px solid var(--line)}
+.seo .wrap{padding-top:56px;padding-bottom:8px}
+.jaren{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:26px}
+.jaar{background:var(--white);padding:20px 20px 22px}
+.jaar h3{font-size:19px;margin-bottom:8px}
+.jaar h3 span{color:var(--gold);font-style:italic}
+.jaar p{font-size:14px;line-height:1.7;margin:0}
+.uitleg{background:var(--slate-bg);border:1px solid var(--line);padding:26px 24px;margin-top:30px;color:var(--slate)}
+.uitleg p{color:var(--slate);font-size:14.5px}
+.uitleg p:last-child{margin-bottom:0}
+.uitleg code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;background:rgba(57,72,92,.07);padding:1px 5px}
+.vraagblok{margin-top:30px}
+.vraagblok h3{font-size:19px;margin:24px 0 8px}
+.vraagblok p{font-size:14.5px;margin:0}
+@media(max-width:600px){.jaren{grid-template-columns:1fr}}
+
+.topbar{padding:30px 0 22px;text-align:center}
+.hero-img{position:relative;width:100%;max-width:1400px;margin:0 auto;aspect-ratio:1536/880;max-height:66vh;overflow:hidden;background:var(--cream)}
+.hero-img img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+.hero-img::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to bottom,rgba(249,245,240,0) 62%,rgba(249,245,240,.55) 84%,var(--cream) 100%)}
+.szinn-arc{display:block;width:min(620px,92vw);height:auto;margin:6px auto 0}
+.sz-breathe{animation:szBreath 6s ease-in-out infinite}
+@keyframes szBreath{0%,100%{opacity:1}50%{opacity:.78}}
+@media (prefers-reduced-motion:reduce){.sz-breathe{animation:none}}
+@media(max-width:640px){.hero-img{aspect-ratio:4/3;max-height:none}}
+
+.reveal{animation:fade .7s ease both}
+@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.reveal{animation:none}html{scroll-behavior:auto}}
+@media(max-width:480px){.fields{grid-template-columns:1fr 1fr;grid-template-areas:"d m" "y y"}.fields>div:nth-child(1){grid-area:d}.fields>div:nth-child(2){grid-area:m}.fields>div:nth-child(3){grid-area:y}.months{grid-template-columns:1fr}}
+</style>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Calculate your Personal Year","url":"https://szinn.ai/en/personal-year","applicationCategory":"LifestyleApplication","operatingSystem":"Web browser","inLanguage":"en","description":"Calculate your Personal Year for free using classical numerology and see where you stand in your nine-year cycle.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"publisher":{"@type":"Organization","name":"SZINN","url":"https://szinn.ai/"},"isPartOf":{"@type":"WebSite","name":"SZINN","url":"https://szinn.ai/"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"What is a Personal Year?","acceptedAnswer":{"@type":"Answer","text":"A Personal Year is a number from numerology that shows where you stand in a recurring cycle of nine years. Every year in that cycle carries its own theme, from beginning in a 1 year to completing in a 9 year."}},{"@type":"Question","name":"Do I need my time of birth?","acceptedAnswer":{"@type":"Answer","text":"No. Your Personal Year only needs your day and month of birth, plus the current calendar year."}},{"@type":"Question","name":"When does my Personal Year change?","acceptedAnswer":{"@type":"Answer","text":"On 1 January. SZINN calculates on a calendar year basis, so Personal Year, Personal Month and Personal Day all run on the same cycle."}},{"@type":"Question","name":"What does an 11 or a 22 mean?","acceptedAnswer":{"@type":"Answer","text":"Those are master numbers. They are not reduced to 2 or 4, because in numerology they carry their own, more intense meaning."}},{"@type":"Question","name":"Is this calculation free?","acceptedAnswer":{"@type":"Answer","text":"Yes. Calculating your Personal Year and reading the interpretation costs nothing."}}]}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"SZINN","item":"https://szinn.ai/en/"},{"@type":"ListItem","position":2,"name":"Calculate your Personal Year","item":"https://szinn.ai/en/personal-year"}]}</script>
+</head>
+<body>
+
+<header>
+  <div class="topbar"><a class="logo" href="https://szinn.ai/en/">SZINN</a></div>
+  <div class="hero-img">
+    <picture>
+      <source type="image/webp" srcset="/assets/hero-mandala-900.webp 900w, /assets/hero-mandala-1200.webp 1200w, /assets/hero-mandala-1536.webp 1536w" sizes="(max-width:1400px) 100vw, 1400px">
+      <img src="/assets/hero-mandala-1200.jpg" srcset="/assets/hero-mandala-900.jpg 900w, /assets/hero-mandala-1200.jpg 1200w, /assets/hero-mandala-1536.jpg 1536w" sizes="(max-width:1400px) 100vw, 1400px" alt="The SZINN mark within the Flower of Life, above the Nile at sunrise." width="1536" height="880" fetchpriority="high" decoding="async">
+    </picture>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="hero">
+    <div class="tag">Free · Numerology</div>
+    <h1>Your <em>Personal Year</em></h1>
+    <p>Numerology moves in cycles of nine years. Each year carries its own energy and its own question. Enter your date of birth and see where you are right now.</p>
+  </section>
+
+  <svg class="szinn-arc" viewBox="0 0 900 214" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Nine points on an arc: the nine-year cycle."><defs><linearGradient id="szFade" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".24" stop-color="#fff" stop-opacity="1"/><stop offset=".76" stop-color="#fff" stop-opacity="1"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><radialGradient id="szBloom" gradientUnits="userSpaceOnUse" cx="450" cy="138" r="260"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".34" stop-color="#fff" stop-opacity=".78"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><radialGradient id="szHalo" gradientUnits="userSpaceOnUse" cx="450" cy="138" r="84"><stop offset=".60" stop-color="#F9F5F0" stop-opacity="1"/><stop offset="1" stop-color="#F9F5F0" stop-opacity="0"/></radialGradient><mask id="szMask"><rect width="900" height="214" fill="url(#szFade)"/></mask><mask id="szBloomMask"><rect width="900" height="214" fill="url(#szBloom)"/></mask></defs><g mask="url(#szMask)"><path d="M 0.0 202.6 L 15.0 198.3 L 30.0 194.1 L 45.0 190.1 L 60.0 186.3 L 75.0 182.6 L 90.0 179.0 L 105.0 175.6 L 120.0 172.4 L 135.0 169.3 L 150.0 166.4 L 165.0 163.6 L 180.0 160.9 L 195.0 158.5 L 210.0 156.1 L 225.0 153.9 L 240.0 151.8 L 255.0 149.9 L 270.0 148.2 L 285.0 146.5 L 300.0 145.0 L 315.0 143.7 L 330.0 142.5 L 345.0 141.4 L 360.0 140.5 L 375.0 139.8 L 390.0 139.1 L 405.0 138.6 L 420.0 138.3 L 435.0 138.1 L 450.0 138.0 L 465.0 138.1 L 480.0 138.3 L 495.0 138.6 L 510.0 139.1 L 525.0 139.8 L 540.0 140.5 L 555.0 141.4 L 570.0 142.5 L 585.0 143.7 L 600.0 145.0 L 615.0 146.5 L 630.0 148.2 L 645.0 149.9 L 660.0 151.8 L 675.0 153.9 L 690.0 156.1 L 705.0 158.5 L 720.0 160.9 L 735.0 163.6 L 750.0 166.4 L 765.0 169.3 L 780.0 172.4 L 795.0 175.6 L 810.0 179.0 L 825.0 182.6 L 840.0 186.3 L 855.0 190.1 L 870.0 194.1 L 885.0 198.3 L 900.0 202.6" fill="none" stroke="#A8884A" stroke-width="1.2" opacity=".6"/></g><circle cx="45.0" cy="190.1" r="4.5" fill="#F9F5F0" stroke="#A8884A" stroke-width="1.2"/><circle cx="146.2" cy="167.1" r="4.5" fill="#F9F5F0" stroke="#A8884A" stroke-width="1.2"/><circle cx="247.5" cy="150.9" r="4.5" fill="#F9F5F0" stroke="#A8884A" stroke-width="1.2"/><circle cx="348.8" cy="141.2" r="4.5" fill="#F9F5F0" stroke="#A8884A" stroke-width="1.2"/><circle cx="450.0" cy="138.0" r="6.5" fill="#A8884A" stroke="#A8884A" stroke-width="1.2"/><circle cx="551.2" cy="141.2" r="4.5" fill="#F9F5F0" stroke="#A8884A" stroke-width="1.2"/><circle cx="652.5" cy="150.9" r="4.5" fill="#F9F5F0" stroke="#A8884A" stroke-width="1.2"/><circle cx="753.8" cy="167.1" r="4.5" fill="#F9F5F0" stroke="#A8884A" stroke-width="1.2"/><circle cx="855.0" cy="190.1" r="4.5" fill="#F9F5F0" stroke="#A8884A" stroke-width="1.2"/></svg>
+
+  <div class="card">
+    <div class="fields">
+      <div><label for="d">Day</label><select id="d"></select></div>
+      <div><label for="m">Month</label><select id="m"></select></div>
+      <div><label for="y">Year of birth</label><input id="y" type="number" inputmode="numeric" placeholder="1973" min="1900" max="2026"></div>
+    </div>
+    <button class="btn" id="calcBtn">Calculate my year</button>
+    <div class="err" id="err"></div>
+  </div>
+
+  <section id="result">
+
+    <div class="result-head">
+      <div class="ring-wrap" id="ringWrap"></div>
+      <div class="tag" id="yearLabel" style="margin-top:14px"></div>
+      <div class="kw" id="kw"></div>
+      <div class="calc" id="calc"></div>
+    </div>
+
+    <p class="teaser" id="teaser"></p>
+
+
+    <div class="extras">
+      <div class="ex ex-f">
+        <div class="ex-top"><span class="geo-wrap" id="geo"></span><div class="ex-h">Did you know</div></div>
+        <p id="feit"></p>
+      </div>
+      <div class="ex ex-q"><div class="ex-h">Something to sit with</div><p id="vraag"></p></div>
+    </div>
+
+    <div class="gate" id="gate">
+      <h3>Read your full year</h3>
+      <p>You will see the full reading for this year, three reflection questions and your twelve Personal Months right here on this page.</p>
+      <div class="row">
+        <input id="naam" type="text" placeholder="Your first name" autocomplete="given-name">
+        <input id="mail" type="email" placeholder="Your email address" autocomplete="email">
+        <button class="btn" id="unlockBtn" style="margin-top:0">Show my full year</button>
+      </div>
+      <div class="err" id="err2"></div>
+      <p class="consent">You will receive your reading and an occasional note from SZINN. You can unsubscribe at any time with one click.</p>
+    </div>
+
+    <div id="full">
+      <div class="divider"></div>
+      <div class="tag">The full reading</div>
+      <h2 id="fullTitle"></h2>
+      <div id="body" style="margin-top:20px"></div>
+
+      <div class="divider"></div>
+      <div class="tag">Three questions for this year</div>
+      <div id="qs" style="margin-top:18px"></div>
+
+      <div class="divider"></div>
+      <div class="tag">Your twelve months</div>
+      <h2>Personal Months <em id="pmYear"></em></h2>
+      <p style="margin-top:16px">Within your year, every month moves in its own rhythm. Your Personal Month is your year number added to the number of the calendar month. The month you are in now is marked.</p>
+      <div class="months" id="months"></div>
+    </div>
+
+  </section>
+</div>
+
+<div class="cta">
+  <div class="tag" style="color:var(--gold-l)">Going further</div>
+  <h2>This is <em>one</em> of thirteen layers</h2>
+  <p>Your Personal Year is a single section of the SZINN Alignment Blueprint. There, your birth chart, your numerology and the Tikkun layer come together into one document that shows how you work. The Blueprint is not orderable just yet. Join the list and you will hear first.</p>
+  <a href="https://szinn.ai/en/#bestellen">Keep me posted</a>
+</div>
+
+
+<section class="seo">
+  <div class="wrap">
+    <div class="tag">Reference</div>
+    <h2>The nine <em>Personal Years</em> in brief</h2>
+    <p style="margin-top:14px;max-width:620px;">Numerology moves in a cycle of nine years. Each year is described briefly below, along with the three master numbers that are never reduced. Enter your date of birth above to see which year applies to you right now.</p>
+
+    <div class="jaren">
+      <div class="jaar">
+        <h3>Personal Year 1 · <span>Beginning</span></h3>
+        <p>You are standing at the start of a new nine-year cycle. What you set in motion this year carries the years that follow. It asks for initiative, and for the willingness to move before the road is visible.</p>
+      </div>
+      <div class="jaar">
+        <h3>Personal Year 2 · <span>Connection</span></h3>
+        <p>This is a year of patience and attunement. Where last year asked for action, this year asks for cooperation. What you sowed now needs to root, and most of that happens underground.</p>
+      </div>
+      <div class="jaar">
+        <h3>Personal Year 3 · <span>Expression</span></h3>
+        <p>This year wants to move outward. What has been growing quietly over the past two years now asks to be spoken. It is a year of visibility, creativity and contact.</p>
+      </div>
+      <div class="jaar">
+        <h3>Personal Year 4 · <span>Foundation</span></h3>
+        <p>This is a year of building. It is not the most exciting year in the cycle, but it is one of the most important. What you put down carefully this year will carry for years.</p>
+      </div>
+      <div class="jaar">
+        <h3>Personal Year 5 · <span>Movement</span></h3>
+        <p>This year brings change. After last year of building, movement arrives, along with space and unexpected direction. Holding on works less well this year than moving with it.</p>
+      </div>
+      <div class="jaar">
+        <h3>Personal Year 6 · <span>Care</span></h3>
+        <p>This year turns towards home, relationships and responsibility. It brings warmth and obligation at the same time. What you love will ask something of you this year.</p>
+      </div>
+      <div class="jaar">
+        <h3>Personal Year 7 · <span>Depth</span></h3>
+        <p>This is a year of turning inward. Less is asked of you outwardly and more of you inwardly. It is the quietest year of the cycle, and often the most clarifying.</p>
+      </div>
+      <div class="jaar">
+        <h3>Personal Year 8 · <span>Authority</span></h3>
+        <p>This year is about power, result and the material world. What you have built over the past years now becomes visible on the outside. It asks you to take charge.</p>
+      </div>
+      <div class="jaar">
+        <h3>Personal Year 9 · <span>Completion</span></h3>
+        <p>This is the final year of the cycle. It is about finishing, clearing and letting go. Whatever is not coming with you into the next nine years surfaces this year so you can say goodbye to it.</p>
+      </div>
+      <div class="jaar">
+        <h3>Personal Year 11 · <span>Insight</span></h3>
+        <p>Eleven is a master number and is not reduced. This year is about sensitivity, intuition and insight. You pick up more than usual, and that is useful as long as you take it seriously.</p>
+      </div>
+      <div class="jaar">
+        <h3>Personal Year 22 · <span>Building</span></h3>
+        <p>Twenty-two is a master number and is not reduced. This year carries the energy of the builder on a large scale. More is possible than usual, and that asks for structure.</p>
+      </div>
+      <div class="jaar">
+        <h3>Personal Year 33 · <span>Service</span></h3>
+        <p>Thirty-three is a master number and is not reduced. This year carries the energy of giving, guiding and holding. It is a rare year and it asks a great deal.</p>
+      </div>
+    </div>
+
+    <div class="uitleg">
+      <h3 style="margin-bottom:12px;">How to calculate your Personal Year yourself</h3>
+      <p>SZINN uses the classical method. You add three numbers together: your month of birth, your day of birth and the current calendar year. Each of those three is first reduced to a single digit, then you add them and reduce the result again.</p>
+      <p>An example for someone born on 25 October, in the year 2026. The month is 10, which becomes <code>1 + 0 = 1</code>. The day is 25, which becomes <code>2 + 5 = 7</code>. The year 2026 becomes <code>2 + 0 + 2 + 6 = 10</code>, then <code>1 + 0 = 1</code>. Together that is <code>1 + 7 + 1 = 9</code>. So the Personal Year is 9.</p>
+      <p>If the sum comes to 11, 22 or 33, that number stays as it is. Those are master numbers and numerology does not reduce them further.</p>
+      <p>Your Personal Year runs from January through December, so it changes on 1 January rather than on your birthday. Your year of birth plays no part in this calculation.</p>
+    </div>
+
+    <div class="vraagblok">
+      <div class="tag" style="margin-top:34px">Frequently asked</div>
+
+      <h3>What is a Personal Year?</h3>
+      <p>A Personal Year is a number from numerology that shows where you stand in a recurring cycle of nine years. Every year in that cycle carries its own theme, from beginning in a 1 year to completing in a 9 year.</p>
+
+      <h3>Do I need my time of birth?</h3>
+      <p>No. Your Personal Year only needs your day and month of birth, plus the current calendar year. Time and place of birth are only needed for a full birth chart.</p>
+
+      <h3>When does my Personal Year change?</h3>
+      <p>On 1 January. SZINN calculates on a calendar year basis, so that your Personal Year, Personal Month and Personal Day all run on the same cycle.</p>
+
+      <h3>What does an 11 or a 22 mean?</h3>
+      <p>Those are master numbers. They are not reduced to 2 or 4, because in numerology they carry their own, more intense meaning. An 11 carries the connecting force of the 2 in doubled form, a 22 that of the building 4.</p>
+
+      <h3>Is this calculation free?</h3>
+      <p>Yes. Calculating your Personal Year and reading the interpretation costs nothing. Your Personal Year is one of the thirteen parts of the SZINN Alignment Blueprint.</p>
+    </div>
+  </div>
+</section>
+
+<div class="wrap">
+  <footer>
+    <div class="sig">Remember who you are.</div>
+    © 2026 Elly Elizabeth Korving · Alterego BV · All rights reserved · szinn.ai
+  </footer>
+</div>
+
+<script>
+/* ============================================================
+   SZINN · PERSONAL YEAR — CONFIGURATION
+   Only edit this block when connecting the mailing list.
+   ============================================================ */
+var SZINN = {
+  /* ROUTE A (simplest, no Make needed): the public Enormail form URL, the same
+     kind of address as the waiting list form on the homepage.
+     Create a NEW form on a NEW list in Enormail and paste that URL here. */
+  subscribeUrl: '',   // maak nog een apart EN-formulier aan en plak die URL hier
+  /* ROUTE B (only if you also want to store birth date and number): a NEW Make
+     webhook, not the intake one. Ignored when route A is filled in. */
+  endpoint: '',
+  formId:   '',                                   // Enormail formid (EN), from Forms > Publish
+  lang:     'en',
+  source:   'tool-personal-year',
+  /* true  = master numbers 11/22/33 stay intact in the separate components
+     false = components always reduced to a single digit (default) */
+  keepMasterInComponents: false,
+  /* false = 11/22/33 als Persoonlijk Jaar terugbrengen naar 2/4/6 */
+  masterPersonalYear: true
+};
+
+/* ---------- CALCULATION (classical method) ---------- */
+function reduce(n, keepMaster){
+  while(n > 9){
+    if(keepMaster && (n === 11 || n === 22 || n === 33)) return n;
+    n = String(n).split('').reduce(function(a,b){return a + Number(b);}, 0);
+  }
+  return n;
+}
+function personalYear(day, month, year){
+  var km = SZINN.keepMasterInComponents;
+  var m = reduce(month, km), d = reduce(day, km), y = reduce(year, km);
+  var total = m + d + y;
+  return { m:m, d:d, y:y, total:total, py:reduce(total, SZINN.masterPersonalYear) };
+}
+function personalMonth(py, monthNr){ return reduce(py + monthNr, true); }
+
+/* ---------- CONTENT ---------- */
+var MAANDEN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
+var JAAR = {
+1:{kw:'Beginning',
+ teaser:'You are standing at the start of a new nine-year cycle. What you set in motion this year carries the years that follow. It asks for initiative, and for the willingness to move before the road is visible.',
+ body:['A 1 year rarely feels comfortable, because nothing is finished yet. You are sowing, not harvesting. Everything the previous year released now makes room, and that room asks for something that is truly yours. This is the year to choose what you want, rather than what is expected of you.',
+       'What to watch for is impatience, and the tendency to do everything alone. A 1 year puts you in the leading role, but leadership without support becomes loneliness. Ask for help before you get stuck, and measure your progress by direction rather than result.'],
+ qs:['What am I beginning this year, even if nobody asks me to?','Where am I waiting for permission I could give myself?','Which habit belongs to who I was, not to who I am becoming?']},
+
+2:{kw:'Connection',
+ teaser:'This is a year of patience and attunement. Where last year asked for action, this year asks for cooperation. What you sowed now needs to root, and most of that happens underground.',
+ body:['In a 2 year things move more slowly than you would like. That is not stagnation but ripening. Relationships move to the foreground: collaborations, partnerships, the people around you. You learn more this year by listening than by pushing, and what you treat with attention grows faster than what you force.',
+       'What to watch for is disappearing into other people. Attunement does not mean you hand in your side of the story. The question is not whether you can move along, because you can. The question is whether the movement matches what you need.'],
+ qs:['Where am I pushing when waiting would give me more?','Who do I need, and have I actually asked them?','Where do I say yes while my body says no?']},
+
+3:{kw:'Expression',
+ teaser:'This year wants to move outward. What has been growing quietly over the past two years now asks to be spoken. It is a year of visibility, creativity and contact.',
+ body:['A 3 year brings lightness back. There is room to play, to make, to write, to speak and to share. People find you more easily, and opportunities come from conversations more often than from plans. This is the year to show what you are working on, even when it is not finished.',
+       'What to watch for is scattering. Three is the energy that finds everything interesting at once. Choose one or two things you actually complete, and let the rest go. Lightness is a strength as long as there is depth somewhere to hold it.'],
+ qs:['What do I want to say that I have not said out loud?','Where do I keep myself small out of fear of the response?','What do I make purely because it makes me happy?']},
+
+4:{kw:'Foundation',
+ teaser:'This is a year of building. It is not the most exciting year in the cycle, but it is one of the most important. What you put down carefully this year will carry for years.',
+ body:['A 4 year asks for structure, discipline and patience. Admin, health, home, work and money all want to be in order. The work sometimes feels heavy and slow, and that is part of it. You are laying brick, and brickwork cannot be rushed without cracks.',
+       'What to watch for is rigidity and overwork. Four can become so focused on the task that the life around it disappears. Build rest into the structure itself, rather than treating it as a reward afterwards.'],
+ qs:['Which foundation is missing, so that I keep starting over?','What costs me energy because it is not sorted out?','Where am I mistaking hard work for progress?']},
+
+5:{kw:'Movement',
+ teaser:'This year brings change. After last year of building, movement arrives, along with space and unexpected direction. Holding on works less well this year than moving with it.',
+ body:['A 5 year opens doors you did not plan for. Travel, new people, a different working rhythm or a move all belong to this energy. There is more freedom available than you are used to, and that can feel exciting and uncomfortable at the same time. Say yes more often this year to what makes you curious.',
+       'What to watch for is restlessness. Five can jump from stimulus to stimulus and finish nothing. Choose deliberately what you take with you into the change, so that freedom does not turn into distraction.'],
+ qs:['Where am I holding on to something that finished long ago?','Which change am I postponing while knowing it is coming?','What would I do if I had more room than I think I have?']},
+
+6:{kw:'Care',
+ teaser:'This year turns towards home, relationships and responsibility. It brings warmth and obligation at the same time. What you love will ask something of you this year.',
+ body:['A 6 year points inward, towards family, the house, the people who are close. Decisions may come up about living together, caring for others, or reshaping your daily life. Beauty and harmony matter more than usual this year, and they are not a luxury but nourishment.',
+       'What to watch for is carrying too much. Six says yes before the question is finished. Caring for others only works when you count yourself inside the circle, not when you stand around the edge of it.'],
+ qs:['Who am I caring for without being asked?','What does my home or my daily life need?','Where am I mistaking responsibility for control?']},
+
+7:{kw:'Depth',
+ teaser:'This is a year of turning inward. Less is asked of you outwardly and more of you inwardly. It is the quietest year of the cycle, and often the most clarifying.',
+ body:['A 7 year takes the pace out. You need more time alone than usual, and that is not withdrawal but processing. Study, silence, nature and anything that lets your thoughts settle work strongly this year. Answers do not come from searching harder but from staying still longer.',
+       'What to watch for is isolation and overthinking. Seven can withdraw so far that contact falls away. Keep one or two people close who tell you the truth, even when you would rather be unreachable.'],
+ qs:['Where do I need silence rather than an answer?','What do I already know but do not want to know yet?','When did I last feel genuinely calm, and what was different then?']},
+
+8:{kw:'Authority',
+ teaser:'This year is about power, result and the material world. What you have built over the past years now becomes visible on the outside. It asks you to take charge.',
+ body:['An 8 year brings money, work, standing and decision-making to the foreground. Larger choices may arrive: negotiating, investing, setting up something that needs you at the helm. This is not the year to keep yourself small. If you ask for what you are worth, the chance of being heard is higher this year than usual.',
+       'What to watch for is hardness, including towards yourself. Eight likes to measure in numbers. Make sure you define success in a way that cannot only be read off a bank balance, or the year will deliver a great deal and still feel empty.'],
+ qs:['Where am I valuing myself too low?','Which decision am I postponing because it feels big?','What do I want this year to produce, in numbers and in feeling?']},
+
+9:{kw:'Completion',
+ teaser:'This is the final year of the cycle. It is about finishing, clearing and letting go. Whatever is not coming with you into the next nine years surfaces this year so you can say goodbye to it.',
+ body:['A 9 year is a year of completion. Relationships, work, habits and beliefs that have had their time become clearly visible. That can feel wistful, but it is clearing the ground for the beginning that follows. New things started in a 9 year often have a short breath, while finishing things creates a remarkable amount of space.',
+       'What to watch for is holding on out of loyalty. Nine has a large heart and a long reach. Letting go this year is not failure but respect for what it has been.'],
+ qs:['What is finished that I am still holding?','What am I saying goodbye to, and have I actually said it out loud?','What do I definitely not want to carry into the next nine years?']},
+
+11:{kw:'Insight',
+ teaser:'Eleven is a master number and is not reduced. This year is about sensitivity, intuition and insight. You pick up more than usual, and that is useful as long as you take it seriously.',
+ body:['An 11 year carries the energy of the 2, connection and attunement, but at a higher tension. You notice atmosphere, undertone and timing more sharply. Insights can arrive that set your direction for years, often at moments when you were not looking for them. Write down what you notice, because it moves faster than you can place it.',
+       'What to watch for is overstimulation and self-doubt. Eleven feels a great deal and then thinks its way past it. Look after rest, rhythm and grounding, because this number only works well from a body that is in order.'],
+ qs:['What do I know without being able to explain it?','Where do I talk myself out of my own perception?','What does my system need in order to carry this year?']},
+
+22:{kw:'Building',
+ teaser:'Twenty-two is a master number and is not reduced. This year carries the energy of the builder on a large scale. More is possible than usual, and that asks for structure.',
+ body:['A 22 year combines vision with execution. What you set up this year can become a foundation that reaches beyond you: a company, a method, a place, something that stands even when you step away for a while. The energy is large and concrete at the same time, and it works best when you think in steps rather than leaps.',
+       'What to watch for is overload. Twenty-two wants to realise everything at once and forgets the human scale. Share the work, guard your limits and build more slowly than the ambition suggests, because that is what makes it hold.'],
+ qs:['What do I want to build that is larger than this year?','What help do I need, and have I already organised it?','Where am I running ahead of the work without a foundation under it?']},
+
+33:{kw:'Service',
+ teaser:'Thirty-three is a master number and is not reduced. This year carries the energy of giving, guiding and holding. It is a rare year and it asks a great deal.',
+ body:['A 33 year places you in a role where others come to you. Teaching, guiding, caring or leading in a way that goes beyond a task. What you pass on this year can last longer than you expect, and it works most strongly when it comes from experience rather than theory.',
+       'What to watch for is walking past yourself. Thirty-three gives until there is nothing left. Without a limit of your own, service becomes exhaustion, and then it helps no one. Fill your own cup first, which is not selfishness but a condition.'],
+ qs:['What am I passing on, and to whom?','Where am I giving more than I have?','What do I need myself in order to carry this?']}
+};
+
+var GEO = {
+1:"<svg class=\"geo\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"><circle cx=\"50.00\" cy=\"50.00\" r=\"38.00\"/><circle cx=\"50.0\" cy=\"50.0\" r=\"4.5\" fill=\"currentColor\" stroke=\"none\"/></svg>",
+2:"<svg class=\"geo\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"><circle cx=\"30.24\" cy=\"50.00\" r=\"32.68\"/><circle cx=\"69.76\" cy=\"50.00\" r=\"32.68\"/></svg>",
+3:"<svg class=\"geo\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"><polygon points=\"50.00,12.00 82.91,69.00 17.09,69.00\"/></svg>",
+4:"<svg class=\"geo\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"><polygon points=\"50.00,12.00 82.91,69.00 17.09,69.00\"/><line x1=\"50.00\" y1=\"53.80\" x2=\"50.00\" y2=\"12.00\"/><line x1=\"50.00\" y1=\"53.80\" x2=\"82.91\" y2=\"69.00\"/><line x1=\"50.00\" y1=\"53.80\" x2=\"17.09\" y2=\"69.00\"/></svg>",
+5:"<svg class=\"geo\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"><polygon points=\"50.00,12.00 86.14,38.26 72.34,80.74 27.66,80.74 13.86,38.26\"/><line x1=\"50.00\" y1=\"12.38\" x2=\"72.11\" y2=\"80.44\"/><line x1=\"85.78\" y1=\"38.37\" x2=\"27.89\" y2=\"80.44\"/><line x1=\"72.11\" y1=\"80.44\" x2=\"14.22\" y2=\"38.37\"/><line x1=\"27.89\" y1=\"80.44\" x2=\"50.00\" y2=\"12.38\"/><line x1=\"14.22\" y1=\"38.37\" x2=\"85.78\" y2=\"38.37\"/></svg>",
+6:"<svg class=\"geo\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"><polygon points=\"50.00,12.00 82.91,31.00 82.91,69.00 50.00,88.00 17.09,69.00 17.09,31.00\"/><polygon points=\"50.00,12.00 82.91,69.00 17.09,69.00\"/><polygon points=\"50.00,88.00 17.09,31.00 82.91,31.00\"/></svg>",
+7:"<svg class=\"geo\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"><circle cx=\"50.00\" cy=\"50.00\" r=\"38.00\"/><line x1=\"50.00\" y1=\"12.00\" x2=\"66.49\" y2=\"84.24\"/><line x1=\"79.71\" y1=\"26.31\" x2=\"33.51\" y2=\"84.24\"/><line x1=\"87.05\" y1=\"58.46\" x2=\"12.95\" y2=\"58.46\"/><line x1=\"66.49\" y1=\"84.24\" x2=\"20.29\" y2=\"26.31\"/><line x1=\"33.51\" y1=\"84.24\" x2=\"50.00\" y2=\"12.00\"/><line x1=\"12.95\" y1=\"58.46\" x2=\"79.71\" y2=\"26.31\"/><line x1=\"20.29\" y1=\"26.31\" x2=\"87.05\" y2=\"58.46\"/></svg>",
+8:"<svg class=\"geo\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"><polygon points=\"50.00,12.00 88.00,50.00 50.00,88.00 12.00,50.00\"/><polygon points=\"76.87,23.13 76.87,76.87 23.13,76.87 23.13,23.13\"/></svg>",
+9:"<svg class=\"geo\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"><circle cx=\"50.00\" cy=\"50.00\" r=\"38.00\"/><polygon points=\"50.00,14.28 80.93,67.86 19.07,67.86\"/><polygon points=\"72.96,22.64 62.22,83.57 14.82,43.80\"/><polygon points=\"85.18,43.80 37.78,83.57 27.04,22.64\"/></svg>",
+11:"<svg class=\"geo\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"><circle cx=\"50.00\" cy=\"50.00\" r=\"38.00\"/><line x1=\"37.00\" y1=\"19.60\" x2=\"37.00\" y2=\"80.40\"/><line x1=\"63.00\" y1=\"19.60\" x2=\"63.00\" y2=\"80.40\"/></svg>",
+22:"<svg class=\"geo\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"><polygon points=\"50.00,12.00 82.91,31.00 82.91,69.00 50.00,88.00 17.09,69.00 17.09,31.00\"/><line x1=\"82.91\" y1=\"31.00\" x2=\"50.00\" y2=\"50.00\"/><line x1=\"50.00\" y1=\"88.00\" x2=\"50.00\" y2=\"50.00\"/><line x1=\"17.09\" y1=\"31.00\" x2=\"50.00\" y2=\"50.00\"/></svg>",
+33:"<svg class=\"geo\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\" aria-hidden=\"true\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linejoin=\"round\"><circle cx=\"50.00\" cy=\"50.00\" r=\"38.00\"/><polygon points=\"50.00,15.04 80.28,67.48 19.72,67.48\"/><polygon points=\"50.00,31.00 66.45,59.50 33.55,59.50\"/></svg>"
+};
+
+var FEIT = {
+1:"A 1 year always follows a 9 year. There is no birth date anywhere for which it runs differently. You begin only after something has been completed, never the other way round.",
+2:"A clean 2 is rare in this calculation. Most of the time the sum lands on 11, the master number with the same base tone. Across a full decade only about three percent of all birth dates come out as a 2.",
+3:"Three is the first number that can make a plane. Two points give a line, and only at three does a triangle appear. That is why a 3 year so often gives shape to what was drifting loose until then.",
+4:"Four is the first number that can hold space. Four points form the tetrahedron, the first stable shape in three dimensions. A 4 year is quite literally building load-bearing capacity.",
+5:"Five sits exactly in the middle of the cycle. Four years lie before it and four after. That makes the 5 the hinge between building and harvesting.",
+6:"Six is the first perfect number in mathematics: its divisors 1, 2 and 3 add up to 6 itself. A number in exact balance with its own parts.",
+7:"Seven is the only number from 1 to 10 that does not divide into 360, the number of the full circle. All the others go in without remainder. The 7 refuses to be neatly divided.",
+8:"Eight is 2 × 2 × 2, and besides 1 the only single digit that is a cube. Where the 4 lays a foundation, the 8 builds that foundation upward.",
+9:"Nine is the only digit that always returns to itself. Every multiple of 9 reduces back to 9: 9 × 7 = 63, and 6 + 3 = 9. Hence its name as the number of completion.",
+11:"Eleven is not rare in this calculation. In many years roughly one in ten birth dates lands on it. What makes it particular is not scarcity but tension. The 11 carries the 2 inside it, doubled.",
+22:"Twenty-two is the rarest Personal Year this calculation can produce. Across a full decade fewer than two percent of all birth dates reach it, and in some years nobody does.",
+33:"Thirty-three is the highest master number and barely occurs as a year. Where the 11 carries insight and the 22 carries building power, the 33 carries the passing on of both."
+};
+
+var VRAAG = {
+1:"If this year sets the tone for the next nine, what would you never want to see again in those nine years?",
+2:"What would happen if for one month you forced nothing and only responded to what came to you on its own?",
+3:"Who would you be if nobody had ever told you that you were too much?",
+4:"Looking back on this from five years out, which boring decision of this year turns out to have mattered most?",
+5:"Which door is already open while you are still explaining why you cannot walk through it?",
+6:"Who would you care for this year if you put yourself first on that list?",
+7:"What would you hear if you asked nobody for advice for a week?",
+8:"What would you ask for if you knew for certain that a no is not a disaster?",
+9:"What are you carrying into the next nine years purely out of habit?",
+11:"Which perception have you already had this year that you talked yourself out of straight away?",
+22:"What are you building that still stands when you are no longer there to hold it up?",
+33:"What are you passing on because you learned it yourself, rather than because someone said it was right?"
+};
+
+var PM = {
+1:'A new beginning. Set something in motion, however small.',
+2:'Attune and cooperate. Patience works better than pressure.',
+3:'Speak, share, be visible.',
+4:'Structure and order. Work that stays standing.',
+5:'Movement and change. Make room.',
+6:'Home, care and responsibility.',
+7:'Turn inward and rest. Think before doing.',
+8:'Authority, money and result.',
+9:'Finish and clear. Let go of what is done.',
+11:'Heightened sensitivity. Listen to what you already know.',
+22:'The larger line. Build something that reaches further.',
+33:'Give and guide, without losing yourself.'
+};
+
+/* ---------- CYCLE RING ---------- */
+function buildRing(py){
+  var root = (py===11||py===22||py===33) ? reduce(py,false) : py;
+  var cx=150, cy=150, r=110, s='';
+  s += '<circle class="ring-path" cx="150" cy="150" r="110"/>';
+  for(var i=1;i<=9;i++){
+    var ang = (i-1)/9 * Math.PI*2 - Math.PI/2;
+    var x = cx + r*Math.cos(ang), y = cy + r*Math.sin(ang);
+    var on = (i===root);
+    s += '<circle class="ring-dot'+(on?' ring-active':'')+'" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+(on?17:13)+'"/>';
+    if(on && py!==root) s += '<circle class="ring-master" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="24"/>';
+    s += '<text class="ring-num'+(on?' ring-active-num':'')+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'">'+i+'</text>';
+  }
+  s += '<text class="ring-center" x="150" y="152" style="font-size:'+(py>9?46:56)+'px">'+py+'</text>';
+  return '<svg class="ring" viewBox="0 0 300 300" role="img" aria-label="You are at position '+root+' of the nine-year cycle. Personal Year '+py+'."><g>'+s+'</g></svg>';
+}
+
+/* ---------- INIT ---------- */
+var dSel=document.getElementById('d'), mSel=document.getElementById('m');
+dSel.innerHTML='<option value="">--</option>';
+for(var i=1;i<=31;i++) dSel.innerHTML += '<option value="'+i+'">'+i+'</option>';
+mSel.innerHTML='<option value="">--</option>';
+for(var j=0;j<12;j++) mSel.innerHTML += '<option value="'+(j+1)+'">'+MAANDEN[j]+'</option>';
+
+var NOW = new Date();
+var CURRENT_YEAR = NOW.getFullYear();
+var CURRENT_MONTH = NOW.getMonth()+1;
+var state = null;
+
+document.getElementById('calcBtn').addEventListener('click', function(){
+  var err=document.getElementById('err');
+  var d=Number(dSel.value), m=Number(mSel.value), y=Number(document.getElementById('y').value);
+  err.style.display='none';
+  if(!d || !m || !y || y<1900 || y>CURRENT_YEAR){
+    err.textContent='Please enter your full date of birth.'; err.style.display='block'; return;
+  }
+  if(d > new Date(y, m, 0).getDate()){
+    err.textContent='That date does not exist. Check the day and month.'; err.style.display='block'; return;
+  }
+  var r = personalYear(d, m, CURRENT_YEAR);
+  state = {d:d, m:m, y:y, py:r.py};
+
+  document.getElementById('ringWrap').innerHTML = buildRing(r.py);
+  document.getElementById('yearLabel').textContent = 'Personal Year ' + CURRENT_YEAR;
+  document.getElementById('kw').textContent = r.py + ' · ' + JAAR[r.py].kw;
+  document.getElementById('calc').innerHTML =
+    'month ' + m + ' &rarr; <span>' + r.m + '</span> &nbsp;+&nbsp; day ' + d + ' &rarr; <span>' + r.d + '</span> &nbsp;+&nbsp; year ' + CURRENT_YEAR + ' &rarr; <span>' + r.y + '</span>'
+    + '<br>' + r.m + ' + ' + r.d + ' + ' + r.y + ' = ' + r.total + (r.total!==r.py ? ' &rarr; <span>' + r.py + '</span>' : '');
+  document.getElementById('teaser').textContent = JAAR[r.py].teaser;
+  document.getElementById('geo').innerHTML = GEO[r.py];
+  document.getElementById('feit').textContent = FEIT[r.py];
+  document.getElementById('vraag').textContent = VRAAG[r.py];
+
+  var res=document.getElementById('result');
+  res.style.display='block'; res.classList.add('reveal');
+  res.scrollIntoView({behavior:'smooth', block:'start'});
+});
+
+document.getElementById('unlockBtn').addEventListener('click', function(){
+  var e2=document.getElementById('err2');
+  var naam=document.getElementById('naam').value.trim();
+  var mail=document.getElementById('mail').value.trim();
+  e2.style.display='none';
+  if(!naam){
+    e2.textContent='Please enter your first name.'; e2.style.display='block'; return;
+  }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)){
+    e2.textContent='Please enter a valid email address.'; e2.style.display='block'; return;
+  }
+  var btn=this; btn.disabled=true; btn.textContent='One moment...';
+
+  try{
+    if(SZINN.subscribeUrl){
+      /* route A: echte formulierpost naar Enormail in een verborgen iframe.
+         Geen CORS, geen API-sleutel, en de pagina blijft staan.
+         Velden komen exact overeen met het Enormail-formulier, inclusief het
+         verborgen anti-spamveld b_{formid} dat leeg moet blijven. */
+      var sink = document.createElement('iframe');
+      sink.name = 'szinn_sink_' + Date.now();
+      sink.style.display = 'none';
+      document.body.appendChild(sink);
+
+      var f = document.createElement('form');
+      f.action = SZINN.subscribeUrl;
+      f.method = 'POST';
+      f.target = sink.name;
+      f.style.display = 'none';
+      var add = function(n, v){
+        var i = document.createElement('input');
+        i.type = 'hidden'; i.name = n; i.value = v;
+        f.appendChild(i);
+      };
+      add('name', naam);
+      add('email', mail);
+      add('birthday[day]',   state.d);
+      add('birthday[month]', state.m);
+      add('birthday[year]',  state.y);
+      var fid = SZINN.subscribeUrl.split('/').pop();
+      if(fid) add('b_' + fid, '');
+      document.body.appendChild(f);
+      f.submit();
+    } else if(SZINN.endpoint){
+      /* route B: via Make, met geboortedatum en Persoonlijk Jaar erbij */
+      fetch(SZINN.endpoint,{
+        method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          source: SZINN.source, lang: SZINN.lang, form_id: SZINN.formId,
+          naam: naam, email: mail,
+          geboortedatum: state.d + '-' + state.m + '-' + state.y,
+          personal_year: state.py, jaar: CURRENT_YEAR
+        })
+      }).catch(function(){});
+    }
+  }catch(e){}
+
+  var py=state.py, C=JAAR[py];
+  document.getElementById('fullTitle').innerHTML = (naam ? naam + ', your ' : 'Your ') + '<em>' + py + ' year</em>';
+  document.getElementById('body').innerHTML = C.body.map(function(p){return '<p>'+p+'</p>';}).join('');
+  document.getElementById('qs').innerHTML = C.qs.map(function(q){return '<div class="q">'+q+'</div>';}).join('');
+  document.getElementById('pmYear').textContent = CURRENT_YEAR;
+
+  var html='';
+  for(var k=1;k<=12;k++){
+    var v=personalMonth(py,k);
+    html += '<div class="m'+(k===CURRENT_MONTH?' now':'')+'">'
+         +  '<div class="m-top"><div class="m-name">'+MAANDEN[k-1]+(k===CURRENT_MONTH?' · now':'')+'</div><div class="m-num">'+v+'</div></div>'
+         +  '<div class="m-txt">'+PM[v]+'</div></div>';
+  }
+  document.getElementById('months').innerHTML=html;
+
+  document.getElementById('gate').style.display='none';
+  var f=document.getElementById('full');
+  f.style.display='block'; f.classList.add('reveal');
+  f.scrollIntoView({behavior:'smooth', block:'start'});
+});
+</script>
+</body>
+</html>
