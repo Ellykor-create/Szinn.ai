@@ -250,12 +250,11 @@ footer{padding:44px 0 54px;text-align:center;font-size:12px;letter-spacing:.05em
    Pas alleen dit blok aan bij het koppelen van de mailinglijst.
    ============================================================ */
 var SZINN = {
-  /* ROUTE A (eenvoudigst, geen Make nodig): de publieke Enormail-formulier-URL,
-     hetzelfde soort adres als het wachtlijstformulier op de homepage.
-     Maak in Enormail een NIEUW formulier op een NIEUWE lijst en plak die URL hier. */
-  subscribeUrl: 'https://app.enormail.eu/subscribe/af4fe661623e9e9c3871d09c3a9b3d1e',
-  /* ROUTE B (alleen als je ook geboortedatum en getal wilt opslaan): een NIEUWE
-     Make-webhook, niet die van het intakeformulier. Genegeerd als route A is ingevuld. */
+  /* De inschrijving loopt via een Netlify-functie op je eigen domein.
+     Bestand: netlify/functions/subscribe.mjs
+     In Netlify moet ENORMAIL_API_KEY als omgevingsvariabele staan. */
+  subscribeFn: '/.netlify/functions/subscribe',
+  /* Terugval via Make, alleen gebruikt als subscribeFn leeg is. */
   endpoint: '',
   formId:   '',                                   // Enormail formid (NL), uit Formulieren > Publiceren
   lang:     'nl',
@@ -492,35 +491,24 @@ document.getElementById('unlockBtn').addEventListener('click', function(){
   var btn=this; btn.disabled=true; btn.textContent='Een moment...';
 
   try{
-    if(SZINN.subscribeUrl){
-      /* route A: echte formulierpost naar Enormail in een verborgen iframe.
-         Geen CORS, geen API-sleutel, en de pagina blijft staan.
-         Velden komen exact overeen met het Enormail-formulier, inclusief het
-         verborgen anti-spamveld b_{formid} dat leeg moet blijven. */
-      var sink = document.createElement('iframe');
-      sink.name = 'szinn_sink_' + Date.now();
-      sink.style.display = 'none';
-      document.body.appendChild(sink);
-
-      var f = document.createElement('form');
-      f.action = SZINN.subscribeUrl;
-      f.method = 'POST';
-      f.target = sink.name;
-      f.style.display = 'none';
-      var add = function(n, v){
-        var i = document.createElement('input');
-        i.type = 'hidden'; i.name = n; i.value = v;
-        f.appendChild(i);
-      };
-      add('name', naam);
-      add('email', mail);
-      add('birthday[day]',   state.d);
-      add('birthday[month]', state.m);
-      add('birthday[year]',  state.y);
-      var fid = SZINN.subscribeUrl.split('/').pop();
-      if(fid) add('b_' + fid, '');
-      document.body.appendChild(f);
-      f.submit();
+    if(SZINN.subscribeFn){
+      /* De inschrijving gaat via een Netlify-functie op je eigen domein.
+         Die praat vanaf de server met Enormail, zodat de browser er niet
+         tussen zit en we ook echt kunnen zien of het gelukt is. */
+      fetch(SZINN.subscribeFn, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          naam: naam, email: mail, lang: SZINN.lang,
+          dag: state.d, maand: state.m, jaar: state.y
+        })
+      })
+      .then(function(r){ return r.json(); })
+      .then(function(r){
+        if(r && r.ok){ console.log('SZINN: inschrijving verstuurd'); }
+        else { console.error('SZINN: inschrijving mislukt', r); }
+      })
+      .catch(function(e){ console.error('SZINN: inschrijving mislukt', e); });
     } else if(SZINN.endpoint){
       /* route B: via Make, met geboortedatum en Persoonlijk Jaar erbij */
       fetch(SZINN.endpoint,{
