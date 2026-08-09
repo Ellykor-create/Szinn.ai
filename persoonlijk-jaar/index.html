@@ -194,7 +194,35 @@ footer{text-align:center;padding:20px 32px 56px;font-size:11.5px;letter-spacing:
   .months{grid-template-columns:repeat(2,1fr)}
   .inner,.hero-in,.body-wrap,.dark-grid,.bp-grid,.pair,.teaser{padding-left:24px;padding-right:24px}
 }
-@media(max-width:520px){.months{grid-template-columns:1fr}.fields{gap:18px}}
+/* ── MOBIEL ──────────────────────────────────────────── */
+@media(max-width:900px){
+  .hero{display:flex;flex-direction:column}
+  .hero-in{order:1;position:static;padding:44px 24px 30px}
+  .hero-img{order:2;position:relative;inset:auto;height:auto;width:100%}
+  .hero-img img{height:auto;aspect-ratio:1536/880}
+  .hero-img::after{background:linear-gradient(180deg,var(--cream) 0%,rgba(249,245,240,0) 26%,rgba(249,245,240,0) 74%,var(--cream) 100%)}
+  .hero h1{white-space:normal;font-size:clamp(38px,10.5vw,54px)}
+  .hero p{max-width:none}
+  .fields{gap:18px 16px;max-width:420px}
+  .field{flex:1 1 calc(50% - 8px);min-width:0}
+  .field:nth-child(3){flex:1 1 100%}
+  .field select,.field input{font-size:23px}
+  .btn-dark{margin-top:30px;padding:17px 34px;width:100%;max-width:420px}
+  .dark{padding:64px 0 72px}
+  .big-wrap{padding:18px 0 8px;overflow:hidden}
+  .big-rings{width:min(330px,88vw);height:min(330px,88vw);left:50%;opacity:.55}
+  .big-num{font-size:clamp(92px,26vw,120px)}
+  .big-kw{max-width:280px}
+  .cyc{margin-top:18px;text-align:center}
+  .calcline{margin-top:26px}
+  .gate{margin:44px 24px 0}
+  .quote p{font-size:19px;padding:0 22px}
+  .quote p::before,.quote p::after{font-size:34px}
+  .bp{padding:58px 0}
+  .bp-card{padding:34px 24px}
+}
+
+@media(max-width:520px){.months{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
