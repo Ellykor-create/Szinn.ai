@@ -2,24 +2,29 @@ const SzinnAuth = {
   currentUser: null,
 
   async login(email, password) {
+    const en = (typeof localStorage !== 'undefined' && localStorage.getItem('szinn_lang') === 'en');
     let res;
     try {
       res = await fetch('/api/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password, lang: en ? 'en' : 'nl' })
       });
     } catch {
-      throw new Error('Geen verbinding met de server. Controleer je internetverbinding en probeer het opnieuw.');
+      throw new Error(en
+        ? 'No connection to the server. Check your internet connection and try again.'
+        : 'Geen verbinding met de server. Controleer je internetverbinding en probeer het opnieuw.');
     }
     let data;
     try {
       data = await res.json();
     } catch {
-      throw new Error('De server gaf een onverwacht antwoord. Probeer het later opnieuw.');
+      throw new Error(en
+        ? 'The server gave an unexpected response. Please try again later.'
+        : 'De server gaf een onverwacht antwoord. Probeer het later opnieuw.');
     }
-    if (!res.ok) throw new Error(data.error || 'Inloggen mislukt');
+    if (!res.ok) throw new Error(data.error || (en ? 'Login failed' : 'Inloggen mislukt'));
     this.currentUser = data;
     return data;
   },

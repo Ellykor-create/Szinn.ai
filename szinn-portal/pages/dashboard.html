@@ -436,7 +436,7 @@ body.m-a [data-r]:not([data-r*="a"]){display:none}
       <a href="#actie"><span class="k">&middot;</span><span data-i18n="navJournal">Dagboek</span></a>
       <a href="#aanvragen"><span class="k">&middot;</span><span data-i18n="navLibrary">Bibliotheek</span></a>
       <a href="#aanvragen"><span class="k">&middot;</span><span data-i18n="navOrders">Aanvragen</span></a>
-      <a id="navBlueprint" href="#"><span class="k">&#10022;</span>Jouw blueprint</a>
+      <a id="navBlueprint" href="#"><span class="k">&#10022;</span><span data-i18n="navBlueprint">Jouw blueprint</span></a>
       <a href="/cadeau"><span class="k">&#10022;</span><span data-i18n="navGift">Cadeau geven</span></a>
     </nav>
     <div class="quote">
@@ -458,9 +458,9 @@ body.m-a [data-r]:not([data-r*="a"]){display:none}
       <div class="right">
         <div class="modeswitch m-v" id="modeswitch" role="tablist" aria-label="Ritueel">
           <span class="pill" aria-hidden="true"></span>
-          <button class="mbtn" data-m="o" role="tab"><span class="ic">&#10022;</span>Ochtend</button>
-          <button class="mbtn on" data-m="v" role="tab" aria-selected="true">Volledig</button>
-          <button class="mbtn" data-m="a" role="tab"><span class="ic">&#9789;</span>Avond</button>
+          <button class="mbtn" data-m="o" role="tab"><span class="ic">&#10022;</span><span id="mbtnMorning">Ochtend</span></button>
+          <button class="mbtn on" data-m="v" role="tab" aria-selected="true"><span id="mbtnFull">Volledig</span></button>
+          <button class="mbtn" data-m="a" role="tab"><span class="ic">&#9789;</span><span id="mbtnEvening">Avond</span></button>
         </div>
         <a class="ghost" href="https://szinn.ai">&#8592; szinn.ai</a>
         <div class="langsw"><button id="langNL" data-l="nl">NL</button><button id="langEN" data-l="en">EN</button></div>
@@ -508,7 +508,7 @@ body.m-a [data-r]:not([data-r*="a"]){display:none}
             <span class="lbl" style="color:var(--gold)" data-i18n="labQuestion">Vraag van de dag</span>
             <p id="dQuestion">&mdash;</p>
           </div>
-          <button class="daybtn" id="heroSub" style="display:none;margin-top:16px">Ontgrendel je dagelijkse duiding &mdash; &euro;13,90/mnd</button>
+          <button class="daybtn" id="heroSub" style="display:none;margin-top:16px">Ontgrendel je dagelijkse duiding &mdash; &euro;3,69/mnd</button>
         </div>
       </div>
 
@@ -517,8 +517,8 @@ body.m-a [data-r]:not([data-r*="a"]){display:none}
         <div class="seal">&#10022;</div>
         <div class="txt">
           <span class="lbl">Alignment Blueprint</span>
-          <b>Jouw volledige blueprint</b>
-          <p>Je kaart, getallen en levensrichting &mdash; volledig uitgewerkt en altijd bij de hand.</p>
+          <b data-i18n="bpTitle">Jouw volledige blueprint</b>
+          <p data-i18n="bpDesc">Je kaart, getallen en levensrichting &mdash; volledig uitgewerkt en altijd bij de hand.</p>
         </div>
         <a class="go" id="readmore" href="#" data-i18n="readFull">Lees je volledige blueprint &#8594;</a>
       </div>
@@ -743,7 +743,7 @@ body.m-a [data-r]:not([data-r*="a"]){display:none}
         <span class="tag">Overzicht</span>
       </div>
       <div class="card" style="margin-bottom:14px">
-        <span class="lbl">Jouw ritme</span>
+        <span class="lbl" data-i18n="lblRitme">Jouw ritme</span>
         <h3 data-i18n="hRitme">Wat je deze week en maand hebt ingevuld</h3>
         <div class="wkdays" id="wkdays"></div>
         <p style="font-size:12.5px;color:var(--muted)" data-i18n="sumNote">Tik op een stip om te zien wat je schreef.</p>
@@ -785,31 +785,31 @@ body.m-a [data-r]:not([data-r*="a"]){display:none}
     <!-- ===== RAIL ===== -->
     <aside class="rail rv" aria-label="Snel naar">
       <div class="qcard has-soon">
-        <span class="soon">Binnenkort</span>
+        <span class="soon" data-i18n="soon">Binnenkort</span>
         <span class="lbl lbl-gold">SZINN Frequency Blueprint</span>
-        <b>Jouw klank, op maat</b>
-        <p>Een gepersonaliseerde Frequency Blueprint: phi-harmonische audio afgestemd op jouw kaart en getallen.</p>
-        <button class="btn-gold">Zet me op de lijst</button>
+        <b data-i18n="fqTitle">Jouw klank, op maat</b>
+        <p data-i18n="fqDesc">Een gepersonaliseerde Frequency Blueprint: phi-harmonische audio afgestemd op jouw kaart en getallen.</p>
+        <button class="btn-gold" data-i18n="fqBtn">Zet me op de lijst</button>
       </div>
       <div class="qcard">
-        <span class="lbl lbl-gold">Mijn SZINN Guide</span>
+        <span class="lbl lbl-gold" data-i18n="guideLbl">Mijn SZINN Guide</span>
         <ul class="rlist">
-          <li><div><b>Mijn Blueprint</b><span>Jouw volledige blauwdruk</span></div></li>
-          <li><div><b>Persoonlijke consulten</b><span>Plan een 1-op-1 sessie</span></div></li>
-          <li><div><b>Mijn downloads</b><span>Meditaties, gidsen en tools</span></div><span class="badge">Binnenkort</span></li>
+          <li><div><b data-i18n="gi1t">Mijn Blueprint</b><span data-i18n="gi1s">Jouw volledige blauwdruk</span></div></li>
+          <li><div><b data-i18n="gi2t">Persoonlijke consulten</b><span data-i18n="gi2s">Plan een 1-op-1 sessie</span></div></li>
+          <li><div><b data-i18n="gi3t">Mijn downloads</b><span data-i18n="gi3s">Meditaties, gidsen en tools</span></div><span class="badge" data-i18n="soon">Binnenkort</span></li>
         </ul>
-        <a class="more" href="#aanvragen">Naar mijn guide &#8594;</a>
+        <a class="more" href="#aanvragen" data-i18n="guideLink">Naar mijn guide &#8594;</a>
       </div>
       <div class="qcard">
-        <span class="lbl lbl-gold">Ritme &amp; herinneringen</span>
-        <b>Blijf afgestemd</b>
-        <p>Stel in het meldingenblok in hoe je elke dag een seintje krijgt.</p>
-        <a class="more" href="#" data-open-settings>Naar instellingen &#8594;</a>
+        <span class="lbl lbl-gold" data-i18n="remLbl">Ritme &amp; herinneringen</span>
+        <b data-i18n="remTitle">Blijf afgestemd</b>
+        <p data-i18n="remDesc">Stel in het meldingenblok in hoe je elke dag een seintje krijgt.</p>
+        <a class="more" href="#" data-open-settings data-i18n="remLink">Naar instellingen &#8594;</a>
       </div>
       <div class="qcard giftd">
         <span class="lbl" style="color:var(--gold)" data-i18n="gwEyebrow">Cadeau</span>
         <b data-i18n="gsTitle">Geef een Blueprint cadeau</b>
-        <p>Een uniek cadeau dat inzicht, richting en transformatie brengt.</p>
+        <p data-i18n="gwDesc">Een uniek cadeau dat inzicht, richting en transformatie brengt.</p>
         <a class="btn-gold" href="/cadeau" data-i18n="gwBtn">Cadeau geven &#8594;</a>
       </div>
     </aside>
@@ -862,9 +862,9 @@ body.m-a [data-r]:not([data-r*="a"]){display:none}
       <div class="card notify" id="subCard" style="max-width:640px;margin-top:18px">
         <span class="lbl" id="subEyebrow">Abonnement</span>
         <h3 id="subTitle">SZINN Daily &amp; Companion</h3>
-        <p id="subDesc">Elke dag een duiding die met je meebeweegt, reminders via WhatsApp of e-mail en 20 gesprekken per maand met je Companion — €13,90 per maand, maandelijks opzegbaar.</p>
+        <p id="subDesc">Elke dag een duiding die met je meebeweegt, reminders via WhatsApp of e-mail en 10 vragen aan SZINN Companion per maand — €3,69 per maand, maandelijks opzegbaar.</p>
         <div id="subStatus" style="margin-top:12px;font-size:14px;color:var(--gold,#A67C3A)"></div>
-        <button class="notifybtn" id="subBtn">Abonnement afsluiten — €13,90/mnd</button>
+        <button class="notifybtn" id="subBtn">Abonnement afsluiten — €3,69/mnd</button>
         <div id="subMsg" style="margin-top:8px;font-size:13px"></div>
       </div>
     </section>
@@ -912,6 +912,14 @@ const LOCALE = LANG === 'en' ? 'en-GB' : 'nl-NL';
 const fmtD = (d) => new Date(d).toLocaleDateString(LOCALE, { day: 'numeric', month: 'long', year: 'numeric' });
 // Vertalingen voor alle vaste teksten; NL staat al in de HTML.
 const I18N_EN = {
+  navBlueprint:'Your blueprint',
+  bpTitle:'Your full blueprint', bpDesc:'Your chart, numbers and life direction — fully written out and always at hand.',
+  lblRitme:'Your rhythm',
+  soon:'Coming soon',
+  fqTitle:'Your sound, made to measure', fqDesc:'A personalised Frequency Blueprint: phi-harmonic audio attuned to your chart and numbers.', fqBtn:'Put me on the list',
+  guideLbl:'My SZINN Guide', gi1t:'My Blueprint', gi1s:'Your complete blueprint', gi2t:'Personal consultations', gi2s:'Book a 1-on-1 session', gi3t:'My downloads', gi3s:'Meditations, guides and tools', guideLink:'To my guide →',
+  remLbl:'Rhythm & reminders', remTitle:'Stay attuned', remDesc:'Set in the notifications block how you want your daily nudge.', remLink:'To settings →',
+  gwDesc:'A unique gift that brings insight, direction and transformation.',
   navDash:'Dashboard', navToday:'Today', navLifepath:'Life path', navNumbers:'Numbers', navCycles:'Cycles',
   navGuide:'Guidance', navJournal:'Journal', navLibrary:'Library', navOrders:'Orders', navNotify:'Notifications', navGift:'Give a gift', navLogout:'Log out',
   intentToday:"Today's intention",
@@ -978,6 +986,7 @@ const I18N_EN = {
 };
 // Dynamische strings die in JS worden opgebouwd
 const T = LANG === 'en' ? {
+  mMorning:'Morning', mFull:'Full', mEvening:'Evening', rightsReserved:'All rights reserved',
   greetN:'Good night', greetM:'Good morning', greetA:'Good afternoon', greetE:'Good evening',
   sunIn:'Sun in', moonIn:'Moon in', asc:'Ascendant', house:'House',
   waxing:'Waxing', waning:'Waning', moonTo:' · towards the new moon of', moonToday:'Moon in',
@@ -1010,6 +1019,7 @@ const T = LANG === 'en' ? {
   reflectDefault:'When one of these comes up, pause and ask: what am I protecting, and what do I really need right now?',
   notifyPick:'Choose an option first.', notifySaved:'Preference saved ✓', notifyErr:'Could not save. Try again.',
 } : {
+  mMorning:'Ochtend', mFull:'Volledig', mEvening:'Avond', rightsReserved:'Alle rechten voorbehouden',
   greetN:'Goedenacht', greetM:'Goedemorgen', greetA:'Goedemiddag', greetE:'Goedenavond',
   sunIn:'Zon in', moonIn:'Maan in', asc:'Ascendant', house:'Huis',
   waxing:'Wassende', waning:'Afnemende', moonTo:' · naar de nieuwe maan van', moonToday:'Maan in',
@@ -1057,6 +1067,9 @@ function applyLang() {
   set('mandCap', 'Flower of Life, your planets at their exact degrees.');
   set('dGifts', 'Six inner capacities to lean on.');
   set('reflectQ', T.reflectDefault);
+  set('mbtnMorning', T.mMorning);
+  set('mbtnFull', T.mFull);
+  set('mbtnEvening', T.mEvening);
 }
 applyLang();
 // Paradigma-vraag rouleert per dag zodat de "vaste" stukken echt elke dag meebewegen.
@@ -1197,7 +1210,7 @@ function fillFromBlueprint(d) {
   const C = d.chart, N = d.numerology;
 
   // Kop & astrorij
-  set('footLine', `SZINN · Companion Dashboard · ${d.clientName} · © ${new Date().getFullYear()} Elly Elizabeth Korving · Alterego BV · Alle rechten voorbehouden · szinn.ai`);
+  set('footLine', `SZINN · Companion Dashboard · ${d.clientName} · © ${new Date().getFullYear()} Elly Elizabeth Korving · Alterego BV · ${T.rightsReserved} · szinn.ai`);
   if (C.sun) set('aSun', `${T.sunIn} ${sn(C.sun)}${C.sun.house ? ` · ${T.house} ` + C.sun.house : ''}`);
   if (C.moon) set('aMoon', `${T.moonIn} ${sn(C.moon)}${C.moon.house ? ` · ${T.house} ` + C.moon.house : ''}`);
   if (C.ascendant) set('aAsc', `${sn(C.ascendant)} ${T.asc}`);
@@ -1298,17 +1311,17 @@ function applyDay(day) {
   set('sideIntent', day.focus || day.thema);
 }
 
-// ── Abonnement (€13,90/mnd): daily + WhatsApp-reminders + companion ──────────
+// ── Abonnement (€3,69/mnd): daily + WhatsApp-reminders + companion ──────────
 let SUBSCRIBED = true;
 function showDayUpsell() {
   document.getElementById('app').classList.add('locked');   // dagelijkse blokken vervagen
   set('dTheme', LANG === 'en' ? 'Unlock your daily guidance' : 'Ontgrendel je dagelijkse duiding');
   set('dFocus', LANG === 'en'
-    ? 'Your daily reading, WhatsApp reminders and the Companion are part of the SZINN subscription — €13.90 per month, cancel monthly.'
-    : 'Je dagelijkse duiding, WhatsApp-reminders en de Companion horen bij het SZINN-abonnement — €13,90 per maand, maandelijks opzegbaar.');
+    ? 'Your daily reading, WhatsApp reminders and the Companion are part of the SZINN subscription — €3.69 per month, cancel monthly.'
+    : 'Je dagelijkse duiding, WhatsApp-reminders en de Companion horen bij het SZINN-abonnement — €3,69 per maand, maandelijks opzegbaar.');
   set('dQuestion', LANG === 'en' ? 'One tap unlocks everything below.' : 'Eén tik ontgrendelt alles hieronder.');
   const hb = $('heroSub');
-  if (hb) { hb.style.display = ''; hb.textContent = LANG === 'en' ? 'Unlock your daily guidance — €13.90/month' : 'Ontgrendel je dagelijkse duiding — €13,90/mnd'; }
+  if (hb) { hb.style.display = ''; hb.textContent = LANG === 'en' ? 'Unlock your daily guidance — €3.69/month' : 'Ontgrendel je dagelijkse duiding — €3,69/mnd'; }
 }
 function unlockDashboard() {
   document.getElementById('app').classList.remove('locked');
@@ -1333,8 +1346,8 @@ async function confirmSubscribe(btn) {
   const ok = await confirmModal({
     title: LANG === 'en' ? 'Start your subscription?' : 'Abonnement starten?',
     body: LANG === 'en'
-      ? '€13.90 per month, cancel monthly. You will be taken to the secure payment page.'
-      : '€13,90 per maand, maandelijks opzegbaar. Je gaat door naar de beveiligde betaalpagina.',
+      ? '€3.69 per month, cancel monthly. You will be taken to the secure payment page.'
+      : '€3,69 per maand, maandelijks opzegbaar. Je gaat door naar de beveiligde betaalpagina.',
     ok: LANG === 'en' ? 'Yes, subscribe' : 'Ja, abonneren',
   });
   if (ok) startSubscription(btn);
@@ -1352,7 +1365,7 @@ async function startSubscription(btn) {
 async function loadSubscription() {
   if (LANG === 'en') {
     set('subEyebrow', 'Subscription');
-    set('subDesc', 'A reading that moves with you every day, reminders via WhatsApp or email and 20 Companion conversations a month — €13.90 per month, cancel monthly.');
+    set('subDesc', 'A reading that moves with you every day, reminders via WhatsApp or email and 10 SZINN Companion questions per month — €3.69 per month, cancel monthly.');
   }
   try {
     const r = await fetch('/api/subscription/status', { credentials: 'same-origin' });
@@ -1380,7 +1393,7 @@ async function loadSubscription() {
             ? `Trial period — ${s.trialDaysLeft} ${s.trialDaysLeft === 1 ? 'day' : 'days'} left. Subscribe to keep your daily reading and Companion.`
             : `Proefperiode — nog ${s.trialDaysLeft} ${s.trialDaysLeft === 1 ? 'dag' : 'dagen'}. Neem het abonnement om je dagelijkse duiding en Companion te behouden.`)
         : '');
-      btn.textContent = LANG === 'en' ? 'Subscribe — €13.90/month' : 'Abonnement afsluiten — €13,90/mnd';
+      btn.textContent = LANG === 'en' ? 'Subscribe — €3.69/month' : 'Abonnement afsluiten — €3,69/mnd';
       btn.dataset.mode = 'subscribe';
     }
   } catch (e) { /* kaart blijft in standaardstand */ }

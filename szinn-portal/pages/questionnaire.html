@@ -143,9 +143,9 @@
 
   <div class="questionnaire-page">
     <div class="q-header fade-up" id="q-header">
-      <span class="eyebrow">Reflectievragen</span>
-      <h1>Jouw persoonlijke input</h1>
-      <p>
+      <span class="eyebrow" id="qEyebrow">Reflectievragen</span>
+      <h1 id="qH1">Jouw persoonlijke input</h1>
+      <p id="qLead">
         Deze vragen helpen ons je Alignment Blueprint nog persoonlijker te maken.
         Er zijn geen goede of foute antwoorden — schrijf wat je het eerste te binnen schiet.
       </p>
@@ -161,16 +161,17 @@
         <span class="q-step-label" id="step-label">Vraag 1 van 5</span>
         <button type="button" class="btn btn-primary" id="btn-next">Volgende</button>
       </div>
+      <p class="q-error" id="submit-error" style="display:none"></p>
     </form>
 
     <div class="q-success" id="q-success">
       <div class="q-success-icon">✓</div>
-      <h2>Bedankt voor je antwoorden</h2>
-      <p>
+      <h2 id="qOkH">Bedankt voor je antwoorden</h2>
+      <p id="qOkP">
         Je Blueprint wordt nu gegenereerd. Dit duurt ongeveer 2-3 minuten.
         Je ontvangt een e-mail zodra je persoonlijke wegwijzer klaar is.
       </p>
-      <a href="/portaal" class="btn btn-primary">Terug naar dashboard</a>
+      <a href="/portaal" class="btn btn-primary" id="qOkBtn">Terug naar dashboard</a>
     </div>
   </div>
 
@@ -182,8 +183,87 @@
   <script>
     if (!SzinnAuth.requireAuth()) throw new Error('Not authenticated');
 
-    // Questions — these map to the 5-7 reflective questions from the technical brief
-    const questions = [
+    // Zelfde taalsleutel als dashboard.html/login.html.
+    const LANG = (localStorage.getItem('szinn_lang') === 'en') ? 'en' : 'nl';
+    document.documentElement.lang = LANG;
+
+    const T = LANG === 'en' ? {
+      title: 'SZINN — Questionnaire',
+      eyebrow: 'Reflection questions',
+      h1: 'Your personal input',
+      lead: 'These questions help us make your Alignment Blueprint even more personal. There are no right or wrong answers — write down whatever comes to mind first.',
+      prev: 'Previous',
+      next: 'Next',
+      submit: 'Submit',
+      submitting: 'Submitting…',
+      stepLabel: (n, total) => `Question ${n} of ${total}`,
+      qNumber: (n) => `Question ${n}`,
+      placeholder: 'Type your answer here…',
+      required: 'Please answer this question to continue.',
+      okH: 'Thank you for your answers',
+      okP: 'Your Blueprint is being created now. This takes about 2-3 minutes. You will receive an email as soon as your personal guide is ready.',
+      okBtn: 'Back to dashboard',
+      failed: 'Something went wrong. Please try again.',
+    } : {
+      title: 'SZINN — Vragenlijst',
+      eyebrow: 'Reflectievragen',
+      h1: 'Jouw persoonlijke input',
+      lead: 'Deze vragen helpen ons je Alignment Blueprint nog persoonlijker te maken. Er zijn geen goede of foute antwoorden — schrijf wat je het eerste te binnen schiet.',
+      prev: 'Vorige',
+      next: 'Volgende',
+      submit: 'Versturen',
+      submitting: 'Versturen…',
+      stepLabel: (n, total) => `Vraag ${n} van ${total}`,
+      qNumber: (n) => `Vraag ${n}`,
+      placeholder: 'Typ hier je antwoord…',
+      required: 'Vul deze vraag in om verder te gaan.',
+      okH: 'Bedankt voor je antwoorden',
+      okP: 'Je Blueprint wordt nu gegenereerd. Dit duurt ongeveer 2-3 minuten. Je ontvangt een e-mail zodra je persoonlijke wegwijzer klaar is.',
+      okBtn: 'Terug naar dashboard',
+      failed: 'Er ging iets mis. Probeer het opnieuw.',
+    };
+
+    if (LANG === 'en') {
+      document.title = T.title;
+      const txt = { qEyebrow: T.eyebrow, qH1: T.h1, qLead: T.lead, 'btn-prev': T.prev,
+        'btn-next': T.next, qOkH: T.okH, qOkP: T.okP, qOkBtn: T.okBtn };
+      for (const id in txt) { const el = document.getElementById(id); if (el) el.textContent = txt[id]; }
+    }
+
+    // Questions — these map to the 5-7 reflective questions from the technical brief.
+    // De id's (q1…q5) blijven gelijk in beide talen; alleen de zichtbare tekst verschilt.
+    const questions = LANG === 'en' ? [
+      {
+        id: 'q1',
+        question: 'What is the first word that comes to mind when you think of "direction"?',
+        hint: "Don't think too long — write down your first impulse.",
+        type: 'text'
+      },
+      {
+        id: 'q2',
+        question: 'Which theme or pattern do you see returning again and again in your life?',
+        hint: 'This can be something positive or challenging — a recurring theme in relationships, work, or personal growth.',
+        type: 'textarea'
+      },
+      {
+        id: 'q3',
+        question: 'Where do you feel the most friction or restlessness right now?',
+        hint: 'Briefly describe the area of your life where you experience the most tension.',
+        type: 'textarea'
+      },
+      {
+        id: 'q4',
+        question: 'What would you like to be different six months from now?',
+        hint: 'Be as concrete or as abstract as you like.',
+        type: 'textarea'
+      },
+      {
+        id: 'q5',
+        question: 'Is there something you have wanted to do for a long time but keep putting off?',
+        hint: 'There is no judgement here — this helps us deepen the patterns in your Blueprint.',
+        type: 'textarea'
+      }
+    ] : [
       {
         id: 'q1',
         question: 'Wat is het eerste woord dat in je opkomt als je aan "richting" denkt?',
@@ -226,7 +306,7 @@
       if (card && !card.querySelector('.q-error')) {
         const msg = document.createElement('div');
         msg.className = 'q-error';
-        msg.textContent = 'Vul deze vraag in om verder te gaan.';
+        msg.textContent = T.required;
         card.appendChild(msg);
       }
       input.focus();
@@ -255,12 +335,12 @@
       card.className = 'q-card' + (i > 0 ? ' hidden' : '');
       card.id = `card-${i}`;
       card.innerHTML = `
-        <div class="q-number">Vraag ${i + 1}</div>
+        <div class="q-number">${T.qNumber(i + 1)}</div>
         <div class="q-question">${q.question}</div>
         <div class="q-hint">${q.hint}</div>
         ${q.type === 'textarea'
-          ? `<textarea class="form-input" id="input-${q.id}" rows="4" placeholder="Typ hier je antwoord…"></textarea>`
-          : `<input type="text" class="form-input" id="input-${q.id}" placeholder="Typ hier je antwoord…">`
+          ? `<textarea class="form-input" id="input-${q.id}" rows="4" placeholder="${T.placeholder}"></textarea>`
+          : `<input type="text" class="form-input" id="input-${q.id}" placeholder="${T.placeholder}">`
         }
       `;
       container.appendChild(card);
@@ -283,8 +363,8 @@
       });
 
       btnPrev.style.visibility = step === 0 ? 'hidden' : 'visible';
-      btnNext.textContent = step === questions.length - 1 ? 'Versturen' : 'Volgende';
-      stepLabel.textContent = `Vraag ${step + 1} van ${questions.length}`;
+      btnNext.textContent = step === questions.length - 1 ? T.submit : T.next;
+      stepLabel.textContent = T.stepLabel(step + 1, questions.length);
 
       // Focus input
       const input = document.querySelector(`#card-${step} .form-input`);
@@ -313,8 +393,9 @@
         showStep(currentStep + 1);
       } else {
         // Submit
-        btnNext.textContent = 'Versturen…';
+        btnNext.textContent = T.submitting;
         btnNext.disabled = true;
+        document.getElementById('submit-error').style.display = 'none';
 
         const params = new URLSearchParams(window.location.search);
         const orderId = params.get('id') || 'unknown';
@@ -327,8 +408,10 @@
           document.getElementById('q-nav').style.display = 'none';
           document.getElementById('q-success').classList.add('visible');
         } catch (err) {
-          alert('Er ging iets mis. Probeer het opnieuw.');
-          btnNext.textContent = 'Versturen';
+          const el = document.getElementById('submit-error');
+          el.textContent = T.failed;
+          el.style.display = '';
+          btnNext.textContent = T.submit;
           btnNext.disabled = false;
         }
       }

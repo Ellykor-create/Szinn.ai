@@ -104,6 +104,10 @@
     .icon-download::before { content: '↓'; margin-right: 4px; }
     .icon-print::before { content: '⎙'; margin-right: 4px; }
 
+    /* Inline PDF-foutmelding (geen browser-alert). */
+    .pdf-err { display: none; color: #b4462e; font-size: 13px; text-align: center; margin: 0 0 12px; }
+    .pdf-err.show { display: block; }
+
     @media (max-width: 600px) {
       .viewer-toolbar { flex-direction: column; text-align: center; }
       .viewer-actions { justify-content: center; }
@@ -124,7 +128,7 @@
   <main class="container">
     <div class="viewer-page fade-up">
       <div class="viewer-toolbar">
-        <a href="/portaal" class="viewer-back">← Terug naar dashboard</a>
+        <a href="/portaal" class="viewer-back" id="vBack">← Terug naar dashboard</a>
 
         <div class="viewer-info" id="viewer-info">
           <span class="eyebrow">Alignment Blueprint</span>
@@ -133,7 +137,7 @@
 
         <div class="viewer-actions">
           <button class="btn" id="lang-toggle" style="display:none" onclick="toggleLang()" title="Switch language">EN</button>
-          <button class="btn" onclick="printBlueprint()" title="Printen">
+          <button class="btn" id="printBtn" onclick="printBlueprint()" title="Printen">
             <span class="icon-print"></span>Print
           </button>
           <button class="btn btn-primary" id="pdfBtn" onclick="downloadPDF()" title="Download PDF">
@@ -142,10 +146,12 @@
         </div>
       </div>
 
+      <p class="pdf-err" id="pdfErr"></p>
+
       <div class="blueprint-frame-wrapper" id="frame-wrapper">
         <div class="viewer-loading" id="viewer-loading">
           <div class="spinner-lg"></div>
-          <p>Blueprint laden…</p>
+          <p id="vLoading">Blueprint laden…</p>
         </div>
 
         <iframe class="blueprint-frame"
@@ -157,9 +163,9 @@
       </div>
 
       <div class="viewer-error" id="viewer-error">
-        <h3>Blueprint niet gevonden</h3>
-        <p>Deze Blueprint is nog niet beschikbaar of het adres is onjuist.</p>
-        <a href="/portaal" class="btn btn-primary">Terug naar dashboard</a>
+        <h3 id="vErrH">Blueprint niet gevonden</h3>
+        <p id="vErrP">Deze Blueprint is nog niet beschikbaar of het adres is onjuist.</p>
+        <a href="/portaal" class="btn btn-primary" id="vErrBtn">Terug naar dashboard</a>
       </div>
     </div>
   </main>
@@ -176,7 +182,48 @@
     const params = new URLSearchParams(window.location.search);
     // Onraadbaar view-token (?t=…). ?id= wordt nog geaccepteerd voor oude links.
     const orderId = params.get('t') || params.get('id');
-    let lang = params.get('lang') === 'en' ? 'en' : 'nl';
+
+    // Taal van de portal-interface (zelfde sleutel als dashboard.html/login.html).
+    const LANG = (localStorage.getItem('szinn_lang') === 'en') ? 'en' : 'nl';
+    document.documentElement.lang = LANG;
+
+    const T = LANG === 'en' ? {
+      back: '← Back to dashboard',
+      loadingName: 'Loading…',
+      loading: 'Loading blueprint…',
+      print: 'Print',
+      printTitle: 'Print',
+      pdfMaking: 'Creating PDF…',
+      errH: 'Blueprint not found',
+      errP: 'This Blueprint is not available yet, or the address is incorrect.',
+      errBtn: 'Back to dashboard',
+      pdfFail: 'The PDF could not be created.',
+    } : {
+      back: '← Terug naar dashboard',
+      loadingName: 'Laden…',
+      loading: 'Blueprint laden…',
+      print: 'Print',
+      printTitle: 'Printen',
+      pdfMaking: 'PDF maken…',
+      errH: 'Blueprint niet gevonden',
+      errP: 'Deze Blueprint is nog niet beschikbaar of het adres is onjuist.',
+      errBtn: 'Terug naar dashboard',
+      pdfFail: 'De PDF kon niet worden gemaakt.',
+    };
+
+    if (LANG === 'en') {
+      const txt = { vBack: T.back, 'viewer-name': T.loadingName, vLoading: T.loading,
+        vErrH: T.errH, vErrP: T.errP, vErrBtn: T.errBtn };
+      for (const id in txt) { const el = document.getElementById(id); if (el) el.textContent = txt[id]; }
+      const pb = document.getElementById('printBtn');
+      pb.innerHTML = '<span class="icon-print"></span>' + T.print;
+      pb.title = T.printTitle;
+    }
+
+    // Blueprint-taal: expliciete ?lang= wint, anders volgt hij de interfacetaal.
+    let lang = params.get('lang') === 'en' ? 'en'
+             : params.get('lang') === 'nl' ? 'nl'
+             : LANG;
     let currentOrder = null;
 
     SzinnAuth.requireAuth().then(ok => {
@@ -300,11 +347,12 @@
       const btn = document.getElementById('pdfBtn');
       const label = btn.innerHTML;
       btn.disabled = true;
-      btn.innerHTML = '<span class="icon-download"></span>PDF maken…';
+      btn.innerHTML = `<span class="icon-download"></span>${T.pdfMaking}`;
+      document.getElementById('pdfErr').classList.remove('show');
       try {
         const resp = await fetch(`/api/orders/${orderId}/pdf?lang=${lang}`, { credentials: 'same-origin' });
         if (!resp.ok) {
-          let msg = 'De PDF kon niet worden gemaakt.';
+          let msg = T.pdfFail;
           try { msg = (await resp.json()).error || msg; } catch (e) {}
           throw new Error(msg);
         }
@@ -319,7 +367,9 @@
         a.remove();
         setTimeout(() => URL.revokeObjectURL(url), 4000);
       } catch (e) {
-        alert(e.message || 'De PDF kon niet worden gemaakt.');
+        const el = document.getElementById('pdfErr');
+        el.textContent = e.message || T.pdfFail;
+        el.classList.add('show');
       } finally {
         btn.disabled = false;
         btn.innerHTML = label;
