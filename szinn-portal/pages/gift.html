@@ -49,9 +49,9 @@
   <main class="container">
     <div class="gift-page fade-up">
       <div class="gift-head">
-        <span class="eyebrow">Cadeau</span>
-        <h1>Geef een SZINN Alignment Blueprint</h1>
-        <p>Schenk iemand een diep persoonlijke spiegel — geweven uit astrologie, numerologie en Kabbalah, speciaal voor hen gemaakt.</p>
+        <span class="eyebrow" id="gEyebrow">Cadeau</span>
+        <h1 id="gH1">Geef een SZINN Alignment Blueprint</h1>
+        <p id="gLead">Schenk iemand een diep persoonlijke spiegel — geweven uit astrologie, numerologie en Kabbalah, speciaal voor hen gemaakt.</p>
       </div>
 
       <div class="gift-steps">
@@ -63,16 +63,16 @@
       <div class="card">
         <!-- Stap 1: intro + betaling starten -->
         <div class="panel on" id="p0">
-          <div class="price">&euro;<span id="priceVal">39,90</span> <small>eenmalig</small></div>
+          <div class="price">&euro;<span id="priceVal">39,90</span> <small id="gOnce">eenmalig</small></div>
           <ul class="feat">
-            <li>Een volledige, persoonlijke Alignment Blueprint</li>
-            <li>De ontvanger vult zelf de vragenlijst in — jij hoeft niets te weten</li>
-            <li>Kies zelf wanneer het cadeau bezorgd wordt</li>
-            <li>Een warme, mooi vormgegeven cadeau-e-mail</li>
+            <li id="gF1">Een volledige, persoonlijke Alignment Blueprint</li>
+            <li id="gF2">De ontvanger vult zelf de vragenlijst in — jij hoeft niets te weten</li>
+            <li id="gF3">Kies zelf wanneer het cadeau bezorgd wordt</li>
+            <li id="gF4">Een warme, mooi vormgegeven cadeau-e-mail</li>
           </ul>
           <div class="actions">
             <button class="btn btn-primary" id="btnPay">Ga naar betaling →</button>
-            <a class="btn" href="/portaal">Terug</a>
+            <a class="btn" href="/portaal" id="gBack">Terug</a>
           </div>
           <div class="mock-note" id="mockNote" style="display:none">
             Testmodus: er is nog geen Stripe-sleutel ingesteld, dus de betaling wordt gesimuleerd. Zodra <code>STRIPE_SECRET_KEY</code> is ingevuld, gaat deze knop naar de echte Stripe-betaalpagina.
@@ -82,26 +82,26 @@
 
         <!-- Stap 2: ontvanger + verzenddatum -->
         <div class="panel" id="p1">
-          <h2 style="font-family:'Cormorant Garamond',serif;font-weight:500;margin:0 0 4px">Aan wie geef je dit?</h2>
-          <p style="color:var(--muted);font-size:13px;margin:0 0 20px">Betaling geslaagd. Vul in wie het cadeau ontvangt en wanneer.</p>
+          <h2 style="font-family:'Cormorant Garamond',serif;font-weight:500;margin:0 0 4px" id="gH2">Aan wie geef je dit?</h2>
+          <p style="color:var(--muted);font-size:13px;margin:0 0 20px" id="gP1">Betaling geslaagd. Vul in wie het cadeau ontvangt en wanneer.</p>
 
           <div class="field" id="f-email">
-            <label for="recipientEmail">E-mailadres van de ontvanger *</label>
+            <label for="recipientEmail" id="gLEmail">E-mailadres van de ontvanger *</label>
             <input type="email" id="recipientEmail" placeholder="naam@voorbeeld.nl" autocomplete="off">
             <div class="err-txt" id="e-email">Vul een geldig e-mailadres in.</div>
           </div>
           <div class="field">
-            <label for="recipientName">Naam van de ontvanger</label>
+            <label for="recipientName" id="gLName">Naam van de ontvanger</label>
             <input type="text" id="recipientName" placeholder="Voornaam (optioneel)">
           </div>
           <div class="field">
-            <label for="message">Persoonlijk bericht</label>
+            <label for="message" id="gLMsg">Persoonlijk bericht</label>
             <textarea id="message" rows="3" placeholder="Een paar woorden die met het cadeau meegaan (optioneel)"></textarea>
           </div>
           <div class="field" id="f-date">
-            <label for="sendDate">Wanneer versturen?</label>
+            <label for="sendDate" id="gLDate">Wanneer versturen?</label>
             <input type="date" id="sendDate">
-            <div class="hint">Kies vandaag om direct te versturen, of een datum in de toekomst.</div>
+            <div class="hint" id="gHint">Kies vandaag om direct te versturen, of een datum in de toekomst.</div>
           </div>
           <div class="err-txt" id="e-form"></div>
           <div class="actions">
@@ -117,7 +117,7 @@
             <p style="color:var(--muted);font-size:14px;max-width:420px;margin:0 auto 6px" id="okBody"></p>
             <div class="codebox" id="okCode"></div>
             <div class="actions" style="justify-content:center">
-              <a class="btn btn-primary" href="/portaal">Terug naar dashboard</a>
+              <a class="btn btn-primary" href="/portaal" id="gDash">Terug naar dashboard</a>
               <button class="btn" id="btnAgain">Nog een cadeau geven</button>
             </div>
           </div>
@@ -132,9 +132,102 @@
   <script src="/szinn-portal/js/api.js"></script>
   <script src="/szinn-portal/js/nav.js"></script>
   <script>
-    SzinnAuth.requireAuth().then(ok => { if (ok) SzinnNav.updateUserInfo(); });
+    // Zelfde taalsleutel als dashboard.html/login.html.
+    const LANG = (localStorage.getItem('szinn_lang') === 'en') ? 'en' : 'nl';
+    // Zet <html lang>, zodat de cadeau-e-mail (lang in /api/gift/create) de taalkeuze volgt.
+    document.documentElement.lang = LANG;
+
+    const T = LANG === 'en' ? {
+      title: 'SZINN — Gift a Blueprint',
+      eyebrow: 'Gift',
+      h1: 'Gift a SZINN Alignment Blueprint',
+      lead: 'Give someone a deeply personal mirror — woven from astrology, numerology and Kabbalah, made just for them.',
+      once: 'one-off',
+      f1: 'A complete, personal Alignment Blueprint',
+      f2: 'The recipient fills in the questionnaire themselves — you need to know nothing',
+      f3: 'You choose when the gift is delivered',
+      f4: 'A warm, beautifully designed gift email',
+      pay: 'Continue to payment →',
+      back: 'Back',
+      mock: 'Test mode: no Stripe key is set yet, so the payment is simulated. Once STRIPE_SECRET_KEY is filled in, this button goes to the real Stripe payment page.',
+      h2: 'Who are you giving this to?',
+      p1: 'Payment successful. Tell us who receives the gift, and when.',
+      lEmail: "Recipient's email address *",
+      lName: "Recipient's name",
+      lMsg: 'Personal message',
+      lDate: 'When should we send it?',
+      phEmail: 'name@example.com',
+      phName: 'First name (optional)',
+      phMsg: 'A few words to go with the gift (optional)',
+      hint: 'Choose today to send right away, or a date in the future.',
+      eEmail: 'Please enter a valid email address.',
+      send: 'Send gift →',
+      sending: 'Sending…',
+      wait: 'One moment…',
+      dash: 'Back to dashboard',
+      again: 'Give another gift',
+      okScheduled: 'Your gift is scheduled',
+      okSent: 'Your gift is on its way',
+      bodyScheduled: (d, e) => `On ${d} we'll send the gift email to ${e}. This is the code that comes with it:`,
+      bodySent: (e) => `The gift email has just been sent to ${e}. This is the code that comes with it:`,
+      payErr: 'Payment could not be started.',
+      generic: 'Something went wrong. Please try again.',
+      genericShort: 'Something went wrong.',
+    } : {
+      title: 'SZINN — Geef een Blueprint cadeau',
+      eyebrow: 'Cadeau',
+      h1: 'Geef een SZINN Alignment Blueprint',
+      lead: 'Schenk iemand een diep persoonlijke spiegel — geweven uit astrologie, numerologie en Kabbalah, speciaal voor hen gemaakt.',
+      once: 'eenmalig',
+      f1: 'Een volledige, persoonlijke Alignment Blueprint',
+      f2: 'De ontvanger vult zelf de vragenlijst in — jij hoeft niets te weten',
+      f3: 'Kies zelf wanneer het cadeau bezorgd wordt',
+      f4: 'Een warme, mooi vormgegeven cadeau-e-mail',
+      pay: 'Ga naar betaling →',
+      back: 'Terug',
+      mock: 'Testmodus: er is nog geen Stripe-sleutel ingesteld, dus de betaling wordt gesimuleerd. Zodra STRIPE_SECRET_KEY is ingevuld, gaat deze knop naar de echte Stripe-betaalpagina.',
+      h2: 'Aan wie geef je dit?',
+      p1: 'Betaling geslaagd. Vul in wie het cadeau ontvangt en wanneer.',
+      lEmail: 'E-mailadres van de ontvanger *',
+      lName: 'Naam van de ontvanger',
+      lMsg: 'Persoonlijk bericht',
+      lDate: 'Wanneer versturen?',
+      phEmail: 'naam@voorbeeld.nl',
+      phName: 'Voornaam (optioneel)',
+      phMsg: 'Een paar woorden die met het cadeau meegaan (optioneel)',
+      hint: 'Kies vandaag om direct te versturen, of een datum in de toekomst.',
+      eEmail: 'Vul een geldig e-mailadres in.',
+      send: 'Cadeau versturen →',
+      sending: 'Versturen…',
+      wait: 'Even geduld…',
+      dash: 'Terug naar dashboard',
+      again: 'Nog een cadeau geven',
+      okScheduled: 'Je cadeau staat ingepland',
+      okSent: 'Je cadeau is verstuurd',
+      bodyScheduled: (d, e) => `Op ${d} sturen we de cadeau-e-mail naar ${e}. Deze code hoort erbij:`,
+      bodySent: (e) => `De cadeau-e-mail is zojuist verstuurd naar ${e}. Deze code hoort erbij:`,
+      payErr: 'Betaling kon niet worden gestart.',
+      generic: 'Er ging iets mis. Probeer het opnieuw.',
+      genericShort: 'Er ging iets mis.',
+    };
 
     const $ = id => document.getElementById(id);
+
+    if (LANG === 'en') {
+      document.title = T.title;
+      const txt = { gEyebrow: T.eyebrow, gH1: T.h1, gLead: T.lead, gOnce: T.once, gF1: T.f1, gF2: T.f2,
+        gF3: T.f3, gF4: T.f4, btnPay: T.pay, gBack: T.back, gH2: T.h2, gP1: T.p1, gLEmail: T.lEmail,
+        gLName: T.lName, gLMsg: T.lMsg, gLDate: T.lDate, gHint: T.hint, 'e-email': T.eEmail,
+        btnSend: T.send, okTitle: T.okSent, gDash: T.dash, btnAgain: T.again, mockNote: T.mock };
+      for (const id in txt) { const el = $(id); if (el) el.textContent = txt[id]; }
+      $('recipientEmail').placeholder = T.phEmail;
+      $('recipientName').placeholder = T.phName;
+      $('message').placeholder = T.phMsg;
+      $('priceVal').textContent = '39.90';
+    }
+
+    SzinnAuth.requireAuth().then(ok => { if (ok) SzinnNav.updateUserInfo(); });
+
     let paidToken = null;
     const showPayErr = (msg) => { const e = $('payErr'); e.textContent = msg; e.style.display = 'block'; };
 
@@ -165,7 +258,7 @@
     // Stap 1 → betaling
     $('btnPay').addEventListener('click', async () => {
       $('btnPay').disabled = true;
-      $('btnPay').textContent = 'Even geduld…';
+      $('btnPay').textContent = T.wait;
       try {
         const r = await fetch('/api/gift/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: '{}' });
         const data = await r.json();
@@ -177,10 +270,10 @@
           setTimeout(() => step(1), 500);
           return;
         }
-        showPayErr(data.error || 'Betaling kon niet worden gestart.');
-      } catch (e) { showPayErr('Er ging iets mis. Probeer het opnieuw.'); }
+        showPayErr(data.error || T.payErr);
+      } catch (e) { showPayErr(T.generic); }
       $('btnPay').disabled = false;
-      $('btnPay').textContent = 'Ga naar betaling →';
+      $('btnPay').textContent = T.pay;
     });
 
     // Stap 2 → versturen
@@ -193,7 +286,7 @@
       if (!valid) { $('recipientEmail').focus(); return; }
 
       $('btnSend').disabled = true;
-      $('btnSend').textContent = 'Versturen…';
+      $('btnSend').textContent = T.sending;
       try {
         const r = await fetch('/api/gift/create', {
           method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
@@ -210,23 +303,23 @@
         if (r.ok && data.ok) {
           $('okCode').textContent = data.code;
           if (data.scheduled) {
-            $('okTitle').textContent = 'Je cadeau staat ingepland';
-            $('okBody').textContent = `Op ${data.sendDate} sturen we de cadeau-e-mail naar ${email}. Deze code hoort erbij:`;
+            $('okTitle').textContent = T.okScheduled;
+            $('okBody').textContent = T.bodyScheduled(data.sendDate, email);
           } else {
-            $('okTitle').textContent = 'Je cadeau is verstuurd';
-            $('okBody').textContent = `De cadeau-e-mail is zojuist verstuurd naar ${email}. Deze code hoort erbij:`;
+            $('okTitle').textContent = T.okSent;
+            $('okBody').textContent = T.bodySent(email);
           }
           step(2);
           return;
         }
-        $('e-form').textContent = data.error || 'Er ging iets mis.';
+        $('e-form').textContent = data.error || T.genericShort;
         $('e-form').classList.add('show');
       } catch (e) {
-        $('e-form').textContent = 'Er ging iets mis. Probeer het opnieuw.';
+        $('e-form').textContent = T.generic;
         $('e-form').classList.add('show');
       }
       $('btnSend').disabled = false;
-      $('btnSend').textContent = 'Cadeau versturen →';
+      $('btnSend').textContent = T.send;
     });
 
     $('recipientEmail').addEventListener('input', () => { $('f-email').classList.remove('err'); $('e-email').classList.remove('show'); });
@@ -234,8 +327,8 @@
     $('btnAgain').addEventListener('click', () => {
       paidToken = null;
       $('recipientEmail').value = ''; $('recipientName').value = ''; $('message').value = '';
-      $('btnPay').disabled = false; $('btnPay').textContent = 'Ga naar betaling →';
-      $('btnSend').disabled = false; $('btnSend').textContent = 'Cadeau versturen →';
+      $('btnPay').disabled = false; $('btnPay').textContent = T.pay;
+      $('btnSend').disabled = false; $('btnSend').textContent = T.send;
       step(0);
     });
   </script>

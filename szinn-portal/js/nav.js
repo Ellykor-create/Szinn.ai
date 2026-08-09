@@ -4,6 +4,11 @@
  */
 
 const SzinnNav = {
+  // Zelfde taalsleutel als dashboard.html/login.html gebruiken.
+  lang() {
+    return (typeof localStorage !== 'undefined' && localStorage.getItem('szinn_lang') === 'en') ? 'en' : 'nl';
+  },
+
   init() {
     this.renderNav();
     this.renderFooter();
@@ -19,6 +24,7 @@ const SzinnNav = {
     const user = SzinnAuth.getUser();
     const initials = user ? user.initials : '??';
     const name = user ? user.name : '';
+    const en = this.lang() === 'en';
 
     nav.innerHTML = `
       <nav class="nav">
@@ -30,8 +36,8 @@ const SzinnNav = {
 
           <ul class="nav-links" id="nav-links">
             <li><a href="/portaal" data-page="dashboard">Dashboard</a></li>
-            <li><a href="/portaal/vragenlijst" data-page="questionnaire">Vragenlijst</a></li>
-            <li><a href="#" onclick="SzinnAuth.logout(); return false;">Uitloggen</a></li>
+            <li><a href="/portaal/vragenlijst" data-page="questionnaire">${en ? 'Questionnaire' : 'Vragenlijst'}</a></li>
+            <li><a href="#" onclick="SzinnAuth.logout(); return false;">${en ? 'Log out' : 'Uitloggen'}</a></li>
           </ul>
 
           <div class="nav-user">
@@ -53,6 +59,7 @@ const SzinnNav = {
     if (!footer) return;
 
     const year = new Date().getFullYear();
+    const en = this.lang() === 'en';
     footer.innerHTML = `
       <footer style="
         text-align: center;
@@ -69,7 +76,7 @@ const SzinnNav = {
           ">SZINN</span>
         </div>
         <p style="font-size: 11px; color: var(--muted); letter-spacing: 0.08em;">
-          &copy; ${year} SZINN &middot; Alterego BV &middot; Alle rechten voorbehouden
+          &copy; ${year} SZINN &middot; Alterego BV &middot; ${en ? 'All rights reserved' : 'Alle rechten voorbehouden'}
         </p>
       </footer>
     `;

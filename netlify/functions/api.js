@@ -151,7 +151,8 @@ function clearAuthCookie(res) {
 // ── Auth ──────────────────────────────────────────────────────────────────────
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ error: 'Email en wachtwoord zijn verplicht' });
+  const en = req.body?.lang === 'en';
+  if (!email || !password) return res.status(400).json({ error: en ? 'Email and password are required' : 'Email en wachtwoord zijn verplicht' });
   const db   = await loadDB();
   // Demo-account + voorbeeld-blueprint aanmaken zodra iemand ermee inlogt.
   if (email.trim().toLowerCase() === DEMO_EMAIL) {
@@ -159,7 +160,7 @@ app.post('/api/auth/login', async (req, res) => {
   }
   const user = db.users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
   if (!user || !bcrypt.compareSync(password, user.password))
-    return res.status(401).json({ error: 'Onjuist e-mailadres of wachtwoord' });
+    return res.status(401).json({ error: en ? 'Incorrect email address or password' : 'Onjuist e-mailadres of wachtwoord' });
   setAuthCookie(res, { userId: user.id, email: user.email, name: user.name, isAdmin: !!user.is_admin });
   res.json({ id: user.id, email: user.email, name: user.name, initials: user.name.substring(0,2).toUpperCase(), isAdmin: !!user.is_admin });
 });
@@ -585,8 +586,8 @@ app.post('/api/companion/day', async (req, res) => {
   const dayLang = (req.body?.lang === 'en' || req.query.lang === 'en') ? 'en' : 'nl';
   if (!(await accessState(await loadDB(), req)).dashboardOpen)
     return res.status(402).json({ error: dayLang === 'en'
-      ? 'Your 11-day trial has ended. Subscribe (€13.90/month) for your daily reading.'
-      : 'Je proefperiode van 11 dagen is voorbij. Neem het abonnement (€13,90/mnd) voor je dagelijkse duiding.', subscribe: true });
+      ? 'Your 11-day trial has ended. Subscribe (€3.69/month) for your daily reading.'
+      : 'Je proefperiode van 11 dagen is voorbij. Neem het abonnement (€3,69/mnd) voor je dagelijkse duiding.', subscribe: true });
 
   const c = await companionContext(req.auth.userId, req.body?.lang || req.query.lang);
   if (!c.ctx) return res.status(400).json({ error: 'Nog geen voltooide blueprint' });
@@ -633,19 +634,19 @@ app.post('/api/companion/chat', async (req, res) => {
   if (!userMessage) return res.status(400).json({ error: 'Geen bericht' });
 
   // Companion hoort bij dashboard-toegang (proef of abonnement), met een
-  // vragenlimiet per account: 3 tijdens de proef, 20 per maand met abonnement.
+  // vragenlimiet per account: 3 tijdens de proef, 10 per maand met abonnement.
   const db  = await loadDB();
   const acc = await accessState(db, req);
   if (!acc.dashboardOpen)
     return res.status(402).json({ error: lang === 'en'
-      ? 'Your 11-day trial has ended. Subscribe (€13.90/month) to keep talking with your Companion.'
-      : 'Je proefperiode van 11 dagen is voorbij. Neem het abonnement (€13,90/mnd) om verder te praten met je Companion.', subscribe: true });
+      ? 'Your 11-day trial has ended. Subscribe (€3.69/month) to keep talking with your Companion.'
+      : 'Je proefperiode van 11 dagen is voorbij. Neem het abonnement (€3,69/mnd) om verder te praten met je Companion.', subscribe: true });
   if (acc.companionLeft <= 0)
     return res.status(429).json({ error: acc.paid
       ? (lang === 'en' ? `You've reached your ${SUB_COMPANION_LIMIT} Companion questions for this month. They renew next month.`
                        : `Je hebt je ${SUB_COMPANION_LIMIT} Companion-vragen voor deze maand bereikt. Ze vernieuwen volgende maand.`)
-      : (lang === 'en' ? `You've used your ${TRIAL_COMPANION_LIMIT} trial questions. Subscribe (€13.90/month) for ${SUB_COMPANION_LIMIT} questions a month.`
-                       : `Je hebt je ${TRIAL_COMPANION_LIMIT} proefvragen gebruikt. Neem het abonnement (€13,90/mnd) voor ${SUB_COMPANION_LIMIT} vragen per maand.`),
+      : (lang === 'en' ? `You've used your ${TRIAL_COMPANION_LIMIT} trial questions. Subscribe (€3.69/month) for ${SUB_COMPANION_LIMIT} questions a month.`
+                       : `Je hebt je ${TRIAL_COMPANION_LIMIT} proefvragen gebruikt. Neem het abonnement (€3,69/mnd) voor ${SUB_COMPANION_LIMIT} vragen per maand.`),
       subscribe: !acc.paid, limitReached: true });
 
   let system = lang === 'en'
@@ -725,6 +726,9 @@ const {
   createSubscriptionCheckout, createGiftCheckout, summarizeSub, subIsActive, refreshSubIfStale, cancelSubscription,
 } = require('../../lib/stripe');
 const INTAKE_PAY_LINK = process.env.INTAKE_PAY_LINK || 'https://buy.stripe.com/fZu9AL8g20KT5xgdpO0kE00';
+// Engelse betaallink (eigen redirect naar /intake-en); zolang die er nog niet
+// is valt de Engelse intake terug op de Nederlandse link.
+const INTAKE_PAY_LINK_EN = process.env.INTAKE_PAY_LINK_EN || INTAKE_PAY_LINK;
 
 function setIntakeCookie(res, payload) {
   const token = jwt.sign({ intake: true, ...payload }, JWT_SECRET, { expiresIn: '24h' });
@@ -740,6 +744,9 @@ async function intakeAccess(req, db, { sessionId, code } = {}) {
   if (req.auth?.isAdmin) return { ok: true };
   if (req.auth) {
     const u = db.users.find(u => u.id === req.auth.userId);
+    // Heractivering door admin: eenmalig een nieuwe intake zonder betaling;
+    // de submit verbruikt de toekenning via grantUserId.
+    if (u?.intake_grant) return { ok: true, grantUserId: u.id };
     if (u?.intake_draft) return { ok: true }; // had al toegang: concept staat klaar
   }
   const cookies = cookieLib.parse(req.headers.cookie || '');
@@ -776,7 +783,7 @@ app.post('/api/intake/access', async (req, res) => {
     sessionId: req.body?.session_id || null,
     code: req.body?.code || null,
   });
-  if (!access.ok) return res.status(402).json({ ok: false, payLink: INTAKE_PAY_LINK });
+  if (!access.ok) return res.status(402).json({ ok: false, payLink: INTAKE_PAY_LINK, payLinkEn: INTAKE_PAY_LINK_EN });
   if (access.fresh) setIntakeCookie(res, { sid: access.sid || null, code: access.code || null });
   res.json({ ok: true });
 });
@@ -807,6 +814,20 @@ app.post('/api/journal', async (req, res) => {
   while (keys.length > 200) delete user.journal[keys.shift()];
   await saveDB(db);
   res.json({ ok: true, date, entry: user.journal[date] });
+});
+
+// ── Feedback (publiek formulier op /feedback en /en/feedback) ─────────────────
+const { validateFeedback } = require('../../lib/feedback');
+
+app.post('/api/feedback', async (req, res) => {
+  const fb = validateFeedback(req.body);
+  if (fb.error) return res.status(400).json({ error: fb.error });
+  const db = await loadDB();
+  db.feedback = db.feedback || [];
+  db.nextFeedbackId = db.nextFeedbackId || 1;
+  db.feedback.push({ id: db.nextFeedbackId++, created_at: new Date().toISOString(), ...fb });
+  await saveDB(db);
+  res.json({ ok: true });
 });
 
 // Korte AI-samenvatting van het dagboek (ochtend + avond) van de gebruiker, plus
@@ -858,7 +879,7 @@ app.get('/api/companion/journal-summary', async (req, res) => {
   }
 });
 
-// ── Abonnement €20/mnd: daily dashboard + WhatsApp-reminders + companion ─────
+// ── Abonnement €3,69/mnd: daily dashboard + WhatsApp-reminders + companion ───
 // Afsluiten vanuit het dashboard: wij maken een Stripe Checkout-sessie
 // (mode=subscription) aan; Stripe maakt product/prijs/klant zelf aan.
 const SITE_URL = (process.env.URL || 'https://szinn.ai').replace(/\/+$/, '');
@@ -881,17 +902,20 @@ async function hasSubscriptionAccess(db, req) {
   if (req.auth?.isAdmin) return true;
   const user = db.users.find(u => u.id === req.auth.userId);
   if (!user) return false;
+  // Admin-override per account gaat vóór demo/abonnement.
+  if (user.dashboard_access === 'off') return false;
+  if (user.dashboard_access === 'on') return true;
   if (user.email.toLowerCase() === DEMO_EMAIL || user.email.toLowerCase() === 'demo-plus@szinn.ai') return true;
   return subIsActive(await userSubscription(db, user));
 }
 
 // ── Proefperiode (11 dagen) + Companion-quota ────────────────────────────────
 // Nieuw account → 11 dagen gratis dashboard-toegang; daarna alleen met een
-// abonnement (€13,90/mnd). Companion: 3 vragen in de proef (totaal), 20 per
+// abonnement (€3,69/mnd). Companion: 3 vragen in de proef (totaal), 10 per
 // maand met abonnement. Alles per account bijgehouden in user.companion_usage.
 const TRIAL_DAYS             = parseInt(process.env.TRIAL_DAYS || '11', 10);
 const TRIAL_COMPANION_LIMIT  = parseInt(process.env.TRIAL_COMPANION_LIMIT || '3', 10);
-const SUB_COMPANION_LIMIT    = parseInt(process.env.SUB_COMPANION_LIMIT || '20', 10);
+const SUB_COMPANION_LIMIT    = parseInt(process.env.SUB_COMPANION_LIMIT || '10', 10);
 
 function trialDaysLeft(user) {
   if (!user?.created_at) return 0;
@@ -924,7 +948,7 @@ function bumpCompanionUsage(user, paid) {
 
 // Centrale toegangsstatus voor dashboard + Companion.
 //   unlimited → admin/demo of geen Stripe-sleutel (lokaal): alles open
-//   paid      → lopend abonnement (20 vragen/maand)
+//   paid      → lopend abonnement (10 vragen/maand)
 //   trial     → binnen de 11-daagse proef (3 vragen totaal, dashboard open)
 //   anders    → dashboard op slot, companion uit tot er wordt geabonneerd
 async function accessState(db, req) {
@@ -935,10 +959,13 @@ async function accessState(db, req) {
     return { user: null, paid: false, trial: false, unlimited, dashboardOpen: unlimited,
       trialDaysLeft: 0, companionUsed: 0, companionLimit: unlimited ? Infinity : 0, companionLeft: unlimited ? Infinity : 0 };
   }
-  const paid  = subIsActive(await userSubscription(db, user));
+  // Admin-override per account: 'on' = altijd toegang (telt als abonnement voor
+  // het companion-quotum), 'off' = dashboard dicht ondanks proef/abonnement.
+  const override = user.dashboard_access || null;
+  const paid  = override === 'on' || subIsActive(await userSubscription(db, user));
   const left  = trialDaysLeft(user);
   const trial = !paid && left > 0;
-  const dashboardOpen = unlimited || paid || trial;
+  const dashboardOpen = override === 'off' ? false : (unlimited || paid || trial);
   const { used, limit } = companionUsedAndLimit(user, paid);
   const companionLimit = unlimited ? Infinity : (dashboardOpen ? limit : 0);
   const companionLeft  = unlimited ? Infinity : Math.max(0, companionLimit - used);
@@ -1112,6 +1139,11 @@ app.post('/api/intake/submit', async (req, res) => {
   db.orders.push(order);
   // Concept opruimen: het formulier is nu definitief ingestuurd
   if (user.intake_draft) user.intake_draft = null;
+  // Heractivering verbruiken: één nieuwe intake per toekenning.
+  if (access.grantUserId) {
+    const gu = db.users.find(u => u.id === access.grantUserId);
+    if (gu) gu.intake_grant = false;
+  }
   // Betaling/cadeaucode verzilveren: één intake per betaling.
   if (access.sid) {
     db.usedCheckoutSessions = db.usedCheckoutSessions || [];
@@ -1272,6 +1304,13 @@ app.get('/api/admin/orders', async (req, res) => {
   res.json(orders);
 });
 
+// Feedback-inzendingen (nieuwste eerst) voor het admin-dashboard.
+app.get('/api/admin/feedback', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  const db = await loadDB();
+  res.json((db.feedback || []).slice().sort((a, b) => b.id - a.id).slice(0, 500));
+});
+
 // Generatie (opnieuw) starten voor een order — bijv. na een 'failed'
 // ── Prompt-instellingen: aanscherping voor alle volgende generaties ─────────
 app.get('/api/admin/prompt-settings', async (req, res) => {
@@ -1420,6 +1459,39 @@ app.post('/api/admin/order/:orderId/status', async (req, res) => {
   res.json({ ok: true, status });
 });
 
+// ── Gebruikersbeheer: dashboard-toegang + blueprint-heractivering ──────────────
+app.get('/api/admin/users', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  const db = await loadDB();
+  const users = db.users.filter(u => !u.is_admin).map(u => ({
+    id: u.id, email: u.email, name: u.name, created_at: u.created_at,
+    dashboard_access: u.dashboard_access || 'auto',
+    intake_grant: !!u.intake_grant,
+    subActive: subIsActive(u.subscription),
+    trialDaysLeft: trialDaysLeft(u),
+    blueprints: db.orders.filter(o => o.user_id === u.id && o.status === 'completed').length,
+  })).sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+  res.json(users);
+});
+
+// Zet per gebruiker de dashboard-toegang ('on'/'off'/'auto') en/of de eenmalige
+// gratis nieuwe intake (blueprint-heractivering) aan of uit.
+app.post('/api/admin/user/:userId/access', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  const db = await loadDB();
+  const user = db.users.find(u => u.id === Number(req.params.userId));
+  if (!user) return res.status(404).json({ error: 'Gebruiker niet gevonden' });
+  const { dashboard, intakeGrant } = req.body || {};
+  if (dashboard !== undefined) {
+    if (!['on', 'off', 'auto'].includes(dashboard))
+      return res.status(400).json({ error: 'dashboard moet on, off of auto zijn' });
+    user.dashboard_access = dashboard === 'auto' ? null : dashboard;
+  }
+  if (intakeGrant !== undefined) user.intake_grant = !!intakeGrant;
+  await saveDB(db);
+  res.json({ ok: true, dashboard_access: user.dashboard_access || 'auto', intake_grant: !!user.intake_grant });
+});
+
 // ── Foutafhandelaar ─────────────────────────────────────────────────────────────
 // Vangt alle doorgestuurde fouten op (arity 4 → Express herkent dit als error-handler).
 app.use((err, req, res, next) => {
@@ -1461,4 +1533,21 @@ if (require.main === module) {
   assert.strictEqual(p.companion_usage.month, currentMonthKey());
   assert.strictEqual(p.companion_usage.monthCount, 1);
   console.log('api quota self-check ok');
+
+  // Admin-overrides: dashboard-toegang + intake-heractivering (geen Stripe/Blobs nodig).
+  (async () => {
+    process.env.STRIPE_SECRET_KEY = 'sk_selfcheck_dummy'; // anders is lokaal alles 'unlimited'
+    const req = { auth: { userId: 1 }, headers: {} };
+    const expired = (extra) => ({ id: 1, email: 'x@y.z', created_at: iso((TRIAL_DAYS + 5) * dayMs), ...extra });
+    // Proef voorbij, geen abonnement → dicht; override 'on' → open; 'off' wint van de proef.
+    assert.strictEqual((await accessState({ users: [expired()] }, req)).dashboardOpen, false);
+    assert.strictEqual((await accessState({ users: [expired({ dashboard_access: 'on' })] }, req)).dashboardOpen, true);
+    assert.strictEqual((await accessState({ users: [{ ...expired({ dashboard_access: 'off' }), created_at: iso(0) }] }, req)).dashboardOpen, false);
+    // Heractivering: intakeAccess geeft toegang mét grant-marker; zonder grant dicht.
+    const a = await intakeAccess(req, { users: [expired({ intake_grant: true })] }, {});
+    assert.strictEqual(a.ok, true);
+    assert.strictEqual(a.grantUserId, 1);
+    assert.strictEqual((await intakeAccess(req, { users: [expired()] }, {})).ok, false);
+    console.log('api access self-check ok');
+  })().catch(e => { console.error(e); process.exit(1); });
 }

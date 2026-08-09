@@ -22,7 +22,8 @@
         var s = document.getElementById('szinn-gate-style');
         if (s) s.remove();
       } else {
-        location.replace((x.j && x.j.payLink) || 'https://buy.stripe.com/fZu9AL8g20KT5xgdpO0kE00');
+        // English page → English payment link (falls back to the Dutch one).
+        location.replace((x.j && (x.j.payLinkEn || x.j.payLink)) || 'https://buy.stripe.com/fZu9AL8g20KT5xgdpO0kE00');
       }
     })
     .catch(function () { // API unreachable: better to show than lock out a paying customer
@@ -684,7 +685,7 @@
       </div>
       <div class="field" id="field-geboortetijd">
         <label class="field-label">
-          <span>Geboortetijd</span>
+          <span data-nl="Geboortetijd" data-en="Time of birth">Time of birth</span>
           <span class="opt">(as exact as possible)</span>
         </label>
         <input type="time" id="geboortetijd">
@@ -1173,10 +1174,16 @@
       &nbsp;&middot;&nbsp;
       <a href="/privacy#cookies" style="color:var(--gold); text-decoration:none;" class="nl-text">Cookiebeleid</a>
       <a href="/privacy-en#cookies" style="color:var(--gold); text-decoration:none; display:none;" class="en-text" style="display:none;">Cookie policy</a>
+      &nbsp;&middot;&nbsp;
+      <a href="/faq" style="color:var(--gold); text-decoration:none;" class="nl-text">Veelgestelde vragen</a>
+      <a href="/en/faq" style="color:var(--gold); text-decoration:none; display:none;" class="en-text" style="display:none;">FAQ</a>
+      &nbsp;&middot;&nbsp;
+      <a href="/feedback" style="color:var(--gold); text-decoration:none;" class="nl-text">Feedback</a>
+      <a href="/en/feedback" style="color:var(--gold); text-decoration:none; display:none;" class="en-text" style="display:none;">Feedback</a>
     </p>
 
     <div class="nav" style="border-top: none; padding-top: 0; margin-top: 24px; justify-content: center;">
-      <button class="btn btn-back" id="back-last-btn" onclick="prevSection(7)">← Back naar vorige stap</button>
+      <button class="btn btn-back" id="back-last-btn" onclick="prevSection(7)" data-nl="← Terug naar vorige stap" data-en="← Back to previous step">← Back to previous step</button>
     </div>
   </section>
 

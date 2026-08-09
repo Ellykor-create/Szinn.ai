@@ -86,6 +86,9 @@ db.exec(`CREATE TABLE IF NOT EXISTS companion_state (
   state TEXT NOT NULL,
   updated_at TEXT DEFAULT (CURRENT_TIMESTAMP)
 )`);
+// Companion-quotum: aantal vragen per gebruiker per kalendermaand (YYYY-MM, UTC).
+const companionQuota = require('./lib/companion-quota');
+companionQuota.ensureTable(db);
 // Dagboek: dagstart/dagafsluiting per gebruiker per dag ({ morning, evening } als JSON).
 db.exec(`CREATE TABLE IF NOT EXISTS journal_entries (
   user_id INTEGER NOT NULL,
@@ -103,11 +106,15 @@ db.exec(`CREATE TABLE IF NOT EXISTS used_checkout_sessions (
 )`);
 try { db.exec(`ALTER TABLE gift_codes ADD COLUMN redeemed_at TEXT DEFAULT NULL`); } catch {}
 try { db.exec(`ALTER TABLE gift_codes ADD COLUMN redeemed_order TEXT DEFAULT NULL`); } catch {}
-// Abonnement €20/mnd: compacte Stripe-samenvatting als JSON per gebruiker.
+// Abonnement €3,69/mnd: compacte Stripe-samenvatting als JSON per gebruiker.
 try { db.exec(`ALTER TABLE users ADD COLUMN subscription TEXT DEFAULT NULL`); } catch {}
 // Meldingsvoorkeur: 'whatsapp' | 'email' | 'off'. Default 'off' zodat niemand
 // ongevraagd berichten krijgt; de gebruiker kiest expliciet in zijn instellingen.
 try { db.exec(`ALTER TABLE users ADD COLUMN notify_channel TEXT DEFAULT 'off'`); } catch {}
+// Admin-overrides: dashboard-toegang ('on'/'off', NULL = automatisch via
+// proef/abonnement) en een eenmalige gratis nieuwe intake (blueprint-heractivering).
+try { db.exec(`ALTER TABLE users ADD COLUMN dashboard_access TEXT DEFAULT NULL`); } catch {}
+try { db.exec(`ALTER TABLE users ADD COLUMN intake_grant INTEGER DEFAULT 0`); } catch {}
 // Onraadbaar deel-/kijktoken per order. Zo staat het volgnummer (ORD-…) nooit
 // in een URL en kan niemand door een nummer te raden andermans blueprint openen.
 try { db.exec(`ALTER TABLE orders ADD COLUMN view_token TEXT`); } catch {}
@@ -122,6 +129,17 @@ db.exec(`CREATE TABLE IF NOT EXISTS settings (
   key        TEXT PRIMARY KEY,
   value      TEXT,
   updated_at TEXT
+);`);
+
+// Feedback vanaf /feedback (NL) en /en/feedback (EN); zichtbaar in het admin-dashboard.
+db.exec(`CREATE TABLE IF NOT EXISTS feedback (
+  id         INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_at TEXT DEFAULT (CURRENT_TIMESTAMP),
+  name       TEXT,
+  email      TEXT,
+  rating     INTEGER,
+  message    TEXT NOT NULL,
+  lang       TEXT DEFAULT 'nl'
 );`);
 
 // ── Admin-account ───────────────────────────────────────────────────────────────
@@ -352,10 +370,11 @@ app.use(express.static(ROOT));
 // ── Auth ──────────────────────────────────────────────────────────────────────
 app.post('/api/auth/login', (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ error: 'Email en wachtwoord zijn verplicht' });
+  const en = req.body?.lang === 'en';
+  if (!email || !password) return res.status(400).json({ error: en ? 'Email and password are required' : 'Email en wachtwoord zijn verplicht' });
   const user = db.prepare('SELECT * FROM users WHERE LOWER(email) = LOWER(?)').get(email.trim());
   if (!user || !bcrypt.compareSync(password, user.password))
-    return res.status(401).json({ error: 'Onjuist e-mailadres of wachtwoord' });
+    return res.status(401).json({ error: en ? 'Incorrect email address or password' : 'Onjuist e-mailadres of wachtwoord' });
   req.session.userId = user.id;
   res.json({ id: user.id, email: user.email, name: user.name, initials: user.name.substring(0,2).toUpperCase() });
 });
@@ -848,7 +867,18 @@ app.post('/api/journal', (req, res) => {
   res.json({ ok: true, date, entry });
 });
 
-// ── Abonnement €20/mnd (pariteit met de live Netlify-functie) ─────────────────
+// ── Feedback (publiek formulier op /feedback en /en/feedback) ─────────────────
+const { validateFeedback } = require('./lib/feedback');
+
+app.post('/api/feedback', (req, res) => {
+  const fb = validateFeedback(req.body);
+  if (fb.error) return res.status(400).json({ error: fb.error });
+  db.prepare('INSERT INTO feedback (name, email, rating, message, lang) VALUES (?, ?, ?, ?, ?)')
+    .run(fb.name, fb.email, fb.rating, fb.message, fb.lang);
+  res.json({ ok: true });
+});
+
+// ── Abonnement €3,69/mnd (pariteit met de live Netlify-functie) ───────────────
 // Daily dashboard + WhatsApp-reminders + companion. Afsluiten vanuit het
 // dashboard via een Stripe Checkout-sessie; status wordt hooguit één keer per
 // dag bij Stripe ververst (geen webhook nodig).
@@ -875,9 +905,14 @@ async function userSubscription(userId) {
 }
 // Admin en demo-accounts altijd; zonder Stripe-sleutel (lokaal) niet blokkeren.
 async function hasSubscriptionAccess(req) {
-  if (!stripeConfigured()) return true;
   if (req.session.isAdmin) return true;
-  const u = db.prepare('SELECT email FROM users WHERE id = ?').get(req.session.userId);
+  const u = req.session.userId
+    ? db.prepare('SELECT email, dashboard_access FROM users WHERE id = ?').get(req.session.userId)
+    : null;
+  // Admin-override per account gaat vóór demo/abonnement én de lokale fail-open.
+  if (u?.dashboard_access === 'off') return false;
+  if (u?.dashboard_access === 'on') return true;
+  if (!stripeConfigured()) return true;
   if (!u) return false;
   if (DEMO_SUB_EMAILS.includes(u.email.toLowerCase())) return true;
   return subIsActive(await userSubscription(req.session.userId));
@@ -970,6 +1005,15 @@ function saveCompanionState(userId, state) {
     .run(userId, JSON.stringify(state));
 }
 
+// 10 Companion-vragen per kalendermaand (zelfde venster als de Netlify-functie).
+// Admin/demo-accounts en lokaal draaien zonder Stripe-sleutel blijven onbeperkt.
+const SUB_COMPANION_LIMIT = parseInt(process.env.SUB_COMPANION_LIMIT || '10', 10);
+function companionUnlimited(req) {
+  if (!stripeConfigured() || req.session.isAdmin) return true;
+  const u = db.prepare('SELECT email FROM users WHERE id = ?').get(req.session.userId);
+  return !!u && DEMO_SUB_EMAILS.includes(u.email.toLowerCase());
+}
+
 app.post('/api/companion/chat', async (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
 
@@ -991,6 +1035,16 @@ app.post('/api/companion/chat', async (req, res) => {
   if (!(await hasSubscriptionAccess(req)))
     return res.status(402).json({ error: 'De Companion hoort bij het SZINN-abonnement.', subscribe: true });
 
+  // Abonnement: 10 vragen aan SZINN Companion per kalendermaand.
+  const unlimited = companionUnlimited(req);
+  if (!unlimited && companionQuota.monthCount(db, req.session.userId) >= SUB_COMPANION_LIMIT)
+    return res.status(429).json({
+      error: lang === 'en'
+        ? `You've used your ${SUB_COMPANION_LIMIT} SZINN Companion questions for this month. They renew next month.`
+        : `Je hebt je ${SUB_COMPANION_LIMIT} vragen aan SZINN Companion voor deze maand gebruikt. Volgende maand staan er weer ${SUB_COMPANION_LIMIT} voor je klaar.`,
+      limitReached: true,
+    });
+
   let system = lang === 'en'
     ? 'You are the SZINN AI Companion — warm, clear, practical. No bullet points. Write flowing sentences in English.'
     : 'Je bent de SZINN AI Companion — warm, helder, praktisch. Spreek de gebruiker aan met jij/jouw. Geen bullet points. Schrijf vloeiende zinnen.';
@@ -1004,7 +1058,11 @@ app.post('/api/companion/chat', async (req, res) => {
   try {
     const content = await companionTurn({ state, userMessage, baseSystem: system, name, intakeRaw, lang });
     saveCompanionState(req.session.userId, state);
-    res.json({ content });
+    if (!unlimited) companionQuota.bump(db, req.session.userId); // teller +1 na een gelukte beurt
+    res.json({
+      content,
+      companionLeft: unlimited ? null : Math.max(0, SUB_COMPANION_LIMIT - companionQuota.monthCount(db, req.session.userId)),
+    });
   } catch (err) {
     console.error('Companion API error:', err.message);
     res.status(500).json({ error: 'De AI Companion is tijdelijk niet beschikbaar.' });
@@ -1023,9 +1081,18 @@ app.get('/api/companion/history', (req, res) => {
 // die sessie verifiëren we bij Stripe en houden we vast in de server-sessie.
 const { stripeReq, stripeConfigured } = require('./lib/stripe');
 const INTAKE_PAY_LINK = process.env.INTAKE_PAY_LINK || 'https://buy.stripe.com/fZu9AL8g20KT5xgdpO0kE00';
+// Engelse betaallink (eigen redirect naar /intake-en); zolang die er nog niet
+// is valt de Engelse intake terug op de Nederlandse link.
+const INTAKE_PAY_LINK_EN = process.env.INTAKE_PAY_LINK_EN || INTAKE_PAY_LINK;
 
 async function intakeAccess(req, { sessionId, code } = {}) {
   if (req.session.isAdmin) return { ok: true };
+  // Heractivering door admin: eenmalig een nieuwe intake zonder betaling;
+  // de submit verbruikt de toekenning via grantUserId.
+  if (req.session.userId) {
+    const u = db.prepare('SELECT intake_grant FROM users WHERE id = ?').get(req.session.userId);
+    if (u && u.intake_grant) return { ok: true, grantUserId: req.session.userId };
+  }
   const held = req.session.intakeAccess;
   if (held) {
     const sidUsed = held.sid && db.prepare('SELECT sid FROM used_checkout_sessions WHERE sid = ?').get(held.sid);
@@ -1050,7 +1117,7 @@ async function intakeAccess(req, { sessionId, code } = {}) {
 
 app.post('/api/intake/access', async (req, res) => {
   const access = await intakeAccess(req, { sessionId: req.body?.session_id || null, code: req.body?.code || null });
-  if (!access.ok) return res.status(402).json({ ok: false, payLink: INTAKE_PAY_LINK });
+  if (!access.ok) return res.status(402).json({ ok: false, payLink: INTAKE_PAY_LINK, payLinkEn: INTAKE_PAY_LINK_EN });
   if (access.fresh) req.session.intakeAccess = { sid: access.sid || null, code: access.code || null };
   res.json({ ok: true });
 });
@@ -1106,6 +1173,8 @@ app.post('/api/intake/submit', async (req, res) => {
   // Betaling/cadeaucode verzilveren: één intake per betaling.
   if (access.sid) db.prepare('INSERT OR IGNORE INTO used_checkout_sessions (sid, order_id) VALUES (?, ?)').run(access.sid, orderId);
   if (access.code) db.prepare('UPDATE gift_codes SET redeemed_at = CURRENT_TIMESTAMP, redeemed_order = ? WHERE code = ?').run(orderId, access.code);
+  // Heractivering verbruiken: één nieuwe intake per toekenning.
+  if (access.grantUserId) db.prepare('UPDATE users SET intake_grant = 0 WHERE id = ?').run(access.grantUserId);
 
   // Auto-login this user
   req.session.userId = user.id;
@@ -1246,6 +1315,12 @@ app.get('/api/admin/orders', (req, res) => {
   res.json(rows);
 });
 
+// Feedback-inzendingen (nieuwste eerst) voor het admin-dashboard.
+app.get('/api/admin/feedback', (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Geen toegang' });
+  res.json(db.prepare('SELECT * FROM feedback ORDER BY created_at DESC, id DESC LIMIT 500').all());
+});
+
 // Build prompt for an order (to paste into claude.ai)
 app.get('/api/admin/prompt/:orderId', (req, res) => {
   if (!isAdmin(req)) return res.status(401).json({ error: 'Geen toegang' });
@@ -1384,6 +1459,41 @@ app.post('/api/admin/order/:orderId/status', (req, res) => {
   }
   console.log(`✓ Status gewijzigd via admin: ${order.id} → ${status}`);
   res.json({ ok: true, status });
+});
+
+// ── Gebruikersbeheer: dashboard-toegang + blueprint-heractivering ──────────────
+app.get('/api/admin/users', (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Geen toegang' });
+  const rows = db.prepare(`
+    SELECT u.id, u.email, u.name, u.created_at, u.dashboard_access, u.intake_grant, u.subscription,
+           (SELECT COUNT(*) FROM orders o WHERE o.user_id = u.id AND o.status = 'completed') AS blueprints
+    FROM users u WHERE u.is_admin IS NOT 1 ORDER BY u.created_at DESC
+  `).all();
+  res.json(rows.map(r => ({
+    id: r.id, email: r.email, name: r.name, created_at: r.created_at,
+    dashboard_access: r.dashboard_access || 'auto',
+    intake_grant: !!r.intake_grant,
+    subActive: (() => { try { return subIsActive(JSON.parse(r.subscription)); } catch { return false; } })(),
+    blueprints: r.blueprints,
+  })));
+});
+
+// Zet per gebruiker de dashboard-toegang ('on'/'off'/'auto') en/of de eenmalige
+// gratis nieuwe intake (blueprint-heractivering) aan of uit.
+app.post('/api/admin/user/:userId/access', (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Geen toegang' });
+  const user = db.prepare('SELECT id FROM users WHERE id = ?').get(Number(req.params.userId) || 0);
+  if (!user) return res.status(404).json({ error: 'Gebruiker niet gevonden' });
+  const { dashboard, intakeGrant } = req.body || {};
+  if (dashboard !== undefined) {
+    if (!['on', 'off', 'auto'].includes(dashboard))
+      return res.status(400).json({ error: 'dashboard moet on, off of auto zijn' });
+    db.prepare('UPDATE users SET dashboard_access = ? WHERE id = ?').run(dashboard === 'auto' ? null : dashboard, user.id);
+  }
+  if (intakeGrant !== undefined)
+    db.prepare('UPDATE users SET intake_grant = ? WHERE id = ?').run(intakeGrant ? 1 : 0, user.id);
+  const fresh = db.prepare('SELECT dashboard_access, intake_grant FROM users WHERE id = ?').get(user.id);
+  res.json({ ok: true, dashboard_access: fresh.dashboard_access || 'auto', intake_grant: !!fresh.intake_grant });
 });
 
 // Serve admin page

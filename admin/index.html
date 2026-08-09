@@ -175,6 +175,62 @@ textarea:focus { border-color: var(--gold); }
         </tbody>
       </table>
     </div>
+
+    <!-- Gebruikers & toegang -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <h2 style="margin:0">Gebruikers &amp; toegang</h2>
+      <button class="btn btn-ghost btn-sm" onclick="loadUsers()">↻ Vernieuwen</button>
+    </div>
+
+    <div class="info-box">
+      <strong>Dashboard-toegang:</strong> "Automatisch" volgt de proefperiode/het abonnement. Met <strong>Ja</strong> houdt dit account altijd
+      toegang (incl. Companion), met <strong>Nee</strong> gaat het dashboard op slot, ook mét lopend abonnement.<br>
+      <strong>Blueprint heractiveren:</strong> geeft dit account eenmalig gratis toegang tot een nieuwe intake. De klant logt in, vult de
+      vragenlijst op <strong>/intake</strong> opnieuw in (zonder betaalmuur) en ontvangt een nieuwe blueprint. De toekenning vervalt automatisch
+      zodra de nieuwe intake is ingestuurd.
+    </div>
+
+    <div class="orders-wrap">
+      <table id="users-table">
+        <thead>
+          <tr>
+            <th>Email</th>
+            <th>Naam</th>
+            <th>Aangemaakt</th>
+            <th>Blueprints</th>
+            <th>Abonnement</th>
+            <th>Dashboard-toegang</th>
+            <th>Blueprint heractiveren</th>
+          </tr>
+        </thead>
+        <tbody id="users-body">
+          <tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted)">Laden…</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Feedback -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+      <h2 style="margin:0">Feedback</h2>
+      <button class="btn btn-ghost btn-sm" onclick="loadFeedback()">↻ Vernieuwen</button>
+    </div>
+    <div class="orders-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Datum</th>
+            <th>Naam</th>
+            <th>Email</th>
+            <th>Taal</th>
+            <th>Score</th>
+            <th>Bericht</th>
+          </tr>
+        </thead>
+        <tbody id="feedback-body">
+          <tr><td colspan="6" style="text-align:center;padding:28px;color:var(--muted)">Laden…</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 
@@ -243,6 +299,8 @@ async function adminLogin() {
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app').style.display = 'block';
     loadOrders();
+    loadUsers();
+    loadFeedback();
     loadPromptSettings();
   } else {
     const data = await r.json().catch(() => ({}));
@@ -325,6 +383,104 @@ function renderOrders(orders) {
       </td>
     </tr>`;
   }).join('');
+}
+
+// ── Feedback ──────────────────────────────────────────────────────────────────
+// Publieke input → altijd escapen voor het in de tabel gaat.
+function esc(s) { return String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+async function loadFeedback() {
+  const tbody = document.getElementById('feedback-body');
+  const r = await fetch('/api/admin/feedback');
+  if (!r.ok) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--muted)">Kon feedback niet laden</td></tr>'; return; }
+  const items = await r.json();
+  if (!items.length) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--muted)">Nog geen feedback ontvangen</td></tr>';
+    return;
+  }
+  tbody.innerHTML = items.map(f => {
+    const date = f.created_at ? new Date(f.created_at + (String(f.created_at).includes('T') ? '' : 'Z')).toLocaleString('nl-NL', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+    return `<tr>
+      <td style="font-size:11px;color:var(--muted);white-space:nowrap">${date}</td>
+      <td>${esc(f.name) || '—'}</td>
+      <td style="font-size:12px;color:var(--muted)">${f.email ? `<a href="mailto:${esc(f.email)}">${esc(f.email)}</a>` : '—'}</td>
+      <td style="font-size:11px;text-transform:uppercase">${esc(f.lang) || 'nl'}</td>
+      <td style="white-space:nowrap;color:var(--gold)">${f.rating ? '★'.repeat(f.rating) : '—'}</td>
+      <td style="font-size:13px;max-width:420px;white-space:pre-wrap">${esc(f.message)}</td>
+    </tr>`;
+  }).join('');
+}
+
+// ── Gebruikers & toegang ──────────────────────────────────────────────────────
+async function loadUsers() {
+  const r = await fetch('/api/admin/users');
+  if (!r.ok) return;
+  renderUsers(await r.json());
+}
+
+function accessSelect(u) {
+  const opts = [
+    ['auto', 'Automatisch (proef/abonnement)'],
+    ['on',   'Ja — altijd toegang'],
+    ['off',  'Nee — geen toegang'],
+  ].map(([v, l]) => `<option value="${v}"${v === u.dashboard_access ? ' selected' : ''}>${l}</option>`).join('');
+  return `<select class="status-select" title="Dashboard-toegang wijzigen" onchange="setDashboardAccess(${u.id}, this.value)">${opts}</select>`;
+}
+
+function renderUsers(users) {
+  const tbody = document.getElementById('users-body');
+  if (!users.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted)">Geen gebruikers gevonden</td></tr>';
+    return;
+  }
+  tbody.innerHTML = users.map(u => {
+    const date = u.created_at ? new Date(u.created_at).toLocaleDateString('nl-NL', { day:'2-digit', month:'2-digit', year:'numeric' }) : '—';
+    const sub = u.subActive
+      ? '<span class="badge badge-completed">Actief</span>'
+      : (u.trialDaysLeft > 0 ? `<span class="badge badge-waiting">Proef · ${u.trialDaysLeft}d</span>` : '<span class="badge badge-failed">Geen</span>');
+    const reactivate = u.intake_grant
+      ? `<span class="badge badge-completed">Intake open</span>
+         <button class="btn btn-ghost btn-sm" onclick="setIntakeGrant(${u.id}, false)">Intrekken</button>`
+      : `<button class="btn btn-green btn-sm" onclick="setIntakeGrant(${u.id}, true)">⟳ Heractiveer</button>`;
+    return `<tr>
+      <td style="font-size:12px"><strong>${esc(u.email)}</strong></td>
+      <td style="font-size:12px">${esc(u.name) || '—'}</td>
+      <td style="font-size:11px;color:var(--muted)">${date}</td>
+      <td style="text-align:center">${u.blueprints}</td>
+      <td>${sub}</td>
+      <td>${accessSelect(u)}</td>
+      <td><div class="actions" style="align-items:center">${reactivate}</div></td>
+    </tr>`;
+  }).join('');
+}
+
+async function setDashboardAccess(userId, dashboard) {
+  const r = await fetch(`/api/admin/user/${userId}/access`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ dashboard })
+  });
+  const data = await r.json().catch(() => ({}));
+  if (r.ok && data.ok) {
+    const label = { auto: 'Automatisch', on: 'Ja — altijd toegang', off: 'Nee — geen toegang' }[dashboard];
+    showToast(`✓ Dashboard-toegang → ${label}`);
+  } else {
+    showToast('Fout: ' + (data.error || r.status), true);
+  }
+  loadUsers();
+}
+
+async function setIntakeGrant(userId, grant) {
+  const r = await fetch(`/api/admin/user/${userId}/access`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ intakeGrant: grant })
+  });
+  const data = await r.json().catch(() => ({}));
+  if (r.ok && data.ok) {
+    showToast(grant
+      ? '✓ Blueprint geheractiveerd — dit account kan een nieuwe intake invullen op /intake'
+      : '✓ Heractivering ingetrokken');
+  } else {
+    showToast('Fout: ' + (data.error || r.status), true);
+  }
+  loadUsers();
 }
 
 // ── Prompt-instellingen ───────────────────────────────────────────────────────

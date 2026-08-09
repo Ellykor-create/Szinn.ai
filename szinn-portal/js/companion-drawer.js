@@ -36,8 +36,8 @@
       send: 'Stuur',
       close: 'Sluiten',
       hint: 'Je gesprekken blijven altijd van jou.',
-      trialNote: 'Proefperiode — nog {n} van {limit} gratis Companion-vragen. Daarna hoort de Companion bij het abonnement (€13,90/mnd).',
-      trialNoteDone: 'Proefperiode — je {limit} gratis Companion-vragen zijn op. Neem het abonnement (€13,90/mnd) om verder te praten.',
+      trialNote: 'Proefperiode — nog {n} van {limit} gratis Companion-vragen. Daarna hoort de Companion bij het abonnement (€3,69/mnd).',
+      trialNoteDone: 'Proefperiode — je {limit} gratis Companion-vragen zijn op. Neem het abonnement (€3,69/mnd) om verder te praten.',
     },
     en: {
       launch: 'Companion',
@@ -54,8 +54,8 @@
       send: 'Send',
       close: 'Close',
       hint: 'Your conversations always remain yours.',
-      trialNote: 'Trial — {n} of {limit} free Companion questions left. After that the Companion is part of the subscription (€13.90/month).',
-      trialNoteDone: 'Trial — your {limit} free Companion questions are used up. Subscribe (€13.90/month) to keep talking.',
+      trialNote: 'Trial — {n} of {limit} free Companion questions left. After that the Companion is part of the subscription (€3.69/month).',
+      trialNoteDone: 'Trial — your {limit} free Companion questions are used up. Subscribe (€3.69/month) to keep talking.',
     },
   }[lang];
 

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feedback · SZINN</title>
+<meta name="description" content="Deel je ervaring of suggestie met SZINN. We lezen elk bericht.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F2EA; --surface:#FFFFFF; --ink:#1E1B16; --ink-soft:#4A453C;
+  --navy:#10141E; --gold:#C9A96E; --gold-deep:#A8884A;
+  --line:rgba(30,27,22,.12);
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:'Jost',system-ui,sans-serif; font-weight:300;
+  font-size:16px; line-height:1.75; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:640px; margin:0 auto; padding:0 24px}
+header.masthead{
+  background:var(--navy); color:#EDE7DA; padding:54px 0 46px; text-align:center;
+  border-bottom:2px solid var(--gold);
+}
+.brand .word{
+  font-family:'Cormorant Garamond',serif; font-weight:500; font-size:25px;
+  letter-spacing:.18em; color:#F1EADA; text-decoration:none;
+}
+header.masthead h1{
+  font-family:'Cormorant Garamond',serif; font-weight:500;
+  font-size:clamp(30px,6vw,44px); line-height:1.08; margin:18px 0 14px;
+}
+header.masthead .ver{
+  font-size:12px; letter-spacing:.22em; text-transform:uppercase;
+  color:var(--gold); font-weight:400;
+}
+form.card{
+  background:var(--surface); border:1px solid var(--line); border-radius:6px;
+  padding:30px 28px; margin:42px 0 60px;
+}
+label{display:block; font-size:13px; letter-spacing:.06em; color:var(--ink-soft); margin:18px 0 6px}
+label:first-child{margin-top:0}
+input[type=text], input[type=email], textarea{
+  width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:4px;
+  font-family:'Jost',sans-serif; font-weight:300; font-size:15px; color:var(--ink);
+  background:var(--bg); outline:none;
+}
+input:focus, textarea:focus{border-color:var(--gold)}
+textarea{min-height:140px; resize:vertical}
+.stars{display:flex; gap:6px; flex-direction:row-reverse; justify-content:flex-end; margin-top:4px}
+.stars input{display:none}
+.stars label{font-size:26px; color:#D8D0C0; cursor:pointer; margin:0; line-height:1}
+.stars input:checked ~ label, .stars label:hover, .stars label:hover ~ label{color:var(--gold-deep)}
+button.send{
+  margin-top:26px; width:100%; padding:14px; border:0; border-radius:4px; cursor:pointer;
+  background:var(--navy); color:#F1EADA; font-family:'Jost',sans-serif;
+  font-size:14px; letter-spacing:.14em; text-transform:uppercase;
+}
+button.send:hover{background:#1C2230}
+button.send:disabled{opacity:.6; cursor:default}
+.msg{margin-top:16px; font-size:14px; display:none; padding:12px 14px; border-radius:4px}
+.msg.ok{display:block; background:rgba(201,169,110,.15); color:var(--gold-deep); border:1px solid var(--gold)}
+.msg.err{display:block; background:rgba(160,60,50,.08); color:#8C3A30; border:1px solid rgba(160,60,50,.3)}
+footer.foot{
+  background:var(--navy); color:#C9C3B6;
+  padding:42px 0; text-align:center; font-size:13px; line-height:1.9;
+  border-top:2px solid var(--gold);
+}
+footer.foot .sig{
+  font-family:'Cormorant Garamond',serif; font-size:18px; letter-spacing:.14em;
+  color:#F1EADA; margin-bottom:10px;
+}
+footer.foot a{color:var(--gold); text-decoration:none}
+footer.foot .copyright{margin-top:14px; color:#8C8678; font-size:12px}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <a class="word" href="/">SZINN</a>
+  <h1>Feedback</h1>
+  <div class="ver">We lezen elk bericht</div>
+</header>
+
+<div class="wrap">
+  <form class="card" id="fbForm">
+    <label for="fbName">Naam (optioneel)</label>
+    <input type="text" id="fbName" maxlength="120" autocomplete="name">
+
+    <label for="fbEmail">E-mailadres (optioneel — alleen als je een reactie wilt)</label>
+    <input type="email" id="fbEmail" maxlength="200" autocomplete="email">
+
+    <label>Waardering (optioneel)</label>
+    <div class="stars">
+      <input type="radio" name="rating" id="s5" value="5"><label for="s5">★</label>
+      <input type="radio" name="rating" id="s4" value="4"><label for="s4">★</label>
+      <input type="radio" name="rating" id="s3" value="3"><label for="s3">★</label>
+      <input type="radio" name="rating" id="s2" value="2"><label for="s2">★</label>
+      <input type="radio" name="rating" id="s1" value="1"><label for="s1">★</label>
+    </div>
+
+    <label for="fbMsg">Jouw bericht *</label>
+    <textarea id="fbMsg" maxlength="2000" required placeholder="Deel je ervaring, idee of suggestie…"></textarea>
+
+    <button class="send" type="submit">Verstuur feedback</button>
+    <div class="msg" id="fbStatus"></div>
+  </form>
+</div>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="sig">SZINN</div>
+    Elly Elizabeth Korving · SZINN · 110 Life &amp; Business Awareness<br>
+    <a href="https://www.szinn.ai">szinn.ai</a> &nbsp;·&nbsp; <a href="mailto:info@szinn.ai">info@szinn.ai</a> &nbsp;·&nbsp; <a href="/faq">FAQ</a> &nbsp;·&nbsp; <a href="/privacy">Privacy</a> &nbsp;·&nbsp; <a href="/voorwaarden">Voorwaarden</a>
+    <div class="copyright">© 2026 Elly Elizabeth Korving · Alterego B.V. · Alle rechten voorbehouden · szinn.ai</div>
+  </div>
+</footer>
+
+<script>
+document.getElementById('fbForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = e.target.querySelector('button.send');
+  const status = document.getElementById('fbStatus');
+  status.className = 'msg';
+  btn.disabled = true;
+  try {
+    const rating = document.querySelector('input[name=rating]:checked');
+    const res = await fetch('/api/feedback', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        name: document.getElementById('fbName').value,
+        email: document.getElementById('fbEmail').value,
+        rating: rating ? rating.value : null,
+        message: document.getElementById('fbMsg').value,
+        lang: 'nl',
+      }),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (res.ok) {
+      status.textContent = 'Dank je wel! Je feedback is verstuurd.';
+      status.classList.add('ok');
+      e.target.reset();
+    } else {
+      status.textContent = data.error || 'Versturen is niet gelukt. Probeer het later opnieuw.';
+      status.classList.add('err');
+    }
+  } catch {
+    status.textContent = 'Versturen is niet gelukt. Controleer je verbinding en probeer het opnieuw.';
+    status.classList.add('err');
+  }
+  btn.disabled = false;
+});
+</script>
+
+</body>
+</html>
