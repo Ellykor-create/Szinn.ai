@@ -3,263 +3,439 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Calculate your Personal Year · free numerology | SZINN</title>
-<meta name="description" content="Calculate your Personal Year for free using classical numerology. Only your date of birth is needed. See where you stand in your nine-year cycle, plus your twelve Personal Months.">
-<link rel="alternate" hreflang="nl" href="https://szinn.ai/persoonlijk-jaar">
-<link rel="alternate" hreflang="en" href="https://szinn.ai/en/personal-year">
-<link rel="alternate" hreflang="x-default" href="https://szinn.ai/en/personal-year">
-<meta name="robots" content="index, follow">
-<meta property="og:site_name" content="SZINN">
+<title>Calculate your Personal Year &middot; free numerology | SZINN</title>
+<meta name="description" content="Calculate your Personal Year for free using classical numerology. Only your date of birth is needed. See where you stand in your nine-year cycle.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://szinn.ai/en/personal-year">
-<meta property="og:title" content="Your Personal Year · SZINN">
-<meta property="og:description" content="Calculate your Personal Year for free using classical numerology. See where you stand in your nine-year cycle.">
+<meta property="og:title" content="Calculate your Personal Year &middot; free numerology | SZINN">
+<meta property="og:description" content="Calculate your Personal Year for free using classical numerology. Only your date of birth is needed. See where you stand in your nine-year cycle.">
 <meta property="og:image" content="https://szinn.ai/assets/og-personal-year.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
+<meta property="og:site_name" content="SZINN">
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="robots" content="index, follow">
 <link rel="canonical" href="https://szinn.ai/en/personal-year">
+<link rel="alternate" hreflang="nl" href="https://szinn.ai/persoonlijk-jaar">
+<link rel="alternate" hreflang="en" href="https://szinn.ai/en/personal-year">
+<link rel="alternate" hreflang="x-default" href="https://szinn.ai/en/personal-year">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{
-  --cream:#F9F5F0; --white:#FFFFFF; --gold:#A8884A; --gold-l:#C9A96E;
-  --ink:#0D0A07; --ink2:#4A423A; --line:rgba(168,136,74,.20);
-  --slate:#39485C; --slate-soft:#6A7A90; --slate-bg:#F1F2F5;
+  --cream:#F9F5F0; --warm:#F3EDE4; --white:#FFFFFF;
+  --gold:#A8884A; --gold-l:#C9A96E; --gold-d:#8A6E3A;
+  --ink:#0D0A07; --ink2:#4A423A; --soft:#8A8078;
+  --line:rgba(168,136,74,.22);
+  --serif:'Cormorant Garamond',Georgia,serif; --sans:'Jost',system-ui,sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--cream);color:var(--ink);font-family:'Jost',system-ui,sans-serif;font-weight:300;font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased}
-.wrap{max-width:680px;margin:0 auto;padding:0 24px}
-h1,h2,h3{font-family:'Cormorant Garamond',Georgia,serif;font-weight:400;line-height:1.15;letter-spacing:.01em}
-h1{font-size:clamp(38px,8vw,62px)}
-h2{font-size:clamp(26px,5vw,34px)}
-h3{font-size:21px}
+body{background:var(--cream);color:var(--ink);font-family:var(--sans);font-weight:300;font-size:16px;line-height:1.8;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3{font-family:var(--serif);font-weight:400;line-height:1.12;letter-spacing:.005em}
 em{font-style:italic;color:var(--gold)}
-p{margin-bottom:18px;color:var(--ink2)}
-.tag{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);font-weight:400;margin-bottom:18px}
+p{color:var(--ink2)}
+.inner{max-width:1120px;margin:0 auto;padding:0 32px}
+.tag{font-family:var(--sans);font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);font-weight:400}
+.rule{width:44px;height:1px;background:var(--gold);opacity:.6;margin:22px 0}
 
-header{padding:34px 0 0;text-align:center}
-.logo{font-family:'Cormorant Garamond',serif;font-size:23px;letter-spacing:.42em;color:var(--gold);text-decoration:none;display:inline-block;text-indent:.42em}
+/* ── NAV ─────────────────────────────────────────────── */
+nav{position:sticky;top:0;z-index:60;background:rgba(249,245,240,.94);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.nav-in{max-width:1220px;margin:0 auto;padding:14px 28px;display:flex;align-items:center;gap:28px}
+.nav-logo{display:flex;align-items:center;gap:11px;text-decoration:none;flex:0 0 auto}
+.nav-logo svg{width:30px;height:30px;color:var(--gold)}
+.nav-logo span{font-family:var(--serif);font-size:21px;letter-spacing:.3em;color:var(--ink);text-indent:.3em}
+.nav-links{display:flex;gap:26px;margin-left:auto;align-items:center}
+.nav-links a{font-family:var(--sans);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink2);text-decoration:none;padding-bottom:3px;transition:color .2s}
+.nav-links a:hover{color:var(--gold)}
+.nav-links a.here{color:var(--gold);border-bottom:1px solid var(--gold)}
+.nav-cta{background:var(--gold);color:#fff!important;padding:11px 20px;border-bottom:0!important;transition:opacity .2s}
+.nav-cta:hover{opacity:.86;color:#fff!important}
+.nav-lang{display:flex;gap:8px;align-items:center;font-size:11px;letter-spacing:.12em;color:var(--soft)}
+.nav-lang a{color:var(--soft);text-decoration:none}
+.nav-lang a.on{color:var(--gold)}
+.nav-burger{display:none;margin-left:auto;background:none;border:0;cursor:pointer;padding:8px;color:var(--ink)}
+.nav-burger span{display:block;width:22px;height:1px;background:currentColor;margin:5px 0}
 
-.hero{padding:52px 0 40px;text-align:center}
-.hero p{max-width:480px;margin:20px auto 0;font-size:16.5px}
+/* ── HERO ────────────────────────────────────────────── */
+.hero{position:relative;overflow:hidden;background:var(--cream)}
+.hero-img{position:absolute;inset:0 0 0 38%;z-index:0}
+.hero-img img{width:100%;height:100%;object-fit:cover;object-position:center}
+.hero-img::after{content:'';position:absolute;inset:0;
+  background:linear-gradient(90deg,var(--cream) 0%,rgba(249,245,240,.85) 22%,rgba(249,245,240,0) 62%)}
+.hero-in{position:relative;z-index:1;max-width:1120px;margin:0 auto;padding:92px 32px 104px}
+.hero-copy{max-width:560px}
+.hero h1{font-size:clamp(42px,5.6vw,68px);margin-top:16px;white-space:nowrap}
+.hero h1 span{display:block}
+.hero h1 em{display:block}
+.hero p{font-size:15.5px;line-height:1.85;max-width:340px}
+.hero .accent{color:var(--gold);margin-top:16px}
 
-.card{background:var(--white);border:1px solid var(--line);padding:32px 26px;margin-bottom:8px}
-label{display:block;font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
-.fields{display:grid;grid-template-columns:1fr 1.5fr 1.2fr;gap:12px}
-select,input{width:100%;padding:13px 12px;border:1px solid var(--line);background:var(--cream);font-family:'Jost',sans-serif;font-weight:300;font-size:16px;color:var(--ink);border-radius:0;-webkit-appearance:none;appearance:none}
-select:focus,input:focus{outline:2px solid var(--gold);outline-offset:-2px}
-.btn{display:block;width:100%;margin-top:20px;padding:16px;background:var(--ink);color:var(--cream);border:1px solid var(--ink);font-family:'Jost',sans-serif;font-weight:400;font-size:13px;letter-spacing:.22em;text-transform:uppercase;cursor:pointer;transition:background .25s,color .25s}
-.btn:hover{background:var(--gold);border-color:var(--gold)}
-.btn:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
-.err{color:#9A3B1F;font-size:14px;margin-top:12px;display:none}
+/* ── FORMULIER ───────────────────────────────────────── */
+.calc{background:#FBF8F3;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:56px 0 60px;text-align:center}
+.fields{display:flex;justify-content:center;gap:34px;margin:30px auto 0;max-width:640px;flex-wrap:wrap}
+.field{flex:1 1 150px;min-width:130px;text-align:left}
+.field label{display:block;font-size:10px;letter-spacing:.24em;text-transform:uppercase;color:var(--soft);margin-bottom:6px}
+.field select,.field input{width:100%;background:transparent;border:0;border-bottom:1px solid var(--gold-l);
+  font-family:var(--serif);font-size:27px;color:var(--ink);padding:4px 0 9px;border-radius:0;-webkit-appearance:none;appearance:none}
+.field select{background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none' stroke='%23A8884A' stroke-width='1.2'><path d='M1 1.5 6 6.5 11 1.5'/></svg>");background-repeat:no-repeat;background-position:right 2px center;background-size:12px 8px;padding-right:24px;cursor:pointer}
+.field select:focus,.field input:focus{outline:0;border-bottom-color:var(--gold);border-bottom-width:2px}
+.btn-dark{margin:38px auto 0;display:block;background:var(--ink);color:var(--cream);border:1px solid var(--ink);
+  padding:19px 54px;font-family:var(--sans);font-size:11.5px;letter-spacing:.26em;text-transform:uppercase;cursor:pointer;transition:background .25s}
+.btn-dark:hover{background:var(--gold);border-color:var(--gold)}
+.btn-dark:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+.note{margin-top:18px;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft)}
+.err{color:#9A3B1F;font-size:14px;margin-top:14px;display:none}
 
-.ring-wrap{text-align:center;padding:8px 0 4px}
-svg.ring{width:min(300px,80vw);height:auto;overflow:visible}
-.ring-dot{fill:var(--white);stroke:var(--line);stroke-width:1}
-.ring-num{font-family:'Jost',sans-serif;font-size:11px;fill:var(--ink2);text-anchor:middle;dominant-baseline:central}
-.ring-active{fill:var(--gold);stroke:var(--gold)}
-.ring-active-num{fill:var(--white);font-weight:400}
-.ring-path{fill:none;stroke:var(--line);stroke-width:1}
-.ring-center{font-family:'Cormorant Garamond',serif;font-size:56px;fill:var(--ink);text-anchor:middle;dominant-baseline:central}
-.ring-master{stroke:var(--gold-l);stroke-width:1;fill:none;stroke-dasharray:2 4}
-
+/* ── RESULTAAT, DONKER ───────────────────────────────── */
 #result{display:none}
-.result-head{text-align:center;padding:44px 0 10px}
-.kw{font-family:'Cormorant Garamond',serif;font-size:clamp(30px,6vw,42px);font-style:italic;color:var(--gold);margin-top:6px}
-.calc{font-size:13px;letter-spacing:.06em;color:var(--ink2);opacity:.85;margin-top:20px;font-variant-numeric:tabular-nums}
-.calc span{color:var(--gold)}
-.teaser{font-size:17.5px;line-height:1.85;margin-top:26px}
+.dark{background:var(--ink);color:var(--cream);padding:88px 0 96px;position:relative;overflow:hidden}
+.dark-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center;max-width:1000px;margin:0 auto;padding:0 32px}
+.big-wrap{position:relative;text-align:center;padding:40px 0}
+.big-rings{position:absolute;left:46%;top:50%;transform:translate(-50%,-50%);width:min(560px,120vw);height:min(560px,120vw);opacity:.9;pointer-events:none}
+.big-num{position:relative;font-family:var(--serif);font-size:clamp(118px,17vw,186px);line-height:1;color:var(--gold-l);font-weight:300;margin-bottom:14px}
+.big-label{position:relative;font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--cream);opacity:.85;margin-top:0}
+.big-kw{position:relative;font-size:11.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-top:20px;line-height:2;max-width:230px;margin-left:auto;margin-right:auto}
+.dark h3{font-family:var(--sans);font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold);margin-bottom:16px}
+.dark p{color:rgba(249,245,240,.62);font-size:14.5px;line-height:1.85}
+.cyc{margin-top:26px}
+.cyc svg{width:min(360px,86vw);height:auto}
+.cyc-node{fill:none;stroke:rgba(201,169,110,.45);stroke-width:1}
+.cyc-node.on{fill:var(--gold);stroke:var(--gold-l)}
+.cyc-t{font-family:var(--sans);font-size:11px;fill:rgba(249,245,240,.7);text-anchor:middle;dominant-baseline:central}
+.cyc-t.on{fill:var(--ink);font-weight:400}
+.cyc-c{font-family:var(--sans);font-size:9px;letter-spacing:.24em;fill:rgba(249,245,240,.55);text-anchor:middle}
+.calcline{margin-top:34px;font-size:11px;letter-spacing:.06em;color:rgba(249,245,240,.3);font-variant-numeric:tabular-nums;line-height:1.9}
+.calcline b{color:var(--gold-l);font-weight:400}
 
-.gate{background:var(--white);border:1px solid var(--line);padding:32px 26px;margin-top:36px;text-align:center}
-.gate h3{margin-bottom:12px}
-.gate p{font-size:15px;margin-bottom:22px}
-.gate .row{display:grid;gap:12px}
-.consent{font-size:12.5px;line-height:1.6;color:var(--ink2);opacity:.8;margin-top:14px}
-.consent a{color:var(--gold)}
+/* ── WEETJE + VRAAG ──────────────────────────────────── */
+.pair{max-width:1000px;margin:0 auto;padding:66px 32px 0;display:grid;grid-template-columns:1fr 1fr;gap:26px}
+.card{background:var(--white);border:1px solid var(--line);padding:28px 26px}
+.card.fact{background:#F1F2F5;border-color:rgba(57,72,92,.14);color:#39485C}
+.card.fact p{color:#39485C;font-size:14.5px}
+.card h4{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);font-weight:400;margin-bottom:12px;font-family:var(--sans)}
+.card.fact h4{color:#6A7A90}
+.card-top{display:flex;align-items:center;gap:13px;margin-bottom:14px}
+.card-top h4{margin-bottom:0}
+.geo{flex:0 0 auto;color:#39485C}
+.geo svg{width:38px;height:38px;display:block}
+.card.ask p{font-family:var(--serif);font-size:21px;line-height:1.5;font-style:italic;color:var(--ink)}
+.teaser{max-width:1000px;margin:0 auto;padding:44px 32px 0;font-size:17px;line-height:1.85}
 
-#full{display:none;padding-top:14px}
-.divider{height:1px;background:var(--line);margin:46px 0}
-.q{border-left:2px solid var(--gold-l);padding:4px 0 4px 20px;margin-bottom:16px;font-family:'Cormorant Garamond',serif;font-size:20px;font-style:italic;color:var(--ink);line-height:1.45}
-.months{display:grid;grid-template-columns:repeat(2,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:24px}
-.m{background:var(--white);padding:16px 15px}
+/* ── POORT ───────────────────────────────────────────── */
+.gate{max-width:560px;margin:56px auto 0;background:var(--white);border:1px solid var(--line);padding:38px 32px;text-align:center}
+.gate h3{font-size:25px;margin-bottom:10px}
+.gate>p{font-size:14.5px;margin-bottom:24px}
+.gate input{width:100%;padding:14px 14px;border:1px solid var(--line);background:var(--warm);font-family:var(--sans);font-weight:300;font-size:16px;color:var(--ink);margin-bottom:12px;border-radius:0}
+.gate input:focus{outline:2px solid var(--gold);outline-offset:-2px}
+.gate .btn-dark{margin-top:6px;width:100%;padding:17px}
+.consent{font-size:12px;line-height:1.7;color:var(--soft);margin-top:16px}
+
+/* ── VOLLEDIG ────────────────────────────────────────── */
+#full{display:none}
+.body-wrap{max-width:1000px;margin:0 auto;padding:0 32px}
+.sep{height:1px;background:var(--line);margin:56px 0}
+.q{border-left:2px solid var(--gold-l);padding:5px 0 5px 22px;margin-bottom:18px;font-family:var(--serif);font-size:21px;font-style:italic;line-height:1.45}
+.months{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:28px}
+.m{background:var(--white);padding:18px 17px}
 .m.now{background:#FDF9F2;box-shadow:inset 0 0 0 1px var(--gold-l)}
 .m-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.m-name{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink2)}
-.m-num{font-family:'Cormorant Garamond',serif;font-size:27px;color:var(--gold)}
-.m-txt{font-size:13.5px;line-height:1.6;color:var(--ink2);margin-top:6px}
+.m-name{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft)}
 .m.now .m-name{color:var(--gold)}
+.m-num{font-family:var(--serif);font-size:26px;color:var(--gold)}
+.m-txt{font-size:13px;line-height:1.65;color:var(--ink2);margin-top:6px}
 
-.cta{background:var(--ink);color:var(--cream);padding:46px 26px;margin-top:52px;text-align:center}
-.cta h2{color:var(--cream)}
-.cta p{color:rgba(249,245,240,.72);max-width:420px;margin:16px auto 26px;font-size:15.5px}
-.cta-prijs{margin:22px auto 0;max-width:420px;font-size:13px;line-height:1.75;color:rgba(249,245,240,.6);letter-spacing:.02em}
+/* ── BLUEPRINT ───────────────────────────────────────── */
+.bp{background:var(--warm);border-top:1px solid var(--line);margin-top:80px;padding:78px 0}
+.bp-grid{max-width:1000px;margin:0 auto;padding:0 32px;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}
+.bp h2{font-size:clamp(30px,4.4vw,44px);margin-top:14px}
+.bp h2 em{display:block}
+.bp p{font-size:15px;margin-top:20px}
+.bp-btn{display:inline-block;margin-top:28px;background:var(--gold);color:#fff;text-decoration:none;padding:16px 32px;font-size:11px;letter-spacing:.22em;text-transform:uppercase;transition:opacity .2s}
+.bp-btn:hover{opacity:.86}
+.bp-price{margin-top:18px;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--soft)}
+.bp-price::before{content:"\25C8";color:var(--gold);margin-right:9px;font-size:9px}
+.bp-card{background:var(--cream);border:1px solid var(--line);padding:46px 34px;text-align:center;position:relative}
+.bp-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),rgba(201,169,110,.25),var(--gold-l),rgba(201,169,110,.25),var(--gold))}
+.bp-card .k{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--soft)}
+.bp-card .t{font-family:var(--serif);font-size:27px;line-height:1.25;margin:14px 0 22px}
+.bp-card .m2{color:var(--gold);margin:0 auto 22px;width:64px}
+.bp-card ul{list-style:none;text-align:left;display:flex;flex-direction:column;gap:8px}
+.bp-card li{display:flex;gap:11px;font-size:13.5px;color:var(--ink2);align-items:center}
+.bp-card li::before{content:'\25C8';color:var(--gold);font-size:10px}
 
-.cta a{display:inline-block;padding:15px 34px;border:1px solid var(--gold-l);color:var(--gold-l);text-decoration:none;font-size:12px;letter-spacing:.22em;text-transform:uppercase;transition:background .25s,color .25s}
-.cta a:hover{background:var(--gold-l);color:var(--ink)}
-
-footer{padding:44px 0 54px;text-align:center;font-size:12px;letter-spacing:.05em;color:var(--ink2);opacity:.7;line-height:1.9}
-.sig{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:17px;color:var(--gold);opacity:1;margin-bottom:20px}
-
-.extras{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:34px}
-.ex{background:var(--white);padding:24px 22px}
-.ex-h{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--gold);margin-bottom:12px}
-.ex p{font-size:14.5px;line-height:1.75;margin:0}
-.ex-q p{font-family:'Cormorant Garamond',serif;font-size:20px;line-height:1.5;font-style:italic;color:var(--ink)}
-.ex-f{background:var(--slate-bg);color:var(--slate)}
-.ex-f .ex-h{color:var(--slate-soft);margin-bottom:0}
-.ex-f p{color:var(--slate)}
-.ex-top{display:flex;align-items:center;gap:13px;margin-bottom:14px}
-.geo-wrap{flex:0 0 auto;color:var(--slate);display:block}
-.geo-wrap svg{width:38px;height:38px;display:block}
-@media(max-width:600px){.extras{grid-template-columns:1fr}}
-
-
-.topbar{padding:30px 0 22px;text-align:center}
-.hero-img{position:relative;width:100%;max-width:1400px;margin:0 auto;aspect-ratio:1536/880;max-height:66vh;overflow:hidden;background:var(--cream)}
-.hero-img img{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
-.hero-img::after{content:"";position:absolute;inset:0;pointer-events:none;
-  background:linear-gradient(to bottom,rgba(249,245,240,0) 62%,rgba(249,245,240,.55) 84%,var(--cream) 100%)}
-.szinn-arc{display:block;width:min(620px,92vw);height:auto;margin:6px auto 0}
-.sz-breathe{animation:szBreath 6s ease-in-out infinite}
-@keyframes szBreath{0%,100%{opacity:1}50%{opacity:.78}}
-@media (prefers-reduced-motion:reduce){.sz-breathe{animation:none}}
-@media(max-width:640px){.hero-img{aspect-ratio:4/3;max-height:none}}
+/* ── SLOT ────────────────────────────────────────────── */
+.quote{text-align:center;padding:66px 32px 26px;max-width:660px;margin:0 auto}
+.quote{position:relative}
+.quote p{font-family:var(--serif);font-style:italic;font-size:22px;line-height:1.55;color:var(--ink);position:relative;display:inline-block;padding:0 30px}
+.quote p::before,.quote p::after{font-family:var(--serif);font-size:44px;color:var(--gold);opacity:.55;position:absolute;line-height:1}
+.quote p::before{content:"\201C";left:0;top:-6px}
+.quote p::after{content:"\201D";right:0;bottom:-22px}
+.quote span{display:block;margin-top:18px;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--soft)}
+footer{text-align:center;padding:20px 32px 56px;font-size:11.5px;letter-spacing:.04em;color:var(--soft);line-height:1.9}
 
 .reveal{animation:fade .7s ease both}
-@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes fade{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.reveal{animation:none}html{scroll-behavior:auto}}
-@media(max-width:480px){.fields{grid-template-columns:1fr 1fr;grid-template-areas:"d m" "y y"}.fields>div:nth-child(1){grid-area:d}.fields>div:nth-child(2){grid-area:m}.fields>div:nth-child(3){grid-area:y}.months{grid-template-columns:1fr}}
+
+@media(max-width:900px){
+  .nav-links{display:none}
+  .nav-links.open{display:flex;position:absolute;top:100%;left:0;right:0;background:var(--cream);flex-direction:column;gap:0;padding:12px 0;border-bottom:1px solid var(--line)}
+  .nav-links.open a{padding:12px 28px;border-bottom:0}
+  .nav-burger{display:block}
+  .hero-img{inset:auto 0 0 0;height:46%}
+  .hero-img::after{background:linear-gradient(180deg,var(--cream) 0%,rgba(249,245,240,.6) 34%,rgba(249,245,240,.15) 100%)}
+  .hero-in{padding:52px 24px 210px}
+  .hero-copy{max-width:none}
+  .dark-grid,.bp-grid{grid-template-columns:1fr;gap:44px}
+  .pair{grid-template-columns:1fr}
+  .months{grid-template-columns:repeat(2,1fr)}
+  .inner,.hero-in,.body-wrap,.dark-grid,.bp-grid,.pair,.teaser{padding-left:24px;padding-right:24px}
+}
+@media(max-width:520px){.months{grid-template-columns:1fr}.fields{gap:18px}}
 </style>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Calculate your Personal Year","url":"https://szinn.ai/en/personal-year","applicationCategory":"LifestyleApplication","operatingSystem":"Web browser","inLanguage":"en","description":"Calculate your Personal Year for free using classical numerology and see where you stand in your nine-year cycle.","offers":{"@type":"Offer","price":"0","priceCurrency":"EUR"},"publisher":{"@type":"Organization","name":"SZINN","url":"https://szinn.ai/"},"isPartOf":{"@type":"WebSite","name":"SZINN","url":"https://szinn.ai/"}}</script>
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"SZINN","item":"https://szinn.ai/en/"},{"@type":"ListItem","position":2,"name":"Calculate your Personal Year","item":"https://szinn.ai/en/personal-year"}]}</script>
 </head>
 <body>
 
-<header>
-  <div class="topbar"><a class="logo" href="https://szinn.ai/en/">SZINN</a></div>
+<nav>
+  <div class="nav-in">
+    <a class="nav-logo" href="https://szinn.ai/en/"><svg width="30" height="30" viewBox="0 0 978.0 978.0" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SZINN teken: drie spiralen om een kern."><g transform="translate(0.0 33.5)"><g transform="translate(0.000000,911.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M4690 9105 c-8 -2 -49 -9 -90 -15 -977 -160 -1504 -1271 -969 -2045
+527 -762 1739 -609 1995 252 224 754 -583 1386 -1232 965 -418 -272 -352 -900
+104 -982 279 -50 551 276 357 428 -80 63 -196 -28 -151 -119 58 -116 -180
+-158 -302 -53 -266 228 21 664 438 664 694 0 851 -966 216 -1329 -846 -483
+-1772 459 -1326 1349 552 1102 2253 826 2445 -396 99 -626 -219 -1120 -1027
+-1598 -167 -98 -153 -98 -238 -12 -128 131 -267 6 -140 -128 55 -58 108 -21
+-670 -469 -853 -492 -1451 -488 -2219 16 -246 162 -233 134 -137 285 316 496
+691 903 1099 1194 145 103 166 130 148 189 -27 90 -93 91 -221 5 -807 -548
+-1532 -1615 -1879 -2770 -114 -376 -123 -474 -50 -512 85 -43 118 -1 174 222
+99 391 284 871 479 1238 76 143 57 145 276 -29 544 -434 890 -972 1209 -1882
+136 -389 229 -577 368 -750 19 -24 32 -43 30 -43 -2 0 -44 23 -93 51 -631 363
+-1458 628 -1919 616 -1618 -45 -1874 -2350 -307 -2759 1144 -299 2024 1058
+1212 1870 -684 684 -1866 -27 -1451 -874 269 -546 1135 -433 1077 141 -25 251
+-355 414 -467 231 -61 -100 41 -198 142 -139 91 54 164 -107 105 -233 -116
+-250 -536 -199 -679 82 -329 651 602 1184 1138 650 656 -654 -62 -1771 -995
+-1546 -1049 252 -1288 1652 -375 2206 503 306 1076 222 2259 -330 1039 -485
+1781 -1536 1744 -2471 -3 -80 -3 -80 -123 -77 -616 15 -1282 184 -1833 464
+-216 109 -262 113 -292 23 -24 -72 0 -96 205 -199 1312 -663 2964 -655 4298
+21 162 82 187 107 172 174 -21 92 -85 89 -293 -15 -563 -282 -1227 -450 -1847
+-468 -100 -3 -100 -3 -99 147 3 715 367 1406 1169 2225 217 221 300 319 368
+432 34 57 34 57 40 -170 30 -1271 768 -2177 1772 -2177 1185 0 1878 1264 1229
+2241 -665 1000 -2263 608 -2268 -556 -4 -841 958 -1315 1553 -765 461 428 217
+1235 -374 1235 -344 0 -592 -318 -457 -586 84 -167 316 -226 393 -100 55 91
+-32 189 -124 141 -136 -71 -137 208 -2 294 278 176 634 -91 612 -459 -36 -606
+-887 -765 -1262 -235 -424 599 67 1399 860 1399 1260 0 1543 -1806 363 -2316
+-792 -342 -1640 125 -1958 1078 -343 1030 -72 2152 741 3068 215 242 576 541
+606 500 144 -196 444 -945 538 -1344 51 -219 74 -255 151 -236 86 22 90 68 29
+315 -296 1197 -1078 2393 -1947 2981 -129 87 -218 73 -218 -34 0 -54 7 -62
+120 -142 451 -317 870 -777 1198 -1315 24 -39 -66 -109 -342 -269 -662 -381
+-1343 -391 -1942 -29 -193 116 -685 489 -646 489 38 0 465 280 618 405 1027
+844 700 2371 -571 2666 -83 19 -461 37 -515 24z m360 -3276 c103 -84 103 -83
+50 -74 -25 4 -111 10 -192 14 -147 6 -147 6 -50 63 120 69 103 70 192 -3z
+m115 -288 c1043 -202 1678 -1306 1276 -2218 -572 -1301 -2480 -1372 -3106
+-116 -594 1194 502 2593 1830 2334z m-2513 -452 c201 -42 593 -33 763 18 13 4
+6 -9 -24 -43 -167 -189 -327 -537 -382 -829 -23 -118 -23 -118 -37 -84 -142
+327 -368 704 -567 943 -36 43 -65 79 -65 81 0 1 45 -12 99 -30 55 -18 150 -43
+213 -56z m4739 54 c-238 -287 -469 -661 -607 -985 -28 -68 -28 -68 -50 51 -58
+317 -184 578 -420 870 -23 28 -24 32 -8 28 261 -79 745 -55 1045 51 75 27 75
+27 40 -15z m-3131 -2953 c369 -120 787 -118 1169 5 138 45 135 50 40 -70 -241
+-304 -482 -733 -579 -1033 -27 -83 -27 -83 -60 5 -144 385 -376 753 -676 1071
+-87 93 -87 93 -33 71 30 -12 92 -34 139 -49z"/>
+<path d="M4635 5070 c-856 -180 -1242 -1145 -733 -1832 629 -849 2005 -523
+2173 515 128 792 -632 1487 -1440 1317z m461 -196 c630 -130 977 -811 698
+-1367 -374 -743 -1475 -738 -1830 8 -346 730 318 1528 1132 1359z"/>
+</g></g></svg><span>SZINN</span></a>
+    <button class="nav-burger" id="burger" aria-label="Menu"><span></span><span></span><span></span></button>
+    <div class="nav-links" id="navlinks">
+      <a href="https://szinn.ai/en/#verhaal">The Story</a>
+      <a href="/en/personal-year/" class="here">Personal Year</a>
+      <a href="https://szinn.ai/en/#blueprint">The Blueprint</a>
+      <a href="https://szinn.ai/portaal">Dashboard</a>
+      <a href="#gate" class="nav-cta">Join the list &nbsp;&rarr;</a>
+    </div>
+    <div class="nav-lang">
+      <a href="https://szinn.ai/persoonlijk-jaar" class="">NL</a><span>|</span><a href="https://szinn.ai/en/personal-year" class="on">EN</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
   <div class="hero-img">
     <picture>
-      <source type="image/webp" srcset="/assets/hero-mandala-900.webp 900w, /assets/hero-mandala-1200.webp 1200w, /assets/hero-mandala-1536.webp 1536w" sizes="(max-width:1400px) 100vw, 1400px">
-      <img src="/assets/hero-mandala-1200.jpg" srcset="/assets/hero-mandala-900.jpg 900w, /assets/hero-mandala-1200.jpg 1200w, /assets/hero-mandala-1536.jpg 1536w" sizes="(max-width:1400px) 100vw, 1400px" alt="The SZINN mark within the Flower of Life, above the Nile at sunrise." width="1536" height="880" fetchpriority="high" decoding="async">
+      <source type="image/webp" srcset="/assets/hero-mandala-900.webp 900w, /assets/hero-mandala-1200.webp 1200w, /assets/hero-mandala-1536.webp 1536w" sizes="70vw">
+      <img src="/assets/hero-mandala-1200.jpg" srcset="/assets/hero-mandala-900.jpg 900w, /assets/hero-mandala-1200.jpg 1200w, /assets/hero-mandala-1536.jpg 1536w" sizes="70vw" alt="The SZINN mark within the Flower of Life, above the Nile at sunrise" width="1536" height="880" fetchpriority="high">
     </picture>
   </div>
-</header>
-
-<div class="wrap">
-
-  <section class="hero">
-    <div class="tag">Free · Numerology</div>
-    <h1>Your <em>Personal Year</em></h1>
-    <p>Numerology moves in cycles of nine years. Each year carries its own energy and its own question. Enter your date of birth and see where you are right now.</p>
-  </section>
-
-  <svg class="szinn-arc" viewBox="0 0 900 214" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Nine points on an arc: the nine-year cycle."><defs><linearGradient id="szFade" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".24" stop-color="#fff" stop-opacity="1"/><stop offset=".76" stop-color="#fff" stop-opacity="1"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient><radialGradient id="szBloom" gradientUnits="userSpaceOnUse" cx="450" cy="138" r="260"><stop offset="0" stop-color="#fff" stop-opacity="1"/><stop offset=".34" stop-color="#fff" stop-opacity=".78"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><radialGradient id="szHalo" gradientUnits="userSpaceOnUse" cx="450" cy="138" r="84"><stop offset=".60" stop-color="#F9F5F0" stop-opacity="1"/><stop offset="1" stop-color="#F9F5F0" stop-opacity="0"/></radialGradient><mask id="szMask"><rect width="900" height="214" fill="url(#szFade)"/></mask><mask id="szBloomMask"><rect width="900" height="214" fill="url(#szBloom)"/></mask></defs><g mask="url(#szMask)"><path d="M 0.0 202.6 L 15.0 198.3 L 30.0 194.1 L 45.0 190.1 L 60.0 186.3 L 75.0 182.6 L 90.0 179.0 L 105.0 175.6 L 120.0 172.4 L 135.0 169.3 L 150.0 166.4 L 165.0 163.6 L 180.0 160.9 L 195.0 158.5 L 210.0 156.1 L 225.0 153.9 L 240.0 151.8 L 255.0 149.9 L 270.0 148.2 L 285.0 146.5 L 300.0 145.0 L 315.0 143.7 L 330.0 142.5 L 345.0 141.4 L 360.0 140.5 L 375.0 139.8 L 390.0 139.1 L 405.0 138.6 L 420.0 138.3 L 435.0 138.1 L 450.0 138.0 L 465.0 138.1 L 480.0 138.3 L 495.0 138.6 L 510.0 139.1 L 525.0 139.8 L 540.0 140.5 L 555.0 141.4 L 570.0 142.5 L 585.0 143.7 L 600.0 145.0 L 615.0 146.5 L 630.0 148.2 L 645.0 149.9 L 660.0 151.8 L 675.0 153.9 L 690.0 156.1 L 705.0 158.5 L 720.0 160.9 L 735.0 163.6 L 750.0 166.4 L 765.0 169.3 L 780.0 172.4 L 795.0 175.6 L 810.0 179.0 L 825.0 182.6 L 840.0 186.3 L 855.0 190.1 L 870.0 194.1 L 885.0 198.3 L 900.0 202.6" fill="none" stroke="#A8884A" stroke-width="1.2" opacity=".6"/></g><circle cx="45.0" cy="190.1" r="4.5" fill="#F9F5F0" stroke="#A8884A" stroke-width="1.2"/><circle cx="146.2" cy="167.1" r="4.5" fill="#F9F5F0" stroke="#A8884A" stroke-width="1.2"/><circle cx="247.5" cy="150.9" r="4.5" fill="#F9F5F0" stroke="#A8884A" stroke-width="1.2"/><circle cx="348.8" cy="141.2" r="4.5" fill="#F9F5F0" stroke="#A8884A" stroke-width="1.2"/><circle cx="450.0" cy="138.0" r="6.5" fill="#A8884A" stroke="#A8884A" stroke-width="1.2"/><circle cx="551.2" cy="141.2" r="4.5" fill="#F9F5F0" stroke="#A8884A" stroke-width="1.2"/><circle cx="652.5" cy="150.9" r="4.5" fill="#F9F5F0" stroke="#A8884A" stroke-width="1.2"/><circle cx="753.8" cy="167.1" r="4.5" fill="#F9F5F0" stroke="#A8884A" stroke-width="1.2"/><circle cx="855.0" cy="190.1" r="4.5" fill="#F9F5F0" stroke="#A8884A" stroke-width="1.2"/></svg>
-
-  <div class="card">
-    <div class="fields">
-      <div><label for="d">Day</label><select id="d"></select></div>
-      <div><label for="m">Month</label><select id="m"></select></div>
-      <div><label for="y">Year of birth</label><input id="y" type="number" inputmode="numeric" placeholder="1973" min="1900" max="2026"></div>
+  <div class="hero-in">
+    <div class="hero-copy">
+      <div class="tag">Free &middot; Numerology</div>
+      <h1><span>Your</span><em>Personal Year</em></h1>
+      <div class="rule"></div>
+      <p>Numerology moves in cycles of nine years. Each year carries its own energy and its own question.</p>
+      <p class="accent">Enter your date of birth and see where you are right now.</p>
     </div>
-    <button class="btn" id="calcBtn">Calculate my year</button>
+  </div>
+</section>
+
+<section class="calc" id="bereken">
+  <div class="inner">
+    <div class="tag">Where are you now in your cycle?</div>
+    <div class="fields">
+      <div class="field"><label for="d">Day</label><select id="d"></select></div>
+      <div class="field"><label for="m">Month</label><select id="m"></select></div>
+      <div class="field"><label for="y">Year of birth</label><input id="y" type="number" inputmode="numeric" placeholder="1973" min="1900" max="2026"></div>
+    </div>
+    <button class="btn-dark" id="calcBtn">Reveal my year &nbsp;&rarr;</button>
     <div class="err" id="err"></div>
+    <div class="note">100% free &middot; your date of birth is never sent</div>
+  </div>
+</section>
+
+<section id="result">
+
+  <div class="dark">
+    <div class="dark-grid">
+      <div class="big-wrap">
+        <div class="tag" style="color:var(--gold);margin-bottom:8px;position:relative;z-index:2">Your position</div>
+        <div class="big-rings" id="rings"></div>
+        <div class="big-num" id="bigNum"></div>
+        <div class="big-label" id="bigLabel"></div>
+        <div class="big-kw" id="bigKw"></div>
+      </div>
+      <div>
+        <h3>The nine-year cycle</h3>
+        <p>Numerology moves in a cycle of nine years. Each position brings its own lesson, its own gift and its own timing.</p>
+        <div class="cyc" id="cyc"></div>
+        <div class="calcline" id="calcline"></div>
+      </div>
+    </div>
   </div>
 
-  <section id="result">
+  <p class="teaser" id="teaser"></p>
 
-    <div class="result-head">
-      <div class="ring-wrap" id="ringWrap"></div>
-      <div class="tag" id="yearLabel" style="margin-top:14px"></div>
-      <div class="kw" id="kw"></div>
-      <div class="calc" id="calc"></div>
+  <div class="pair">
+    <div class="card fact">
+      <div class="card-top"><span class="geo" id="geo"></span><h4>Did you know</h4></div>
+      <p id="feit"></p>
     </div>
+    <div class="card ask"><h4>Something to sit with</h4><p id="vraag"></p></div>
+  </div>
 
-    <p class="teaser" id="teaser"></p>
+  <div class="gate" id="gate">
+    <h3>Read your full year</h3>
+    <p>You will see the full reading, three reflection questions and your twelve Personal Months right here on this page.</p>
+    <input id="naam" type="text" placeholder="Your first name" autocomplete="given-name">
+    <input id="mail" type="email" placeholder="Your email address" autocomplete="email">
+    <button class="btn-dark" id="unlockBtn">Show my full year</button>
+    <div class="err" id="err2"></div>
+    <p class="consent">You will receive your reading and an occasional note from SZINN. You can unsubscribe at any time with one click.</p>
+  </div>
 
-
-    <div class="extras">
-      <div class="ex ex-f">
-        <div class="ex-top"><span class="geo-wrap" id="geo"></span><div class="ex-h">Did you know</div></div>
-        <p id="feit"></p>
-      </div>
-      <div class="ex ex-q"><div class="ex-h">Something to sit with</div><p id="vraag"></p></div>
-    </div>
-
-    <div class="gate" id="gate">
-      <h3>Read your full year</h3>
-      <p>You will see the full reading for this year, three reflection questions and your twelve Personal Months right here on this page.</p>
-      <div class="row">
-        <input id="naam" type="text" placeholder="Your first name" autocomplete="given-name">
-        <input id="mail" type="email" placeholder="Your email address" autocomplete="email">
-        <button class="btn" id="unlockBtn" style="margin-top:0">Show my full year</button>
-      </div>
-      <div class="err" id="err2"></div>
-      <p class="consent">You will receive your reading and an occasional note from SZINN. You can unsubscribe at any time with one click.</p>
-    </div>
-
-    <div id="full">
-      <div class="divider"></div>
+  <div id="full">
+    <div class="body-wrap">
+      <div class="sep"></div>
       <div class="tag">The full reading</div>
-      <h2 id="fullTitle"></h2>
-      <div id="body" style="margin-top:20px"></div>
+      <h2 id="fullTitle" style="font-size:clamp(28px,4vw,40px);margin-top:14px"></h2>
+      <div id="body" style="margin-top:22px"></div>
 
-      <div class="divider"></div>
+      <div class="sep"></div>
       <div class="tag">Three questions for this year</div>
-      <div id="qs" style="margin-top:18px"></div>
+      <div id="qs" style="margin-top:20px"></div>
 
-      <div class="divider"></div>
+      <div class="sep"></div>
       <div class="tag">Your twelve months</div>
-      <h2>Personal Months <em id="pmYear"></em></h2>
-      <p style="margin-top:16px">Within your year, every month moves in its own rhythm. Your Personal Month is your year number added to the number of the calendar month. The month you are in now is marked.</p>
+      <h2 style="font-size:clamp(26px,3.6vw,36px);margin-top:14px">Personal Months <em id="pmYear"></em></h2>
+      <p style="margin-top:16px;max-width:620px">Within your year, every month moves in its own rhythm. Your Personal Month is your year number added to the number of the calendar month. The month you are in now is marked.</p>
       <div class="months" id="months"></div>
     </div>
+  </div>
 
-  </section>
+</section>
+
+<section class="bp">
+  <div class="bp-grid">
+    <div>
+      <div class="tag">Going further</div>
+      <h2>One layer. <em>Thirteen dimensions.</em></h2>
+      <p>Your Personal Year is one of thirteen layers within the SZINN Alignment Blueprint.</p>
+      <p>Your birth chart, your numerology and the Tikkun layer come together into one document that reveals how you work, where your strength sits and which patterns keep repeating.</p>
+      <a class="bp-btn" href="https://szinn.ai/en/#bestellen">Keep me posted &nbsp;&rarr;</a>
+      <div class="bp-price">&euro; 39.90 &middot; one-off &middot; PDF + interactive HTML</div>
+    </div>
+    <div class="bp-card">
+      <div class="m2"><svg width="64" height="64" style="display:block;margin:0 auto" viewBox="0 0 978.0 978.0" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SZINN teken: drie spiralen om een kern."><g transform="translate(0.0 33.5)"><g transform="translate(0.000000,911.000000) scale(0.100000,-0.100000)"
+fill="currentColor" stroke="none">
+<path d="M4690 9105 c-8 -2 -49 -9 -90 -15 -977 -160 -1504 -1271 -969 -2045
+527 -762 1739 -609 1995 252 224 754 -583 1386 -1232 965 -418 -272 -352 -900
+104 -982 279 -50 551 276 357 428 -80 63 -196 -28 -151 -119 58 -116 -180
+-158 -302 -53 -266 228 21 664 438 664 694 0 851 -966 216 -1329 -846 -483
+-1772 459 -1326 1349 552 1102 2253 826 2445 -396 99 -626 -219 -1120 -1027
+-1598 -167 -98 -153 -98 -238 -12 -128 131 -267 6 -140 -128 55 -58 108 -21
+-670 -469 -853 -492 -1451 -488 -2219 16 -246 162 -233 134 -137 285 316 496
+691 903 1099 1194 145 103 166 130 148 189 -27 90 -93 91 -221 5 -807 -548
+-1532 -1615 -1879 -2770 -114 -376 -123 -474 -50 -512 85 -43 118 -1 174 222
+99 391 284 871 479 1238 76 143 57 145 276 -29 544 -434 890 -972 1209 -1882
+136 -389 229 -577 368 -750 19 -24 32 -43 30 -43 -2 0 -44 23 -93 51 -631 363
+-1458 628 -1919 616 -1618 -45 -1874 -2350 -307 -2759 1144 -299 2024 1058
+1212 1870 -684 684 -1866 -27 -1451 -874 269 -546 1135 -433 1077 141 -25 251
+-355 414 -467 231 -61 -100 41 -198 142 -139 91 54 164 -107 105 -233 -116
+-250 -536 -199 -679 82 -329 651 602 1184 1138 650 656 -654 -62 -1771 -995
+-1546 -1049 252 -1288 1652 -375 2206 503 306 1076 222 2259 -330 1039 -485
+1781 -1536 1744 -2471 -3 -80 -3 -80 -123 -77 -616 15 -1282 184 -1833 464
+-216 109 -262 113 -292 23 -24 -72 0 -96 205 -199 1312 -663 2964 -655 4298
+21 162 82 187 107 172 174 -21 92 -85 89 -293 -15 -563 -282 -1227 -450 -1847
+-468 -100 -3 -100 -3 -99 147 3 715 367 1406 1169 2225 217 221 300 319 368
+432 34 57 34 57 40 -170 30 -1271 768 -2177 1772 -2177 1185 0 1878 1264 1229
+2241 -665 1000 -2263 608 -2268 -556 -4 -841 958 -1315 1553 -765 461 428 217
+1235 -374 1235 -344 0 -592 -318 -457 -586 84 -167 316 -226 393 -100 55 91
+-32 189 -124 141 -136 -71 -137 208 -2 294 278 176 634 -91 612 -459 -36 -606
+-887 -765 -1262 -235 -424 599 67 1399 860 1399 1260 0 1543 -1806 363 -2316
+-792 -342 -1640 125 -1958 1078 -343 1030 -72 2152 741 3068 215 242 576 541
+606 500 144 -196 444 -945 538 -1344 51 -219 74 -255 151 -236 86 22 90 68 29
+315 -296 1197 -1078 2393 -1947 2981 -129 87 -218 73 -218 -34 0 -54 7 -62
+120 -142 451 -317 870 -777 1198 -1315 24 -39 -66 -109 -342 -269 -662 -381
+-1343 -391 -1942 -29 -193 116 -685 489 -646 489 38 0 465 280 618 405 1027
+844 700 2371 -571 2666 -83 19 -461 37 -515 24z m360 -3276 c103 -84 103 -83
+50 -74 -25 4 -111 10 -192 14 -147 6 -147 6 -50 63 120 69 103 70 192 -3z
+m115 -288 c1043 -202 1678 -1306 1276 -2218 -572 -1301 -2480 -1372 -3106
+-116 -594 1194 502 2593 1830 2334z m-2513 -452 c201 -42 593 -33 763 18 13 4
+6 -9 -24 -43 -167 -189 -327 -537 -382 -829 -23 -118 -23 -118 -37 -84 -142
+327 -368 704 -567 943 -36 43 -65 79 -65 81 0 1 45 -12 99 -30 55 -18 150 -43
+213 -56z m4739 54 c-238 -287 -469 -661 -607 -985 -28 -68 -28 -68 -50 51 -58
+317 -184 578 -420 870 -23 28 -24 32 -8 28 261 -79 745 -55 1045 51 75 27 75
+27 40 -15z m-3131 -2953 c369 -120 787 -118 1169 5 138 45 135 50 40 -70 -241
+-304 -482 -733 -579 -1033 -27 -83 -27 -83 -60 5 -144 385 -376 753 -676 1071
+-87 93 -87 93 -33 71 30 -12 92 -34 139 -49z"/>
+<path d="M4635 5070 c-856 -180 -1242 -1145 -733 -1832 629 -849 2005 -523
+2173 515 128 792 -632 1487 -1440 1317z m461 -196 c630 -130 977 -811 698
+-1367 -374 -743 -1475 -738 -1830 8 -346 730 318 1528 1132 1359z"/>
+</g></g></svg></div>
+      <div class="k">The SZINN Alignment Blueprint</div>
+      <div class="t">Thirteen layers,<br>one complete picture</div>
+      <ul><li>Full birth chart analysis</li><li>Numerology life path report</li><li>Kabbalah Tikkun soul correction</li><li>Sacred Geometry guidance</li><li>Personal mandala</li><li>Month calendar 2026</li></ul>
+    </div>
+  </div>
+</section>
+
+<div class="quote">
+  <p>Everything you are looking for was already present in you.<br>This is your remembering.</p>
+  <span>Elly Elizabeth Korving</span>
 </div>
 
-<div class="cta">
-  <div class="tag" style="color:var(--gold-l)">Going further</div>
-  <h2>This is <em>one</em> of thirteen layers</h2>
-  <p>Your Personal Year is a single section of the SZINN Alignment Blueprint. There, your birth chart, your numerology and the Tikkun layer come together into one document that shows how you work, where your strength sits and which patterns keep repeating.</p>
-  <a href="https://szinn.ai/en/#bestellen">Keep me posted</a>
-  <p class="cta-prijs">€39.90 · one-off · PDF + interactive HTML<br>The Blueprint is not orderable just yet. Join the list and you will hear first.</p>
-</div>
-
-<div class="wrap">
-  <footer>
-    <div class="sig">Remember who you are.</div>
-    © 2026 Elly Elizabeth Korving · Alterego BV · All rights reserved · szinn.ai
-  </footer>
-</div>
+<footer>&copy; 2026 Elly Elizabeth Korving &middot; Alterego BV &middot; All rights reserved &middot; szinn.ai</footer>
 
 <script>
-/* ============================================================
-   SZINN · PERSONAL YEAR — CONFIGURATION
-   Only edit this block when connecting the mailing list.
-   ============================================================ */
 var SZINN = {
-  /* Subscription runs through a Netlify function on your own domain.
-     File: netlify/functions/subscribe.mjs
-     Netlify needs ENORMAIL_API_KEY as an environment variable.
-     The English form id still has to be filled in inside that function. */
   subscribeFn: '/.netlify/functions/subscribe',
-  /* Make fallback, only used when subscribeFn is empty. */
-  endpoint: '',
-  formId:   '',                                   // Enormail formid (EN), from Forms > Publish
-  lang:     'en',
-  source:   'tool-personal-year',
-  /* true  = master numbers 11/22/33 stay intact in the separate components
-     false = components always reduced to a single digit (default) */
+  lang: 'en',
   keepMasterInComponents: false,
-  /* false = 11/22/33 als Persoonlijk Jaar terugbrengen naar 2/4/6 */
   masterPersonalYear: true
 };
 
-/* ---------- CALCULATION (classical method) ---------- */
+/* ---------- BEREKENING (klassieke methode) ---------- */
 function reduce(n, keepMaster){
   while(n > 9){
     if(keepMaster && (n === 11 || n === 22 || n === 33)) return n;
@@ -275,7 +451,9 @@ function personalYear(day, month, year){
 }
 function personalMonth(py, monthNr){ return reduce(py + monthNr, true); }
 
-/* ---------- CONTENT ---------- */
+/* ---------- INHOUD ---------- */
+var KW3 = {"1": "Beginning · Initiative · Direction", "2": "Connection · Patience · Attunement", "3": "Expression · Creativity · Contact", "4": "Foundation · Structure · Patience", "5": "Movement · Freedom · Change", "6": "Care · Home · Responsibility", "7": "Depth · Stillness · Reflection", "8": "Authority · Power · Result", "9": "Completion · Release · Closure", "11": "Insight · Intuition · Sensitivity", "22": "Building · Vision · Execution", "33": "Service · Passing on · Guidance"};
+
 var MAANDEN = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 var JAAR = {
@@ -397,6 +575,80 @@ var VRAAG = {
 33:"What are you passing on because you learned it yourself, rather than because someone said it was right?"
 };
 
+var JAAR = {
+1:{kw:'Beginning',
+ teaser:'You are standing at the start of a new nine-year cycle. What you set in motion this year carries the years that follow. It asks for initiative, and for the willingness to move before the road is visible.',
+ body:['A 1 year rarely feels comfortable, because nothing is finished yet. You are sowing, not harvesting. Everything the previous year released now makes room, and that room asks for something that is truly yours. This is the year to choose what you want, rather than what is expected of you.',
+       'What to watch for is impatience, and the tendency to do everything alone. A 1 year puts you in the leading role, but leadership without support becomes loneliness. Ask for help before you get stuck, and measure your progress by direction rather than result.'],
+ qs:['What am I beginning this year, even if nobody asks me to?','Where am I waiting for permission I could give myself?','Which habit belongs to who I was, not to who I am becoming?']},
+
+2:{kw:'Connection',
+ teaser:'This is a year of patience and attunement. Where last year asked for action, this year asks for cooperation. What you sowed now needs to root, and most of that happens underground.',
+ body:['In a 2 year things move more slowly than you would like. That is not stagnation but ripening. Relationships move to the foreground: collaborations, partnerships, the people around you. You learn more this year by listening than by pushing, and what you treat with attention grows faster than what you force.',
+       'What to watch for is disappearing into other people. Attunement does not mean you hand in your side of the story. The question is not whether you can move along, because you can. The question is whether the movement matches what you need.'],
+ qs:['Where am I pushing when waiting would give me more?','Who do I need, and have I actually asked them?','Where do I say yes while my body says no?']},
+
+3:{kw:'Expression',
+ teaser:'This year wants to move outward. What has been growing quietly over the past two years now asks to be spoken. It is a year of visibility, creativity and contact.',
+ body:['A 3 year brings lightness back. There is room to play, to make, to write, to speak and to share. People find you more easily, and opportunities come from conversations more often than from plans. This is the year to show what you are working on, even when it is not finished.',
+       'What to watch for is scattering. Three is the energy that finds everything interesting at once. Choose one or two things you actually complete, and let the rest go. Lightness is a strength as long as there is depth somewhere to hold it.'],
+ qs:['What do I want to say that I have not said out loud?','Where do I keep myself small out of fear of the response?','What do I make purely because it makes me happy?']},
+
+4:{kw:'Foundation',
+ teaser:'This is a year of building. It is not the most exciting year in the cycle, but it is one of the most important. What you put down carefully this year will carry for years.',
+ body:['A 4 year asks for structure, discipline and patience. Admin, health, home, work and money all want to be in order. The work sometimes feels heavy and slow, and that is part of it. You are laying brick, and brickwork cannot be rushed without cracks.',
+       'What to watch for is rigidity and overwork. Four can become so focused on the task that the life around it disappears. Build rest into the structure itself, rather than treating it as a reward afterwards.'],
+ qs:['Which foundation is missing, so that I keep starting over?','What costs me energy because it is not sorted out?','Where am I mistaking hard work for progress?']},
+
+5:{kw:'Movement',
+ teaser:'This year brings change. After last year of building, movement arrives, along with space and unexpected direction. Holding on works less well this year than moving with it.',
+ body:['A 5 year opens doors you did not plan for. Travel, new people, a different working rhythm or a move all belong to this energy. There is more freedom available than you are used to, and that can feel exciting and uncomfortable at the same time. Say yes more often this year to what makes you curious.',
+       'What to watch for is restlessness. Five can jump from stimulus to stimulus and finish nothing. Choose deliberately what you take with you into the change, so that freedom does not turn into distraction.'],
+ qs:['Where am I holding on to something that finished long ago?','Which change am I postponing while knowing it is coming?','What would I do if I had more room than I think I have?']},
+
+6:{kw:'Care',
+ teaser:'This year turns towards home, relationships and responsibility. It brings warmth and obligation at the same time. What you love will ask something of you this year.',
+ body:['A 6 year points inward, towards family, the house, the people who are close. Decisions may come up about living together, caring for others, or reshaping your daily life. Beauty and harmony matter more than usual this year, and they are not a luxury but nourishment.',
+       'What to watch for is carrying too much. Six says yes before the question is finished. Caring for others only works when you count yourself inside the circle, not when you stand around the edge of it.'],
+ qs:['Who am I caring for without being asked?','What does my home or my daily life need?','Where am I mistaking responsibility for control?']},
+
+7:{kw:'Depth',
+ teaser:'This is a year of turning inward. Less is asked of you outwardly and more of you inwardly. It is the quietest year of the cycle, and often the most clarifying.',
+ body:['A 7 year takes the pace out. You need more time alone than usual, and that is not withdrawal but processing. Study, silence, nature and anything that lets your thoughts settle work strongly this year. Answers do not come from searching harder but from staying still longer.',
+       'What to watch for is isolation and overthinking. Seven can withdraw so far that contact falls away. Keep one or two people close who tell you the truth, even when you would rather be unreachable.'],
+ qs:['Where do I need silence rather than an answer?','What do I already know but do not want to know yet?','When did I last feel genuinely calm, and what was different then?']},
+
+8:{kw:'Authority',
+ teaser:'This year is about power, result and the material world. What you have built over the past years now becomes visible on the outside. It asks you to take charge.',
+ body:['An 8 year brings money, work, standing and decision-making to the foreground. Larger choices may arrive: negotiating, investing, setting up something that needs you at the helm. This is not the year to keep yourself small. If you ask for what you are worth, the chance of being heard is higher this year than usual.',
+       'What to watch for is hardness, including towards yourself. Eight likes to measure in numbers. Make sure you define success in a way that cannot only be read off a bank balance, or the year will deliver a great deal and still feel empty.'],
+ qs:['Where am I valuing myself too low?','Which decision am I postponing because it feels big?','What do I want this year to produce, in numbers and in feeling?']},
+
+9:{kw:'Completion',
+ teaser:'This is the final year of the cycle. It is about finishing, clearing and letting go. Whatever is not coming with you into the next nine years surfaces this year so you can say goodbye to it.',
+ body:['A 9 year is a year of completion. Relationships, work, habits and beliefs that have had their time become clearly visible. That can feel wistful, but it is clearing the ground for the beginning that follows. New things started in a 9 year often have a short breath, while finishing things creates a remarkable amount of space.',
+       'What to watch for is holding on out of loyalty. Nine has a large heart and a long reach. Letting go this year is not failure but respect for what it has been.'],
+ qs:['What is finished that I am still holding?','What am I saying goodbye to, and have I actually said it out loud?','What do I definitely not want to carry into the next nine years?']},
+
+11:{kw:'Insight',
+ teaser:'Eleven is a master number and is not reduced. This year is about sensitivity, intuition and insight. You pick up more than usual, and that is useful as long as you take it seriously.',
+ body:['An 11 year carries the energy of the 2, connection and attunement, but at a higher tension. You notice atmosphere, undertone and timing more sharply. Insights can arrive that set your direction for years, often at moments when you were not looking for them. Write down what you notice, because it moves faster than you can place it.',
+       'What to watch for is overstimulation and self-doubt. Eleven feels a great deal and then thinks its way past it. Look after rest, rhythm and grounding, because this number only works well from a body that is in order.'],
+ qs:['What do I know without being able to explain it?','Where do I talk myself out of my own perception?','What does my system need in order to carry this year?']},
+
+22:{kw:'Building',
+ teaser:'Twenty-two is a master number and is not reduced. This year carries the energy of the builder on a large scale. More is possible than usual, and that asks for structure.',
+ body:['A 22 year combines vision with execution. What you set up this year can become a foundation that reaches beyond you: a company, a method, a place, something that stands even when you step away for a while. The energy is large and concrete at the same time, and it works best when you think in steps rather than leaps.',
+       'What to watch for is overload. Twenty-two wants to realise everything at once and forgets the human scale. Share the work, guard your limits and build more slowly than the ambition suggests, because that is what makes it hold.'],
+ qs:['What do I want to build that is larger than this year?','What help do I need, and have I already organised it?','Where am I running ahead of the work without a foundation under it?']},
+
+33:{kw:'Service',
+ teaser:'Thirty-three is a master number and is not reduced. This year carries the energy of giving, guiding and holding. It is a rare year and it asks a great deal.',
+ body:['A 33 year places you in a role where others come to you. Teaching, guiding, caring or leading in a way that goes beyond a task. What you pass on this year can last longer than you expect, and it works most strongly when it comes from experience rather than theory.',
+       'What to watch for is walking past yourself. Thirty-three gives until there is nothing left. Without a limit of your own, service becomes exhaustion, and then it helps no one. Fill your own cup first, which is not selfishness but a condition.'],
+ qs:['What am I passing on, and to whom?','Where am I giving more than I have?','What do I need myself in order to carry this?']}
+};
+
 var PM = {
 1:'A new beginning. Set something in motion, however small.',
 2:'Attune and cooperate. Patience works better than pressure.',
@@ -412,58 +664,73 @@ var PM = {
 33:'Give and guide, without losing yourself.'
 };
 
-/* ---------- CYCLE RING ---------- */
-function buildRing(py){
-  var root = (py===11||py===22||py===33) ? reduce(py,false) : py;
-  var cx=150, cy=150, r=110, s='';
-  s += '<circle class="ring-path" cx="150" cy="150" r="110"/>';
-  for(var i=1;i<=9;i++){
-    var ang = (i-1)/9 * Math.PI*2 - Math.PI/2;
-    var x = cx + r*Math.cos(ang), y = cy + r*Math.sin(ang);
-    var on = (i===root);
-    s += '<circle class="ring-dot'+(on?' ring-active':'')+'" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+(on?17:13)+'"/>';
-    if(on && py!==root) s += '<circle class="ring-master" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="24"/>';
-    s += '<text class="ring-num'+(on?' ring-active-num':'')+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'">'+i+'</text>';
+
+/* ---------- TEKENINGEN ---------- */
+function buildRings(){
+  var s = '<svg viewBox="0 0 340 340" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" fill="none">';
+  [168,140,112,84].forEach(function(r,i){
+    s += '<circle cx="170" cy="170" r="'+r+'" stroke="rgba(201,169,110,'+(0.30-i*0.05)+')" stroke-width="1"'+(i===1?' stroke-dasharray="2 6"':'')+'/>';
+  });
+  for(var i=0;i<8;i++){
+    var a = i/8*Math.PI*2 - Math.PI/2;
+    s += '<circle cx="'+(170+168*Math.cos(a)).toFixed(1)+'" cy="'+(170+168*Math.sin(a)).toFixed(1)+'" r="2.5" fill="rgba(201,169,110,.5)"/>';
   }
-  s += '<text class="ring-center" x="150" y="152" style="font-size:'+(py>9?46:56)+'px">'+py+'</text>';
-  return '<svg class="ring" viewBox="0 0 300 300" role="img" aria-label="You are at position '+root+' of the nine-year cycle. Personal Year '+py+'."><g>'+s+'</g></svg>';
+  return s + '</svg>';
+}
+function buildCycle(py, hereLabel){
+  var root = (py===11||py===22||py===33) ? reduce(py,false) : py;
+  var cx=150, cy=150, r=104, s='';
+  s += '<circle class="cyc-node" cx="150" cy="150" r="104"/>';
+  for(var i=1;i<=9;i++){
+    var a = (i-1)/9*Math.PI*2 - Math.PI/2;
+    var x = cx + r*Math.cos(a), y = cy + r*Math.sin(a);
+    var on = (i===root);
+    s += '<circle class="cyc-node'+(on?' on':'')+'" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+(on?17:14)+'"'+(on?'':' fill="#0D0A07"')+'/>';
+    if(on && py!==root) s += '<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="24" fill="none" stroke="rgba(201,169,110,.55)" stroke-width="1" stroke-dasharray="2 4"/>';
+    s += '<text class="cyc-t'+(on?' on':'')+'" x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'">'+i+'</text>';
+  }
+  s += '<text class="cyc-c" x="150" y="144">'+hereLabel.toUpperCase()+'</text>';
+  s += '<line x1="132" y1="160" x2="168" y2="160" stroke="rgba(201,169,110,.5)" stroke-width="1"/>';
+  return '<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="'+hereLabel+' '+py+'"><g>'+s+'</g></svg>';
 }
 
 /* ---------- INIT ---------- */
+var T = {"py": "Personal Year", "here": "You are here", "mo": "month", "da": "day", "ye": "year", "now": "now", "your": ", your ", "your2": "Your ", "yr": " year", "wait": "One moment...", "e1": "Please enter your full date of birth.", "e2": "That date does not exist. Check the day and month.", "e3": "Please enter your first name.", "e4": "Please enter a valid email address."};
+
 var dSel=document.getElementById('d'), mSel=document.getElementById('m');
 dSel.innerHTML='<option value="">--</option>';
 for(var i=1;i<=31;i++) dSel.innerHTML += '<option value="'+i+'">'+i+'</option>';
 mSel.innerHTML='<option value="">--</option>';
-for(var j=0;j<12;j++) mSel.innerHTML += '<option value="'+(j+1)+'">'+MAANDEN[j]+'</option>';
+for(var j=0;j<12;j++) mSel.innerHTML += '<option value="'+(j+1)+'">'+(j+1)+'</option>';
 
-var NOW = new Date();
-var CURRENT_YEAR = NOW.getFullYear();
-var CURRENT_MONTH = NOW.getMonth()+1;
-var state = null;
+var NOW=new Date(), CURRENT_YEAR=NOW.getFullYear(), CURRENT_MONTH=NOW.getMonth()+1, state=null;
+
+document.getElementById('burger').addEventListener('click', function(){
+  document.getElementById('navlinks').classList.toggle('open');
+});
 
 document.getElementById('calcBtn').addEventListener('click', function(){
   var err=document.getElementById('err');
   var d=Number(dSel.value), m=Number(mSel.value), y=Number(document.getElementById('y').value);
   err.style.display='none';
-  if(!d || !m || !y || y<1900 || y>CURRENT_YEAR){
-    err.textContent='Please enter your full date of birth.'; err.style.display='block'; return;
-  }
-  if(d > new Date(y, m, 0).getDate()){
-    err.textContent='That date does not exist. Check the day and month.'; err.style.display='block'; return;
-  }
+  if(!d || !m || !y || y<1900 || y>CURRENT_YEAR){ err.textContent=T.e1; err.style.display='block'; return; }
+  if(d > new Date(y, m, 0).getDate()){ err.textContent=T.e2; err.style.display='block'; return; }
+
   var r = personalYear(d, m, CURRENT_YEAR);
   state = {d:d, m:m, y:y, py:r.py};
 
-  document.getElementById('ringWrap').innerHTML = buildRing(r.py);
-  document.getElementById('yearLabel').textContent = 'Personal Year ' + CURRENT_YEAR;
-  document.getElementById('kw').textContent = r.py + ' · ' + JAAR[r.py].kw;
-  document.getElementById('calc').innerHTML =
-    'month ' + m + ' &rarr; <span>' + r.m + '</span> &nbsp;+&nbsp; day ' + d + ' &rarr; <span>' + r.d + '</span> &nbsp;+&nbsp; year ' + CURRENT_YEAR + ' &rarr; <span>' + r.y + '</span>'
-    + '<br>' + r.m + ' + ' + r.d + ' + ' + r.y + ' = ' + r.total + (r.total!==r.py ? ' &rarr; <span>' + r.py + '</span>' : '');
-  document.getElementById('teaser').textContent = JAAR[r.py].teaser;
+  document.getElementById('rings').innerHTML = buildRings();
+  document.getElementById('bigNum').textContent = r.py;
+  document.getElementById('bigLabel').textContent = T.py + ' ' + CURRENT_YEAR;
+  document.getElementById('bigKw').textContent = KW3[r.py].toUpperCase();
+  document.getElementById('cyc').innerHTML = buildCycle(r.py, T.here);
+  document.getElementById('calcline').innerHTML =
+    T.mo+' '+m+' &rarr; <b>'+r.m+'</b> &nbsp;+&nbsp; '+T.da+' '+d+' &rarr; <b>'+r.d+'</b> &nbsp;+&nbsp; '+T.ye+' '+CURRENT_YEAR+' &rarr; <b>'+r.y+'</b>'
+    + '<br>'+r.m+' + '+r.d+' + '+r.y+' = '+r.total+(r.total!==r.py ? ' &rarr; <b>'+r.py+'</b>' : '');
   document.getElementById('geo').innerHTML = GEO[r.py];
   document.getElementById('feit').textContent = FEIT[r.py];
   document.getElementById('vraag').textContent = VRAAG[r.py];
+  document.getElementById('teaser').textContent = JAAR[r.py].teaser;
 
   var res=document.getElementById('result');
   res.style.display='block'; res.classList.add('reveal');
@@ -475,50 +742,23 @@ document.getElementById('unlockBtn').addEventListener('click', function(){
   var naam=document.getElementById('naam').value.trim();
   var mail=document.getElementById('mail').value.trim();
   e2.style.display='none';
-  if(!naam){
-    e2.textContent='Please enter your first name.'; e2.style.display='block'; return;
-  }
-  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)){
-    e2.textContent='Please enter a valid email address.'; e2.style.display='block'; return;
-  }
-  var btn=this; btn.disabled=true; btn.textContent='One moment...';
+  if(!naam){ e2.textContent=T.e3; e2.style.display='block'; return; }
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)){ e2.textContent=T.e4; e2.style.display='block'; return; }
+  var btn=this; btn.disabled=true; btn.textContent=T.wait;
 
   try{
-    if(SZINN.subscribeFn){
-      /* De inschrijving gaat via een Netlify-functie op je eigen domein.
-         Die praat vanaf de server met Enormail, zodat de browser er niet
-         tussen zit en we ook echt kunnen zien of het gelukt is. */
-      fetch(SZINN.subscribeFn, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({
-          naam: naam, email: mail, lang: SZINN.lang,
-          dag: state.d, maand: state.m, jaar: state.y
-        })
-      })
-      .then(function(r){ return r.json(); })
-      .then(function(r){
-        if(r && r.ok){ console.log('SZINN: inschrijving verstuurd'); }
-        else { console.error('SZINN: inschrijving mislukt', r); }
-      })
-      .catch(function(e){ console.error('SZINN: inschrijving mislukt', e); });
-    } else if(SZINN.endpoint){
-      /* route B: via Make, met geboortedatum en Persoonlijk Jaar erbij */
-      fetch(SZINN.endpoint,{
-        method:'POST', mode:'no-cors', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({
-          source: SZINN.source, lang: SZINN.lang, form_id: SZINN.formId,
-          naam: naam, email: mail,
-          geboortedatum: state.d + '-' + state.m + '-' + state.y,
-          personal_year: state.py, jaar: CURRENT_YEAR
-        })
-      }).catch(function(){});
-    }
+    fetch(SZINN.subscribeFn,{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({naam:naam, email:mail, lang:SZINN.lang, dag:state.d, maand:state.m, jaar:state.y})
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(r){ if(r&&r.ok) console.log('SZINN: inschrijving verstuurd'); else console.error('SZINN: inschrijving mislukt', r); })
+    .catch(function(e){ console.error('SZINN: inschrijving mislukt', e); });
   }catch(e){}
 
   var py=state.py, C=JAAR[py];
-  document.getElementById('fullTitle').innerHTML = (naam ? naam + ', your ' : 'Your ') + '<em>' + py + ' year</em>';
-  document.getElementById('body').innerHTML = C.body.map(function(p){return '<p>'+p+'</p>';}).join('');
+  document.getElementById('fullTitle').innerHTML = (naam ? naam + T.your : T.your2) + '<em>' + py + T.yr + '</em>';
+  document.getElementById('body').innerHTML = C.body.map(function(p){return '<p style="margin-bottom:18px">'+p+'</p>';}).join('');
   document.getElementById('qs').innerHTML = C.qs.map(function(q){return '<div class="q">'+q+'</div>';}).join('');
   document.getElementById('pmYear').textContent = CURRENT_YEAR;
 
@@ -526,7 +766,7 @@ document.getElementById('unlockBtn').addEventListener('click', function(){
   for(var k=1;k<=12;k++){
     var v=personalMonth(py,k);
     html += '<div class="m'+(k===CURRENT_MONTH?' now':'')+'">'
-         +  '<div class="m-top"><div class="m-name">'+MAANDEN[k-1]+(k===CURRENT_MONTH?' · now':'')+'</div><div class="m-num">'+v+'</div></div>'
+         +  '<div class="m-top"><div class="m-name">'+MAANDEN[k-1]+(k===CURRENT_MONTH?' &middot; '+T.now:'')+'</div><div class="m-num">'+v+'</div></div>'
          +  '<div class="m-txt">'+PM[v]+'</div></div>';
   }
   document.getElementById('months').innerHTML=html;
