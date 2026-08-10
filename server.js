@@ -1110,7 +1110,9 @@ async function intakeAccess(req, { sessionId, code } = {}) {
     if (db.prepare('SELECT sid FROM used_checkout_sessions WHERE sid = ?').get(sessionId)) return { ok: false };
     try {
       const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(sessionId)}`);
-      if (s.payment_status === 'paid') return { ok: true, sid: sessionId, fresh: true };
+      // 100%-kortingscode → Stripe zet no_payment_required i.p.v. paid; ook geldig.
+      if (s.status === 'complete' && (s.payment_status === 'paid' || s.payment_status === 'no_payment_required'))
+        return { ok: true, sid: sessionId, fresh: true };
     } catch (e) { console.error('checkout-sessie verifiëren mislukt:', e.message); }
   }
   if (code) {

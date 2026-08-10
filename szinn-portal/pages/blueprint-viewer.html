@@ -356,8 +356,10 @@
       // seconden, en de eerste aanroep start pas de achtergrondjob.
       for (let poging = 0; poging < 38; poging++) {
         const resp = await fetch(`/api/orders/${orderId}/pdf?lang=${lang}`, { credentials: 'same-origin' });
-        if (resp.ok) return resp;
+        // Let op: 202 ("nog bezig") valt óók onder resp.ok — eerst afvangen,
+        // anders belandt de status-JSON als .pdf-bestand op de schijf.
         if (resp.status !== 202) {
+          if (resp.ok) return resp;
           let msg = T.pdfFail;
           try { msg = (await resp.json()).error || msg; } catch (e) {}
           throw new Error(msg);

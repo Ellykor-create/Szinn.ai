@@ -764,7 +764,9 @@ async function intakeAccess(req, db, { sessionId, code } = {}) {
     if ((db.usedCheckoutSessions || []).includes(sessionId)) return { ok: false };
     try {
       const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(sessionId)}`);
-      if (s.payment_status === 'paid') return { ok: true, sid: sessionId, fresh: true };
+      // 100%-kortingscode → Stripe zet no_payment_required i.p.v. paid; ook geldig.
+      if (s.status === 'complete' && (s.payment_status === 'paid' || s.payment_status === 'no_payment_required'))
+        return { ok: true, sid: sessionId, fresh: true };
     } catch (e) { console.error('checkout-sessie verifiëren mislukt:', e.message); }
   }
   if (code) {
@@ -1542,7 +1544,9 @@ app.use((err, req, res, next) => {
 // Klassieke Lambda-handlers krijgen de Netlify Blobs-configuratie niet
 // automatisch; connectLambda(event) leest die uit de request en zet hem klaar.
 const { connectLambda } = require('@netlify/blobs');
-const serverlessHandler = serverless(app);
+// Zonder `binary` geeft serverless-http de response als UTF-8-tekst terug; een
+// PDF komt er dan onherstelbaar verminkt uit (alle streams onuitpakbaar).
+const serverlessHandler = serverless(app, { binary: ['application/pdf'] });
 module.exports.handler = async (event, context) => {
   try { connectLambda(event); } catch (e) { console.error('connectLambda:', e.message); }
   return serverlessHandler(event, context);
