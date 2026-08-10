@@ -206,9 +206,10 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
    Elke hoofdsectie begint bovenaan een eigen pagina; vh-paddings worden
    vervangen door vaste mm-marges en kaarten breken niet doormidden. */
 @media print{
-  nav,.copy-btn,.orn{display:none!important}
-  /* Mocht de nav in print ooit weer aangezet worden: nooit het burgermenu,
-     altijd de volledige navigatie (het mobiele inklappen geldt alleen op scherm). */
+  .copy-btn,.orn{display:none!important}
+  /* In print nooit het burgermenu, altijd de volledige navigatie: in de PDF
+     staan alle secties uitgeschreven (inklappen geldt alleen op scherm). */
+  nav{position:static!important;break-inside:avoid;page-break-inside:avoid}
   .nav-burger,.nav-toggle{display:none!important}
   .nav-links{display:grid!important}
   html,body{background:var(--cream)}

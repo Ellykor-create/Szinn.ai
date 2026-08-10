@@ -307,23 +307,29 @@ app.use(session({
   saveUninitialized: false,
   cookie: { maxAge: 7*86400000 }
 }));
-// Serve blueprints: filesystem first (local), then DB column (production)
+// Serve blueprints: filesystem first (local), then DB column (production).
+// upgradeNav() zet het burgermenu in oudere blueprints die nog zonder zijn
+// gerenderd, zodat de navigatie ook op mobiel binnen beeld blijft.
 app.get('/szinn-portal/blueprints/:filename', (req, res, next) => {
   const filename = req.params.filename;
+  const { upgradeNav } = require('./lib/blueprint-nav');
   // Try filesystem (local dev or DATA_DIR)
   for (const dir of [
     path.join(ROOT, 'szinn-portal', 'blueprints'),
     path.join(DATA_DIR, 'blueprints')
   ]) {
     const fp = path.join(dir, filename);
-    if (fs.existsSync(fp)) return res.sendFile(fp);
+    if (fs.existsSync(fp)) {
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      return res.send(upgradeNav(fs.readFileSync(fp, 'utf8')));
+    }
   }
   // Fallback to DB (Railway production without persistent volume)
   const orderId = filename.replace(/\.html$/, '');
   const row = db.prepare('SELECT blueprint_html FROM orders WHERE id = ?').get(orderId);
   if (row?.blueprint_html) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.send(row.blueprint_html);
+    return res.send(upgradeNav(row.blueprint_html));
   }
   next();
 });
@@ -470,15 +476,16 @@ app.get('/api/orders/:id/pdf', async (req, res) => {
   if (!html) return res.status(404).json({ error: 'Blueprint nog niet beschikbaar' });
 
   try {
+    const { upgradeNav } = require('./lib/blueprint-nav');
     const { generatePDF } = require('./lib/pdf');
-    const pdf = await generatePDF(html);
+    const pdf = await generatePDF(upgradeNav(html));
     const name = (row.client_name || 'SZINN').replace(/[^\w\-]+/g, '-');
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `attachment; filename="SZINN-Blueprint-${name}.pdf"`);
     res.send(pdf);
   } catch (err) {
     console.error('PDF-generatie mislukt:', err.message);
-    res.status(500).json({ error: 'PDF kon niet worden gegenereerd. Is er een Chrome/Chromium beschikbaar? Zet eventueel CHROME_PATH.' });
+    res.status(500).json({ error: `De PDF kon niet worden gemaakt: ${err.message}` });
   }
 });
 
