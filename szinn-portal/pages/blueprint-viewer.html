@@ -177,6 +177,9 @@
   <script src="/szinn-portal/js/nav.js"></script>
   <!-- Op de blueprint-pagina dockt de Companion naast de blueprint i.p.v. als overlay. -->
   <script>window.SZINN_COMPANION_DOCK = true;</script>
+  <!-- Taalkeuze vóór de companion-drawer (zelfde volgorde als dashboard.html):
+       de drawer leest de taal één keer bij het laden, dus daarna zetten is te laat. -->
+  <script>window.SZINN_LANG = (localStorage.getItem('szinn_lang') === 'en') ? 'en' : 'nl';</script>
   <script src="/szinn-portal/js/companion-drawer.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
