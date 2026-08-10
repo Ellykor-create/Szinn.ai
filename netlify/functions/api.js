@@ -1240,6 +1240,13 @@ app.get('/api/orders/:id/pdf', async (req, res) => {
   const store = blueprintStore();
   const name  = (order.client_name || order.id).replace(/[^\w\-]+/g, '-');
 
+  // ?refresh=1 gooit een verouderde PDF weg (bijv. na een nieuwe render van de
+  // blueprint) zodat de achtergrondjob hem opnieuw maakt.
+  if (req.query.refresh) {
+    await store.delete(`${order.id}.${lang}.pdf`).catch(() => {});
+    await store.delete(`${order.id}.${lang}.pdf.job`).catch(() => {});
+  }
+
   // 1) Klaargezette PDF (pipeline of een eerdere achtergrondjob)
   const pregen = await store.get(`${order.id}.${lang}.pdf`, { type: 'arrayBuffer' });
   if (pregen) {
