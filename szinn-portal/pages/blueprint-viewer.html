@@ -177,6 +177,9 @@
   <script src="/szinn-portal/js/nav.js"></script>
   <!-- Op de blueprint-pagina dockt de Companion naast de blueprint i.p.v. als overlay. -->
   <script>window.SZINN_COMPANION_DOCK = true;</script>
+  <!-- Taalkeuze vóór de companion-drawer (zelfde volgorde als dashboard.html):
+       de drawer leest de taal één keer bij het laden, dus daarna zetten is te laat. -->
+  <script>window.SZINN_LANG = (localStorage.getItem('szinn_lang') === 'en') ? 'en' : 'nl';</script>
   <script src="/szinn-portal/js/companion-drawer.js"></script>
   <script>
     const params = new URLSearchParams(window.location.search);
@@ -198,6 +201,7 @@
       errP: 'This Blueprint is not available yet, or the address is incorrect.',
       errBtn: 'Back to dashboard',
       pdfFail: 'The PDF could not be created.',
+      pdfSlow: 'The PDF is taking longer than usual. Try again in a minute.',
     } : {
       back: '← Terug naar dashboard',
       loadingName: 'Laden…',
@@ -209,6 +213,7 @@
       errP: 'Deze Blueprint is nog niet beschikbaar of het adres is onjuist.',
       errBtn: 'Terug naar dashboard',
       pdfFail: 'De PDF kon niet worden gemaakt.',
+      pdfSlow: 'De PDF duurt langer dan normaal. Probeer het over een minuut nog eens.',
     };
 
     if (LANG === 'en') {
@@ -342,7 +347,28 @@
     }
 
     // Downloadt de PDF direct als bestand — met alle kleuren en afbeeldingen.
-    // De server rendert de blueprint-HTML naar een print-PDF (printBackground).
+    // Staat hij nog niet klaar, dan rendert de server hem in de achtergrond
+    // (HTTP 202) en wachten we hier tot hij er is.
+    const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+    async function fetchPDF() {
+      // ± 2,5 minuut geduld: een volledige blueprint renderen duurt tientallen
+      // seconden, en de eerste aanroep start pas de achtergrondjob.
+      for (let poging = 0; poging < 38; poging++) {
+        const resp = await fetch(`/api/orders/${orderId}/pdf?lang=${lang}`, { credentials: 'same-origin' });
+        // Let op: 202 ("nog bezig") valt óók onder resp.ok — eerst afvangen,
+        // anders belandt de status-JSON als .pdf-bestand op de schijf.
+        if (resp.status !== 202) {
+          if (resp.ok) return resp;
+          let msg = T.pdfFail;
+          try { msg = (await resp.json()).error || msg; } catch (e) {}
+          throw new Error(msg);
+        }
+        await sleep(4000);
+      }
+      throw new Error(T.pdfSlow);
+    }
+
     async function downloadPDF() {
       const btn = document.getElementById('pdfBtn');
       const label = btn.innerHTML;
@@ -350,12 +376,7 @@
       btn.innerHTML = `<span class="icon-download"></span>${T.pdfMaking}`;
       document.getElementById('pdfErr').classList.remove('show');
       try {
-        const resp = await fetch(`/api/orders/${orderId}/pdf?lang=${lang}`, { credentials: 'same-origin' });
-        if (!resp.ok) {
-          let msg = T.pdfFail;
-          try { msg = (await resp.json()).error || msg; } catch (e) {}
-          throw new Error(msg);
-        }
+        const resp = await fetchPDF();
         const blob = await resp.blob();
         const url = URL.createObjectURL(blob);
         const name = ((currentOrder && currentOrder.clientName) || 'blueprint').replace(/[^\w\-]+/g, '-');

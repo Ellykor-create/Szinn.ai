@@ -10,6 +10,7 @@ const jwt        = require('jsonwebtoken');
 const cookieLib  = require('cookie');
 const crypto     = require('crypto');
 const { blueprintStore, loadDB, saveDB } = require('../../lib/db');
+const { upgradeNav } = require('../../lib/blueprint-nav');
 const { sendAccountEmail, sendDraftEmail, sendNewOrderEmail, sendGiftEmail, sendGiftConfirmationEmail, sendPasswordResetEmail } = require('../../lib/email');
 
 const app = express();
@@ -763,7 +764,9 @@ async function intakeAccess(req, db, { sessionId, code } = {}) {
     if ((db.usedCheckoutSessions || []).includes(sessionId)) return { ok: false };
     try {
       const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(sessionId)}`);
-      if (s.payment_status === 'paid') return { ok: true, sid: sessionId, fresh: true };
+      // 100%-kortingscode → Stripe zet no_payment_required i.p.v. paid; ook geldig.
+      if (s.status === 'complete' && (s.payment_status === 'paid' || s.payment_status === 'no_payment_required'))
+        return { ok: true, sid: sessionId, fresh: true };
     } catch (e) { console.error('checkout-sessie verifiëren mislukt:', e.message); }
   }
   if (code) {
@@ -1209,15 +1212,29 @@ app.get('/szinn-portal/blueprints/:filename', async (req, res) => {
             || (await store.get(orderId));
   if (html) {
     res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    return res.send(html);
+    // Oudere blueprints zijn gerenderd vóór het burgermenu bestond; upgradeNav
+    // zet het er alsnog in zodat de navigatie op mobiel niet buiten beeld loopt.
+    return res.send(upgradeNav(html));
   }
   res.status(404).send('<h1>Blueprint niet gevonden</h1>');
 });
 
-// PDF-download van de blueprint. Snelle route: de tijdens de pipeline vooraf
-// gegenereerde PDF. Ontbreekt die (oudere order, PDF-stap ooit gefaald, of de
-// demo), dan renderen we hem alsnog on-the-fly uit de opgeslagen HTML — zodat
-// de download altijd werkt, met alle kleuren en afbeeldingen.
+// Een blueprint renderen duurt ruim langer dan de 10 seconden die een gewone
+// Netlify-function krijgt. Daarom doet de background function het werk en
+// serveert deze route alleen de klaargezette PDF; ontbreekt die, dan zet hij de
+// job in gang en antwoordt 202 zodat de viewer kan blijven pollen.
+async function triggerPdf(orderId, lang) {
+  const base = process.env.URL || process.env.DEPLOY_URL;
+  if (!base) return false;
+  const res = await fetch(`${base}/.netlify/functions/blueprint-pdf-background`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ orderId, lang, secret: TRIGGER_SECRET }),
+  });
+  console.log(`PDF-generatie getriggerd voor ${orderId} (${lang}): HTTP ${res.status}`);
+  return res.status >= 200 && res.status < 300;
+}
+
 app.get('/api/orders/:id/pdf', async (req, res) => {
   const order = await authorizedOrder(req, req.params.id);
   if (!order) return res.status(403).json({ error: 'Geen toegang' });
@@ -1225,7 +1242,14 @@ app.get('/api/orders/:id/pdf', async (req, res) => {
   const store = blueprintStore();
   const name  = (order.client_name || order.id).replace(/[^\w\-]+/g, '-');
 
-  // 1) Vooraf gegenereerde PDF (snel)
+  // ?refresh=1 gooit een verouderde PDF weg (bijv. na een nieuwe render van de
+  // blueprint) zodat de achtergrondjob hem opnieuw maakt.
+  if (req.query.refresh) {
+    await store.delete(`${order.id}.${lang}.pdf`).catch(() => {});
+    await store.delete(`${order.id}.${lang}.pdf.job`).catch(() => {});
+  }
+
+  // 1) Klaargezette PDF (pipeline of een eerdere achtergrondjob)
   const pregen = await store.get(`${order.id}.${lang}.pdf`, { type: 'arrayBuffer' });
   if (pregen) {
     res.setHeader('Content-Type', 'application/pdf');
@@ -1233,24 +1257,40 @@ app.get('/api/orders/:id/pdf', async (req, res) => {
     return res.send(Buffer.from(pregen));
   }
 
-  // 2) Terugval: on-demand renderen uit de opgeslagen blueprint-HTML
   const html = (await store.get(`${order.id}.${lang}.html`))
             || (lang === 'en' ? await store.get(`${order.id}.nl.html`) : null)
             || (await store.get(order.id));
   if (!html) return res.status(404).json({ error: 'Blueprint nog niet beschikbaar' });
 
-  try {
-    const { generatePDF } = require('../../lib/pdf');
-    const pdf = await generatePDF(html);
-    // Best effort: bewaar hem voor de volgende keer
-    try { await store.set(`${order.id}.${lang}.pdf`, pdf.buffer.slice(pdf.byteOffset, pdf.byteOffset + pdf.byteLength)); } catch {}
-    res.setHeader('Content-Type', 'application/pdf');
-    res.setHeader('Content-Disposition', `attachment; filename="SZINN-Blueprint-${name}.pdf"`);
-    res.send(pdf);
-  } catch (err) {
-    console.error('On-demand PDF mislukt:', err.message);
-    res.status(500).json({ error: 'De PDF kon niet worden gemaakt. Probeer het zo nog eens.' });
+  // 2) Lokaal (netlify dev, geen site-URL): gewoon direct renderen.
+  const jobKey = `${order.id}.${lang}.pdf.job`;
+  if (!process.env.URL && !process.env.DEPLOY_URL) {
+    try {
+      const { generatePDF } = require('../../lib/pdf');
+      const pdf = await generatePDF(upgradeNav(html));
+      try { await store.set(`${order.id}.${lang}.pdf`, pdf.buffer.slice(pdf.byteOffset, pdf.byteOffset + pdf.byteLength)); } catch {}
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="SZINN-Blueprint-${name}.pdf"`);
+      return res.send(pdf);
+    } catch (err) {
+      console.error('Directe PDF mislukt:', err.message);
+      return res.status(500).json({ error: `De PDF kon niet worden gemaakt: ${err.message}` });
+    }
   }
+
+  // 3) Achtergrondjob: lopend, mislukt of nog te starten
+  const job = await store.get(jobKey, { type: 'json' }).catch(() => null);
+  if (job && job.error) {
+    await store.delete(jobKey).catch(() => {});
+    return res.status(500).json({ error: `De PDF kon niet worden gemaakt: ${job.error}` });
+  }
+  // Een job die er 5 minuten over doet is vastgelopen; dan opnieuw starten.
+  const running = job && (Date.now() - Date.parse(job.started)) < 5 * 60 * 1000;
+  if (!running) {
+    await store.setJSON(jobKey, { started: new Date().toISOString() }).catch(() => {});
+    try { await triggerPdf(order.id, lang); } catch (err) { console.error('PDF-trigger mislukt:', err.message); }
+  }
+  res.status(202).json({ status: 'generating' });
 });
 
 // ── Admin ─────────────────────────────────────────────────────────────────────
@@ -1504,7 +1544,9 @@ app.use((err, req, res, next) => {
 // Klassieke Lambda-handlers krijgen de Netlify Blobs-configuratie niet
 // automatisch; connectLambda(event) leest die uit de request en zet hem klaar.
 const { connectLambda } = require('@netlify/blobs');
-const serverlessHandler = serverless(app);
+// Zonder `binary` geeft serverless-http de response als UTF-8-tekst terug; een
+// PDF komt er dan onherstelbaar verminkt uit (alle streams onuitpakbaar).
+const serverlessHandler = serverless(app, { binary: ['application/pdf'] });
 module.exports.handler = async (event, context) => {
   try { connectLambda(event); } catch (e) { console.error('connectLambda:', e.message); }
   return serverlessHandler(event, context);

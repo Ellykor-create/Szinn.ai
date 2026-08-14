@@ -16,9 +16,14 @@
   external_node_modules = ["@sparticuz/chromium", "puppeteer-core"]
   included_files = ["templates/*.html"]
 
-# De api-functie rendert de demo-blueprint bij het inloggen én maakt zo nodig
-# on-the-fly een PDF (terugval als de vooraf gegenereerde PDF ontbreekt).
-# Daarom moeten de templates mee én Chromium extern meegekopieerd worden.
+# Background function: rendert de blueprint-HTML naar PDF (te traag voor de
+# 10 seconden van een gewone function). Chromium wordt extern meegekopieerd.
+[functions."blueprint-pdf-background"]
+  external_node_modules = ["@sparticuz/chromium", "puppeteer-core"]
+
+# De api-functie rendert de demo-blueprint bij het inloggen én kan lokaal
+# (netlify dev, zonder site-URL) zelf een PDF maken. Daarom moeten de templates
+# mee én Chromium extern meegekopieerd worden.
 [functions."api"]
   included_files       = ["templates/*.html"]
   external_node_modules = ["@sparticuz/chromium", "puppeteer-core"]

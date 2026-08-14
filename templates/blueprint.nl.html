@@ -22,6 +22,20 @@ nav{position:sticky;top:0;z-index:100;background:rgba(13,10,7,0.97);backdrop-fil
 .nav-link.active{color:var(--gold);font-weight:500}
 .nav-link.verdieping{grid-column:1;grid-row:2}
 .nav-date{font-size:12px;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;white-space:pre;line-height:1.5;text-align:right;padding-top:2px}
+/* Burgermenu op smalle schermen: de checkbox stuurt open/dicht, zodat het ook
+   werkt in de opgeslagen blueprint-HTML (geen JS nodig). Print laat de nav
+   ongemoeid — daar geldt de @media print-regel verderop. */
+.nav-toggle{position:absolute;width:1px;height:1px;opacity:0;margin:0}
+.nav-burger{display:none;color:var(--ink);font-size:20px;line-height:1;cursor:pointer;padding:2px 0 2px 12px;user-select:none}
+.nav-toggle:focus-visible+.nav-burger{outline:2px solid var(--gold);outline-offset:2px}
+@media(max-width:760px){
+  nav{grid-template-columns:1fr auto;gap:0}
+  .nav-burger{display:block;justify-self:end}
+  .nav-date{display:none}
+  .nav-links{display:none;grid-column:1/-1;grid-auto-flow:row;grid-template-rows:none;grid-template-columns:1fr 1fr;gap:2px 14px;padding:8px 0 2px}
+  .nav-toggle:checked~.nav-links{display:grid}
+  .nav-link.verdieping{grid-column:auto;grid-row:auto}
+}
 
 .hero{display:grid;grid-template-columns:auto 1fr 2fr;gap:0 32px;padding:54px 5vw 44px;max-width:1200px;margin:0 auto;align-items:start}
 .logo-block{display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:4px}
@@ -192,7 +206,12 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
    Elke hoofdsectie begint bovenaan een eigen pagina; vh-paddings worden
    vervangen door vaste mm-marges en kaarten breken niet doormidden. */
 @media print{
-  nav,.copy-btn,.orn{display:none!important}
+  .copy-btn,.orn{display:none!important}
+  /* In print nooit het burgermenu, altijd de volledige navigatie: in de PDF
+     staan alle secties uitgeschreven (inklappen geldt alleen op scherm). */
+  nav{position:static!important;break-inside:avoid;page-break-inside:avoid}
+  .nav-burger,.nav-toggle,.nav-date{display:none!important}
+  .nav-links{display:grid!important}
   html,body{background:var(--cream)}
   .hero{padding:12mm 12mm 8mm}
   .mini-row{margin:0 12mm 6mm}
@@ -237,6 +256,8 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
 <body>
 <nav>
   <a href="#" class="nav-l">SZINN · {{CLIENT_NAME}}</a>
+  <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Menu">
+  <label for="nav-toggle" class="nav-burger" aria-hidden="true">&#9776;</label>
   <div class="nav-links">
     <a href="#vision" class="nav-link">Visie</a>
     <a href="#introduction" class="nav-link">Introductie</a>
