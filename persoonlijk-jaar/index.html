@@ -150,6 +150,19 @@ nav{position:sticky;top:0;z-index:60;background:rgba(249,245,240,.94);backdrop-f
 .body-wrap{max-width:1000px;margin:0 auto;padding:0 32px}
 .sep{height:1px;background:var(--line);margin:56px 0}
 .q{border-left:2px solid var(--gold-l);padding:5px 0 5px 22px;margin-bottom:18px;font-family:var(--serif);font-size:21px;font-style:italic;line-height:1.45}
+
+/* ── HERKENNING & ENERGIE ── */
+.ken{margin-top:24px;display:grid;gap:14px}
+.ken-item{display:flex;gap:16px;align-items:flex-start;background:var(--white);border:1px solid var(--line);padding:18px 20px}
+.ken-item .dot{flex:0 0 auto;width:8px;height:8px;transform:rotate(45deg);background:var(--gold);margin-top:7px}
+.ken-item p{margin:0;font-size:14.5px;line-height:1.7;color:var(--ink2)}
+.flow2{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line);border:1px solid var(--line);margin-top:28px}
+.flowcol{background:var(--white);padding:26px 26px 22px}
+.flowcol.warn{background:#FBF7F0}
+.flowcol h3{font-family:var(--sans);font-size:11px;letter-spacing:.26em;text-transform:uppercase;font-weight:500;color:var(--gold-d);margin-bottom:16px}
+.flowcol .fi{position:relative;padding-left:20px;margin-bottom:14px;font-size:14.5px;line-height:1.7;color:var(--ink2)}
+.flowcol .fi::before{content:'';position:absolute;left:0;top:9px;width:8px;height:2px;background:var(--gold)}
+@media(max-width:760px){.flow2{grid-template-columns:1fr}}
 .months{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);margin-top:28px}
 .m{background:var(--white);padding:18px 17px}
 .m.now{background:#FDF9F2;box-shadow:inset 0 0 0 1px var(--gold-l)}
@@ -376,6 +389,21 @@ m115 -288 c1043 -202 1678 -1306 1276 -2218 -572 -1301 -2480 -1372 -3106
       <div id="body" style="margin-top:22px"></div>
 
       <div class="sep"></div>
+      <div class="tag">Herkenning</div>
+      <h2 style="font-size:clamp(26px,3.6vw,36px);margin-top:14px">Dit ga je <em>herkennen</em></h2>
+      <p style="margin-top:16px;max-width:620px">Energie wordt pas bruikbaar als je haar herkent in je gewone dagen. Dit zijn de signalen waaraan je merkt dat je jaar aan het werk is. Hoe vaker je ze opmerkt, hoe minder je ertegen vecht.</p>
+      <div class="ken" id="ken"></div>
+
+      <div class="sep"></div>
+      <div class="tag">Werken met de energie</div>
+      <h2 style="font-size:clamp(26px,3.6vw,36px);margin-top:14px">Zo beweeg je <em>mee</em></h2>
+      <p style="margin-top:16px;max-width:620px">Elk jaar heeft een stroomrichting. Meebewegen kost weinig en levert veel op. Tegenbewegen kan ook, maar dan werk je dubbel zo hard voor de helft van het resultaat. Zo herken je het verschil.</p>
+      <div class="flow2">
+        <div class="flowcol"><h3>Dit werkt mee</h3><div id="mee"></div></div>
+        <div class="flowcol warn"><h3>Dit werkt tegen</h3><div id="tegen"></div></div>
+      </div>
+
+      <div class="sep"></div>
       <div class="tag">Drie vragen voor dit jaar</div>
       <div id="qs" style="margin-top:20px"></div>
 
@@ -480,6 +508,8 @@ var VRAAG = {
 22:"Wat bouw je dat nog overeind staat als jij er niet meer bent om het te dragen?",
 33:"Wat geef je door omdat je het zelf hebt geleerd, en niet omdat iemand zei dat het zo hoort?"
 };
+
+var KEN = {"1": {"herken": ["Je hebt meer ideeën dan tijd en voelt een sterke drang om iets nieuws te starten.", "Oude rollen of samenwerkingen beginnen te knellen.", "Je wil vaker zelf beslissen in plaats van eerst te overleggen.", "Er komen kansen voorbij die om een snelle ja vragen."], "mee": ["Begin klein maar begin echt: één concrete eerste stap per week.", "Neem beslissingen zelf en leg ze pas daarna uit.", "Kies één richting en parkeer de rest bewust."], "tegen": ["Wachten tot alles zeker voelt. Dit jaar beloont beweging.", "Alles tegelijk starten waardoor niets wortel schiet.", "Toestemming zoeken waar geen toestemming nodig is."]}, "2": {"herken": ["Alles lijkt trager te gaan dan je wil, vooral wat je vorig jaar startte.", "Relaties en samenwerkingen vragen opeens meer aandacht.", "Je gevoeligheid is hoger: je vangt meer op van anderen.", "Resultaat komt via mensen, niet via doorduwen."], "mee": ["Investeer in de relatie voordat je het resultaat vraagt.", "Luister uit en laat stiltes bestaan.", "Werk aan details en timing in plaats van aan snelheid."], "tegen": ["Forceren en deadlines door de relatie heen drukken.", "Je gevoeligheid wegzetten als zwakte.", "Alles alleen willen doen."]}, "3": {"herken": ["Je wil zichtbaar zijn: delen, praten, maken.", "Er komt meer sociaal leven op je af dan normaal.", "Ideeën komen makkelijk, afmaken is lastiger.", "Mensen reageren sterker op wat je laat zien."], "mee": ["Deel werk dat nog onderweg is in plaats van te wachten op perfect.", "Plan speelruimte in: plezier is dit jaar productief.", "Kies twee creatieve uitingen en geef ze een vast moment in je week."], "tegen": ["Jezelf verspreiden over te veel gesprekken en projecten.", "Aan de oppervlakte blijven omdat alles leuk is.", "Je expressie uitstellen tot je je zekerder voelt."]}, "4": {"herken": ["Het jaar voelt als werk: minder glans, meer bouwen.", "Losse eindjes van eerdere jaren vragen om afhechting.", "Je lijf en je agenda vragen om regelmaat.", "Details die je oversloeg komen terug op je bord."], "mee": ["Bouw ritmes: vaste dagen, vaste blokken, vaste gewoontes.", "Maak af wat half is voordat je iets nieuws toevoegt.", "Verzorg je basis: slaap, financiën, administratie."], "tegen": ["Shortcuts nemen. Dit jaar controleert het werk.", "Structuur zien als gevangenis in plaats van als drager.", "Resultaat verwachten zonder herhaling."]}, "5": {"herken": ["Je verdraagt routine slechter dan anders.", "Onverwachte wendingen: reizen, verhuizen, nieuwe mensen.", "Je wil ruimte en voelt weerstand tegen vastleggen.", "Kansen komen plots en vragen flexibiliteit."], "mee": ["Zeg vaker ja op wat nieuw is, ook als het schuurt.", "Bouw bewust variatie in je week.", "Houd één anker vast. De rest mag bewegen."], "tegen": ["Alles willen controleren en vastzetten.", "Vrijheid verwarren met vluchten.", "Grote definitieve beslissingen forceren midden in de beweging."]}, "6": {"herken": ["Familie, huis en relaties vragen meer van je.", "Mensen komen naar jou toe met wat ze nodig hebben.", "Thema's rond verantwoordelijkheid en de balans tussen geven en nemen.", "Je huis of werkplek wil aandacht: opknappen, ordenen, kloppend maken."], "mee": ["Zorg bewust en met grenzen, niet automatisch.", "Maak je thuisbasis kloppend. Dat voedt al het andere.", "Herstel wat scheef zit in je belangrijkste relaties."], "tegen": ["Iedereen dragen en jezelf achteraan zetten.", "Verantwoordelijkheid nemen die niet van jou is.", "Perfectie eisen van je gezin of je team."]}, "7": {"herken": ["Je hebt minder behoefte aan drukte en meer aan alleen zijn.", "Vragen over zin en richting worden luider.", "De buitenwereld reageert trager, alsof het jaar naar binnen wijst.", "Studie, onderzoek en verdieping trekken meer dan netwerken."], "mee": ["Plan stilte zoals je afspraken plant.", "Verdiep één onderwerp echt in plaats van tien half.", "Vertrouw dat minder zichtbaar zijn dit jaar geen achterstand is."], "tegen": ["Jezelf volproppen met prikkels om de stilte te vermijden.", "Grote lanceringen forceren. Het jaar draagt ze nauwelijks.", "Twijfel verwarren met falen. Het is onderzoek."]}, "8": {"herken": ["Thema's rond geld, positie en zeggenschap komen naar voren.", "Wat je jaren opbouwde wil nu oogst of erkenning.", "Mensen kijken naar jou voor leiding.", "Gesprekken over macht en grenzen dienen zich aan."], "mee": ["Neem de regie zichtbaar en vraag wat je waard bent.", "Neem de besluiten over geld en structuur die je uitstelde.", "Denk in resultaat en meet wat je doet."], "tegen": ["Je kracht inhouden uit angst voor te groot.", "Alles persoonlijk maken wat zakelijk is.", "De oogst uitstellen naar volgend jaar."]}, "9": {"herken": ["Afscheid, opruimen en afronden komen vanzelf op je pad.", "Nieuwe dingen starten lukt moeizaam of dooft snel uit.", "Oude thema's komen nog één keer langs, als toets.", "Je voelt weemoed en opluchting door elkaar."], "mee": ["Maak bewust af en vier wat klaar is.", "Ruim op: in huis, in relaties, in verplichtingen.", "Laat ruimte leeg blijven. Vul haar niet meteen."], "tegen": ["Krampachtig vasthouden aan wat voorbij is.", "Grote nieuwe starts forceren. Het jaar draagt ze niet.", "Loslaten uitstellen tot het jaar het voor je doet."]}, "11": {"herken": ["Je intuïtie is scherper: je weet dingen voordat je ze kunt uitleggen.", "Prikkels en emoties van anderen komen harder binnen.", "Dingen vallen opvallend vaak samen.", "Spanning tussen hoge inspiratie en gewone dagelijkse eisen."], "mee": ["Neem je ingevingen serieus en schrijf ze op.", "Bescherm je energie: kies bewust waar je bent en met wie.", "Deel je inzicht. Dit jaar wil door jou heen spreken."], "tegen": ["Alles wegrationaliseren wat je voelt.", "Jezelf overladen met verplichtingen zonder herstel.", "Je gevoeligheid bestrijden in plaats van kanaliseren."]}, "22": {"herken": ["Een groot idee blijft terugkomen en laat je niet los.", "Je krijgt de mensen en middelen aangereikt om iets neer te zetten.", "De druk voelt hoger, alsof er meer op het spel staat.", "Kleine stappen voelen te klein en dat frustreert."], "mee": ["Vertaal de visie naar een concreet bouwplan met fasen.", "Bouw voor de lange termijn: kies duurzaam boven snel.", "Vraag hulp. Meesterbouwers bouwen nooit alleen."], "tegen": ["Dromen zonder fundament te leggen.", "Jezelf klein houden omdat het groot voelt.", "Alles zelf willen dragen."]}, "33": {"herken": ["Mensen komen als vanzelf bij jou voor steun en richting.", "Wat jij doorleefd hebt blijkt precies wat anderen nodig hebben.", "De behoefte om bij te dragen wordt sterker dan de behoefte om te presteren.", "Je hart en je agenda trekken aan elkaar."], "mee": ["Geef door wat je geleerd hebt: in woorden, in werk, in aanwezigheid.", "Zorg dat je zelf gevoed blijft terwijl je geeft.", "Kies de plekken waar jouw bijdrage echt landt."], "tegen": ["Redden wat niet gered wil worden.", "Jezelf wegcijferen tot er niets meer te geven is.", "Je bijdrage uitstellen tot je je klaar voelt."]}};
 
 var JAAR = {
 1:{kw:'Begin',
@@ -642,6 +672,10 @@ document.getElementById('calcBtn').addEventListener('click', function(){
   document.getElementById('fullTitle').innerHTML = T.your2 + '<em>' + r.py + T.yr + '</em>';
   document.getElementById('body').innerHTML = C.body.map(function(p){return '<p style="margin-bottom:18px">'+p+'</p>';}).join('');
   document.getElementById('qs').innerHTML = C.qs.map(function(q){return '<div class="q">'+q+'</div>';}).join('');
+  var K=KEN[r.py];
+  document.getElementById('ken').innerHTML = K.herken.map(function(t){return '<div class="ken-item"><span class="dot"></span><p>'+t+'</p></div>';}).join('');
+  document.getElementById('mee').innerHTML = K.mee.map(function(t){return '<div class="fi">'+t+'</div>';}).join('');
+  document.getElementById('tegen').innerHTML = K.tegen.map(function(t){return '<div class="fi">'+t+'</div>';}).join('');
   document.getElementById('pmYear').textContent = CURRENT_YEAR;
 
   var html='';
@@ -671,6 +705,16 @@ function buildMailText(){
   lines.push(C.teaser);
   lines.push('');
   C.body.forEach(function(p){ lines.push(p); lines.push(''); });
+  var K=KEN[py];
+  lines.push('Dit ga je herkennen:');
+  K.herken.forEach(function(t){ lines.push('- '+t); });
+  lines.push('');
+  lines.push('Dit werkt mee:');
+  K.mee.forEach(function(t){ lines.push('- '+t); });
+  lines.push('');
+  lines.push('Dit werkt tegen:');
+  K.tegen.forEach(function(t){ lines.push('- '+t); });
+  lines.push('');
   lines.push('Drie vragen voor dit jaar:');
   C.qs.forEach(function(q,i){ lines.push((i+1)+'. '+q); });
   lines.push('');
