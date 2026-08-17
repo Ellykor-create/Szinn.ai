@@ -102,6 +102,11 @@ p.lede{font-size:18px;color:var(--soft);}
 .step-eyebrow{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold2);margin-bottom:8px;}
 .step-card h3{font-family:var(--serif);font-weight:400;font-size:24px;margin-bottom:10px;}
 .step-card p{font-size:15px;color:var(--soft);margin-bottom:14px;}
+.step-card p.why{font-size:14px;color:var(--soft);font-style:italic;border-left:2px solid var(--gold);padding-left:14px;margin:14px 0;}
+.examples{font-size:13.5px;color:var(--soft);background:var(--warm);border-radius:10px;padding:12px 16px;margin:10px 0 14px;line-height:1.75;}
+.examples span{color:var(--gold2);font-size:10px;letter-spacing:.22em;text-transform:uppercase;display:block;margin-bottom:4px;}
+.when{max-width:640px;margin:0 auto;padding:26px 24px 8px;text-align:center;}
+.when p{font-size:15px;color:var(--soft);}
 textarea{
   width:100%;min-height:90px;border:1px solid rgba(184,150,90,.35);
   border-radius:10px;padding:12px 14px;font-family:var(--sans);
@@ -178,6 +183,10 @@ footer img{height:36px;width:auto;margin-bottom:14px;opacity:.85;}
 </section>
 
 <section>
+  <div class="when">
+    <div class="eyebrow" id="t_whenE"></div>
+    <p id="t_whenP"></p>
+  </div>
   <div class="wheel-wrap"><svg id="wheel" viewBox="0 0 640 640" role="img" aria-label="Emotiewiel"></svg></div>
   <p class="hint" id="hint"></p>
 
@@ -194,6 +203,8 @@ footer img{height:36px;width:auto;margin-bottom:14px;opacity:.85;}
         <div class="step-eyebrow" id="t_s1e"></div>
         <h3 id="t_s1h"></h3>
         <p id="t_s1p"></p>
+        <p class="why" id="t_s1why"></p>
+        <div class="examples"><span id="t_exLbl1"></span><em id="t_s1ex"></em></div>
         <div class="body-chips" id="bodyChips"></div>
         <p style="margin-top:18px;margin-bottom:4px;" id="t_s1q"></p>
         <div class="slider-row">
@@ -206,15 +217,23 @@ footer img{height:36px;width:auto;margin-bottom:14px;opacity:.85;}
         <div class="step-eyebrow" id="t_s2e"></div>
         <h3 id="t_s2h"></h3>
         <p id="t_s2p"></p>
+        <p class="why" id="t_s2why"></p>
+        <div class="examples"><span id="t_exLbl2"></span><em id="t_s2ex"></em></div>
         <textarea id="trigger"></textarea>
         <p style="margin-top:16px;" id="t_s2p2"></p>
+        <div class="examples"><span id="t_exLbl3"></span><em id="t_s2ex2"></em></div>
         <textarea id="message"></textarea>
+        <p style="margin-top:16px;" id="t_depthP"></p>
+        <div class="examples"><span id="t_exLbl4"></span><em id="t_depthEx"></em></div>
+        <textarea id="depth"></textarea>
       </div>
 
       <div class="step-card">
         <div class="step-eyebrow" id="t_s3e"></div>
         <h3 id="t_s3h"></h3>
         <p id="t_s3p"></p>
+        <p class="why" id="t_s3why"></p>
+        <div class="examples"><span id="t_exLbl5"></span><em id="t_s3ex"></em></div>
         <textarea id="need"></textarea>
         <div class="btn-row" style="margin-top:18px;">
           <button class="btn" id="finish"></button>
@@ -244,6 +263,7 @@ footer img{height:36px;width:auto;margin-bottom:14px;opacity:.85;}
     <div class="eyebrow" id="t_whyE"></div>
     <h2 id="t_whyH"></h2>
     <p style="color:var(--soft);" id="t_whyP"></p>
+    <p style="color:var(--soft);margin-top:14px;" id="t_whyP2"></p>
     <div class="three">
       <div><div class="n">1</div><div class="t" id="t_m1t"></div><div class="d" id="t_m1d"></div></div>
       <div><div class="n">2</div><div class="t" id="t_m2t"></div><div class="d" id="t_m2d"></div></div>
@@ -333,28 +353,42 @@ const T={
 nl:{
   h1:"Het Emotiewiel",
   lede:"De meeste mensen kennen zes woorden voor wat ze voelen. Hoe preciezer jouw woord, hoe helderder jouw volgende stap. Tik in het wiel op wat het dichtst in de buurt komt.",
+  whenE:"Wanneer gebruik je dit wiel",
+  whenP:"Op elk moment dat je iets voelt en er niet meteen woorden voor hebt. Na een gesprek dat bleef hangen. Bij onrust zonder duidelijke reden. Voor een belangrijke keuze. Of gewoon als dagelijkse check-in, in de ochtend of voor het slapen. Er is geen fout moment en geen fout antwoord: het wiel is een spiegel, geen test.",
   hint0:"Tik op een kernemotie in het midden, of direct op een woord in de ringen eromheen.",
   hint1:"Kies nu in de ringen het woord dat het dichtst bij jouw gevoel komt.",
   refineSub:"Komt een van deze woorden nog dichterbij? Je mag ook bij je eerste woord blijven.",
   startFlow:"Ga verder met dit woord",
   s1e:"Stap 1 · Herkenning", s1h:"Waar leeft dit in je lichaam?",
-  s1p:"Een emotie is eerst een lichamelijk signaal. Sluit even je ogen en scan van hoofd naar voeten.",
+  s1p:"Een emotie is eerst een lichamelijk signaal, nog voordat je er woorden voor hebt. Sluit even je ogen en scan langzaam van hoofd naar voeten. Je hoeft niets te veranderen, alleen op te merken.",
+  s1why:"Waarom dit werkt: zodra je een gevoel in je lichaam lokaliseert, verschuif je van erin zitten naar ernaar kijken. Dat kleine beetje afstand geeft je zenuwstelsel ruimte om te zakken.",
+  exLbl:"Bijvoorbeeld",
+  s1ex:"een knoop in je buik, een dichte keel, zware schouders, een warme of juist beklemde borst, tintelende handen, een leeg gevoel achter je ogen.",
   s1q:"Hoe sterk voelt het nu?",
   s2e:"Stap 2 · Helderheid", s2h:"Wat ging eraan vooraf?",
-  s2p:"Beschrijf kort het moment waarop dit gevoel begon. Geen analyse, alleen wat er gebeurde.",
-  ph_trigger:"Vlak hiervoor...",
+  s2p:"Beschrijf kort het moment waarop dit gevoel begon. Geen analyse, alleen wat er gebeurde, alsof je een camera bent die de scène terugkijkt.",
+  s2why:"Waarom dit werkt: een emotie is bijna nooit een reactie op niets. Door het moment terug te vinden, zie je waar het gevoel bij hoort en hoef je het niet meer op alles te plakken.",
+  s2ex:"een berichtje dat anders viel dan bedoeld, een opmerking in een vergadering, een stilte die te lang duurde, een blik van iemand, iets dat je zag en aan vroeger deed denken.",
   s2p2:"Elke emotie draagt informatie. Als dit gevoel je iets wil laten zien, wat zou dat zijn?",
+  s2ex2:"een grens die is overgegaan, een behoefte die aandacht vraagt, iets dat je belangrijker vindt dan je dacht, een oud patroon dat geraakt wordt, iets waar je afscheid van aan het nemen bent.",
+  ph_trigger:"Vlak hiervoor...",
   ph_message:"Misschien laat het me zien dat...",
+  depthP:"Wil je dieper? Deze vraag is optioneel. Neem er alleen de tijd voor als het nu past.",
+  depthEx:"Ken je dit gevoel van eerder in je leven, en wanneer voelde je het voor het eerst? Wat zou je zeggen tegen iemand van wie je houdt als die dit voelde? Welke behoefte ligt er onder dit gevoel?",
+  ph_depth:"Wat er nog meer naar boven komt...",
   s3e:"Stap 3 · Integratie", s3h:"Wat heb je nu nodig?",
-  s3p:"Niet oplossen, wel verzorgen. Kies één kleine, haalbare stap voor vandaag.",
+  s3p:"Niet oplossen, wel verzorgen. Het gevoel hoeft niet weg; het vraagt om een antwoord. Kies één kleine, haalbare stap voor vandaag.",
+  s3why:"Waarom dit werkt: een grote conclusie verandert zelden iets, een kleine handeling wel. Door één stap te kiezen die bij jou past, geef je jezelf het signaal dat je naar jezelf luistert.",
+  s3ex:"vijf minuten naar buiten, drie keer langzaam uitademen, iemand een eerlijk berichtje sturen, water drinken, iets opschrijven, een afspraak verzetten, jezelf toestemming geven om vanavond niets te moeten.",
   ph_need:"Eén kleine stap...",
   finish:"Rond de oefening af", restart:"Opnieuw beginnen",
   sumEyebrow:"Jouw check-in", family:"Familie", intensity:"Intensiteit",
   copyBtn:"Kopieer als notitie", newCheckin:"Nieuwe check-in",
   copied:"Gekopieerd. Plak het in je journal of notities.",
-  l_body:"In mijn lichaam", l_before:"Wat eraan voorafging", l_shows:"Wat het me laat zien", l_need:"Wat ik nodig heb",
+  l_body:"In mijn lichaam", l_before:"Wat eraan voorafging", l_shows:"Wat het me laat zien", l_depth:"Verdieping", l_need:"Wat ik nodig heb",
   whyE:"Waarom dit werkt", whyH:"Benoemen is de eerste beweging",
-  whyP:"Zodra je een gevoel precies benoemt, verschuift er iets in je zenuwstelsel: van reageren naar waarnemen. Dat is precies de beweging waarmee de SZINN-methode begint. Deze oefening volgt dezelfde drie stappen als jouw Alignment Blueprint.",
+  whyP:"Zodra je een gevoel precies benoemt, verschuift er iets in je zenuwstelsel: van reageren naar waarnemen. Onderzoek naar het benoemen van emoties laat hetzelfde zien als de praktijk: woorden geven aan wat je voelt maakt het gevoel niet groter, maar juist hanteerbaarder. Vage onrust wordt een herkenbaar signaal, en een signaal kun je beantwoorden.",
+  whyP2:"Deze oefening volgt dezelfde drie bewegingen als de SZINN-methode en jouw Alignment Blueprint: Herkenning, Helderheid, Integratie. Niet als rechte lijn, maar als spiraal. Je mag hem zo vaak doorlopen als je wilt, met hetzelfde gevoel of met een nieuw gevoel. Elke ronde legt een laag bloot.",
   m1t:"Herkenning", m1d:"Je merkt op wat er is, in je lichaam en in je taal.",
   m2t:"Helderheid", m2d:"Je ziet waar het vandaan komt en wat het je vertelt.",
   m3t:"Integratie", m3d:"Je kiest één stap die bij jou past, niet tegen jezelf in.",
@@ -368,28 +402,42 @@ nl:{
 en:{
   h1:"The Emotion Wheel",
   lede:"Most people know six words for what they feel. The more precise your word, the clearer your next step. Tap the word in the wheel that comes closest.",
+  whenE:"When to use this wheel",
+  whenP:"Any moment you feel something and don't immediately have words for it. After a conversation that stayed with you. When you feel restless without a clear reason. Before an important choice. Or simply as a daily check-in, in the morning or before sleep. There is no wrong moment and no wrong answer: the wheel is a mirror, not a test.",
   hint0:"Tap a core emotion in the centre, or go straight to a word in the rings around it.",
   hint1:"Now choose the word in the rings that comes closest to what you feel.",
   refineSub:"Does one of these words come even closer? You can also stay with your first word.",
   startFlow:"Continue with this word",
   s1e:"Step 1 · Recognition", s1h:"Where does this live in your body?",
-  s1p:"An emotion is first a signal in the body. Close your eyes for a moment and scan from head to toe.",
+  s1p:"An emotion is first a signal in the body, before you have words for it. Close your eyes for a moment and slowly scan from head to toe. You don't need to change anything, only notice.",
+  s1why:"Why this works: the moment you locate a feeling in your body, you shift from being inside it to looking at it. That small bit of distance gives your nervous system room to settle.",
+  exLbl:"For example",
+  s1ex:"a knot in your stomach, a tight throat, heavy shoulders, a warm or constricted chest, tingling hands, an empty feeling behind your eyes.",
   s1q:"How strong does it feel right now?",
   s2e:"Step 2 · Clarity", s2h:"What came before it?",
-  s2p:"Briefly describe the moment this feeling began. No analysis, just what happened.",
-  ph_trigger:"Just before this...",
+  s2p:"Briefly describe the moment this feeling began. No analysis, just what happened, as if you were a camera replaying the scene.",
+  s2why:"Why this works: an emotion is almost never a response to nothing. By finding the moment, you see what the feeling belongs to, and you no longer have to attach it to everything.",
+  s2ex:"a message that landed differently than intended, a remark in a meeting, a silence that lasted too long, a look from someone, something you saw that reminded you of the past.",
   s2p2:"Every emotion carries information. If this feeling wants to show you something, what would that be?",
+  s2ex2:"a boundary that was crossed, a need asking for attention, something that matters more to you than you thought, an old pattern being touched, something you are in the process of letting go.",
+  ph_trigger:"Just before this...",
   ph_message:"Maybe it shows me that...",
+  depthP:"Want to go deeper? This question is optional. Only take the time if it fits right now.",
+  depthEx:"Do you know this feeling from earlier in your life, and when did you first feel it? What would you say to someone you love if they felt this? What need lies underneath this feeling?",
+  ph_depth:"What else is coming up...",
   s3e:"Step 3 · Integration", s3h:"What do you need right now?",
-  s3p:"Not fixing, but caring. Choose one small, doable step for today.",
+  s3p:"Not fixing, but caring. The feeling doesn't have to go away; it asks for a response. Choose one small, doable step for today.",
+  s3why:"Why this works: a big conclusion rarely changes anything, a small action does. By choosing one step that fits you, you signal to yourself that you are listening.",
+  s3ex:"five minutes outside, three slow exhales, sending someone an honest message, drinking water, writing something down, moving an appointment, giving yourself permission to do nothing tonight.",
   ph_need:"One small step...",
   finish:"Complete the exercise", restart:"Start over",
   sumEyebrow:"Your check-in", family:"Family", intensity:"Intensity",
   copyBtn:"Copy as a note", newCheckin:"New check-in",
   copied:"Copied. Paste it into your journal or notes.",
-  l_body:"In my body", l_before:"What came before it", l_shows:"What it shows me", l_need:"What I need",
+  l_body:"In my body", l_before:"What came before it", l_shows:"What it shows me", l_depth:"Going deeper", l_need:"What I need",
   whyE:"Why this works", whyH:"Naming is the first movement",
-  whyP:"The moment you name a feeling precisely, something shifts in your nervous system: from reacting to observing. That is exactly the movement the SZINN method begins with. This exercise follows the same three steps as your Alignment Blueprint.",
+  whyP:"The moment you name a feeling precisely, something shifts in your nervous system: from reacting to observing. Research on naming emotions shows the same thing practice does: putting words to what you feel doesn't make it bigger, it makes it workable. Vague unrest becomes a recognisable signal, and a signal is something you can answer.",
+  whyP2:"This exercise follows the same three movements as the SZINN method and your Alignment Blueprint: Recognition, Clarity, Integration. Not as a straight line, but as a spiral. You can go through it as often as you like, with the same feeling or a new one. Every round reveals another layer.",
   m1t:"Recognition", m1d:"You notice what is there, in your body and in your language.",
   m2t:"Clarity", m2d:"You see where it comes from and what it tells you.",
   m3t:"Integration", m3d:"You choose one step that fits you, not one that works against you.",
@@ -425,13 +473,19 @@ function applyLang(){
   const set=(id,v)=>{document.getElementById(id).textContent=v;};
   set('t_h1',t.h1); set('t_lede',t.lede);
   set('t_refineSub',t.refineSub); set('startFlow',t.startFlow);
+  set('t_whenE',t.whenE); set('t_whenP',t.whenP);
   set('t_s1e',t.s1e); set('t_s1h',t.s1h); set('t_s1p',t.s1p); set('t_s1q',t.s1q);
+  set('t_s1why',t.s1why); set('t_s1ex',t.s1ex);
   set('t_s2e',t.s2e); set('t_s2h',t.s2h); set('t_s2p',t.s2p); set('t_s2p2',t.s2p2);
+  set('t_s2why',t.s2why); set('t_s2ex',t.s2ex); set('t_s2ex2',t.s2ex2);
+  set('t_depthP',t.depthP); set('t_depthEx',t.depthEx);
   set('t_s3e',t.s3e); set('t_s3h',t.s3h); set('t_s3p',t.s3p);
+  set('t_s3why',t.s3why); set('t_s3ex',t.s3ex);
+  set('t_exLbl1',t.exLbl); set('t_exLbl2',t.exLbl); set('t_exLbl3',t.exLbl); set('t_exLbl4',t.exLbl); set('t_exLbl5',t.exLbl);
   set('finish',t.finish); set('restart1',t.restart);
   set('t_sumEyebrow',t.sumEyebrow); set('copyBtn',t.copyBtn); set('restart2',t.newCheckin);
   set('copied',t.copied);
-  set('t_whyE',t.whyE); set('t_whyH',t.whyH); set('t_whyP',t.whyP);
+  set('t_whyE',t.whyE); set('t_whyH',t.whyH); set('t_whyP',t.whyP); set('t_whyP2',t.whyP2);
   set('t_m1t',t.m1t); set('t_m1d',t.m1d);
   set('t_m2t',t.m2t); set('t_m2d',t.m2d);
   set('t_m3t',t.m3t); set('t_m3d',t.m3d);
@@ -440,6 +494,7 @@ function applyLang(){
   const cta=document.getElementById('ctaBtn'); cta.textContent=t.ctaBtn; cta.href=t.ctaHref;
   document.getElementById('trigger').placeholder=t.ph_trigger;
   document.getElementById('message').placeholder=t.ph_message;
+  document.getElementById('depth').placeholder=t.ph_depth;
   document.getElementById('need').placeholder=t.ph_need;
   document.getElementById('hint').textContent=t.hint0;
   build();
@@ -569,6 +624,7 @@ document.getElementById('startFlow').addEventListener('click',()=>{
   buildBodyChips();
   document.getElementById('trigger').value='';
   document.getElementById('message').value='';
+  document.getElementById('depth').value='';
   document.getElementById('need').value='';
   document.getElementById('intensity').value=5;
   document.getElementById('intensityVal').textContent='5';
@@ -596,6 +652,7 @@ document.getElementById('finish').addEventListener('click',()=>{
   const intensity=document.getElementById('intensity').value;
   const trigger=document.getElementById('trigger').value.trim();
   const message=document.getElementById('message').value.trim();
+  const depth=document.getElementById('depth').value.trim();
   const need=document.getElementById('need').value.trim();
   document.getElementById('sumWord').textContent=finalWord;
   document.getElementById('sumFamily').textContent=t.family+': '+fam.core+' · '+t.intensity+' '+intensity+'/10';
@@ -603,13 +660,14 @@ document.getElementById('finish').addEventListener('click',()=>{
   if(selBody.length)lines.push('<b>'+t.l_body+':</b> '+selBody.join(', '));
   if(trigger)lines.push('<b>'+t.l_before+':</b> '+esc(trigger));
   if(message)lines.push('<b>'+t.l_shows+':</b> '+esc(message));
+  if(depth)lines.push('<b>'+t.l_depth+':</b> '+esc(depth));
   if(need)lines.push('<b>'+t.l_need+':</b> '+esc(need));
   document.getElementById('sumLines').innerHTML=lines.join('<br>');
   show('summary');
   document.getElementById('summary').scrollIntoView({behavior:'smooth',block:'center'});
   try{
     const log=JSON.parse(localStorage.getItem('szinn_emotiewiel')||'[]');
-    log.push({d:new Date().toISOString(),lang:lang,word:finalWord,fam:fam.core,i:intensity,body:selBody,trigger,message,need});
+    log.push({d:new Date().toISOString(),lang:lang,word:finalWord,fam:fam.core,i:intensity,body:selBody,trigger,message,depth,need});
     localStorage.setItem('szinn_emotiewiel',JSON.stringify(log.slice(-60)));
   }catch(e){}
 });
@@ -624,9 +682,11 @@ document.getElementById('copyBtn').addEventListener('click',()=>{
   if(selBody.length)out+=`${t.l_body}: ${selBody.join(', ')}\n`;
   const tr=document.getElementById('trigger').value.trim();
   const m=document.getElementById('message').value.trim();
+  const dp=document.getElementById('depth').value.trim();
   const n=document.getElementById('need').value.trim();
   if(tr)out+=`${t.l_before}: ${tr}\n`;
   if(m)out+=`${t.l_shows}: ${m}\n`;
+  if(dp)out+=`${t.l_depth}: ${dp}\n`;
   if(n)out+=`${t.l_need}: ${n}\n`;
   out+=`\nszinn.ai · Remember who you are.`;
   navigator.clipboard.writeText(out).then(()=>{
