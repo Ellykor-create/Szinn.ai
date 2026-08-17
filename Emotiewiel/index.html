@@ -119,6 +119,15 @@ input[type=range]{flex:1;accent-color:var(--gold);}
 .slider-val{font-family:var(--serif);font-size:26px;width:38px;text-align:center;color:var(--gold2);}
 .body-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
 .body-chips .chip{font-size:13px;padding:7px 14px;}
+.breath{text-align:center;margin:4px 0 20px;padding:18px 14px;background:var(--cream);border:1px solid rgba(184,150,90,.25);border-radius:12px;}
+.breath-title{font-family:var(--serif);font-size:19px;margin-bottom:12px;}
+.breath-circle{width:78px;height:78px;border-radius:50%;margin:0 auto 12px;background:radial-gradient(circle at 35% 30%,#C8A870,var(--gold2));transform:scale(.68);transition:transform 4s ease-in-out;opacity:.9;}
+.breath-circle.grow{transform:scale(1.12);}
+.breath-circle.slow{transition-duration:6s;}
+.breath-label{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold2);min-height:20px;}
+.breath-btn{margin-top:12px;}
+.support{margin-top:20px;font-size:13.5px;line-height:1.8;color:rgba(249,245,240,.8);border-top:1px solid rgba(201,169,110,.35);padding-top:16px;display:none;text-align:left;max-width:440px;margin-left:auto;margin-right:auto;}
+.support.show{display:block;}
 
 .btn{
   display:inline-block;background:var(--ink);color:var(--cream);
@@ -202,6 +211,12 @@ footer img{height:36px;width:auto;margin-bottom:14px;opacity:.85;}
       <div class="step-card">
         <div class="step-eyebrow" id="t_s1e"></div>
         <h3 id="t_s1h"></h3>
+        <div class="breath">
+          <div class="breath-title" id="t_breathT"></div>
+          <div class="breath-circle" id="breathCircle"></div>
+          <div class="breath-label" id="breathLabel"></div>
+          <button class="chip breath-btn" id="breathBtn"></button>
+        </div>
         <p id="t_s1p"></p>
         <p class="why" id="t_s1why"></p>
         <div class="examples"><span id="t_exLbl1"></span><em id="t_s1ex"></em></div>
@@ -252,6 +267,7 @@ footer img{height:36px;width:auto;margin-bottom:14px;opacity:.85;}
           <button class="btn btn-gold" id="copyBtn"></button>
           <button class="btn btn-ghost" id="restart2" style="color:var(--cream);border-color:rgba(249,245,240,.4);"></button>
         </div>
+        <div class="support" id="supportNote"></div>
         <div class="copied" id="copied"></div>
       </div>
     </div>
@@ -381,6 +397,10 @@ nl:{
   s3why:"Waarom dit werkt: een grote conclusie verandert zelden iets, een kleine handeling wel. Door één stap te kiezen die bij jou past, geef je jezelf het signaal dat je naar jezelf luistert.",
   s3ex:"vijf minuten naar buiten, drie keer langzaam uitademen, iemand een eerlijk berichtje sturen, water drinken, iets opschrijven, een afspraak verzetten, jezelf toestemming geven om vanavond niets te moeten.",
   ph_need:"Eén kleine stap...",
+  breathT:"Begin met drie ademhalingen",
+  breathBtn:"Start", breathIn:"Adem in", breathOut:"Adem uit",
+  breathDone:"Mooi zo. Ga verder wanneer jij er klaar voor bent.",
+  support:"Voelt dit gevoel zwaar, of duurt het al langere tijd? Zoek dan iemand om mee te praten: een vriend of vriendin, familie, of een professional. Je hoeft dit niet alleen te dragen.",
   finish:"Rond de oefening af", restart:"Opnieuw beginnen",
   sumEyebrow:"Jouw check-in", family:"Familie", intensity:"Intensiteit",
   copyBtn:"Kopieer als notitie", newCheckin:"Nieuwe check-in",
@@ -430,6 +450,10 @@ en:{
   s3why:"Why this works: a big conclusion rarely changes anything, a small action does. By choosing one step that fits you, you signal to yourself that you are listening.",
   s3ex:"five minutes outside, three slow exhales, sending someone an honest message, drinking water, writing something down, moving an appointment, giving yourself permission to do nothing tonight.",
   ph_need:"One small step...",
+  breathT:"Begin with three breaths",
+  breathBtn:"Start", breathIn:"Breathe in", breathOut:"Breathe out",
+  breathDone:"Well done. Continue whenever you are ready.",
+  support:"Does this feeling weigh heavily, or has it been with you for a longer time? Then find someone to talk to: a friend, family, or a professional. You don't have to carry this alone.",
   finish:"Complete the exercise", restart:"Start over",
   sumEyebrow:"Your check-in", family:"Family", intensity:"Intensity",
   copyBtn:"Copy as a note", newCheckin:"New check-in",
@@ -482,6 +506,9 @@ function applyLang(){
   set('t_s3e',t.s3e); set('t_s3h',t.s3h); set('t_s3p',t.s3p);
   set('t_s3why',t.s3why); set('t_s3ex',t.s3ex);
   set('t_exLbl1',t.exLbl); set('t_exLbl2',t.exLbl); set('t_exLbl3',t.exLbl); set('t_exLbl4',t.exLbl); set('t_exLbl5',t.exLbl);
+  set('t_breathT',t.breathT); set('breathBtn',t.breathBtn);
+  document.getElementById('breathLabel').textContent='';
+  resetBreath();
   set('finish',t.finish); set('restart1',t.restart);
   set('t_sumEyebrow',t.sumEyebrow); set('copyBtn',t.copyBtn); set('restart2',t.newCheckin);
   set('copied',t.copied);
@@ -622,6 +649,7 @@ function hide(id){document.getElementById(id).classList.remove('show');}
 
 document.getElementById('startFlow').addEventListener('click',()=>{
   buildBodyChips();
+  resetBreath();
   document.getElementById('trigger').value='';
   document.getElementById('message').value='';
   document.getElementById('depth').value='';
@@ -630,6 +658,30 @@ document.getElementById('startFlow').addEventListener('click',()=>{
   document.getElementById('intensityVal').textContent='5';
   show('flow');
   document.getElementById('flow').scrollIntoView({behavior:'smooth',block:'start'});
+});
+
+let breathTimers=[];
+function resetBreath(){
+  breathTimers.forEach(clearTimeout);breathTimers=[];
+  const c=document.getElementById('breathCircle');
+  c.classList.remove('grow','slow');
+  document.getElementById('breathLabel').textContent='';
+  document.getElementById('breathBtn').style.display='inline-block';
+}
+document.getElementById('breathBtn').addEventListener('click',()=>{
+  const t=txt();
+  const c=document.getElementById('breathCircle');
+  const l=document.getElementById('breathLabel');
+  document.getElementById('breathBtn').style.display='none';
+  breathTimers.forEach(clearTimeout);breathTimers=[];
+  let delay=0;
+  for(let i=0;i<3;i++){
+    breathTimers.push(setTimeout(()=>{l.textContent=t.breathIn;c.classList.remove('slow');c.classList.add('grow');},delay));
+    delay+=4000;
+    breathTimers.push(setTimeout(()=>{l.textContent=t.breathOut;c.classList.add('slow');c.classList.remove('grow');},delay));
+    delay+=6000;
+  }
+  breathTimers.push(setTimeout(()=>{l.textContent=t.breathDone;document.getElementById('breathBtn').style.display='inline-block';},delay));
 });
 
 document.getElementById('intensity').addEventListener('input',e=>{
@@ -663,6 +715,9 @@ document.getElementById('finish').addEventListener('click',()=>{
   if(depth)lines.push('<b>'+t.l_depth+':</b> '+esc(depth));
   if(need)lines.push('<b>'+t.l_need+':</b> '+esc(need));
   document.getElementById('sumLines').innerHTML=lines.join('<br>');
+  const sup=document.getElementById('supportNote');
+  if(selCore>=3){sup.textContent=t.support;sup.classList.add('show');}
+  else{sup.classList.remove('show');}
   show('summary');
   document.getElementById('summary').scrollIntoView({behavior:'smooth',block:'center'});
   try{
