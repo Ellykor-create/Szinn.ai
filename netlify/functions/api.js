@@ -619,6 +619,100 @@ app.post('/api/companion/day', async (req, res) => {
   }
 });
 
+// AI-geschreven Guidance-kaarten (astrologie, numerologie, kabbalah/tikkun, maan)
+// plus week/maand-vooruitblik en paradigma-check voor het dashboard. Eén keer per
+// dag berekend en gecachet op user.dayPillars ({ date, data }); zonder AI-sleutel
+// (of bij een AI-fout) geeft het endpoint een leeg object terug — de UI toont dan
+// haar eigen statische teksten.
+app.get('/api/companion/day-pillars', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const lang = req.query.lang === 'en' ? 'en' : 'nl';
+  const db  = await loadDB();
+  const acc = await accessState(db, req);
+  if (!acc.dashboardOpen)
+    return res.status(402).json({ error: lang === 'en'
+      ? 'Your 11-day trial has ended. Subscribe (€3.69/month) for your daily reading.'
+      : 'Je proefperiode van 11 dagen is voorbij. Neem het abonnement (€3,69/mnd) voor je dagelijkse duiding.', subscribe: true });
+
+  const c = await companionContext(req.auth.userId, req.query.lang);
+  if (!c.ctx) return res.status(400).json({ error: 'Nog geen voltooide blueprint' });
+
+  // Dagsleutel als benadering van Europe/Amsterdam (zelfde conventie als de
+  // daily-whatsapp): de UTC-datum volstaat voor "één keer per dag".
+  const today = new Date().toISOString().slice(0, 10);
+  const user = acc.user;
+  const cached = user && user.dayPillars;
+  if (cached && cached.date === today && cached.lang === lang) return res.json(cached.data);
+
+  if (!companionConfigured()) return res.json({});
+
+  try {
+    const str = { type: 'string' };
+    const schema = {
+      type: 'object', additionalProperties: false,
+      properties: {
+        astroTitel: str, astroTekst: str, astroTekst2: str,
+        numTitel: str, numTekst: str, numMaand: str,
+        kabTitel: str, kabTekst: str,
+        maanTitel: str, maanTekst: str, maanVooruit: str,
+        weekTekst: str, maandTekst: str,
+        paradigmaVraag: str, paraHerken: str, paraToets: str, paraKies: str,
+      },
+      required: ['astroTitel', 'astroTekst', 'astroTekst2', 'numTitel', 'numTekst', 'numMaand',
+        'kabTitel', 'kabTekst', 'maanTitel', 'maanTekst', 'maanVooruit', 'weekTekst', 'maandTekst',
+        'paradigmaVraag', 'paraHerken', 'paraToets', 'paraKies'],
+    };
+
+    // Extra vaste gegevens die niet in de system-prompt zitten: het tikkun-kernthema
+    // en de eerstvolgende nieuwe/volle maan (net als /api/companion/blueprint opgebouwd).
+    const tikkun = (c.texts && c.texts.tikkun && c.texts.tikkun.cards && c.texts.tikkun.cards[0]) || {};
+    const tikkunSub = (c.texts && c.texts.summary && c.texts.summary.tikkunSub) || '';
+    const fmtMoon = (m) => m
+      ? `${new Date(m.date).toLocaleDateString(c.lang === 'en' ? 'en-GB' : 'nl-NL', { day: 'numeric', month: 'long' })} in ${signT(c.lang, m.sign)}`
+      : (c.lang === 'en' ? 'unknown' : 'onbekend');
+    const nn = fmtMoon(c.sky.nextNewMoon), fm = fmtMoon(c.sky.nextFullMoon);
+    const py = c.ctx.numerology.personalYear;
+
+    const userPrompt = c.lang === 'en'
+      ? `Generate today's texts for the four Guidance cards of the dashboard, fully grounded in the fixed verified data in the system prompt. NEVER calculate positions or transits yourself and invent nothing; use only the natal chart, the numbers and today's given moon phase.
+Fixed extra data to use verbatim:
+- Tikkun core theme: "${tikkun.title || ''}" — ${tikkun.body || ''}
+- Tikkun in one line: ${tikkunSub}
+- Next new moon: ${nn}. Next full moon: ${fm}.
+Fields:
+- astroTitel (short heading), astroTekst (2-3 sentences: what the natal chart means today, linked to the moon phase), astroTekst2 (1-2 sentences of depth/balance).
+- numTitel (heading for Personal Day ${c.pd}), numTekst (2-3 sentences about Personal Day ${c.pd} and Personal Year ${py}), numMaand (1 sentence about Personal Month ${c.pm.number}).
+- kabTitel (heading for the tikkun core theme), kabTekst (2-3 sentences about the core theme today).
+- maanTitel (short heading, ${c.sky.waxing ? 'waxing' : 'waning'}), maanTekst (2-3 sentences), maanVooruit (1 sentence about the next new and full moon, using only the given dates/signs).
+- weekTekst (2 sentences: this week around the chart), maandTekst (2 sentences: this month).
+- paradigmaVraag (one reflection question about beliefs), paraHerken/paraToets/paraKies (each one short sentence for the Recognise/Test/Choose steps of the paradigm check).`
+      : `Genereer de dagteksten voor de vier Guidance-kaarten van het dashboard, volledig gegrond in de vaste geverifieerde gegevens uit het systeem-prompt. Bereken NOOIT zelf standen of transits en verzin niets; gebruik alleen de geboortekaart, de getallen en de meegegeven maanstand van vandaag.
+Vaste extra gegevens om letterlijk te gebruiken:
+- Tikkun-kernthema: "${tikkun.title || ''}" — ${tikkun.body || ''}
+- Tikkun in één zin: ${tikkunSub}
+- Eerstvolgende nieuwe maan: ${nn}. Eerstvolgende volle maan: ${fm}.
+Velden:
+- astroTitel (korte kop), astroTekst (2-3 zinnen: wat de geboortekaart vandaag betekent, gekoppeld aan de maanstand), astroTekst2 (1-2 zinnen verdieping/balans).
+- numTitel (kop bij de Persoonlijke Dag ${c.pd}), numTekst (2-3 zinnen over Persoonlijke Dag ${c.pd} en Persoonlijk Jaar ${py}), numMaand (1 zin over de Persoonlijke Maand ${c.pm.number}).
+- kabTitel (kop bij het tikkun-kernthema), kabTekst (2-3 zinnen over het kernthema vandaag).
+- maanTitel (korte kop, ${c.sky.waxing ? 'wassend' : 'afnemend'}), maanTekst (2-3 zinnen), maanVooruit (1 zin over de eerstvolgende nieuwe én volle maan, alleen met de gegeven datums/tekens).
+- weekTekst (2 zinnen: deze week rond de kaart), maandTekst (2 zinnen: deze maand).
+- paradigmaVraag (één reflectievraag over overtuigingen), paraHerken/paraToets/paraKies (elk één korte zin voor de stappen Herken/Toets/Kies van de paradigma-check).`;
+
+    const reading = await companionChat({
+      system: companionSystem(c),
+      messages: [{ role: 'user', content: userPrompt }],
+      maxTokens: 1200,
+      jsonSchema: schema,
+    });
+    if (user) { user.dayPillars = { date: today, lang, data: reading }; await saveDB(db); }
+    res.json(reading);
+  } catch (err) {
+    console.error('companion/day-pillars AI-fout:', err.message);
+    res.json({});
+  }
+});
+
 // Gesprek met de Companion (kent de kaart en blueprint van de gebruiker).
 // De geschiedenis en het samengevatte geheugen leven per account op de server
 // (user.companion), zodat een nieuwe sessie naadloos verdergaat waar de vorige
