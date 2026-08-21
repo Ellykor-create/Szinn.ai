@@ -3621,8 +3621,11 @@ function pushJournal(part){
   var body={date:todayIso()};
   var m=collectMorning(), e=collectEvening();
   var vandaag=JOURNAL[todayIso()]||{};
+  // Alleen het dagdeel dat je nu ritualiseert gaat mee. Avond niet meeschrijven
+  // bij 'am': de avondschuiven staan altijd op een default en zouden 'heeftInhoud'
+  // vals-positief maken, waardoor de avonddot al bij dagstart vol zou worden.
   if(part==='am'||vandaag.morning||heeftInhoud(m)) body.morning=m;
-  if(part==='pm'||vandaag.evening||heeftInhoud(e)) body.evening=e;
+  if(part==='pm'||vandaag.evening) body.evening=e;
   if(!body.morning&&!body.evening) return;
   fetch('/api/journal',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
     .then(function(r){ return r.ok?r.json():null; })
