@@ -1283,6 +1283,11 @@ app.post('/api/intake/submit', async (req, res) => {
   // Heractivering verbruiken: één nieuwe intake per toekenning.
   if (access.grantUserId) db.prepare('UPDATE users SET intake_grant = 0 WHERE id = ?').run(access.grantUserId);
 
+  // Koper automatisch in Enormail zetten (fire-and-forget; faalt stil).
+  const { addBuyerToEnormail } = require('./lib/enormail');
+  addBuyerToEnormail({ name: user.name || clientName, email: user.email, birthday: data.geboortedatum })
+    .catch(err => console.error('enormail-koper mislukt:', err.message));
+
   // Auto-login this user
   req.session.userId = user.id;
 

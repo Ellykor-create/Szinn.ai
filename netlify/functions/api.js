@@ -12,6 +12,7 @@ const crypto     = require('crypto');
 const { blueprintStore, loadDB, saveDB } = require('../../lib/db');
 const { upgradeNav } = require('../../lib/blueprint-nav');
 const { sendAccountEmail, sendDraftEmail, sendNewOrderEmail, sendGiftEmail, sendGiftConfirmationEmail, sendPasswordResetEmail, sendFeedbackAlert } = require('../../lib/email');
+const { addBuyerToEnormail } = require('../../lib/enormail');
 
 const app = express();
 app.use(express.json());
@@ -1252,6 +1253,10 @@ app.post('/api/intake/submit', async (req, res) => {
     if (g) { g.redeemed_at = new Date().toISOString(); g.redeemed_order = orderId; }
   }
   await saveDB(db);
+
+  // Koper automatisch in Enormail zetten (fire-and-forget; faalt stil).
+  addBuyerToEnormail({ name: user.name, email: user.email, birthday: order.birth_date })
+    .catch(err => console.error('enormail-koper mislukt:', err.message));
 
   // Mail 1: account + wachtwoord (of "nieuwe blueprint in je bestaande account")
   const mailLang = (order.blueprint_language === 'en') ? 'en' : 'nl';
