@@ -11,7 +11,7 @@ const cookieLib  = require('cookie');
 const crypto     = require('crypto');
 const { blueprintStore, loadDB, saveDB } = require('../../lib/db');
 const { upgradeNav } = require('../../lib/blueprint-nav');
-const { sendAccountEmail, sendDraftEmail, sendNewOrderEmail, sendGiftEmail, sendGiftConfirmationEmail, sendPasswordResetEmail } = require('../../lib/email');
+const { sendAccountEmail, sendDraftEmail, sendNewOrderEmail, sendGiftEmail, sendGiftConfirmationEmail, sendPasswordResetEmail, sendFeedbackAlert } = require('../../lib/email');
 
 const app = express();
 app.use(express.json());
@@ -924,6 +924,7 @@ app.post('/api/feedback', async (req, res) => {
   db.nextFeedbackId = db.nextFeedbackId || 1;
   db.feedback.push({ id: db.nextFeedbackId++, created_at: new Date().toISOString(), ...fb });
   await saveDB(db);
+  sendFeedbackAlert(fb).catch(err => console.error('feedback-melding mislukt:', err.message));
   res.json({ ok: true });
 });
 

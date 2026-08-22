@@ -2460,6 +2460,7 @@ if(dimBtn){ dimBtn.addEventListener('click', function(){
 (function(){
   document.querySelectorAll('a[href="#"]').forEach(function(a){
     if(a.querySelector('.soonpill')) return;
+    if(a.classList.contains('bp-link')) return; // krijgt later een echte href via viewToken (regel ~3549)
     if(a.classList.contains('geen-pil')){ a.addEventListener('click', function(e){ e.preventDefault(); }); return; }
     var kaart=a.closest('.qcard');
     if(kaart && kaart.querySelector('.soon')){ a.addEventListener('click', function(e){ e.preventDefault(); }); return; }

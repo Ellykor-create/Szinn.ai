@@ -978,6 +978,8 @@ app.post('/api/feedback', (req, res) => {
   if (fb.error) return res.status(400).json({ error: fb.error });
   db.prepare('INSERT INTO feedback (name, email, rating, message, lang) VALUES (?, ?, ?, ?, ?)')
     .run(fb.name, fb.email, fb.rating, fb.message, fb.lang);
+  const { sendFeedbackAlert } = require('./lib/email');
+  sendFeedbackAlert(fb).catch(err => console.error('feedback-melding mislukt:', err.message));
   res.json({ ok: true });
 });
 
