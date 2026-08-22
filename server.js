@@ -1608,6 +1608,18 @@ app.post('/api/admin/user/:userId/access', (req, res) => {
   res.json({ ok: true, dashboard_access: fresh.dashboard_access || 'auto', intake_grant: !!fresh.intake_grant });
 });
 
+// Wis de volledige dagboek-dag (ochtend + avond) van een gebruiker, zodat die
+// de dag opnieuw kan invullen. Onomkeerbaar; daarom admin-only + exacte datum.
+app.post('/api/admin/user/:userId/journal-reset', (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Geen toegang' });
+  const user = db.prepare('SELECT id FROM users WHERE id = ?').get(Number(req.params.userId) || 0);
+  if (!user) return res.status(404).json({ error: 'Gebruiker niet gevonden' });
+  const date = String(req.body?.date || '');
+  if (!DATE_RE.test(date)) return res.status(400).json({ error: 'Ongeldige datum' });
+  const { changes } = db.prepare('DELETE FROM journal_entries WHERE user_id = ? AND date = ?').run(user.id, date);
+  res.json({ ok: true, date, removed: changes > 0 });
+});
+
 // Serve admin page
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(ROOT, 'admin', 'index.html'));

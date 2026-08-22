@@ -1632,6 +1632,20 @@ app.post('/api/admin/user/:userId/access', async (req, res) => {
   res.json({ ok: true, dashboard_access: user.dashboard_access || 'auto', intake_grant: !!user.intake_grant });
 });
 
+// Wis de volledige dagboek-dag (ochtend + avond) van een gebruiker, zodat die
+// de dag opnieuw kan invullen. Onomkeerbaar; daarom admin-only + exacte datum.
+app.post('/api/admin/user/:userId/journal-reset', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  const db = await loadDB();
+  const user = db.users.find(u => u.id === Number(req.params.userId));
+  if (!user) return res.status(404).json({ error: 'Gebruiker niet gevonden' });
+  const date = String(req.body?.date || '');
+  if (!DATE_RE.test(date)) return res.status(400).json({ error: 'Ongeldige datum' });
+  const removed = !!(user.journal && user.journal[date]);
+  if (removed) { delete user.journal[date]; await saveDB(db); }
+  res.json({ ok: true, date, removed });
+});
+
 // ── Foutafhandelaar ─────────────────────────────────────────────────────────────
 // Vangt alle doorgestuurde fouten op (arity 4 → Express herkent dit als error-handler).
 app.use((err, req, res, next) => {
