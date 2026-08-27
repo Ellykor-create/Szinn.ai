@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- SZINN favicon -->
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
 <title>SZINN Alignment Blueprint · Intake</title>
 <!-- Betaalpoort: de intake is alleen toegankelijk na betaling (of met een
      cadeaucode). De pagina blijft verborgen tot de server de toegang bevestigt;
@@ -581,6 +584,16 @@
 </head>
 <body>
 
+<!-- LANGUAGE TOGGLE -->
+<style>
+.lang-switch{position:fixed;top:14px;right:14px;z-index:1000;display:flex;gap:2px;background:rgba(20,16,10,0.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(201,169,110,0.4);border-radius:999px;padding:3px;}
+.lang-btn{font-family:'Jost',sans-serif;font-size:12px;letter-spacing:0.08em;padding:5px 12px;border:0;border-radius:999px;background:transparent;color:#E8DDCB;cursor:pointer;transition:all .2s;}
+.lang-btn.active{background:#C9A96E;color:#1a140c;font-weight:600;}
+</style>
+<div class="lang-switch" role="group" aria-label="Language / Taal">
+  <button type="button" id="btn-nl" class="lang-btn active" onclick="setLang('nl')">NL</button>
+  <button type="button" id="btn-en" class="lang-btn" onclick="setLang('en')">EN</button>
+</div>
 
 <!-- HEADER -->
 <header class="header">
@@ -1317,7 +1330,7 @@ function validate(i) {
   let firstBad = null;
 
   if (i === 0) {
-    ['voornaam','achternaam','geboortenaam','email','geboortedatum','geboortetijd','geboorteland','geboorteplaats'].forEach(id => {
+    ['voornaam','achternaam','geboortenaam','email','geboortedatum','geboortetijd','geboorteland'].forEach(id => {
       const el = document.getElementById(id);
       const fd = document.getElementById('field-' + id);
       if (!el || !el.value.trim()) { fd && fd.classList.add('has-error'); ok = false; firstBad = firstBad || fd || el; }
@@ -1696,8 +1709,59 @@ document.addEventListener('input', function (e) {
   if (field && el.value && el.value.trim()) field.classList.remove('has-error');
 });
 
+// ── Injecteer EN-vertaling op structurele elementen die nog geen data-en hebben.
+// Daarna doet setLang() de omschakeling via het bestaande [data-nl]/[data-en]-mechanisme.
+function initI18n() {
+  const EN_SECTIONS = [
+    ['Step 1 — Your details', 'Who <em>are you?</em>', 'These details form the basis of your personal calculations. Please fill in your birth time and place as accurately as possible.'],
+    ['Step 2 — Personal depth', 'What <em>is happening</em> inside you?', 'Write what comes to mind first. There is no right or wrong — only your honest answer matters.'],
+    ['Step 3 — Work & direction', 'How does <em>your work</em> feel?', 'Work is more than what you do — it is how you relate to your contribution and direction.'],
+    ['Step 4 — Energy & balance', 'What <em>recharges</em> you?', 'Energy is the foundation of everything you create. Show what nourishes you and what drains you.'],
+    ['Step 5 — Relationships & connection', 'How do you <em>connect</em>?', 'Relationships are a mirror of what is happening inside you. What do you see when you look honestly?'],
+    ['Step 6 — Future & goals', 'Where are you <em>heading?</em>', 'What do you want to achieve and what is currently standing between you and that goal?'],
+    ['Step 7 — Self-reflection & patterns', 'What <em>keeps you</em> small?', 'The most honest questions. Write without judgement — this is for you, not for anyone else.'],
+    ['Step 8 — Consciousness & creation', 'How do you <em>create</em> your reality?', 'The deepest layer. Dare to be honest — these are the answers that make your Blueprint most personal.'],
+  ];
+  const setEn = (el, en) => {
+    if (el && !el.hasAttribute('data-nl')) {
+      el.setAttribute('data-nl', el.innerHTML.trim());
+      el.setAttribute('data-en', en);
+    }
+  };
+
+  EN_SECTIONS.forEach((t, i) => {
+    const sec = document.getElementById('section-' + i);
+    if (!sec) return;
+    setEn(sec.querySelector('.section-eyebrow'), t[0]);
+    setEn(sec.querySelector('.section-title'), t[1]);
+    setEn(sec.querySelector('.section-intro'), t[2]);
+  });
+
+  setEn(document.querySelector('.header-hero-content h1'), 'Your <em>Alignment</em><br>Blueprint starts here');
+  setEn(document.querySelector('.header-sub'), 'Take time. There are no right or wrong answers — only your truth.');
+
+  const tyEn = ['✦ Thank you for your purchase', 'Complete your details below to create your Blueprint.', 'You will also receive an invoice by email. Please check your spam folder and add us to your safe senders list so our emails always reach you.'];
+  document.querySelectorAll('#form-main > div:first-of-type > p').forEach((p, i) => setEn(p, tyEn[i]));
+
+  document.querySelectorAll('.btn-next').forEach(b => setEn(b, 'Next →'));
+  document.querySelectorAll('.btn-back').forEach(b => setEn(b, '← Back'));
+
+  const ERR = {
+    'Vul je voornaam in': 'Please enter your first name',
+    'Vul je achternaam in': 'Please enter your last name',
+    'Vul e-mailadres in': 'Please enter a valid email address',
+    'Vul in': 'Please fill this in',
+    'Selecteer geboorteland': 'Please select your country of birth',
+  };
+  document.querySelectorAll('.err-msg').forEach(s => {
+    const en = ERR[s.textContent.trim()];
+    if (en) setEn(s, en);
+  });
+}
+
 // Init — taal automatisch NL
 document.addEventListener('DOMContentLoaded', function() {
+  initI18n();
   setLang('nl');
   setupBirthplace();
   setupDraft();

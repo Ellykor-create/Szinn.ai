@@ -249,6 +249,49 @@ if (userCount === 0) {
   } catch (e) { console.error('Volledig demo-account kon niet worden aangemaakt:', e.message); }
 })();
 
+// ── Sales-showcase-account (Morgan) ────────────────────────────────────────────
+// Permanent gratis, volledig gevuld dashboard zodat Morgan SZINN kan demonstreren
+// en verkopen: dashboard_access='on' omzeilt trial/abonnement. Idempotent.
+// E-mail/wachtwoord instelbaar via SALES_ACCOUNT_EMAIL / SALES_ACCOUNT_PASSWORD.
+(function ensureSalesAccount() {
+  try {
+    const demo    = require('./lib/demo-blueprint');
+    const email   = (process.env.SALES_ACCOUNT_EMAIL || 'morgan@szinn.ai').trim();
+    const pw      = process.env.SALES_ACCOUNT_PASSWORD || 'SzinnSales2026';
+    const orderId = 'ORD-SALES-MORGAN';
+
+    let u = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(email);
+    if (!u) {
+      db.prepare('INSERT INTO users (email, password, name) VALUES (?, ?, ?)')
+        .run(email, bcrypt.hashSync(pw, 10), 'Morgan');
+      u = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(email);
+    }
+    // Permanente toegang: geen betaling of trial nodig.
+    db.prepare("UPDATE users SET dashboard_access = 'on' WHERE id = ?").run(u.id);
+
+    if (!db.prepare('SELECT id FROM orders WHERE id = ?').get(orderId)) {
+      db.prepare(`INSERT INTO orders
+        (id, user_id, type, status, client_name, birth_date, birth_time, birth_location,
+         created_at, completed_at, blueprint_url, blueprint_language, full_birth_name, intake_data,
+         birth_lat, birth_lng, birth_tz,
+         alignment_score, astro_score, numerology_score, soul_direction_score, personal_year_score)
+        VALUES (?, ?, 'personal', 'completed', ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, 'nl', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+        .run(orderId, u.id, demo.intake.clientName, demo.intake.birthDate, demo.intake.birthTime,
+          `${demo.intake.birthCity}, ${demo.intake.birthCountry}`,
+          '/szinn-portal/blueprints/sample-blueprint.html', demo.intake.birthName,
+          JSON.stringify(demo.intake.raw || {}), demo.intake.lat, demo.intake.lng, demo.intake.tz,
+          78, 80, 82, 70, 74);
+    }
+
+    const dir = path.join(DATA_DIR, 'blueprints');
+    fs.mkdirSync(dir, { recursive: true });
+    const tf = path.join(dir, `${orderId}.texts.json`);
+    if (!fs.existsSync(tf)) fs.writeFileSync(tf, JSON.stringify({ orderId, nl: demo.texts, en: demo.texts }), 'utf8');
+
+    console.log(`✓ Sales-account (Morgan) klaar: ${email} / ${pw}`);
+  } catch (e) { console.error('Sales-account kon niet worden aangemaakt:', e.message); }
+})();
+
 // ── View-tokens backfillen ─────────────────────────────────────────────────────
 // Geef elke bestaande order zonder token een onraadbaar token, zodat alle
 // blueprint-links via ?t=<token> lopen i.p.v. via het volgnummer.
@@ -421,6 +464,21 @@ app.post('/api/settings/notifications', (req, res) => {
   db.prepare('UPDATE users SET notify_channel = ?, phone = ? WHERE id = ?')
     .run(channel, phone || null, req.session.userId);
   res.json({ ok: true, channel, phone });
+});
+
+// ── Zelf je wachtwoord wijzigen (vanuit het dashboard) ────────────────────────
+app.post('/api/settings/password', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  const currentPassword = String(req.body.currentPassword || '');
+  const newPassword = String(req.body.newPassword || '');
+  if (newPassword.length < 8)
+    return res.status(400).json({ error: 'Kies een wachtwoord van minstens 8 tekens' });
+  const u = db.prepare('SELECT password FROM users WHERE id = ?').get(req.session.userId);
+  if (!u || !bcrypt.compareSync(currentPassword, u.password))
+    return res.status(400).json({ error: 'Huidig wachtwoord is onjuist' });
+  db.prepare('UPDATE users SET password = ? WHERE id = ?')
+    .run(bcrypt.hashSync(newPassword, 10), req.session.userId);
+  res.json({ ok: true });
 });
 
 // ── Orders ────────────────────────────────────────────────────────────────────
@@ -662,11 +720,13 @@ async function sendDailyReadings() {
       const firstName = (u.name || '').trim().split(/\s+/)[0] || (c.lang === 'en' ? 'there' : 'daar');
       if (u.notify_channel === 'whatsapp') {
         if (!u.phone) continue; // WhatsApp gekozen maar geen nummer → overslaan
-        await sendWhatsApp({ to: u.phone, lang: c.lang, params: [firstName, day.thema, day.focus] });
-        console.log(`✓ Dagelijkse reading-app verstuurd → ${u.phone}`);
+        const r = await sendWhatsApp({ to: u.phone, lang: c.lang, params: [firstName, day.thema, day.focus] });
+        if (r?.skipped) console.warn(`⚠ Dagelijkse reading NIET verstuurd → ${u.phone}: geen WHATSAPP_TOKEN/WHATSAPP_PHONE_ID ingesteld`);
+        else console.log(`✓ Dagelijkse reading-app verstuurd → ${u.phone}`);
       } else {
-        await sendDailyReadingEmail({ to: u.email, name: u.name, theme: day.thema, focus: day.focus, lang: c.lang });
-        console.log(`✓ Dagelijkse reading-mail verstuurd → ${u.email}`);
+        const r = await sendDailyReadingEmail({ to: u.email, name: u.name, theme: day.thema, focus: day.focus, lang: c.lang });
+        if (r?.skipped) console.warn(`⚠ Dagelijkse reading NIET verstuurd → ${u.email}: geen RESEND_API_KEY ingesteld`);
+        else console.log(`✓ Dagelijkse reading-mail verstuurd → ${u.email}`);
       }
     } catch (err) {
       console.error(`Dagelijkse reading voor user ${u.id} mislukt:`, err.message);
@@ -1618,6 +1678,18 @@ app.post('/api/admin/user/:userId/journal-reset', (req, res) => {
   if (!DATE_RE.test(date)) return res.status(400).json({ error: 'Ongeldige datum' });
   const { changes } = db.prepare('DELETE FROM journal_entries WHERE user_id = ? AND date = ?').run(user.id, date);
   res.json({ ok: true, date, removed: changes > 0 });
+});
+
+// Volledige herstart: wis de blueprint(s) van deze gebruiker, geef een nieuwe
+// gratis intake én laat de 11-daagse proef opnieuw beginnen (created_at = nu).
+// Onomkeerbaar; admin-only.
+app.post('/api/admin/user/:userId/reset-intake', (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Geen toegang' });
+  const user = db.prepare('SELECT id FROM users WHERE id = ?').get(Number(req.params.userId) || 0);
+  if (!user) return res.status(404).json({ error: 'Gebruiker niet gevonden' });
+  const { changes } = db.prepare('DELETE FROM orders WHERE user_id = ?').run(user.id);
+  db.prepare('UPDATE users SET intake_grant = 1, created_at = ? WHERE id = ?').run(new Date().toISOString(), user.id);
+  res.json({ ok: true, removed: changes });
 });
 
 // Serve admin page

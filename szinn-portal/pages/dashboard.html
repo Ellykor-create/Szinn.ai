@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>SZINN · Dashboard</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -72,6 +74,14 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible{
 .langs{display:flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;font-size:11px;letter-spacing:.14em}
 .langs span{padding:5px 13px;color:var(--muted)}
 .langs span.on{background:var(--gold-deep);color:var(--cream)}
+/* #6 · donker/licht-schakelaar in de topbar */
+.themetoggle{border:1px solid var(--line);background:var(--raised);border-radius:50%;width:34px;height:34px;
+  display:flex;align-items:center;justify-content:center;color:var(--gold-print);cursor:pointer;transition:background .2s}
+.themetoggle:hover{background:rgba(201,169,110,.12)}
+.themetoggle .zon{display:block}
+.themetoggle .maan{display:none}
+body.gedimd .themetoggle .zon{display:none}
+body.gedimd .themetoggle .maan{display:block}
 .ghost{font-family:var(--sans);font-size:12.5px;letter-spacing:.06em;color:var(--muted);background:none;border:1px solid var(--line);border-radius:10px;padding:6px 16px;cursor:pointer}
 .ghost:hover{color:var(--soft);border-color:var(--gold)}
 .bell{position:relative;width:34px;height:34px;border:1px solid var(--line);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--raised);cursor:pointer}
@@ -457,6 +467,17 @@ a.nogniet:hover{opacity:.85}
 .tkaart .mk{transform-origin:50% 50%;animation:mdraai 46s linear infinite}
 @keyframes mdraai{to{transform:rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){.tkaart .mk{animation:none}}
+/* #5 · blueprint-kaart krijgt duidelijk meer ruimte */
+.tkaart.bp-groot{padding:38px 36px;gap:28px;min-height:168px;border-color:rgba(201,169,110,.4)}
+.tkaart.bp-groot .tico{width:72px;height:72px;font-size:27px}
+.tkaart.bp-groot h3{font-size:28px;margin:6px 0 9px}
+.tkaart.bp-groot p{font-size:15px;max-width:54ch}
+.tkaart.bp-groot .tknop{min-height:56px;padding:0 32px;font-size:13.5px}
+@media(max-width:820px){
+  .tkaart.bp-groot{padding:26px 22px;gap:16px;min-height:0}
+  .tkaart.bp-groot .tico{width:60px;height:60px;font-size:23px}
+  .tkaart.bp-groot h3{font-size:24px}
+}
 @media(max-width:820px){
   .tkaart{flex-wrap:wrap;gap:14px;padding:20px}
   .tkaart .ttxt{flex:1 1 60%}
@@ -1182,6 +1203,8 @@ body.locked #heroSubBtn{display:inline-block}
 </style>
 </head>
 <body>
+<script>/* #6 · thema vroeg herstellen, voorkomt flits van verkeerde modus */
+try{ if(localStorage.getItem('szinn_theme')==='dark') document.body.classList.add('gedimd'); }catch(e){}</script>
 
 <header class="mhead">
   <button class="burger" aria-label="Menu" onclick="toggleMenu(true)"><span></span><span></span><span></span></button>
@@ -1303,6 +1326,10 @@ body.locked #heroSubBtn{display:inline-block}
         <button class="hulpknop" id="hulpBtn" aria-label="Hoe werkt het">?</button>
         <a href="https://szinn.ai" style="font-size:12.5px;color:var(--muted)">&#8592; szinn.ai</a>
         <div class="langs" id="langs"><span class="on" data-l="nl">NL</span><span data-l="en">EN</span></div>
+        <button class="themetoggle" id="themeBtn" type="button" aria-label="Wissel donker of licht" aria-pressed="false">
+          <svg class="zon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.4M12 19.6V22M4.2 4.2l1.7 1.7M18.1 18.1l1.7 1.7M2 12h2.4M19.6 12H22M4.2 19.8l1.7-1.7M18.1 5.9l1.7-1.7"/></svg>
+          <svg class="maan" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.4 6.4 0 0 0 10.5 10.5z"/></svg>
+        </button>
         <div class="bellwrap">
           <button class="bell" id="bellbtn" aria-label="Meldingen" aria-expanded="false"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M18 8a6 6 0 10-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 01-3.4 0"/></svg></button>
           <div class="notif" id="notif" role="menu" aria-label="Meldingen">
@@ -1396,7 +1423,7 @@ body.locked #heroSubBtn{display:inline-block}
 
     <!-- ===== TOEGANG: BLUEPRINT & MANDALA ===== -->
     <section class="rv toegang no-r" id="toegang">
-      <div class="tkaart">
+      <div class="tkaart bp-groot">
         <span class="tico">&#10022;</span>
         <div class="ttxt">
           <span class="lbl">Alignment Blueprint</span>
@@ -2175,6 +2202,19 @@ body.locked #heroSubBtn{display:inline-block}
       <div id="notifyMsg"></div>
     </div>
 
+    <div class="card" id="pwCard" style="max-width:640px;margin-top:18px">
+      <span class="lbl">Account</span>
+      <h3>Wachtwoord wijzigen</h3>
+      <p>Kies een nieuw wachtwoord van minstens 8 tekens.</p>
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+        <input class="field" id="pwCurrent" type="password" autocomplete="current-password" placeholder="Huidig wachtwoord"/>
+        <input class="field" id="pwNew" type="password" autocomplete="new-password" placeholder="Nieuw wachtwoord (min. 8 tekens)"/>
+        <input class="field" id="pwConfirm" type="password" autocomplete="new-password" placeholder="Bevestig nieuw wachtwoord"/>
+      </div>
+      <button class="notifybtn" id="pwSave">Wachtwoord opslaan</button>
+      <div id="pwMsg" aria-live="polite"></div>
+    </div>
+
     <div class="card" id="subCard" style="max-width:640px;margin-top:18px">
       <span class="lbl" id="subEyebrow">Abonnement</span>
       <h3 id="subTitle">SZINN Daily &amp; Companion</h3>
@@ -2394,12 +2434,21 @@ if(losBtn){ losBtn.addEventListener('click', function(){
   losBtn.textContent = losBtn.classList.contains('on') ? 'Losgelaten \u2726' : 'Gezien \u00b7 en losgelaten';
 }); }
 
-// ---- scherm dimmen voor de nacht ----
+// ---- donker/licht thema (gedeeld door topbar-schakelaar en dim-knop) ----
+// Hergebruikt de bestaande body.gedimd donkere modus (token-remap), plus persistentie.
+var themeBtn=document.getElementById('themeBtn');
 var dimBtn=document.getElementById('dimBtn');
-if(dimBtn){ dimBtn.addEventListener('click', function(){
-  var aan=document.body.classList.toggle('gedimd');
-  dimBtn.textContent = aan ? 'Terug naar helder' : 'Dim het scherm';
-}); }
+function pasThemaToe(donker, bewaar){
+  document.body.classList.toggle('gedimd', donker);
+  if(dimBtn) dimBtn.textContent = donker ? (EN()?'Back to light':'Terug naar helder') : (EN()?'Dim the screen':'Dim het scherm');
+  if(themeBtn) themeBtn.setAttribute('aria-pressed', donker?'true':'false');
+  if(bewaar!==false){ try{ localStorage.setItem('szinn_theme', donker?'dark':'light'); }catch(e){} }
+}
+function wisselThema(){ pasThemaToe(!document.body.classList.contains('gedimd')); }
+if(themeBtn) themeBtn.addEventListener('click', wisselThema);
+if(dimBtn) dimBtn.addEventListener('click', wisselThema);
+// labels/aria synchroniseren met de vroeg herstelde stand (zonder persistentie te wijzigen)
+pasThemaToe(document.body.classList.contains('gedimd'), false);
 
 // ---- welkomstlaag: hoe werkt het ----
 (function(){
@@ -2477,6 +2526,10 @@ var SZINN_PH = {"Welke schaduwkant kwam ik vandaag tegen, en wat liet die me zie
 // Extra vertalingen voor de portaal-onderdelen (instellingen, bibliotheek, companion-chat)
 // — vóór de taal-IIFE zodat de omgekeerde tabel ze ook kent.
 Object.assign(SZINN_EN, {
+  'Wissel donker of licht': 'Toggle dark or light',
+  'Account': 'Account', 'Wachtwoord wijzigen': 'Change password',
+  'Kies een nieuw wachtwoord van minstens 8 tekens.': 'Choose a new password of at least 8 characters.',
+  'Wachtwoord opslaan': 'Save password',
   'Aanvragen en documenten': 'Orders and documents', 'Bibliotheek': 'Library',
   'Instellingen': 'Settings', '← Terug naar dashboard': '← Back to dashboard',
   'Dagelijkse reading': 'Daily reading',
@@ -2497,6 +2550,9 @@ Object.assign(SZINN_EN, {
 });
 Object.assign(SZINN_PH, {
   'Telefoonnummer, bijv. +31 6 12345678': 'Phone number, e.g. +31 6 12345678',
+  'Huidig wachtwoord': 'Current password',
+  'Nieuw wachtwoord (min. 8 tekens)': 'New password (min. 8 characters)',
+  'Bevestig nieuw wachtwoord': 'Confirm new password',
 });
 (function(){
   var taal='nl', bezig=false;
@@ -3279,6 +3335,27 @@ $('notifySave').addEventListener('click', function(){
     .catch(function(){ $('notifyMsg').textContent=EN()?'Could not save. Try again.':'Opslaan mislukt. Probeer opnieuw.'; })
     .finally(function(){ b.disabled=false; });
 });
+
+// ── Wachtwoord wijzigen ─────────────────────────────────────────────────────
+(function(){
+  var save=$('pwSave'); if(!save) return;
+  save.addEventListener('click', function(){
+    var cur=$('pwCurrent').value, nw=$('pwNew').value, cf=$('pwConfirm').value, msg=$('pwMsg');
+    if(nw.length<8){ msg.textContent=EN()?'The new password must be at least 8 characters.':'Het nieuwe wachtwoord moet minstens 8 tekens zijn.'; return; }
+    if(nw!==cf){ msg.textContent=EN()?'The new passwords do not match.':'De nieuwe wachtwoorden komen niet overeen.'; return; }
+    save.disabled=true; msg.textContent='';
+    fetch('/api/settings/password',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({currentPassword:cur,newPassword:nw})})
+      .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
+      .then(function(x){
+        if(x.ok && x.d && x.d.ok){ msg.textContent=EN()?'Password changed ✓':'Wachtwoord gewijzigd ✓';
+          $('pwCurrent').value=''; $('pwNew').value=''; $('pwConfirm').value=''; }
+        else { msg.textContent=(x.d&&x.d.error)||(EN()?'Could not change password.':'Wijzigen mislukt.'); }
+      })
+      .catch(function(){ msg.textContent=EN()?'Could not change password. Try again.':'Wijzigen mislukt. Probeer opnieuw.'; })
+      .finally(function(){ save.disabled=false; });
+  });
+})();
 
 // ── Abonnement (€3,69/mnd): daily + reminders + companion ───────────────────
 function unlockDashboard(){ document.body.classList.remove('locked'); }

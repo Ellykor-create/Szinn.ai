@@ -38,6 +38,9 @@ const ADMIN_EMAIL     = (process.env.ADMIN_EMAIL || 'admin@szinn.ai').trim().toL
 const DEMO_EMAIL      = (process.env.DEMO_EMAIL || 'demo@szinn.ai').trim().toLowerCase();
 const DEMO_PASSWORD   = process.env.DEMO_PASSWORD || 'szinn-demo';
 const DEMO_ORDER_ID   = 'ORD-DEMO-0001';
+const SALES_EMAIL     = (process.env.SALES_ACCOUNT_EMAIL || 'morgan@szinn.ai').trim().toLowerCase();
+const SALES_PASSWORD  = process.env.SALES_ACCOUNT_PASSWORD || 'SzinnSales2026';
+const SALES_ORDER_ID  = 'ORD-SALES-MORGAN';
 const TRIGGER_SECRET  = process.env.INTERNAL_TRIGGER_SECRET || JWT_SECRET;
 
 // Zorgt dat er een admin-account in de database staat (idempotent).
@@ -107,6 +110,57 @@ async function ensureDemoData(db) {
   return true;
 }
 
+// Sales-showcase-account (Morgan): permanent gratis, volledig gevuld dashboard om
+// SZINN te demonstreren en te verkopen. dashboard_access='on' omzeilt trial/abonnement.
+// Idempotent, lui geseed bij eerste login (zoals het demo-account).
+async function ensureSalesData(db) {
+  let user = db.users.find(u => u.email.toLowerCase() === SALES_EMAIL);
+  const orderExists = user && db.orders.some(o => o.id === SALES_ORDER_ID);
+  if (orderExists && user.dashboard_access === 'on') return false;
+
+  if (!user) {
+    user = {
+      id: db.nextUserId++, email: SALES_EMAIL,
+      password: bcrypt.hashSync(SALES_PASSWORD, 10),
+      name: 'Morgan', created_at: new Date().toISOString(),
+    };
+    db.users.push(user);
+  }
+  user.dashboard_access = 'on'; // permanente toegang, geen betaling nodig
+
+  if (!orderExists) {
+    const demo = require('../../lib/demo-blueprint');
+    const now = new Date().toISOString();
+    const order = {
+      id: SALES_ORDER_ID, user_id: user.id, type: 'personal', status: 'completed',
+      view_token: crypto.randomBytes(16).toString('hex'),
+      client_name: demo.intake.clientName, birth_date: demo.intake.birthDate,
+      birth_time: demo.intake.birthTime,
+      birth_location: `${demo.intake.birthCity}, ${demo.intake.birthCountry}`,
+      birth_lat: demo.intake.lat, birth_lng: demo.intake.lng, birth_tz: demo.intake.tz,
+      full_birth_name: demo.intake.birthName,
+      blueprint_language: 'nl',
+      intake_data: JSON.stringify(demo.intake.raw || {}),
+      created_at: now, completed_at: now,
+      blueprint_url: `/szinn-portal/blueprints/${SALES_ORDER_ID}.html`,
+      blueprint_languages: ['nl'], pdf_available: false,
+      alignment_score: null, astro_score: null, numerology_score: null,
+      soul_direction_score: null, personal_year_score: null,
+    };
+    db.orders.push(order);
+
+    const { buildContext } = require('../../lib/pipeline');
+    const { renderBlueprint } = require('../../lib/template');
+    const ctx = buildContext(order);
+    const html = renderBlueprint({ ...ctx, ai: demo.texts, lang: 'nl' });
+    const store = blueprintStore();
+    await store.set(`${SALES_ORDER_ID}.nl.html`, html);
+    await store.setJSON(`${SALES_ORDER_ID}.texts.json`, { orderId: SALES_ORDER_ID, demo: true, nl: demo.texts, en: demo.texts });
+    console.log(`Sales-blueprint aangemaakt voor ${SALES_EMAIL}`);
+  }
+  return true;
+}
+
 // Start de blueprint-generatie als background function (15 min limiet).
 // Fire-and-forget: de intake-response wacht alleen op de 202-acceptatie.
 // De order gaat mee in de payload: Blobs is eventually consistent, dus de
@@ -159,6 +213,8 @@ app.post('/api/auth/login', async (req, res) => {
   // Demo-account + voorbeeld-blueprint aanmaken zodra iemand ermee inlogt.
   if (email.trim().toLowerCase() === DEMO_EMAIL) {
     if (await ensureDemoData(db)) await saveDB(db);
+  } else if (email.trim().toLowerCase() === SALES_EMAIL) {
+    if (await ensureSalesData(db)) await saveDB(db);
   }
   const user = db.users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
   if (!user || !bcrypt.compareSync(password, user.password))
@@ -810,6 +866,22 @@ app.post('/api/settings/notifications', async (req, res) => {
   if (phone) u.phone = phone;
   await saveDB(db);
   res.json({ ok: true, channel, phone: u.phone || '' });
+});
+
+// ── Zelf je wachtwoord wijzigen (vanuit het dashboard) ────────────────────────
+app.post('/api/settings/password', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const currentPassword = String(req.body?.currentPassword || '');
+  const newPassword = String(req.body?.newPassword || '');
+  if (newPassword.length < 8)
+    return res.status(400).json({ error: 'Kies een wachtwoord van minstens 8 tekens' });
+  const db = await loadDB();
+  const u = db.users.find(u => u.id === req.auth.userId);
+  if (!u || !bcrypt.compareSync(currentPassword, u.password))
+    return res.status(400).json({ error: 'Huidig wachtwoord is onjuist' });
+  u.password = bcrypt.hashSync(newPassword, 10);
+  await saveDB(db);
+  res.json({ ok: true });
 });
 
 // ── Intake-toegang: alleen na betaling (of met cadeaucode) ───────────────────
@@ -1644,6 +1716,24 @@ app.post('/api/admin/user/:userId/journal-reset', async (req, res) => {
   const removed = !!(user.journal && user.journal[date]);
   if (removed) { delete user.journal[date]; await saveDB(db); }
   res.json({ ok: true, date, removed });
+});
+
+// Volledige herstart: wis de blueprint(s) van deze gebruiker, geef een nieuwe
+// gratis intake én laat de 11-daagse proef opnieuw beginnen (created_at = nu).
+// Onomkeerbaar; admin-only. Blob-artefacten blijven staan maar zijn na het
+// wissen van de order onbereikbaar; een nieuwe intake krijgt een nieuw order-id.
+app.post('/api/admin/user/:userId/reset-intake', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  const db = await loadDB();
+  const user = db.users.find(u => u.id === Number(req.params.userId));
+  if (!user) return res.status(404).json({ error: 'Gebruiker niet gevonden' });
+  const removed = db.orders.filter(o => o.user_id === user.id).length;
+  db.orders = db.orders.filter(o => o.user_id !== user.id);
+  delete user.intake_draft;                     // eventueel opgeslagen concept weg
+  user.intake_grant = true;                     // nieuwe intake zonder betaling
+  user.created_at = new Date().toISOString();   // proef van 11 dagen herstart
+  await saveDB(db);
+  res.json({ ok: true, removed });
 });
 
 // ── Foutafhandelaar ─────────────────────────────────────────────────────────────

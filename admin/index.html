@@ -104,6 +104,8 @@ textarea:focus { border-color: var(--gold); }
 #toast.show { display: block; animation: fadeIn .3s; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 </style>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/favicon.png">
 </head>
 <body>
 
@@ -451,7 +453,9 @@ function renderUsers(users) {
       <td style="text-align:center">${u.blueprints}</td>
       <td>${sub}</td>
       <td>${accessSelect(u)}</td>
-      <td><div class="actions" style="align-items:center">${reactivate}</div></td>
+      <td><div class="actions" style="align-items:center">${reactivate}
+        <button class="btn btn-ghost btn-sm" onclick="resetIntake(${u.id})" title="Blueprint wissen, intake opnieuw laten invullen én de proef van 11 dagen herstarten">↺ Reset intake</button>
+      </div></td>
       <td><div class="actions" style="align-items:center">
         <input type="date" id="jr-${u.id}" value="${today}" title="Datum van de dag die opnieuw ingevuld mag worden">
         <button class="btn btn-ghost btn-sm" onclick="resetJournalDay(${u.id})">Wis dag</button>
@@ -499,6 +503,18 @@ async function setIntakeGrant(userId, grant) {
     showToast(grant
       ? '✓ Blueprint geheractiveerd — dit account kan een nieuwe intake invullen op /intake'
       : '✓ Heractivering ingetrokken');
+  } else {
+    showToast('Fout: ' + (data.error || r.status), true);
+  }
+  loadUsers();
+}
+
+async function resetIntake(userId) {
+  if (!confirm('⚠ Weet je het zeker?\n\nDit VERWIJDERT de blueprint van dit account, zet het terug op de intake (opnieuw invullen zonder betaling) én start de gratis proef van 11 dagen opnieuw.\n\nDit kan niet ongedaan worden gemaakt.')) return;
+  const r = await fetch(`/api/admin/user/${userId}/reset-intake`, { method: 'POST' });
+  const data = await r.json().catch(() => ({}));
+  if (r.ok && data.ok) {
+    showToast(`✓ Blueprint gewist (${data.removed}) — account staat terug op de intake, proef opnieuw gestart`);
   } else {
     showToast('Fout: ' + (data.error || r.status), true);
   }
