@@ -435,6 +435,29 @@ app.post('/api/auth/logout', (req, res) => {
   req.session.destroy(() => res.json({ ok: true }));
 });
 
+// Wachtwoord vergeten: genereer een nieuw wachtwoord, sla het gehasht op en mail
+// het via Resend. Antwoord is bewust altijd generiek (ok:true) zodat we niet
+// lekken welke e-mailadressen een account hebben. Admin is uitgesloten.
+app.post('/api/auth/forgot-password', async (req, res) => {
+  const { email, lang } = req.body || {};
+  if (!email || !String(email).includes('@'))
+    return res.status(400).json({ error: 'Vul een geldig e-mailadres in' });
+  const user = db.prepare('SELECT * FROM users WHERE LOWER(email) = LOWER(?)').get(String(email).trim());
+  if (user && !user.is_admin) {
+    const newPassword = crypto.randomBytes(5).toString('hex'); // 10 hex-tekens
+    db.prepare('UPDATE users SET password = ? WHERE id = ?')
+      .run(bcrypt.hashSync(newPassword, 10), user.id);
+    try {
+      const { sendPasswordResetEmail } = require('./lib/email');
+      await sendPasswordResetEmail({ to: user.email, name: user.name, newPassword, lang: lang === 'en' ? 'en' : 'nl' });
+    } catch (e) {
+      console.error('wachtwoord-reset mail mislukt:', e.message);
+      return res.status(500).json({ error: 'Kon de e-mail niet versturen. Probeer het later opnieuw.' });
+    }
+  }
+  res.json({ ok: true });
+});
+
 app.get('/api/auth/me', (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
   const user = db.prepare('SELECT id, email, name FROM users WHERE id = ?').get(req.session.userId);
