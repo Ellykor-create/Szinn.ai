@@ -2440,7 +2440,8 @@ var themeBtn=document.getElementById('themeBtn');
 var dimBtn=document.getElementById('dimBtn');
 function pasThemaToe(donker, bewaar){
   document.body.classList.toggle('gedimd', donker);
-  if(dimBtn) dimBtn.textContent = donker ? (EN()?'Back to light':'Terug naar helder') : (EN()?'Dim the screen':'Dim het scherm');
+  var en = document.documentElement.lang==='en';
+  if(dimBtn) dimBtn.textContent = donker ? (en?'Back to light':'Terug naar helder') : (en?'Dim the screen':'Dim het scherm');
   if(themeBtn) themeBtn.setAttribute('aria-pressed', donker?'true':'false');
   if(bewaar!==false){ try{ localStorage.setItem('szinn_theme', donker?'dark':'light'); }catch(e){} }
 }
