@@ -460,9 +460,17 @@ app.post('/api/auth/forgot-password', async (req, res) => {
 
 app.get('/api/auth/me', (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
-  const user = db.prepare('SELECT id, email, name FROM users WHERE id = ?').get(req.session.userId);
+  const user = db.prepare('SELECT id, email, name, intake_grant FROM users WHERE id = ?').get(req.session.userId);
   if (!user) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
-  res.json({ ...user, initials: user.name.substring(0,2).toUpperCase() });
+  // Na een intake-reset (grant + geen afgeronde blueprint) hoort de gebruiker
+  // niet in het dashboard maar direct op /intake. Heractivering met behouden
+  // blueprint valt hier buiten: die houdt gewoon toegang.
+  const hasBlueprint = !!db.prepare("SELECT 1 FROM orders WHERE user_id = ? AND status = 'completed' LIMIT 1").get(user.id);
+  res.json({
+    id: user.id, email: user.email, name: user.name,
+    initials: user.name.substring(0, 2).toUpperCase(),
+    mustIntake: !!user.intake_grant && !hasBlueprint,
+  });
 });
 
 // ── Meldingsvoorkeur (WhatsApp / e-mail / uit) ────────────────────────────────

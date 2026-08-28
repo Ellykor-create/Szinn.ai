@@ -260,7 +260,15 @@ app.get('/api/auth/me', async (req, res) => {
   const db   = await loadDB();
   const user = db.users.find(u => u.id === req.auth.userId);
   if (!user) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
-  res.json({ id: user.id, email: user.email, name: user.name, initials: user.name.substring(0,2).toUpperCase() });
+  // Na een intake-reset (grant + geen afgeronde blueprint) hoort de gebruiker
+  // niet in het dashboard maar direct op /intake; heractivering met behouden
+  // blueprint valt hier buiten.
+  const hasBlueprint = db.orders.some(o => o.user_id === user.id && o.status === 'completed');
+  res.json({
+    id: user.id, email: user.email, name: user.name,
+    initials: user.name.substring(0, 2).toUpperCase(),
+    mustIntake: !!user.intake_grant && !hasBlueprint,
+  });
 });
 
 // ── Orders ────────────────────────────────────────────────────────────────────
