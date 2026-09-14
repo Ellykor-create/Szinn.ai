@@ -30,6 +30,10 @@ const FALLBACK = {
 // De dagelijkse reading hoort bij het abonnement; demo-accounts uitgezonderd.
 // Zonder Stripe-sleutel (lokaal) niet blokkeren — gelijk aan hasSubscriptionAccess in api.js.
 const DEMO_EMAILS = [(process.env.DEMO_EMAIL || 'demo@szinn.ai').trim().toLowerCase(), 'demo-plus@szinn.ai'];
+// Permanente super-accounts (Morgan/Elly/Danillo): altijd reminders, net als demo.
+// dashboard_access==='on' dekt ze ook (zo geseed), maar env houdt het overrideable.
+const SUPER_EMAILS = (process.env.SUPER_EMAILS || 'morgan@szinn.ai,elly@szinn.ai,danillo@udefine.nl')
+  .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
 
 exports.handler = async () => {
   const hourNL = Number(new Intl.DateTimeFormat('nl-NL', { timeZone: 'Europe/Amsterdam', hour: '2-digit', hour12: false }).format(new Date()));
@@ -49,7 +53,9 @@ exports.handler = async () => {
     if (!order) continue;
     // Toegang: demo, lopend abonnement, óf binnen de 11-daagse proef. Zonder
     // Stripe-sleutel (lokaal) niet blokkeren.
-    const hasAccess = !stripeConfigured() || DEMO_EMAILS.includes((u.email || '').toLowerCase())
+    const email = (u.email || '').toLowerCase();
+    const hasAccess = !stripeConfigured() || DEMO_EMAILS.includes(email)
+      || SUPER_EMAILS.includes(email) || u.dashboard_access === 'on'
       || subIsActive(u.subscription) || withinTrial(u.created_at);
     if (!hasAccess) continue;
     // Kanaalkeuze: onbekend/leeg valt terug op WhatsApp mits er een nummer is.

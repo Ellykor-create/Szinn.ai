@@ -249,47 +249,55 @@ if (userCount === 0) {
   } catch (e) { console.error('Volledig demo-account kon niet worden aangemaakt:', e.message); }
 })();
 
-// ── Sales-showcase-account (Morgan) ────────────────────────────────────────────
-// Permanent gratis, volledig gevuld dashboard zodat Morgan SZINN kan demonstreren
-// en verkopen: dashboard_access='on' omzeilt trial/abonnement. Idempotent.
-// E-mail/wachtwoord instelbaar via SALES_ACCOUNT_EMAIL / SALES_ACCOUNT_PASSWORD.
-(function ensureSalesAccount() {
+// ── Permanente super-accounts (Morgan, Elly, Danillo) ──────────────────────────
+// Gratis, volledig gevuld dashboard om SZINN te demonstreren/verkopen:
+// dashboard_access='on' omzeilt trial/abonnement, notify_channel='email' zet de
+// dagelijkse reminder aan, en SUPER_EMAILS geeft onbeperkte Companion. Idempotent.
+// E-mail/wachtwoord per account instelbaar via env (sensible defaults).
+const SUPER_ACCOUNTS = [
+  { email: (process.env.SALES_ACCOUNT_EMAIL || 'morgan@szinn.ai').trim(), password: process.env.SALES_ACCOUNT_PASSWORD || 'SzinnSales2026', name: 'Morgan', orderId: 'ORD-SALES-MORGAN' },
+  { email: (process.env.ELLY_ACCOUNT_EMAIL || 'elly@szinn.ai').trim(), password: process.env.ELLY_ACCOUNT_PASSWORD || 'SzinnElly2026', name: 'Elly', orderId: 'ORD-SALES-ELLY' },
+  { email: (process.env.DANILLO_ACCOUNT_EMAIL || 'danillo@udefine.nl').trim(), password: process.env.DANILLO_ACCOUNT_PASSWORD || 'SzinnDanillo2026', name: 'Danillo', orderId: 'ORD-SALES-DANILLO' },
+];
+const SUPER_EMAILS = (process.env.SUPER_EMAILS || SUPER_ACCOUNTS.map(a => a.email).join(','))
+  .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+
+(function ensureSuperAccounts() {
   try {
-    const demo    = require('./lib/demo-blueprint');
-    const email   = (process.env.SALES_ACCOUNT_EMAIL || 'morgan@szinn.ai').trim();
-    const pw      = process.env.SALES_ACCOUNT_PASSWORD || 'SzinnSales2026';
-    const orderId = 'ORD-SALES-MORGAN';
-
-    let u = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(email);
-    if (!u) {
-      db.prepare('INSERT INTO users (email, password, name) VALUES (?, ?, ?)')
-        .run(email, bcrypt.hashSync(pw, 10), 'Morgan');
-      u = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(email);
-    }
-    // Permanente toegang: geen betaling of trial nodig.
-    db.prepare("UPDATE users SET dashboard_access = 'on' WHERE id = ?").run(u.id);
-
-    if (!db.prepare('SELECT id FROM orders WHERE id = ?').get(orderId)) {
-      db.prepare(`INSERT INTO orders
-        (id, user_id, type, status, client_name, birth_date, birth_time, birth_location,
-         created_at, completed_at, blueprint_url, blueprint_language, full_birth_name, intake_data,
-         birth_lat, birth_lng, birth_tz,
-         alignment_score, astro_score, numerology_score, soul_direction_score, personal_year_score)
-        VALUES (?, ?, 'personal', 'completed', ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, 'nl', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-        .run(orderId, u.id, demo.intake.clientName, demo.intake.birthDate, demo.intake.birthTime,
-          `${demo.intake.birthCity}, ${demo.intake.birthCountry}`,
-          '/szinn-portal/blueprints/sample-blueprint.html', demo.intake.birthName,
-          JSON.stringify(demo.intake.raw || {}), demo.intake.lat, demo.intake.lng, demo.intake.tz,
-          78, 80, 82, 70, 74);
-    }
-
+    const demo = require('./lib/demo-blueprint');
     const dir = path.join(DATA_DIR, 'blueprints');
     fs.mkdirSync(dir, { recursive: true });
-    const tf = path.join(dir, `${orderId}.texts.json`);
-    if (!fs.existsSync(tf)) fs.writeFileSync(tf, JSON.stringify({ orderId, nl: demo.texts, en: demo.texts }), 'utf8');
+    for (const acc of SUPER_ACCOUNTS) {
+      let u = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(acc.email);
+      if (!u) {
+        db.prepare('INSERT INTO users (email, password, name) VALUES (?, ?, ?)')
+          .run(acc.email, bcrypt.hashSync(acc.password, 10), acc.name);
+        u = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(acc.email);
+      }
+      // Permanente toegang; dagelijkse reminder aan tenzij al bewust een kanaal gekozen is.
+      db.prepare("UPDATE users SET dashboard_access = 'on' WHERE id = ?").run(u.id);
+      db.prepare("UPDATE users SET notify_channel = 'email' WHERE id = ? AND (notify_channel IS NULL OR notify_channel = '' OR notify_channel = 'off')").run(u.id);
 
-    console.log(`✓ Sales-account (Morgan) klaar: ${email} / ${pw}`);
-  } catch (e) { console.error('Sales-account kon niet worden aangemaakt:', e.message); }
+      if (!db.prepare('SELECT id FROM orders WHERE id = ?').get(acc.orderId)) {
+        db.prepare(`INSERT INTO orders
+          (id, user_id, type, status, client_name, birth_date, birth_time, birth_location,
+           created_at, completed_at, blueprint_url, blueprint_language, full_birth_name, intake_data,
+           birth_lat, birth_lng, birth_tz,
+           alignment_score, astro_score, numerology_score, soul_direction_score, personal_year_score)
+          VALUES (?, ?, 'personal', 'completed', ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, 'nl', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+          .run(acc.orderId, u.id, demo.intake.clientName, demo.intake.birthDate, demo.intake.birthTime,
+            `${demo.intake.birthCity}, ${demo.intake.birthCountry}`,
+            '/szinn-portal/blueprints/sample-blueprint.html', demo.intake.birthName,
+            JSON.stringify(demo.intake.raw || {}), demo.intake.lat, demo.intake.lng, demo.intake.tz,
+            78, 80, 82, 70, 74);
+      }
+
+      const tf = path.join(dir, `${acc.orderId}.texts.json`);
+      if (!fs.existsSync(tf)) fs.writeFileSync(tf, JSON.stringify({ orderId: acc.orderId, nl: demo.texts, en: demo.texts }), 'utf8');
+
+      console.log(`✓ Super-account klaar: ${acc.email} (${acc.name})`);
+    }
+  } catch (e) { console.error('Super-accounts konden niet worden aangemaakt:', e.message); }
 })();
 
 // ── View-tokens backfillen ─────────────────────────────────────────────────────
@@ -391,8 +399,68 @@ const PAGE_ALIASES = {
   '/cadeau': 'szinn-portal/pages/gift.html',
 };
 app.get(Object.keys(PAGE_ALIASES), (req, res) => {
-  res.sendFile(path.join(ROOT, PAGE_ALIASES[req.path]));
+  // Express matcht '/portaal/' (met slash) ook op '/portaal'; zonder deze
+  // normalisatie is de lookup undefined en crasht path.join met een 500.
+  res.sendFile(path.join(ROOT, PAGE_ALIASES[req.path.replace(/\/+$/, '')]));
 });
+// De herkenning-journey: de klantdata (client*.json) en het kaartbeeld worden
+// per ingelogde gebruiker opgebouwd uit de eigen blueprint; zonder voltooide
+// blueprint komt er een vergrendelde variant terug (alleen het welkomstscherm).
+function journeyContext(req) {
+  if (!req.session.userId) return null;
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.session.userId);
+  if (!user) return null;
+  const order = db.prepare(
+    "SELECT * FROM orders WHERE user_id = ? AND status = 'completed' ORDER BY created_at DESC LIMIT 1"
+  ).get(user.id);
+  return { user, order };
+}
+app.get(['/portaal/journey/client.json', '/portaal/journey/client-nl.json', '/portaal/journey/client-en.json'], (req, res) => {
+  const ctx = journeyContext(req);
+  if (!ctx) return res.status(401).json({ error: 'Niet ingelogd' });
+  const { buildJourneyJSON } = require('./lib/journey-data');
+  const { user, order } = ctx;
+  let lang = req.path.endsWith('client-en.json') ? 'en' : req.path.endsWith('client-nl.json') ? 'nl' : null;
+  if (!lang) lang = (order && order.blueprint_language === 'en') ? 'en' : 'nl';
+  res.set('Cache-Control', 'no-store');
+  if (!order) {
+    return res.json(buildJourneyJSON({ lang, ready: false, userName: user.name || '' }));
+  }
+  try {
+    const { buildContext } = require('./lib/pipeline');
+    const { chart, numerology } = buildContext(order);
+    let texts = null;
+    for (const dir of [path.join(DATA_DIR, 'blueprints'), path.join(ROOT, 'blueprints')]) {
+      const f = path.join(dir, `${order.id}.texts.json`);
+      if (fs.existsSync(f)) { texts = JSON.parse(fs.readFileSync(f, 'utf8')); break; }
+    }
+    res.json(buildJourneyJSON({
+      lang, order, chart, numerology,
+      texts: texts ? texts[lang] : null,
+      ready: true, userName: user.name || '',
+    }));
+  } catch (err) {
+    console.error('journey-data mislukt:', err.message);
+    res.json(buildJourneyJSON({ lang, ready: false, userName: user.name || '' }));
+  }
+});
+app.get('/portaal/journey/chart.svg', (req, res) => {
+  const ctx = journeyContext(req);
+  if (!ctx || !ctx.order) return res.status(404).end();
+  try {
+    const { buildContext } = require('./lib/pipeline');
+    const { generateBirthChartSVG } = require('./lib/generate-blueprint');
+    const { chart } = buildContext(ctx.order);
+    res.set('Content-Type', 'image/svg+xml');
+    res.set('Cache-Control', 'no-store');
+    res.send(generateBirthChartSVG(chart));
+  } catch (err) {
+    console.error('chart.svg mislukt:', err.message);
+    res.status(500).end();
+  }
+});
+// Overige journey-bestanden (css, js, assets) blijven statisch.
+app.use('/portaal/journey', express.static(path.join(ROOT, 'szinn-portal', 'journey')));
 // Cadeau verzilveren → intake (met eventuele code).
 app.get('/cadeau/verzilveren', (req, res) => {
   const code = req.query.code ? `?code=${encodeURIComponent(String(req.query.code))}` : '';
@@ -733,7 +801,7 @@ async function sendDailyReadings() {
   const { sendDailyReadingEmail } = require('./lib/email');
   // Alleen wie 'whatsapp' of 'email' als voorkeur koos; 'off' krijgt niets.
   const recipients = db.prepare(`
-    SELECT DISTINCT u.id, u.name, u.email, u.phone, u.notify_channel, u.created_at FROM users u
+    SELECT DISTINCT u.id, u.name, u.email, u.phone, u.notify_channel, u.created_at, u.dashboard_access FROM users u
     JOIN orders o ON o.user_id = u.id
     WHERE o.status='completed' AND u.notify_channel IN ('whatsapp','email')`).all();
 
@@ -743,7 +811,8 @@ async function sendDailyReadings() {
       // Reminders horen bij dashboard-toegang: lopend abonnement óf 11-daagse
       // proef (demo-accounts uitgezonderd).
       const inTrial = u.created_at && (Date.now() - new Date(u.created_at).getTime()) / 86400000 < TRIAL_DAYS;
-      if (stripeConfigured() && !DEMO_SUB_EMAILS.includes(u.email.toLowerCase())
+      // Super-accounts (dashboard_access='on') horen er altijd bij, net als demo.
+      if (stripeConfigured() && u.dashboard_access !== 'on' && !DEMO_SUB_EMAILS.includes(u.email.toLowerCase())
           && !subIsActive(await userSubscription(u.id)) && !inTrial) continue;
       const c = companionContext(u.id);
       if (!c.order || c.order.status !== 'completed') continue;
@@ -1207,7 +1276,9 @@ const SUB_COMPANION_LIMIT = parseInt(process.env.SUB_COMPANION_LIMIT || '10', 10
 function companionUnlimited(req) {
   if (!stripeConfigured() || req.session.isAdmin) return true;
   const u = db.prepare('SELECT email FROM users WHERE id = ?').get(req.session.userId);
-  return !!u && DEMO_SUB_EMAILS.includes(u.email.toLowerCase());
+  if (!u) return false;
+  const email = u.email.toLowerCase();
+  return DEMO_SUB_EMAILS.includes(email) || SUPER_EMAILS.includes(email);
 }
 
 app.post('/api/companion/chat', async (req, res) => {
@@ -1466,6 +1537,18 @@ async function generateBlueprint(orderId) {
   );
 
   console.log(`✓ Blueprint klaar: ${orderId} — alignment ${scores.alignment}%`);
+
+  // Mail — blueprint klaar (zelfde mail als de Netlify-pipeline stuurt).
+  const mailUser = db.prepare('SELECT * FROM users WHERE id = ?').get(order.user_id);
+  if (mailUser) {
+    const { sendReadyEmail } = require('./lib/email');
+    await sendReadyEmail({
+      to: mailUser.email,
+      name: order.client_name || mailUser.name,
+      orderId,
+      lang: order.blueprint_language === 'en' ? 'en' : 'nl',
+    }).catch(e => console.error('klaar-mail mislukt:', e.message));
+  }
 }
 
 // ── Book order (placeholder) ──────────────────────────────────────────────────

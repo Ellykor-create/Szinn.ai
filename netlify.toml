@@ -25,7 +25,7 @@
 # (netlify dev, zonder site-URL) zelf een PDF maken. Daarom moeten de templates
 # mee én Chromium extern meegekopieerd worden.
 [functions."api"]
-  included_files       = ["templates/*.html"]
+  included_files       = ["templates/*.html", "szinn-portal/journey/client.json", "szinn-portal/journey/client-nl.json"]
   external_node_modules = ["@sparticuz/chromium", "puppeteer-core"]
 
 # Ingeplande functie: verstuurt cadeau-e-mails op hun verzenddatum, om 00:01 UTC
@@ -59,6 +59,34 @@
 [[redirects]]
   from = "/portaal/mandala"
   to = "/szinn-portal/pages/mandala.html"
+  status = 200
+[[redirects]]
+  from = "/portaal/journey"
+  to = "/portaal/journey/"
+  status = 301
+# De klantdata en het kaartbeeld van de journey zijn per gebruiker en komen
+# uit de api-functie; deze regels moeten vóór de statische splat hieronder.
+[[redirects]]
+  from = "/portaal/journey/client.json"
+  to = "/.netlify/functions/api"
+  status = 200
+[[redirects]]
+  from = "/portaal/journey/client-nl.json"
+  to = "/.netlify/functions/api"
+  status = 200
+[[redirects]]
+  from = "/portaal/journey/client-en.json"
+  to = "/.netlify/functions/api"
+  status = 200
+[[redirects]]
+  from = "/portaal/journey/chart.svg"
+  to = "/.netlify/functions/api"
+  status = 200
+# De journey is een map met eigen relatieve assets; de splat houdt alles onder
+# /portaal/journey/ werkend (css, js, assets, downloads).
+[[redirects]]
+  from = "/portaal/journey/*"
+  to = "/szinn-portal/journey/:splat"
   status = 200
 [[redirects]]
   from = "/cadeau"
