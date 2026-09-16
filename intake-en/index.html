@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- SZINN favicon -->
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/favicon.png">
 <title>SZINN Alignment Blueprint · Intake</title>
 <!-- Payment gate: the intake is only accessible after payment (or with a gift
      code). The page stays hidden until the server confirms access; otherwise
@@ -1341,7 +1344,7 @@ function validate(i) {
   let firstBad = null;
 
   if (i === 0) {
-    ['voornaam','achternaam','geboortenaam','email','geboortedatum','geboortetijd','geboorteland','geboorteplaats'].forEach(id => {
+    ['voornaam','achternaam','geboortenaam','email','geboortedatum','geboortetijd','geboorteland'].forEach(id => {
       const el = document.getElementById(id);
       const fd = document.getElementById('field-' + id);
       if (!el || !el.value.trim()) { fd && fd.classList.add('has-error'); ok = false; firstBad = firstBad || fd || el; }

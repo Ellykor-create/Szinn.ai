@@ -42,7 +42,7 @@ h2 { font-size: 18px; margin-bottom: 18px; color: var(--ink); font-weight: 500; 
 h3 { font-size: 15px; margin-bottom: 10px; color: var(--ink); }
 
 /* Orders table */
-.orders-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-bottom: 32px; }
+.orders-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin-bottom: 32px; }
 table { width: 100%; border-collapse: collapse; }
 th { font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); padding: 12px 14px; text-align: left; background: rgba(166,124,58,.05); border-bottom: 1px solid var(--border); }
 td { padding: 12px 14px; border-bottom: 1px solid rgba(0,0,0,.04); vertical-align: middle; }
@@ -104,6 +104,8 @@ textarea:focus { border-color: var(--gold); }
 #toast.show { display: block; animation: fadeIn .3s; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 </style>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/favicon.png">
 </head>
 <body>
 
@@ -201,10 +203,11 @@ textarea:focus { border-color: var(--gold); }
             <th>Abonnement</th>
             <th>Dashboard-toegang</th>
             <th>Blueprint heractiveren</th>
+            <th>Dagboek-dag wissen</th>
           </tr>
         </thead>
         <tbody id="users-body">
-          <tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted)">Laden…</td></tr>
+          <tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted)">Laden…</td></tr>
         </tbody>
       </table>
     </div>
@@ -430,9 +433,10 @@ function accessSelect(u) {
 function renderUsers(users) {
   const tbody = document.getElementById('users-body');
   if (!users.length) {
-    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted)">Geen gebruikers gevonden</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted)">Geen gebruikers gevonden</td></tr>';
     return;
   }
+  const today = new Date().toISOString().slice(0, 10);
   tbody.innerHTML = users.map(u => {
     const date = u.created_at ? new Date(u.created_at).toLocaleDateString('nl-NL', { day:'2-digit', month:'2-digit', year:'numeric' }) : '—';
     const sub = u.subActive
@@ -449,7 +453,13 @@ function renderUsers(users) {
       <td style="text-align:center">${u.blueprints}</td>
       <td>${sub}</td>
       <td>${accessSelect(u)}</td>
-      <td><div class="actions" style="align-items:center">${reactivate}</div></td>
+      <td><div class="actions" style="align-items:center">${reactivate}
+        <button class="btn btn-ghost btn-sm" onclick="resetIntake(${u.id})" title="Blueprint wissen, intake opnieuw laten invullen én de proef van 11 dagen herstarten">↺ Reset intake</button>
+      </div></td>
+      <td><div class="actions" style="align-items:center">
+        <input type="date" id="jr-${u.id}" value="${today}" title="Datum van de dag die opnieuw ingevuld mag worden">
+        <button class="btn btn-ghost btn-sm" onclick="resetJournalDay(${u.id})">Wis dag</button>
+      </div></td>
     </tr>`;
   }).join('');
 }
@@ -468,6 +478,22 @@ async function setDashboardAccess(userId, dashboard) {
   loadUsers();
 }
 
+async function resetJournalDay(userId) {
+  const date = (document.getElementById('jr-' + userId) || {}).value || '';
+  if (!date) { showToast('Kies eerst een datum', true); return; }
+  const r = await fetch(`/api/admin/user/${userId}/journal-reset`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ date })
+  });
+  const data = await r.json().catch(() => ({}));
+  if (r.ok && data.ok) {
+    showToast(data.removed
+      ? `✓ Dagboek ${date} gewist — dit account kan de dag opnieuw invullen`
+      : `Geen dagboek-inhoud gevonden op ${date}`);
+  } else {
+    showToast('Fout: ' + (data.error || r.status), true);
+  }
+}
+
 async function setIntakeGrant(userId, grant) {
   const r = await fetch(`/api/admin/user/${userId}/access`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ intakeGrant: grant })
@@ -477,6 +503,18 @@ async function setIntakeGrant(userId, grant) {
     showToast(grant
       ? '✓ Blueprint geheractiveerd — dit account kan een nieuwe intake invullen op /intake'
       : '✓ Heractivering ingetrokken');
+  } else {
+    showToast('Fout: ' + (data.error || r.status), true);
+  }
+  loadUsers();
+}
+
+async function resetIntake(userId) {
+  if (!confirm('⚠ Weet je het zeker?\n\nDit VERWIJDERT de blueprint van dit account, zet het terug op de intake (opnieuw invullen zonder betaling) én start de gratis proef van 11 dagen opnieuw.\n\nDit kan niet ongedaan worden gemaakt.')) return;
+  const r = await fetch(`/api/admin/user/${userId}/reset-intake`, { method: 'POST' });
+  const data = await r.json().catch(() => ({}));
+  if (r.ok && data.ok) {
+    showToast(`✓ Blueprint gewist (${data.removed}) — account staat terug op de intake, proef opnieuw gestart`);
   } else {
     showToast('Fout: ' + (data.error || r.status), true);
   }

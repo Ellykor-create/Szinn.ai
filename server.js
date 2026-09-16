@@ -115,6 +115,9 @@ try { db.exec(`ALTER TABLE users ADD COLUMN notify_channel TEXT DEFAULT 'off'`);
 // proef/abonnement) en een eenmalige gratis nieuwe intake (blueprint-heractivering).
 try { db.exec(`ALTER TABLE users ADD COLUMN dashboard_access TEXT DEFAULT NULL`); } catch {}
 try { db.exec(`ALTER TABLE users ADD COLUMN intake_grant INTEGER DEFAULT 0`); } catch {}
+// Dagcache voor de AI-Guidance-kaarten (day-pillars): { date, lang, data } als JSON,
+// zodat de dagteksten hooguit één keer per dag bij de AI worden opgehaald.
+try { db.exec(`ALTER TABLE users ADD COLUMN day_pillars TEXT DEFAULT NULL`); } catch {}
 // Onraadbaar deel-/kijktoken per order. Zo staat het volgnummer (ORD-…) nooit
 // in een URL en kan niemand door een nummer te raden andermans blueprint openen.
 try { db.exec(`ALTER TABLE orders ADD COLUMN view_token TEXT`); } catch {}
@@ -244,6 +247,49 @@ if (userCount === 0) {
 
     console.log(`✓ Volledig demo-account klaar: ${email} / szinn2024`);
   } catch (e) { console.error('Volledig demo-account kon niet worden aangemaakt:', e.message); }
+})();
+
+// ── Sales-showcase-account (Morgan) ────────────────────────────────────────────
+// Permanent gratis, volledig gevuld dashboard zodat Morgan SZINN kan demonstreren
+// en verkopen: dashboard_access='on' omzeilt trial/abonnement. Idempotent.
+// E-mail/wachtwoord instelbaar via SALES_ACCOUNT_EMAIL / SALES_ACCOUNT_PASSWORD.
+(function ensureSalesAccount() {
+  try {
+    const demo    = require('./lib/demo-blueprint');
+    const email   = (process.env.SALES_ACCOUNT_EMAIL || 'morgan@szinn.ai').trim();
+    const pw      = process.env.SALES_ACCOUNT_PASSWORD || 'SzinnSales2026';
+    const orderId = 'ORD-SALES-MORGAN';
+
+    let u = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(email);
+    if (!u) {
+      db.prepare('INSERT INTO users (email, password, name) VALUES (?, ?, ?)')
+        .run(email, bcrypt.hashSync(pw, 10), 'Morgan');
+      u = db.prepare('SELECT id FROM users WHERE LOWER(email) = LOWER(?)').get(email);
+    }
+    // Permanente toegang: geen betaling of trial nodig.
+    db.prepare("UPDATE users SET dashboard_access = 'on' WHERE id = ?").run(u.id);
+
+    if (!db.prepare('SELECT id FROM orders WHERE id = ?').get(orderId)) {
+      db.prepare(`INSERT INTO orders
+        (id, user_id, type, status, client_name, birth_date, birth_time, birth_location,
+         created_at, completed_at, blueprint_url, blueprint_language, full_birth_name, intake_data,
+         birth_lat, birth_lng, birth_tz,
+         alignment_score, astro_score, numerology_score, soul_direction_score, personal_year_score)
+        VALUES (?, ?, 'personal', 'completed', ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, ?, 'nl', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+        .run(orderId, u.id, demo.intake.clientName, demo.intake.birthDate, demo.intake.birthTime,
+          `${demo.intake.birthCity}, ${demo.intake.birthCountry}`,
+          '/szinn-portal/blueprints/sample-blueprint.html', demo.intake.birthName,
+          JSON.stringify(demo.intake.raw || {}), demo.intake.lat, demo.intake.lng, demo.intake.tz,
+          78, 80, 82, 70, 74);
+    }
+
+    const dir = path.join(DATA_DIR, 'blueprints');
+    fs.mkdirSync(dir, { recursive: true });
+    const tf = path.join(dir, `${orderId}.texts.json`);
+    if (!fs.existsSync(tf)) fs.writeFileSync(tf, JSON.stringify({ orderId, nl: demo.texts, en: demo.texts }), 'utf8');
+
+    console.log(`✓ Sales-account (Morgan) klaar: ${email} / ${pw}`);
+  } catch (e) { console.error('Sales-account kon niet worden aangemaakt:', e.message); }
 })();
 
 // ── View-tokens backfillen ─────────────────────────────────────────────────────
@@ -389,11 +435,42 @@ app.post('/api/auth/logout', (req, res) => {
   req.session.destroy(() => res.json({ ok: true }));
 });
 
+// Wachtwoord vergeten: genereer een nieuw wachtwoord, sla het gehasht op en mail
+// het via Resend. Antwoord is bewust altijd generiek (ok:true) zodat we niet
+// lekken welke e-mailadressen een account hebben. Admin is uitgesloten.
+app.post('/api/auth/forgot-password', async (req, res) => {
+  const { email, lang } = req.body || {};
+  if (!email || !String(email).includes('@'))
+    return res.status(400).json({ error: 'Vul een geldig e-mailadres in' });
+  const user = db.prepare('SELECT * FROM users WHERE LOWER(email) = LOWER(?)').get(String(email).trim());
+  if (user && !user.is_admin) {
+    const newPassword = crypto.randomBytes(5).toString('hex'); // 10 hex-tekens
+    db.prepare('UPDATE users SET password = ? WHERE id = ?')
+      .run(bcrypt.hashSync(newPassword, 10), user.id);
+    try {
+      const { sendPasswordResetEmail } = require('./lib/email');
+      await sendPasswordResetEmail({ to: user.email, name: user.name, newPassword, lang: lang === 'en' ? 'en' : 'nl' });
+    } catch (e) {
+      console.error('wachtwoord-reset mail mislukt:', e.message);
+      return res.status(500).json({ error: 'Kon de e-mail niet versturen. Probeer het later opnieuw.' });
+    }
+  }
+  res.json({ ok: true });
+});
+
 app.get('/api/auth/me', (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
-  const user = db.prepare('SELECT id, email, name FROM users WHERE id = ?').get(req.session.userId);
+  const user = db.prepare('SELECT id, email, name, intake_grant FROM users WHERE id = ?').get(req.session.userId);
   if (!user) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
-  res.json({ ...user, initials: user.name.substring(0,2).toUpperCase() });
+  // Na een intake-reset (grant + geen afgeronde blueprint) hoort de gebruiker
+  // niet in het dashboard maar direct op /intake. Heractivering met behouden
+  // blueprint valt hier buiten: die houdt gewoon toegang.
+  const hasBlueprint = !!db.prepare("SELECT 1 FROM orders WHERE user_id = ? AND status = 'completed' LIMIT 1").get(user.id);
+  res.json({
+    id: user.id, email: user.email, name: user.name,
+    initials: user.name.substring(0, 2).toUpperCase(),
+    mustIntake: !!user.intake_grant && !hasBlueprint,
+  });
 });
 
 // ── Meldingsvoorkeur (WhatsApp / e-mail / uit) ────────────────────────────────
@@ -418,6 +495,21 @@ app.post('/api/settings/notifications', (req, res) => {
   db.prepare('UPDATE users SET notify_channel = ?, phone = ? WHERE id = ?')
     .run(channel, phone || null, req.session.userId);
   res.json({ ok: true, channel, phone });
+});
+
+// ── Zelf je wachtwoord wijzigen (vanuit het dashboard) ────────────────────────
+app.post('/api/settings/password', (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  const currentPassword = String(req.body.currentPassword || '');
+  const newPassword = String(req.body.newPassword || '');
+  if (newPassword.length < 8)
+    return res.status(400).json({ error: 'Kies een wachtwoord van minstens 8 tekens' });
+  const u = db.prepare('SELECT password FROM users WHERE id = ?').get(req.session.userId);
+  if (!u || !bcrypt.compareSync(currentPassword, u.password))
+    return res.status(400).json({ error: 'Huidig wachtwoord is onjuist' });
+  db.prepare('UPDATE users SET password = ? WHERE id = ?')
+    .run(bcrypt.hashSync(newPassword, 10), req.session.userId);
+  res.json({ ok: true });
 });
 
 // ── Orders ────────────────────────────────────────────────────────────────────
@@ -659,11 +751,13 @@ async function sendDailyReadings() {
       const firstName = (u.name || '').trim().split(/\s+/)[0] || (c.lang === 'en' ? 'there' : 'daar');
       if (u.notify_channel === 'whatsapp') {
         if (!u.phone) continue; // WhatsApp gekozen maar geen nummer → overslaan
-        await sendWhatsApp({ to: u.phone, lang: c.lang, params: [firstName, day.thema, day.focus] });
-        console.log(`✓ Dagelijkse reading-app verstuurd → ${u.phone}`);
+        const r = await sendWhatsApp({ to: u.phone, lang: c.lang, params: [firstName, day.thema, day.focus] });
+        if (r?.skipped) console.warn(`⚠ Dagelijkse reading NIET verstuurd → ${u.phone}: geen WHATSAPP_TOKEN/WHATSAPP_PHONE_ID ingesteld`);
+        else console.log(`✓ Dagelijkse reading-app verstuurd → ${u.phone}`);
       } else {
-        await sendDailyReadingEmail({ to: u.email, name: u.name, theme: day.thema, focus: day.focus, lang: c.lang });
-        console.log(`✓ Dagelijkse reading-mail verstuurd → ${u.email}`);
+        const r = await sendDailyReadingEmail({ to: u.email, name: u.name, theme: day.thema, focus: day.focus, lang: c.lang });
+        if (r?.skipped) console.warn(`⚠ Dagelijkse reading NIET verstuurd → ${u.email}: geen RESEND_API_KEY ingesteld`);
+        else console.log(`✓ Dagelijkse reading-mail verstuurd → ${u.email}`);
       }
     } catch (err) {
       console.error(`Dagelijkse reading voor user ${u.id} mislukt:`, err.message);
@@ -846,6 +940,99 @@ app.get('/api/companion/blueprint', async (req, res) => {
   });
 });
 
+// AI-geschreven Guidance-kaarten (astrologie, numerologie, kabbalah/tikkun, maan)
+// plus week/maand-vooruitblik en paradigma-check (pariteit met de Netlify-api).
+// Eén keer per dag berekend en gecachet op users.day_pillars ({ date, lang, data });
+// zonder AI-sleutel (of bij een AI-fout) volgt een leeg object en toont de UI
+// haar eigen statische teksten.
+app.get('/api/companion/day-pillars', async (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  const lang = req.query.lang === 'en' ? 'en' : 'nl';
+  if (!(await hasSubscriptionAccess(req)))
+    return res.status(402).json({ error: 'De dagelijkse duiding hoort bij het SZINN-abonnement.', subscribe: true });
+
+  const c = companionContext(req.session.userId, req.query.lang);
+  if (!c.ctx) return res.status(400).json({ error: 'Nog geen voltooide blueprint' });
+
+  // Dagsleutel als benadering van Europe/Amsterdam (zelfde conventie als de
+  // daily-whatsapp): de UTC-datum volstaat voor "één keer per dag".
+  const today = new Date().toISOString().slice(0, 10);
+  const row = db.prepare('SELECT day_pillars FROM users WHERE id = ?').get(req.session.userId);
+  let cached = null;
+  try { cached = row?.day_pillars ? JSON.parse(row.day_pillars) : null; } catch {}
+  if (cached && cached.date === today && cached.lang === lang) return res.json(cached.data);
+
+  const { companionConfigured, companionChat } = require('./lib/companion-llm');
+  if (!companionConfigured()) return res.json({});
+
+  try {
+    const str = { type: 'string' };
+    const schema = {
+      type: 'object', additionalProperties: false,
+      properties: {
+        astroTitel: str, astroTekst: str, astroTekst2: str,
+        numTitel: str, numTekst: str, numMaand: str,
+        kabTitel: str, kabTekst: str,
+        maanTitel: str, maanTekst: str, maanVooruit: str,
+        weekTekst: str, maandTekst: str,
+        paradigmaVraag: str, paraHerken: str, paraToets: str, paraKies: str,
+      },
+      required: ['astroTitel', 'astroTekst', 'astroTekst2', 'numTitel', 'numTekst', 'numMaand',
+        'kabTitel', 'kabTekst', 'maanTitel', 'maanTekst', 'maanVooruit', 'weekTekst', 'maandTekst',
+        'paradigmaVraag', 'paraHerken', 'paraToets', 'paraKies'],
+    };
+
+    // Extra vaste gegevens die niet in de system-prompt zitten: het tikkun-kernthema
+    // en de eerstvolgende nieuwe/volle maan (net als /api/companion/blueprint opgebouwd).
+    const tikkun = (c.texts && c.texts.tikkun && c.texts.tikkun.cards && c.texts.tikkun.cards[0]) || {};
+    const tikkunSub = (c.texts && c.texts.summary && c.texts.summary.tikkunSub) || '';
+    const fmtMoon = (m) => m
+      ? `${new Date(m.date).toLocaleDateString(c.lang === 'en' ? 'en-GB' : 'nl-NL', { day: 'numeric', month: 'long' })} in ${cSignT(c.lang, m.sign)}`
+      : (c.lang === 'en' ? 'unknown' : 'onbekend');
+    const nn = fmtMoon(c.sky.nextNewMoon), fm = fmtMoon(c.sky.nextFullMoon);
+    const py = c.ctx.numerology.personalYear;
+
+    const userPrompt = c.lang === 'en'
+      ? `Generate today's texts for the four Guidance cards of the dashboard, fully grounded in the fixed verified data in the system prompt. NEVER calculate positions or transits yourself and invent nothing; use only the natal chart, the numbers and today's given moon phase.
+Fixed extra data to use verbatim:
+- Tikkun core theme: "${tikkun.title || ''}" — ${tikkun.body || ''}
+- Tikkun in one line: ${tikkunSub}
+- Next new moon: ${nn}. Next full moon: ${fm}.
+Fields:
+- astroTitel (short heading), astroTekst (2-3 sentences: what the natal chart means today, linked to the moon phase), astroTekst2 (1-2 sentences of depth/balance).
+- numTitel (heading for Personal Day ${c.pd}), numTekst (2-3 sentences about Personal Day ${c.pd} and Personal Year ${py}), numMaand (1 sentence about Personal Month ${c.pm.number}).
+- kabTitel (heading for the tikkun core theme), kabTekst (2-3 sentences about the core theme today).
+- maanTitel (short heading, ${c.sky.waxing ? 'waxing' : 'waning'}), maanTekst (2-3 sentences), maanVooruit (1 sentence about the next new and full moon, using only the given dates/signs).
+- weekTekst (2 sentences: this week around the chart), maandTekst (2 sentences: this month).
+- paradigmaVraag (one reflection question about beliefs), paraHerken/paraToets/paraKies (each one short sentence for the Recognise/Test/Choose steps of the paradigm check).`
+      : `Genereer de dagteksten voor de vier Guidance-kaarten van het dashboard, volledig gegrond in de vaste geverifieerde gegevens uit het systeem-prompt. Bereken NOOIT zelf standen of transits en verzin niets; gebruik alleen de geboortekaart, de getallen en de meegegeven maanstand van vandaag.
+Vaste extra gegevens om letterlijk te gebruiken:
+- Tikkun-kernthema: "${tikkun.title || ''}" — ${tikkun.body || ''}
+- Tikkun in één zin: ${tikkunSub}
+- Eerstvolgende nieuwe maan: ${nn}. Eerstvolgende volle maan: ${fm}.
+Velden:
+- astroTitel (korte kop), astroTekst (2-3 zinnen: wat de geboortekaart vandaag betekent, gekoppeld aan de maanstand), astroTekst2 (1-2 zinnen verdieping/balans).
+- numTitel (kop bij de Persoonlijke Dag ${c.pd}), numTekst (2-3 zinnen over Persoonlijke Dag ${c.pd} en Persoonlijk Jaar ${py}), numMaand (1 zin over de Persoonlijke Maand ${c.pm.number}).
+- kabTitel (kop bij het tikkun-kernthema), kabTekst (2-3 zinnen over het kernthema vandaag).
+- maanTitel (korte kop, ${c.sky.waxing ? 'wassend' : 'afnemend'}), maanTekst (2-3 zinnen), maanVooruit (1 zin over de eerstvolgende nieuwe én volle maan, alleen met de gegeven datums/tekens).
+- weekTekst (2 zinnen: deze week rond de kaart), maandTekst (2 zinnen: deze maand).
+- paradigmaVraag (één reflectievraag over overtuigingen), paraHerken/paraToets/paraKies (elk één korte zin voor de stappen Herken/Toets/Kies van de paradigma-check).`;
+
+    const reading = await companionChat({
+      system: cCompanionSystem(c),
+      messages: [{ role: 'user', content: userPrompt }],
+      maxTokens: 1200,
+      jsonSchema: schema,
+    });
+    db.prepare('UPDATE users SET day_pillars = ? WHERE id = ?')
+      .run(JSON.stringify({ date: today, lang, data: reading }), req.session.userId);
+    res.json(reading);
+  } catch (err) {
+    console.error('companion/day-pillars AI-fout:', err.message);
+    res.json({});
+  }
+});
+
 // ── Dagboek: dagstart & dagafsluiting (kalender + popup in het dashboard) ─────
 const { DATE_RE, mergeJournalEntry } = require('./lib/journal');
 
@@ -882,6 +1069,8 @@ app.post('/api/feedback', (req, res) => {
   if (fb.error) return res.status(400).json({ error: fb.error });
   db.prepare('INSERT INTO feedback (name, email, rating, message, lang) VALUES (?, ?, ?, ?, ?)')
     .run(fb.name, fb.email, fb.rating, fb.message, fb.lang);
+  const { sendFeedbackAlert } = require('./lib/email');
+  sendFeedbackAlert(fb).catch(err => console.error('feedback-melding mislukt:', err.message));
   res.json({ ok: true });
 });
 
@@ -1184,6 +1373,11 @@ app.post('/api/intake/submit', async (req, res) => {
   if (access.code) db.prepare('UPDATE gift_codes SET redeemed_at = CURRENT_TIMESTAMP, redeemed_order = ? WHERE code = ?').run(orderId, access.code);
   // Heractivering verbruiken: één nieuwe intake per toekenning.
   if (access.grantUserId) db.prepare('UPDATE users SET intake_grant = 0 WHERE id = ?').run(access.grantUserId);
+
+  // Koper automatisch in Enormail zetten (fire-and-forget; faalt stil).
+  const { addBuyerToEnormail } = require('./lib/enormail');
+  addBuyerToEnormail({ name: user.name || clientName, email: user.email, birthday: data.geboortedatum })
+    .catch(err => console.error('enormail-koper mislukt:', err.message));
 
   // Auto-login this user
   req.session.userId = user.id;
@@ -1503,6 +1697,30 @@ app.post('/api/admin/user/:userId/access', (req, res) => {
     db.prepare('UPDATE users SET intake_grant = ? WHERE id = ?').run(intakeGrant ? 1 : 0, user.id);
   const fresh = db.prepare('SELECT dashboard_access, intake_grant FROM users WHERE id = ?').get(user.id);
   res.json({ ok: true, dashboard_access: fresh.dashboard_access || 'auto', intake_grant: !!fresh.intake_grant });
+});
+
+// Wis de volledige dagboek-dag (ochtend + avond) van een gebruiker, zodat die
+// de dag opnieuw kan invullen. Onomkeerbaar; daarom admin-only + exacte datum.
+app.post('/api/admin/user/:userId/journal-reset', (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Geen toegang' });
+  const user = db.prepare('SELECT id FROM users WHERE id = ?').get(Number(req.params.userId) || 0);
+  if (!user) return res.status(404).json({ error: 'Gebruiker niet gevonden' });
+  const date = String(req.body?.date || '');
+  if (!DATE_RE.test(date)) return res.status(400).json({ error: 'Ongeldige datum' });
+  const { changes } = db.prepare('DELETE FROM journal_entries WHERE user_id = ? AND date = ?').run(user.id, date);
+  res.json({ ok: true, date, removed: changes > 0 });
+});
+
+// Volledige herstart: wis de blueprint(s) van deze gebruiker, geef een nieuwe
+// gratis intake én laat de 11-daagse proef opnieuw beginnen (created_at = nu).
+// Onomkeerbaar; admin-only.
+app.post('/api/admin/user/:userId/reset-intake', (req, res) => {
+  if (!isAdmin(req)) return res.status(401).json({ error: 'Geen toegang' });
+  const user = db.prepare('SELECT id FROM users WHERE id = ?').get(Number(req.params.userId) || 0);
+  if (!user) return res.status(404).json({ error: 'Gebruiker niet gevonden' });
+  const { changes } = db.prepare('DELETE FROM orders WHERE user_id = ?').run(user.id);
+  db.prepare('UPDATE users SET intake_grant = 1, created_at = ? WHERE id = ?').run(new Date().toISOString(), user.id);
+  res.json({ ok: true, removed: changes });
 });
 
 // Serve admin page

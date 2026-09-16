@@ -48,6 +48,11 @@ const SzinnAuth = {
       const res = await fetch('/api/auth/me', { credentials: 'same-origin' });
       if (!res.ok) throw new Error();
       this.currentUser = await res.json();
+      // Gereset account (grant, nog geen blueprint): geen dashboard, direct intake.
+      if (this.currentUser.mustIntake && !location.pathname.startsWith('/intake')) {
+        window.location.href = '/intake';
+        return false;
+      }
       return true;
     } catch {
       window.location.href = '/portaal/inloggen';
