@@ -864,6 +864,9 @@ document.getElementById('mailForm').addEventListener('submit', function(ev){
   if(!name){ ev.preventDefault(); e2.textContent = 'Vul je voornaam in.'; e2.style.display = 'block'; document.getElementById('name').focus(); return; }
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)){ ev.preventDefault(); e2.textContent = 'Vul een geldig e-mailadres in.'; e2.style.display = 'block'; document.getElementById('mail').focus(); return; }
 
+  if(!state){ ev.preventDefault(); e2.textContent = 'Vul hierboven eerst je geboortedatum in.'; e2.style.display = 'block';
+    document.getElementById('calcForm').scrollIntoView({behavior:'smooth', block:'center'}); return; }
+
   document.getElementById('bdDay').value   = state.d;
   document.getElementById('bdMonth').value = state.m;
   document.getElementById('bdYear').value  = state.y;
