@@ -111,15 +111,63 @@
   to     = "/admin/index.html"
   status = 200
 
+# ── Taalstructuur: Engels staat op de root, Nederlands op /nl/ ───────────────
+# De Engelse homepage verhuisde van /en/ naar /. De losse pagina's onder /en/
+# (faq, feedback, save-the-date) blijven bestaan: alleen exacte paden worden
+# doorgestuurd, dus /en/faq raakt deze regels niet.
 [[redirects]]
   from   = "/en"
-  to     = "/en/index.html"
-  status = 200
+  to     = "/"
+  status = 301
 
 [[redirects]]
   from   = "/en/"
-  to     = "/en/index.html"
-  status = 200
+  to     = "/"
+  status = 301
+
+# De Engelse persoonlijk-jaarpagina verhuisde naar /personal-year
+[[redirects]]
+  from   = "/en/personal-year"
+  to     = "/personal-year"
+  status = 301
+
+[[redirects]]
+  from   = "/en/personal-year/"
+  to     = "/personal-year"
+  status = 301
+
+# ── Korte URL's die de sitemap noemt, naar hun echte pagina ──────────────────
+[[redirects]]
+  from   = "/blueprint"
+  to     = "/products/alignment-blueprint"
+  status = 301
+
+[[redirects]]
+  from   = "/daily-integration"
+  to     = "/products/daily-integration"
+  status = 301
+
+[[redirects]]
+  from   = "/companion-ai"
+  to     = "/ai"
+  status = 301
+
+[[redirects]]
+  from   = "/gift"
+  to     = "/cadeau"
+  status = 301
+
+# ── Save-the-date: de links op de gidsenpagina's misten de .html-extensie en
+# liepen daardoor al dood (ook vóór de nieuwe website).
+[[redirects]]
+  from   = "/save-the-date"
+  to     = "/save-the-date.html"
+  status = 301
+
+[[redirects]]
+  from   = "/en/save-the-date"
+  to     = "/en/save-the-date.html"
+  status = 301
 
 [[redirects]]
   from   = "/intake"
