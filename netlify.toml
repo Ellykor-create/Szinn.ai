@@ -115,26 +115,33 @@
 # De Engelse homepage verhuisde van /en/ naar /. De losse pagina's onder /en/
 # (faq, feedback, save-the-date) blijven bestaan: alleen exacte paden worden
 # doorgestuurd, dus /en/faq raakt deze regels niet.
+# force = true is hier nodig: de oude bestanden en/index.html en
+# en/personal-year/index.html bestaan nog, en Netlify serveert een bestaand
+# bestand vóór een redirect tenzij de regel geforceerd is.
 [[redirects]]
   from   = "/en"
   to     = "/"
   status = 301
+  force  = true
 
 [[redirects]]
   from   = "/en/"
   to     = "/"
   status = 301
+  force  = true
 
 # De Engelse persoonlijk-jaarpagina verhuisde naar /personal-year
 [[redirects]]
   from   = "/en/personal-year"
   to     = "/personal-year"
   status = 301
+  force  = true
 
 [[redirects]]
   from   = "/en/personal-year/"
   to     = "/personal-year"
   status = 301
+  force  = true
 
 # ── Korte URL's die de sitemap noemt, naar hun echte pagina ──────────────────
 [[redirects]]
@@ -157,17 +164,6 @@
   to     = "/cadeau"
   status = 301
 
-# ── Save-the-date: de links op de gidsenpagina's misten de .html-extensie en
-# liepen daardoor al dood (ook vóór de nieuwe website).
-[[redirects]]
-  from   = "/save-the-date"
-  to     = "/save-the-date.html"
-  status = 301
-
-[[redirects]]
-  from   = "/en/save-the-date"
-  to     = "/en/save-the-date.html"
-  status = 301
 
 [[redirects]]
   from   = "/intake"
