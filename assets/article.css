@@ -158,6 +158,13 @@ footer .legal{width:100%;margin-top:12px;padding-top:12px;border-top:1px solid r
 .method p{color:#33291F;margin-bottom:12px}
 .method .stages{font-family:'Cormorant Garamond',serif;font-size:24px;color:var(--ink)}
 .method .stages span{color:var(--gold);margin:0 8px}
+/* visie */
+.vision{padding:64px 0 8px;text-align:center}
+.vision h2{font-size:36px;margin-bottom:20px}
+.vision p{color:var(--muted);max-width:680px;margin:0 auto 14px}
+.vision .vlead{font-family:'Cormorant Garamond',serif;font-size:22px;line-height:1.45;color:var(--ink2)}
+.vision .vclose{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:24px;line-height:1.35;color:var(--gold3);margin-top:22px}
+@media(max-width:760px){.vision{padding:48px 0 4px}.vision h2{font-size:30px}.vision .vlead{font-size:20px}.vision .vclose{font-size:21px}}
 @media(max-width:960px){.fhero .wrap{grid-template-columns:1fr}.fhero .pic{min-height:360px}.fhero .pic::after{background:linear-gradient(180deg,var(--ink),transparent 40%)}.fhero.light .pic::after{background:linear-gradient(180deg,var(--cream),transparent 40%)}.fhero .txt{padding:44px 0 24px}.fhero h1{font-size:48px}.fbody .wrap,.method .wrap{grid-template-columns:1fr}.fside{position:static}.fnav{grid-template-columns:1fr}}
 
 /* shared header/footer (same as homepage) */
