@@ -317,6 +317,8 @@
     box-shadow: 0 10px 30px rgba(13,10,7,0.10);
   }
   .ac-list.open { display: block; }
+  /* Alleen een melding (zoeken/geen resultaat): niet over de "handmatig invullen"-knop heen leggen */
+  .ac-list:has(.ac-msg) { position: static; margin-top: 2px; }
   .ac-item, .ac-msg { padding: 11px 16px; font-size: 14px; line-height: 1.4; }
   .ac-item {
     cursor: pointer; display: flex; justify-content: space-between;
@@ -1472,11 +1474,7 @@ function validate(i) {
   let firstBad = null;
 
   if (i === 0) {
-<<<<<<< Updated upstream
-    ['voornaam','achternaam','geboortenaam','email','geboortedatum','geboortetijd','geboorteland'].forEach(id => {
-=======
     ['voornaam','achternaam','geboortenaam','email','geboortedatum','geboorteland','geboorteplaats'].forEach(id => {
->>>>>>> Stashed changes
       const el = document.getElementById(id);
       const fd = document.getElementById('field-' + id);
       if (!el || !el.value.trim()) { fd && fd.classList.add('has-error'); ok = false; firstBad = firstBad || fd || el; }
