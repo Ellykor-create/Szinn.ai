@@ -1,0 +1,10 @@
+/* SZINN scroll motion. Only active when JS runs (html.js), so crawlers and no-JS users see everything instantly. */
+html.js .rv{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0ms);will-change:opacity,transform}
+html.js .rv.in{opacity:1;transform:none}
+html.js .rv-img{clip-path:inset(0 0 100% 0);transition:clip-path .9s cubic-bezier(.2,.7,.2,1);transition-delay:var(--d,0ms)}
+html.js .rv-img.in{clip-path:inset(0 0 0 0)}
+html.js .hero .h1-sub,html.js .hero h1,html.js .hero .sub,html.js .hero p,html.js .hero .cta,html.js .hero .trust,html.js .hero .remember{animation:heroIn .9s cubic-bezier(.2,.7,.2,1) both}
+html.js .hero h1{animation-delay:.05s}html.js .hero .sub{animation-delay:.18s}html.js .hero p{animation-delay:.26s}html.js .hero .cta{animation-delay:.34s}html.js .hero .trust{animation-delay:.42s}html.js .hero .remember{animation-delay:.5s}
+@keyframes heroIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+html.js .parallax{will-change:background-position}
+@media(prefers-reduced-motion:reduce){html.js .rv,html.js .rv-img{opacity:1;transform:none;clip-path:none;transition:none}html.js .hero *{animation:none!important}}

@@ -284,6 +284,29 @@
     margin: -2px 0 9px;
   }
 
+  /* ── Geboortetijd: verdieping bij benadering / onbekend ── */
+  .tijd-panel {
+    background: var(--gold-light, #F7F2E8);
+    border: 1px solid var(--border-light);
+    border-radius: 3px;
+    padding: 18px 20px;
+    margin: -6px 0 24px;
+  }
+  .tijd-help {
+    margin: -6px 0 24px;
+  }
+  .tijd-help summary {
+    font-family: 'Jost', sans-serif;
+    font-size: 12.5px;
+    font-weight: 400;
+    color: var(--gold2);
+    cursor: pointer;
+    list-style: none;
+  }
+  .tijd-help summary::before { content: '+ '; }
+  .tijd-help[open] summary::before { content: '\2212\00a0'; }
+  .tijd-help summary::-webkit-details-marker { display: none; }
+
   /* ── Geboorteplaats: stadzoeker met coördinaten ── */
   .ac-wrap { position: relative; }
   .ac-list {
@@ -294,6 +317,8 @@
     box-shadow: 0 10px 30px rgba(13,10,7,0.10);
   }
   .ac-list.open { display: block; }
+  /* Alleen een melding (zoeken/geen resultaat): niet over de "handmatig invullen"-knop heen leggen */
+  .ac-list:has(.ac-msg) { position: static; margin-top: 2px; }
   .ac-item, .ac-msg { padding: 11px 16px; font-size: 14px; line-height: 1.4; }
   .ac-item {
     cursor: pointer; display: flex; justify-content: space-between;
@@ -637,8 +662,10 @@
   <!-- ── SECTIE 0: GEGEVENS ── -->
   <section class="form-section visible" id="section-0">
     <p class="section-eyebrow">Stap 1 — Jouw gegevens</p>
-    <h2 class="section-title">Wie <em>ben jij?</em></em></h2>
-    <p class="section-intro">Deze gegevens vormen de basis van jouw persoonlijke berekeningen. Vul je geboortetijd en -plaats zo nauwkeurig mogelijk in.</p>
+    <h2 class="section-title">Wie <em>ben jij?</em></h2>
+    <p class="section-intro"
+       data-nl="Deze gegevens vormen de basis van jouw persoonlijke berekeningen. Vul je gegevens zo nauwkeurig mogelijk in. Weet je jouw geboortetijd niet (precies)? Geen probleem, dat kun je hieronder aangeven."
+       data-en="These details form the basis of your personal calculations. Fill them in as accurately as you can. Don't know your (exact) time of birth? No problem, you can indicate that below.">Deze gegevens vormen de basis van jouw persoonlijke berekeningen. Vul je gegevens zo nauwkeurig mogelijk in. Weet je jouw geboortetijd niet (precies)? Geen probleem, dat kun je hieronder aangeven.</p>
 
     <div class="grid-2">
       <div class="field" id="field-voornaam">
@@ -696,12 +723,14 @@
         <span class="err-msg">Vul je geboortedatum in</span>
       </div>
       <div class="field" id="field-geboortetijd">
-        <label class="field-label">
-          <span>Geboortetijd</span>
-          <span class="opt">(zo exact mogelijk)</span>
-        </label>
-        <input type="time" id="geboortetijd">
-        <span class="err-msg">Vul je geboortetijd in</span>
+        <label class="field-label" data-nl="Geboortetijd" data-en="Time of birth">Geboortetijd</label>
+        <select id="geboortetijd-status">
+          <option value="exact" data-nl="Ik weet mijn geboortetijd exact" data-en="I know my exact time of birth">Ik weet mijn geboortetijd exact</option>
+          <option value="benadering" data-nl="Ik weet het ongeveer" data-en="I know it approximately">Ik weet het ongeveer</option>
+          <option value="onbekend" data-nl="Ik weet mijn geboortetijd niet" data-en="I don't know my time of birth">Ik weet mijn geboortetijd niet</option>
+        </select>
+        <input type="time" id="geboortetijd" style="margin-top:10px">
+        <span class="err-msg" data-nl="Vul je geboortetijd in" data-en="Please enter your time of birth">Vul je geboortetijd in</span>
       </div>
       <div class="field" id="field-geboorteland">
         <label class="field-label" data-nl="Geboorteland" data-en="Country of birth">Geboorteland</label>
@@ -725,6 +754,59 @@
         <span class="err-msg">Selecteer je geboorteland</span>
       </div>
     </div>
+
+    <!-- ── Geboortetijd bij benadering: verdieping in stappen ── -->
+    <div class="tijd-panel" id="tijd-benadering" hidden>
+      <div class="field" id="field-tijd-dagdeel" style="margin-bottom:18px">
+        <label class="field-label" data-nl="In welk deel van de dag ben je geboren?" data-en="In which part of the day were you born?">In welk deel van de dag ben je geboren?</label>
+        <select id="tijd-dagdeel">
+          <option value="" data-nl="— Kies een dagdeel —" data-en="— Choose a part of the day —">— Kies een dagdeel —</option>
+          <option value="nacht" data-nl="&#39;s Nachts (00:00 – 06:00)" data-en="At night (00:00 – 06:00)">&#39;s Nachts (00:00 – 06:00)</option>
+          <option value="ochtend" data-nl="&#39;s Ochtends (06:00 – 12:00)" data-en="In the morning (06:00 – 12:00)">&#39;s Ochtends (06:00 – 12:00)</option>
+          <option value="middag" data-nl="&#39;s Middags (12:00 – 18:00)" data-en="In the afternoon (12:00 – 18:00)">&#39;s Middags (12:00 – 18:00)</option>
+          <option value="avond" data-nl="&#39;s Avonds (18:00 – 00:00)" data-en="In the evening (18:00 – 00:00)">&#39;s Avonds (18:00 – 00:00)</option>
+        </select>
+        <span class="err-msg" data-nl="Kies een dagdeel" data-en="Please choose a part of the day">Kies een dagdeel</span>
+      </div>
+
+      <div class="field" id="field-tijd-verfijning" style="margin-bottom:18px" hidden>
+        <label class="field-label" data-nl="Kun je het nog iets preciezer maken?" data-en="Can you narrow it down a little further?">Kun je het nog iets preciezer maken?</label>
+        <select id="tijd-verfijning">
+          <option value="" data-nl="Nee, dit is wat ik weet" data-en="No, this is what I know">Nee, dit is wat ik weet</option>
+          <option value="vroeg" data-nl="Vroeg in dit dagdeel (eerste helft)" data-en="Early in this window (first half)">Vroeg in dit dagdeel (eerste helft)</option>
+          <option value="laat" data-nl="Later in dit dagdeel (tweede helft)" data-en="Later in this window (second half)">Later in dit dagdeel (tweede helft)</option>
+        </select>
+        <p class="field-hint" id="tijd-window-hint" style="margin:8px 0 0" hidden></p>
+      </div>
+    </div>
+
+    <!-- ── Geboortetijd onbekend: geruststelling ── -->
+    <div class="tijd-panel" id="tijd-onbekend" hidden>
+      <p class="field-hint" style="margin:0"
+         data-nl="Geen probleem. Je geboortedatum draagt de kern van jouw blauwdruk: je planeten in de tekens, je Noordknoop en Zuidknoop, je volledige numerologie en de Kabbalah-laag. Alleen de Ascendant en de huizen vragen om een exacte tijd; die laag laten we dan weg en vullen we niets voor in. Vind je jouw geboortetijd later alsnog, dan sturen we die verfijningslaag als aanvulling na."
+         data-en="No problem. Your date of birth carries the core of your blueprint: your planets in the signs, your North and South Node, your full numerology and the Kabbalah layer. Only the Ascendant and the houses require an exact time; we leave that layer out and never fill anything in for you. If you find your time of birth later, we will send you that refinement layer as an addition.">Geen probleem. Je geboortedatum draagt de kern van jouw blauwdruk: je planeten in de tekens, je Noordknoop en Zuidknoop, je volledige numerologie en de Kabbalah-laag. Alleen de Ascendant en de huizen vragen om een exacte tijd; die laag laten we dan weg en vullen we niets voor in. Vind je jouw geboortetijd later alsnog, dan sturen we die verfijningslaag als aanvulling na.</p>
+    </div>
+
+    <!-- ── Uitklap: wat werkt wel en niet zonder exacte tijd ── -->
+    <details class="tijd-help" id="tijd-uitleg" hidden>
+      <summary data-nl="Wat betekent dit voor jouw Blueprint?" data-en="What does this mean for your Blueprint?">Wat betekent dit voor jouw Blueprint?</summary>
+      <div class="field-hint" style="margin:10px 0 0">
+        <p style="margin:0 0 10px"
+           data-nl="<strong>Wat volledig blijft werken:</strong> je planeten in de tekens (Zon, Maan, Mercurius, Venus, Mars en verder), de onderlinge aspecten tussen je planeten, jouw Noordknoop en Zuidknoop, je volledige numerologie (Levenspad, Expression, Soul Urge, Personal Year) en de Kabbalah/Tikkun-laag. Dit is de kern van jouw blauwdruk en die staat volledig vast op je geboortedatum."
+           data-en="<strong>What keeps working fully:</strong> your planets in the signs (Sun, Moon, Mercury, Venus, Mars and beyond), the aspects between your planets, your North and South Node, your complete numerology (Life Path, Expression, Soul Urge, Personal Year) and the Kabbalah/Tikkun layer. This is the core of your blueprint and it is fully determined by your date of birth."><strong>Wat volledig blijft werken:</strong> je planeten in de tekens (Zon, Maan, Mercurius, Venus, Mars en verder), de onderlinge aspecten tussen je planeten, jouw Noordknoop en Zuidknoop, je volledige numerologie (Levenspad, Expression, Soul Urge, Personal Year) en de Kabbalah/Tikkun-laag. Dit is de kern van jouw blauwdruk en die staat volledig vast op je geboortedatum.</p>
+        <p style="margin:0"
+           data-nl="<strong>Wat een exacte tijd nodig heeft:</strong> je Ascendant (hoe je de wereld binnenkomt), je MC (je maatschappelijke richting) en de twaalf huizen, dus ook in welk levensgebied jouw planeten en knopen precies vallen. De hemel draait in 24 uur helemaal rond, waardoor deze punten per paar minuten verschuiven. Zonder exacte tijd laten we deze laag eerlijk weg en vullen we niets voor je in. Bij een tijdvenster rekenen we met het midden en benoemen we duidelijk wat indicatief is. Ook de exacte graad van je Maan kan iets verschuiven; wisselt de Maan op jouw geboortedag van teken, dan leggen we beide mogelijkheden naast elkaar zodat jij kunt voelen wat klopt."
+           data-en="<strong>What needs an exact time:</strong> your Ascendant (how you enter the world), your MC (your direction in the world) and the twelve houses, and therefore in which area of life your planets and nodes fall exactly. The sky makes a full turn in 24 hours, so these points shift every few minutes. Without an exact time we honestly leave this layer out and never fill anything in for you. With a time window we calculate from the middle and clearly mark what is indicative. The exact degree of your Moon can also shift slightly; if the Moon changes sign on your day of birth, we present both possibilities side by side so you can feel which one is true for you."><strong>Wat een exacte tijd nodig heeft:</strong> je Ascendant (hoe je de wereld binnenkomt), je MC (je maatschappelijke richting) en de twaalf huizen, dus ook in welk levensgebied jouw planeten en knopen precies vallen. De hemel draait in 24 uur helemaal rond, waardoor deze punten per paar minuten verschuiven. Zonder exacte tijd laten we deze laag eerlijk weg en vullen we niets voor je in. Bij een tijdvenster rekenen we met het midden en benoemen we duidelijk wat indicatief is. Ook de exacte graad van je Maan kan iets verschuiven; wisselt de Maan op jouw geboortedag van teken, dan leggen we beide mogelijkheden naast elkaar zodat jij kunt voelen wat klopt.</p>
+      </div>
+    </details>
+
+    <!-- ── Geheugensteuntjes (bij benadering en onbekend) ── -->
+    <details class="tijd-help" id="tijd-help" hidden>
+      <summary data-nl="Weet je het niet zeker? Deze vragen helpen vaak" data-en="Not sure? These questions often help">Weet je het niet zeker? Deze vragen helpen vaak</summary>
+      <p class="field-hint" style="margin:10px 0 0"
+         data-nl="Was het licht of donker buiten toen je geboren werd? Vertelde je moeder ooit iets over de bevalling (voor of na het eten, midden in de nacht)? Staat er iets in je babyboek of op je geboortekaartje? Tip: je exacte geboortetijd staat vaak op je geboorteakte, opvraagbaar bij de gemeente waar je geboren bent."
+         data-en="Was it light or dark outside when you were born? Did your mother ever mention anything about the delivery (before or after dinner, in the middle of the night)? Is there anything in your baby book or on your birth announcement? Tip: your exact time of birth is often recorded on your birth certificate, which you can request from the municipality where you were born.">Was het licht of donker buiten toen je geboren werd? Vertelde je moeder ooit iets over de bevalling (voor of na het eten, midden in de nacht)? Staat er iets in je babyboek of op je geboortekaartje? Tip: je exacte geboortetijd staat vaak op je geboorteakte, opvraagbaar bij de gemeente waar je geboren bent.</p>
+    </details>
 
     <div class="field" id="field-geboorteplaats">
       <label class="field-label" data-nl="Geboorteplaats" data-en="City of birth">Geboorteplaats</label>
@@ -1310,6 +1392,68 @@ const SECTION_TEXTAREAS = {
   7: ['b1','b2','b3','b4'],
 };
 
+// ── GEBOORTETIJD: status, dagdeel en venster ──
+const TIJD_WINDOWS = {
+  nacht:   ['00:00', '06:00'],
+  ochtend: ['06:00', '12:00'],
+  middag:  ['12:00', '18:00'],
+  avond:   ['18:00', '24:00']
+};
+
+function tijdWindow() {
+  const status = document.getElementById('geboortetijd-status').value;
+  if (status !== 'benadering') return '';
+  const dd = document.getElementById('tijd-dagdeel').value;
+  if (!dd || !TIJD_WINDOWS[dd]) return '';
+  let [a, b] = TIJD_WINDOWS[dd];
+  const fine = document.getElementById('tijd-verfijning').value;
+  const toMin = t => parseInt(t.slice(0, 2), 10) * 60 + parseInt(t.slice(3), 10);
+  const toStr = m => String(Math.floor(m / 60)).padStart(2, '0') + ':' + String(m % 60).padStart(2, '0');
+  if (fine === 'vroeg') b = toStr((toMin(a) + toMin(b)) / 2);
+  if (fine === 'laat')  a = toStr((toMin(a) + toMin(b)) / 2);
+  return a + '\u2013' + (b === '24:00' ? '00:00' : b);
+}
+
+function updateTijdUI() {
+  const status = document.getElementById('geboortetijd-status').value;
+  const tijdInput = document.getElementById('geboortetijd');
+  const benadering = document.getElementById('tijd-benadering');
+  const onbekend = document.getElementById('tijd-onbekend');
+  const help = document.getElementById('tijd-help');
+  const uitleg = document.getElementById('tijd-uitleg');
+  const verfijning = document.getElementById('field-tijd-verfijning');
+  const hint = document.getElementById('tijd-window-hint');
+
+  tijdInput.hidden = status !== 'exact';
+  benadering.hidden = status !== 'benadering';
+  onbekend.hidden = status !== 'onbekend';
+  help.hidden = status === 'exact';
+  uitleg.hidden = status === 'exact';
+
+  if (status !== 'exact') tijdInput.value = '';
+  if (status !== 'benadering') {
+    document.getElementById('tijd-dagdeel').value = '';
+    document.getElementById('tijd-verfijning').value = '';
+  }
+
+  const dd = document.getElementById('tijd-dagdeel').value;
+  verfijning.hidden = !dd;
+
+  const w = tijdWindow();
+  hint.hidden = !w;
+  if (w) {
+    hint.innerHTML = lang === 'en'
+      ? 'We will calculate with the window ' + w + ' and clearly mark this in your Blueprint.'
+      : 'We rekenen met het venster ' + w + ' en benoemen dit helder in jouw Blueprint.';
+  }
+}
+
+['geboortetijd-status', 'tijd-dagdeel', 'tijd-verfijning'].forEach(id => {
+  const el = document.getElementById(id);
+  if (el) el.addEventListener('change', updateTijdUI);
+});
+updateTijdUI();
+
 // Zet/verwijder foutmarkering op het veld van een verplichte open vraag.
 function markTextareaError(el, ok) {
   const field = el.closest('.field');
@@ -1330,12 +1474,29 @@ function validate(i) {
   let firstBad = null;
 
   if (i === 0) {
-    ['voornaam','achternaam','geboortenaam','email','geboortedatum','geboortetijd','geboorteland'].forEach(id => {
+    ['voornaam','achternaam','geboortenaam','email','geboortedatum','geboorteland','geboorteplaats'].forEach(id => {
       const el = document.getElementById(id);
       const fd = document.getElementById('field-' + id);
       if (!el || !el.value.trim()) { fd && fd.classList.add('has-error'); ok = false; firstBad = firstBad || fd || el; }
       else fd && fd.classList.remove('has-error');
     });
+    // Geboortetijd: alleen verplicht als de klant aangeeft de tijd exact te weten
+    const tijdStatus = document.getElementById('geboortetijd-status').value;
+    const tijdEl = document.getElementById('geboortetijd');
+    const tijdFd = document.getElementById('field-geboortetijd');
+    if (tijdStatus === 'exact' && (!tijdEl || !tijdEl.value.trim())) {
+      tijdFd && tijdFd.classList.add('has-error'); ok = false; firstBad = firstBad || tijdFd;
+    } else {
+      tijdFd && tijdFd.classList.remove('has-error');
+    }
+    // Bij benadering is het dagdeel verplicht
+    const ddEl = document.getElementById('tijd-dagdeel');
+    const ddFd = document.getElementById('field-tijd-dagdeel');
+    if (tijdStatus === 'benadering' && (!ddEl || !ddEl.value)) {
+      ddFd && ddFd.classList.add('has-error'); ok = false; firstBad = firstBad || ddFd;
+    } else {
+      ddFd && ddFd.classList.remove('has-error');
+    }
     const em = document.getElementById('email');
     const ef = document.getElementById('field-email');
     if (em && em.value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em.value)) {
@@ -1378,6 +1539,10 @@ function collect() {
     voornaam: v('voornaam'), achternaam: v('achternaam'), geboortenaam: v('geboortenaam'), email: v('email'),
     telefoon: v('telefoon'),
     geboortedatum: v('geboortedatum'), geboortetijd: v('geboortetijd'),
+    birth_time_status: v('geboortetijd-status'),
+    birth_time_dagdeel: v('tijd-dagdeel'),
+    birth_time_verfijning: v('tijd-verfijning'),
+    birth_time_window: tijdWindow(),
     geboorteland: v('geboorteland'), geboorteplaats: v('geboorteplaats'),
     geboorteplaats_volledig: v('geboorteplaats_volledig'),
     geboorte_lat: v('geboorte_lat'), geboorte_lng: v('geboorte_lng'),
@@ -1542,6 +1707,8 @@ const FIELD_KEYS = {
   voornaam: 'voornaam', achternaam: 'achternaam', geboortenaam: 'geboortenaam', email: 'email',
   telefoon: 'telefoon',
   geboortedatum: 'geboortedatum', geboortetijd: 'geboortetijd',
+  'geboortetijd-status': 'birth_time_status',
+  'tijd-dagdeel': 'birth_time_dagdeel', 'tijd-verfijning': 'birth_time_verfijning',
   geboorteland: 'geboorteland', geboorteplaats: 'geboorteplaats',
   'blueprint-taal': 'blueprint_taal',
   p1: 'p1_bezig', p2: 'p2_verlangen', p3: 'p3_energie', p4: 'p4_veranderen', p5: 'p5_tevredenheid',
@@ -1631,6 +1798,7 @@ function restoreDraft() {
         const el = document.getElementById(id);
         if (el && d[FIELD_KEYS[id]]) el.value = d[FIELD_KEYS[id]];
       });
+      if (typeof updateTijdUI === 'function') updateTijdUI();
       if (d.geboorte_lat && d.geboorte_lng && window._setCoords) {
         window._setCoords(parseFloat(d.geboorte_lat), parseFloat(d.geboorte_lng),
           d.geboorte_tz || '', d.geboorteplaats_volledig || '');

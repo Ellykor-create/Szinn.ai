@@ -139,15 +139,59 @@
   to     = "/admin/index.html"
   status = 200
 
+# ── Taalstructuur: Engels staat op de root, Nederlands op /nl/ ───────────────
+# De Engelse homepage verhuisde van /en/ naar /. De losse pagina's onder /en/
+# (faq, feedback, save-the-date) blijven bestaan: alleen exacte paden worden
+# doorgestuurd, dus /en/faq raakt deze regels niet.
+# force = true is hier nodig: de oude bestanden en/index.html en
+# en/personal-year/index.html bestaan nog, en Netlify serveert een bestaand
+# bestand vóór een redirect tenzij de regel geforceerd is.
 [[redirects]]
   from   = "/en"
-  to     = "/en/index.html"
-  status = 200
+  to     = "/"
+  status = 301
+  force  = true
 
 [[redirects]]
   from   = "/en/"
-  to     = "/en/index.html"
-  status = 200
+  to     = "/"
+  status = 301
+  force  = true
+
+# De Engelse persoonlijk-jaarpagina verhuisde naar /personal-year
+[[redirects]]
+  from   = "/en/personal-year"
+  to     = "/personal-year"
+  status = 301
+  force  = true
+
+[[redirects]]
+  from   = "/en/personal-year/"
+  to     = "/personal-year"
+  status = 301
+  force  = true
+
+# ── Korte URL's die de sitemap noemt, naar hun echte pagina ──────────────────
+[[redirects]]
+  from   = "/blueprint"
+  to     = "/products/alignment-blueprint"
+  status = 301
+
+[[redirects]]
+  from   = "/daily-integration"
+  to     = "/products/daily-integration"
+  status = 301
+
+[[redirects]]
+  from   = "/companion-ai"
+  to     = "/ai"
+  status = 301
+
+[[redirects]]
+  from   = "/gift"
+  to     = "/cadeau"
+  status = 301
+
 
 [[redirects]]
   from   = "/intake"

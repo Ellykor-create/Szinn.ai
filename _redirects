@@ -1,6 +1,10 @@
 # Netlify redirects
-/en           /en/index.html         200
-/en/          /en/index.html         200
+#
+# Let op: de routing van deze site staat in netlify.toml. Netlify verwerkt die
+# regels vóór dit bestand, dus houd ze niet met elkaar in tegenspraak.
+# De /en-regels stonden hier ook en zijn verwijderd: Engels staat nu op de
+# root en /en stuurt door naar / (zie netlify.toml).
+
 /intake       /intake/index.html     200
 /intake/      /intake/index.html     200
 /intake-en    /intake-en/index.html  200
