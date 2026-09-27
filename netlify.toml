@@ -60,10 +60,12 @@
   from = "/portaal/mandala"
   to = "/szinn-portal/pages/mandala.html"
   status = 200
+# Netlify matcht met én zonder slash; een 301 naar "/portaal/journey/" loopt dus
+# rond. Rewrite naar de pagina; links gebruiken de slash, zodat relatieve assets kloppen.
 [[redirects]]
   from = "/portaal/journey"
-  to = "/portaal/journey/"
-  status = 301
+  to = "/szinn-portal/journey/index.html"
+  status = 200
 # De klantdata en het kaartbeeld van de journey zijn per gebruiker en komen
 # uit de api-functie; deze regels moeten vóór de statische splat hieronder.
 [[redirects]]

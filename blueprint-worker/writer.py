@@ -146,6 +146,7 @@ Werkregels voor deze pipeline (aanvullend op de masterprompt):
 6. Niets overnemen: schrijf elke zin nieuw voor deze ene mens. Gebruik geen voorbeeldzinnen uit de masterprompt.
 7. Geen namen van andere mensen dan die de klant zelf in de intake noemt. Noem geen andere geboortedata dan die van de klant; schrijf data in de kalender zonder jaartal.
 8. Houd je exact aan de gevraagde aantallen. Lever alleen de JSON volgens het schema.
+9. Eenvoudige taal (B1-niveau): schrijf zoals je tegen een vriendin praat. Korte zinnen (gemiddeld 15 woorden of minder), gewone woorden, één gedachte per zin. Geen abstracte of spirituele vaktaal (manifestatie, polariteit, archetypisch, transformatief, resoneren, integreren, paradigma, essentie, katalysator) en geen dure woorden waar een gewoon woord bestaat ("mogelijk maken" wordt "helpen", "fundamenteel" wordt "diep"). Astrologische en numerologische termen mogen wel, maar alleen met de uitleg in gewone taal uit de masterprompt.
 
 === MASTERPROMPT v4 ===
 """ + MASTERPROMPT

@@ -130,6 +130,7 @@ if a.andere and os.path.isdir(a.andere):
                     if tuple(rw[i:i+6]) in base6:
                         for k in range(i,i+6): cov[k]=True
                 if sum(cov)>=0.8*len(rw): continue   # vrijwel volledig vaste/sjabloontekst
+                if sum(w.isdigit() or len(w)==1 for w in rw)>=0.5*len(rw): continue   # rekentabel van de eigen naam/datum, geen tekst
                 if soort=='fout': fail(f'{len(r.split())} woorden letterlijk gelijk aan {base}: "{r[:120]}…"')
                 elif len(r.split())<FAIL_N: print(f'   ! sjabloonzin ook in {base} (herschrijf bij voorkeur): "{r}"')
     print(f'   vergeleken met {len(bestanden)} eerdere Blueprints')
