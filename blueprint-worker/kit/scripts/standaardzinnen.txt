@@ -1,0 +1,60 @@
+# Vaste structuurzinnen uit het bouwsjabloon (openers, introductie 02, kalender, prompts, colofon).
+# Deze mogen in elke Blueprint letterlijk terugkomen. Voeg hier alleen sjabloonzinnen toe, nooit persoonlijke duiding.
+Het moment dat je een patroon ziet, niet als iets wat je overkomt maar als iets wat je draait.
+Dit deel begint bij de vier elementen en bij wie jij bent als je gewoon jezelf bent: in balans, uit balans, en wat je meebrengt.
+Alles wat hier staat is een spiegel, geen oordeel.
+Een valkuil is een talent dat te lang aan heeft gestaan.
+De meeste mensen leren zichzelf kennen via hoe anderen hen zien.
+Via hun rol in een familie, een baan, een vriendschap.
+SZINN gaat ervan uit dat er een dieper zelf is, niet gevormd door omstandigheden maar simpelweg aanwezig.
+En dat dat diepere zelf een handtekening heeft, zichtbaar in de momenten en patronen van je leven, als je weet waar je moet kijken.
+Lees haar als een uitnodiging om met iets meer nieuwsgierigheid dan gewoonlijk naar jezelf te kijken.
+Niet de helderheid van alle antwoorden weten, maar de helderheid van weten wie je bent.
+Hier staat de techniek: je geboortekaart met de berekeningen, je knopen, je getallen, je zielstaak en je mandala.
+Alles wat je in deel I hebt herkend, komt hier vandaan.
+Hier staat hoe je dit leeft: je flow, je reflectievragen, je ritme, je praktijken, je prompts, je kalender en de toestemming die je jezelf mag geven.
+De praktijken hieronder richten zich op waar de meeste beweging mogelijk is.
+Stel me vragen zodat ik zelf kan ontdekken hoe deze combinatie zich in mijn dagelijks leven laat zien, zonder dat je me vertelt wat ik zou moeten doen.
+Elke maand draagt een eigen kleur van energie, en onder elke maand staan de transits die in die maand precies op jouw kaart vallen.
+Hoe bewuster je dit ritme volgt, hoe meer je meebeweegt met de stroom van je jaar.
+De SZINN-methodologie en de opbouw van dit document zijn beschermd; niets uit dit document mag worden verveelvoudigd zonder de uitdrukkelijke schriftelijke toestemming van Alterego BV.
+Dit SZINN Alignment Blueprint is geen waarheid.
+Lees deze sectie niet als een oordeel.
+Hier wordt het direct, maar nooit hard.
+Hier eindigt elke goede lezing, omdat je ziel dit niet voor niets heeft gekozen.
+Deze lezing werkt met drie lagen: wie je bent als je in balans bent, wat er gebeurt als je uit balans raakt, en wat je meebrengt dat de wereld nodig heeft.
+Jouw volledige geboortekaart, gegenereerd vanuit jouw exacte geboortedata, met de planeten op hun precieze ecliptische graden.
+In het hart staat de Merkaba op de knopen-as: het gouden punt reikt naar jouw Noordknoop in
+Ascendant links, tekens tegen de klok in · Flower of Life en Metatron's Cube in de binnencirkel · Merkaba op de ware knoop
+Je persoonlijke maandgetallen zijn berekend vanuit Persoonlijk Jaar
+Inner Permissions zijn briefjes waarop staat wat je jezelf mag toestaan, omdat niemand anders die toestemming gaat geven.
+Wat er gebeurt als je uit balans raakt
+Wat je meebrengt dat de wereld nodig heeft
+Wie je bent als je in balans bent
+De toestemming die je jezelf mag geven
+Een frequentie om te herkennen
+Persoonlijke kalender · september 2026 tot februari 2027
+Daarna volgt de persoonlijke introductie.
+Wat resoneert, neem je mee. Wat niet klopt, laat je los.
+Dit SZINN Alignment Blueprint is geen waarheid. Het is een spiegel, een reflectie. Wat resoneert, neem het mee. Wat niet klopt, laat het los. Beschouw niets hier als absolute waarheid. Ga zelf op onderzoek. Jij bent altijd de enige expert op jouzelf.
+De meeste mensen leren zichzelf kennen via hoe anderen hen zien. Via hun rol in een familie, een baan, een vriendschap. Via wat er van hen verwacht wordt.
+Lees deze sectie niet als een oordeel. Lees haar als een uitnodiging om met iets meer nieuwsgierigheid dan gewoonlijk naar jezelf te kijken. Wat resoneert, neem het mee. Wat niet klopt, laat het los.
+Lees het niet in één keer. Eén sectie tegelijk is genoeg.
+Het sluitstuk en tegelijk het moeilijkste. Kennis is niet genoeg.
+Concreet, dagelijks, in jouw eigen tempo.
+Voor jou is dat nu vooral
+Lees ze hardop. Onderteken degene die het meest schuurt.
+Dit document is persoonlijk en vertrouwelijk.
+Deze lezing werkt met drie lagen: wie je bent als je in balans bent, wat er gebeurt als je uit balans raakt, en wat je meebrengt dat de wereld nodig heeft. Dit is de eerste laag.
+# Vaste zinnen uit build_blueprint.py (automatische pipeline). Alleen structuur, geen persoonlijke duiding.
+Dit ben jij. Deze Blueprint is je spiegel daarbij.
+Over de tien planeten gerekend krijg je deze verhouding:
+Aspecten in jouw kaart (orb tot 5°, de nauwste eerst)
+Jouw dagelijkse en seizoensritme op basis van jouw kaart.
+Gefaciliteerd door Elly Elizabeth Korving · SZINN · szinn.ai
+Elly Elizabeth Korving · Alterego BV · All rights reserved
+Placidus huizensysteem · Swiss Ephemeris · Ware knoop · Berekend vanuit
+Pythagorisch systeem · Berekend vanuit
+Wie alle cijfers van je geboortedatum in één keer optelt
+als ondertoon onder je Levenspad.
+Ik geef mezelf toestemming om
