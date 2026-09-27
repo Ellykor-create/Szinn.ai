@@ -8,7 +8,7 @@
   <link rel="apple-touch-icon" href="/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 /* ============ TOKENS ============ */
 :root{
@@ -1159,22 +1159,6 @@ body.m-a .fab{background:var(--gold)}
   .ritualbar .mbtn.on{background:rgba(201,169,110,.16);color:var(--cream)}
   .ritualbar .mbtn.sug::before{top:8px;right:14px}
 }
-/* ============ GROET, BLAUWDRUK EN ZIN IN DE NIEUWE STIJL ============ */
-/* Alleen deze drie blokken volgen het nieuwe ontwerp (Inter, behapbare chips);
-   navigatie en de rest van het dashboard blijven bewust op Jost. */
-#vandaag,#weer,#zin{--sans:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-family:var(--sans);font-weight:400}
-:is(#vandaag,#weer,#zin) .lbl{font-weight:500;letter-spacing:.17em}
-.chip b{font-weight:500;white-space:normal;line-height:1.4}
-.chip .tr{display:block;margin-top:5px;color:var(--gold-deep,#9A7B2E);font-size:11px;letter-spacing:.03em}
-.chip{max-width:260px}
-@media(min-width:821px){
-  .chips{flex-wrap:wrap;overflow-x:visible}
-  .chipwrap::after{display:none}
-}
-@media(max-width:820px){
-  .chip{width:74vw;max-width:280px}
-  .chip .tr{font-size:10.5px}
-}
 /* ============ PORTAAL: bibliotheek, instellingen, modals, wachtstanden ============ */
 .orders{display:flex;flex-direction:column;gap:12px}
 .order-card{background:var(--raised);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
@@ -1368,11 +1352,11 @@ try{ if(localStorage.getItem('szinn_theme')==='dark') document.body.classList.ad
       <h1><span id="greetword">Goedemorgen</span><span id="greetName"></span> <span class="star">&#10022;</span></h1>
       <p class="sub" id="greetsub">Het universum is in beweging. Stem af op wat ertoe doet.</p>
       <div class="chipwrap"><div class="chips needs-bp">
-        <div class="chip el-water" id="chipSun"><b>&mdash;</b><i>Wie je in de kern bent</i><i class="tr"></i></div>
-        <div class="chip el-water" id="chipMoon"><b>&mdash;</b><i>Wat je van binnen nodig hebt</i><i class="tr"></i></div>
-        <div class="chip el-vuur" id="chipAsc"><b>&mdash;</b><i>Hoe je de wereld binnenkomt</i><i class="tr"></i></div>
-        <div class="chip el-goud" id="chipLP"><b>&mdash;</b><i></i><i class="tr"></i></div>
-        <div class="chip el-aarde" id="chipPY" style="display:none"><b>&mdash;</b><i></i><i class="tr"></i></div>
+        <div class="chip el-water" id="chipSun"><b>&mdash;</b><i>Wie je in de kern bent</i></div>
+        <div class="chip el-water" id="chipMoon"><b>&mdash;</b><i>Wat je van binnen nodig hebt</i></div>
+        <div class="chip el-vuur" id="chipAsc"><b>&mdash;</b><i>Hoe je de wereld binnenkomt</i></div>
+        <div class="chip el-goud" id="chipLP"><b>&mdash;</b><i></i></div>
+        <div class="chip el-aarde" id="chipPY" style="display:none"><b>&mdash;</b><i></i></div>
       </div></div>
       <div id="pendingNote"></div>
 
@@ -3526,73 +3510,10 @@ function showPending(status){
 // ── Blueprint-data in de blokken ────────────────────────────────────────────
 var ELEMENT={Ram:'vuur',Leeuw:'vuur',Boogschutter:'vuur',Stier:'aarde',Maagd:'aarde',Steenbok:'aarde',
   Tweelingen:'lucht',Weegschaal:'lucht',Waterman:'lucht',Kreeft:'water',Schorpioen:'water',Vissen:'water'};
-// Behapbare kernwoorden per chip: vet staat wat je omschrijft, de stand eronder in goud.
-var TRAIT={
-  zon:{Ram:['moedig · direct · begint als eerste','brave · direct · first to begin'],
-    Stier:['standvastig · zintuiglijk · trouw aan wat werkt','steady · sensual · loyal to what works'],
-    Tweelingen:['nieuwsgierig · snel van geest · praat het uit','curious · quick-minded · talks it through'],
-    Kreeft:['zorgzaam · trouw · beschermend','caring · loyal · protective'],
-    Leeuw:['warm · royaal · wil van betekenis zijn','warm · generous · wants to matter'],
-    Maagd:['precies · behulpzaam · ziet wat beter kan','precise · helpful · sees what could be better'],
-    Weegschaal:['harmonieus · eerlijk · zoekt de balans','harmonious · fair · seeks balance'],
-    Schorpioen:['intens · loyaal · gaat tot op de bodem','intense · loyal · gets to the bottom of things'],
-    Boogschutter:['vrij · optimistisch · zoekt de betekenis','free · optimistic · looks for meaning'],
-    Steenbok:['verantwoordelijk · ambitieus · bouwt voor de lange termijn','responsible · ambitious · builds for the long run'],
-    Waterman:['eigenzinnig · vrijheidslievend · denkt vooruit','independent · freedom-loving · thinks ahead'],
-    Vissen:['gevoelig · dromerig · voelt wat anderen voelen','sensitive · dreamy · feels what others feel']},
-  maan:{Ram:['reageert snel · heeft ruimte nodig · koelt snel af','reacts fast · needs space · cools down fast'],
-    Stier:['zoekt rust · houdt van vaste ritmes · laadt op in comfort','seeks calm · loves routine · recharges in comfort'],
-    Tweelingen:['moet het kwijt · verwerkt door te praten · afwisseling voedt','needs to share · processes by talking · variety feeds'],
-    Kreeft:['voelt diep · vergeet niets · laadt op thuis','feels deeply · forgets nothing · recharges at home'],
-    Leeuw:['wil gezien worden · warm hart · bloeit op bij waardering','wants to be seen · warm heart · thrives on appreciation'],
-    Maagd:['zoekt orde · zorgt door te doen · piekert bij rommel','seeks order · cares by doing · worries in chaos'],
-    Weegschaal:['zoekt vrede · voelt zich goed in verbinding · twijfelt bij ruzie','seeks peace · thrives in connection · wavers in conflict'],
-    Schorpioen:['voelt alles · laat weinig zien · vertrouwen moet verdiend','feels everything · shows little · trust must be earned'],
-    Boogschutter:['heeft lucht nodig · lacht het weg · laadt op in avontuur','needs air · laughs it off · recharges in adventure'],
-    Steenbok:['houdt het binnen · sterk voor anderen · rust als het werk af is','keeps it inside · strong for others · rests when work is done'],
-    Waterman:['afstand geeft rust · voelt via het hoofd · eigen ruimte is heilig','distance brings calm · feels through the mind · own space is sacred'],
-    Vissen:['sponsachtig · droomt weg · heeft stilte nodig','absorbs everything · drifts off · needs silence']},
-  asc:{Ram:['stapt recht naar binnen · direct en energiek','walks straight in · direct and energetic'],
-    Stier:['rustige binnenkomer · kalm en betrouwbaar','calm entrance · steady and reliable'],
-    Tweelingen:['lichte binnenkomer · maakt snel contact','light entrance · connects quickly'],
-    Kreeft:['voorzichtige binnenkomer · eerst veilig voelen','careful entrance · needs to feel safe first'],
-    Leeuw:['valt op zonder moeite · warme uitstraling','stands out effortlessly · warm presence'],
-    Maagd:['bescheiden binnenkomer · kijkt eerst goed rond','modest entrance · looks around first'],
-    Weegschaal:['charmante binnenkomer · voelt de sfeer en past zich aan','charming entrance · reads the mood and adapts'],
-    Schorpioen:['stille binnenkomer · leest de ruimte in één blik','quiet entrance · reads the room at a glance'],
-    Boogschutter:['open binnenkomer · enthousiast en vrij','open entrance · enthusiastic and free'],
-    Steenbok:['serieuze binnenkomer · wekt direct vertrouwen','serious entrance · earns trust right away'],
-    Waterman:['eigen binnenkomer · net even anders dan de rest','own kind of entrance · a little different from the rest'],
-    Vissen:['zachte binnenkomer · voelt sferen direct aan','soft entrance · senses the atmosphere at once']},
-  lp:{1:['pionier · zelfstandig · gaat voorop','pioneer · independent · leads the way'],
-    2:['diplomaat · luisteraar · allergisch voor wrijving','diplomat · listener · allergic to friction'],
-    3:['verteller · creatief · brengt licht in de kamer','storyteller · creative · lights up the room'],
-    4:['bouwer · betrouwbaar · houdt van een plan','builder · reliable · loves a plan'],
-    5:['vrije geest · avontuurlijk · heeft beweging nodig','free spirit · adventurous · needs movement'],
-    6:['zorger · verantwoordelijk · houdt de boel bij elkaar','carer · responsible · holds it all together'],
-    7:['denker · zoeker · wil het echt begrijpen','thinker · seeker · wants to truly understand'],
-    8:['doener · krachtig · maakt dingen groot','doer · powerful · makes things big'],
-    9:['wereldhart · wijs · kan moeilijk loslaten','big heart · wise · finds letting go hard'],
-    11:['antenne · intuïtief · voelt meer dan een ander','antenna · intuitive · senses more than most'],
-    22:['meesterbouwer · visionair · maakt dromen concreet','master builder · visionary · makes dreams concrete'],
-    33:['hartmens · leraar · geeft onvoorwaardelijk','heart person · teacher · gives unconditionally']},
-  py:{1:['startjaar: iets nieuws wil beginnen','starting year: something new wants to begin'],
-    2:['geduldjaar: samenwerken en afwachten','patience year: cooperate and let it grow'],
-    3:['expressiejaar: laat meer van jezelf zien','expression year: show more of yourself'],
-    4:['bouwjaar: fundament leggen, stap voor stap','building year: lay the foundation, step by step'],
-    5:['veranderjaar: beweging en nieuwe deuren','change year: movement and new doors'],
-    6:['zorgjaar: thuis en familie vragen om jou','care year: home and family call on you'],
-    7:['binnenjaar: rust, verdieping en reflectie','inner year: rest, depth and reflection'],
-    8:['oogstjaar: kracht, werk en resultaat','harvest year: power, work and results'],
-    9:['afrondjaar: loslaten wat klaar is','completion year: release what is done']}
-};
-function trait(soort,key){ var t=TRAIT[soort][key]; return t ? t[EN()?1:0] : null; }
-// Zonder omschrijving staat de stand vet, zoals voorheen.
-function chip(id,stand,i,signNl,omschr){
+function chip(id,b,i,signNl){
   var el=$(id); if(!el) return;
-  el.querySelector('b').textContent=omschr||stand;
+  el.querySelector('b').textContent=b;
   if(i!=null) el.querySelector('i').textContent=i;
-  el.querySelector('.tr').textContent=omschr?stand:'';
   if(signNl){ el.className='chip el-'+(ELEMENT[signNl]||'goud'); }
   el.style.display='';
 }
@@ -3607,11 +3528,11 @@ function fillFromBlueprint(d){
   var t=d.texts||{}, C=d.chart, N=d.numerology, huis=EN()?'House':'Huis';
 
   // Chips
-  if(C.sun) chip('chipSun',(EN()?'Sun in ':'Zon in ')+sn(C.sun)+(C.sun.house?' · '+huis+' '+C.sun.house:''),null,C.sun.sign,trait('zon',C.sun.sign));
-  if(C.moon) chip('chipMoon',(EN()?'Moon in ':'Maan in ')+sn(C.moon)+(C.moon.house?' · '+huis+' '+C.moon.house:''),null,C.moon.sign,trait('maan',C.moon.sign));
-  if(C.ascendant) chip('chipAsc',sn(C.ascendant)+' Ascendant'+(C.ascendant.deg!=null?' · '+C.ascendant.deg+'°'+String(C.ascendant.min).padStart(2,'0')+'’':''),null,C.ascendant.sign,trait('asc',C.ascendant.sign));
-  if(N.lifePath!=null) chip('chipLP',(EN()?'Life path ':'Levenspad ')+N.lifePath,N.lifePathName,null,trait('lp',N.lifePath));
-  if(N.personalYear!=null) chip('chipPY',(EN()?'Personal Year ':'Persoonlijk Jaar ')+N.personalYear,N.personalYearTheme||N.personalYearEnergy,null,trait('py',N.personalYear));
+  if(C.sun) chip('chipSun',(EN()?'Sun in ':'Zon in ')+sn(C.sun)+(C.sun.house?' · '+huis+' '+C.sun.house:''),null,C.sun.sign);
+  if(C.moon) chip('chipMoon',(EN()?'Moon in ':'Maan in ')+sn(C.moon)+(C.moon.house?' · '+huis+' '+C.moon.house:''),null,C.moon.sign);
+  if(C.ascendant) chip('chipAsc',sn(C.ascendant)+' Ascendant'+(C.ascendant.deg!=null?' · '+C.ascendant.deg+'°'+String(C.ascendant.min).padStart(2,'0')+'’':''),null,C.ascendant.sign);
+  if(N.lifePath!=null) chip('chipLP',(EN()?'Life path ':'Levenspad ')+N.lifePath,N.lifePathName,null);
+  if(N.personalYear!=null) chip('chipPY',(EN()?'Personal Year ':'Persoonlijk Jaar ')+N.personalYear,N.personalYearTheme||N.personalYearEnergy,null);
 
   // Dagduiding (deterministisch uit blueprint). Zonder abonnement stuurt de
   // server day:null mee → toon de uitnodiging.

@@ -1,0 +1,1600 @@
+{
+  "taal": "nl",
+  "talen": [
+    {
+      "code": "nl",
+      "label": "Nederlands",
+      "kort": "NL",
+      "data": "client-nl.json"
+    },
+    {
+      "code": "en",
+      "label": "English",
+      "kort": "EN",
+      "data": "client.json"
+    }
+  ],
+  "naam": "Elly Elizabeth Korving",
+  "voornaam": "Elly",
+  "dashboard": "/portaal/",
+  "blauwdruk": "downloads/SZINN-blueprint.pdf",
+  "voettekst": "© 2026 Elly Elizabeth Korving · Alterego BV · szinn.ai",
+  "slotmelding": "Deze stap gaat open zodra je de vorige hebt gelezen. Eén ding tegelijk.",
+  "labels": {
+    "fases": [
+      [
+        "Herkenning",
+        "Ik zie mezelf."
+      ],
+      [
+        "Helderheid",
+        "Ik begrijp waarom."
+      ],
+      [
+        "Integratie",
+        "Ik leef het."
+      ]
+    ],
+    "dashboard": "Dashboard",
+    "start": "↻ start",
+    "printen": "Printen",
+    "fasenummer": "Fase ",
+    "merkregel": "Remember who you are.",
+    "merkonder": "Alignment · Awareness · Living",
+    "sluiten": "Sluiten",
+    "terugkop": "Terug naar het overzicht",
+    "terug": "Terug",
+    "volgende": "Volgende",
+    "kernthemas": "Kernthema's",
+    "herkenning": "Dit herken je misschien in jezelf",
+    "herinnering": "Iets om te onthouden",
+    "watHerkenJe": "Wat herken je?",
+    "schrijfhier": "Schrijf hier je gedachten…",
+    "zelfdeLicht": "Hetzelfde licht. Een andere uitdrukking.",
+    "terugPlaneten": "← Terug naar de planeten",
+    "meerInfo": "Meer hierover",
+    "downloaden": "Downloaden",
+    "bestellen": "Print bestellen",
+    "openen": "Openen",
+    "jeBentHier": "Je bent hier",
+    "welkom": "Welkom",
+    "welkomTekst": "Alles staat voor je klaar.",
+    "welkomKnop": "Beginnen",
+    "foutKop": "Je blauwdruk laadt niet",
+    "foutTekst": "De gegevens konden niet worden opgehaald. Probeer het later opnieuw.",
+    "fasesKop": "Jouw reis",
+    "spiegelkop": "Lees dit",
+    "spiegelregel": "Dit is niet wie je bent. Dit is de energie waarmee je mag werken.",
+    "merkOnder": "Alignment Blueprint",
+    "zijStart": "Start",
+    "zijStartSub": "Begin hier",
+    "zijDagelijks": "Dagelijkse integratie",
+    "zijAccount": "Mijn account",
+    "zijUitloggen": "Uitloggen",
+    "disclaimer": "Deze blauwdruk en deze pagina's zijn samengesteld met behulp van AI. AI kan fouten maken: controleer wat belangrijk voor je is en houd je eigen waarneming aan als iets niet klopt. Alles wat hier staat is bedoeld voor zelfinzicht en reflectie. Het is geen medisch, psychologisch, juridisch of financieel advies en geen voorspelling. Jij blijft degene die over jezelf gaat.",
+    "meerOnder": "scroll",
+    "handleiding": "Handleiding",
+    "afvinken": "Afvinken",
+    "afgevinkt": "Afgevinkt"
+  },
+  "welkom": {
+    "altijd": true,
+    "titel": "Welkom, Elly.",
+    "tekst": "Je eerste stappen in je blauwdruk.<br>Drie fases, in je eigen tempo. Er is geen haast.",
+    "knop": "Hier begint jouw herinneren",
+    "reis": {
+      "kop": "De reis",
+      "sub": "Drie fases om te starten met je blauwdruk",
+      "uitleg": "Dit is het begin, niet het geheel. De drie fases hieronder brengen je stap voor stap je blauwdruk in, zodat je er daarna zelf mee kunt werken.",
+      "rechts": "Geen ladder\nmaar een spiraal.",
+      "knop": "Begin je reis",
+      "voet": [
+        "Ken jezelf.\nNavigeer bewust.\nLeef meer in lijn.",
+        "Meer inzicht.\nMeer keuze.\nMeer jij."
+      ],
+      "fases": [
+        {
+          "label": "Fase 1",
+          "titel": "Herkenning",
+          "zin": "Ik zie mezelf.",
+          "tekst": "Een volledig overzicht van wie je bent, gezien door zes lenzen.",
+          "raster": [
+            {
+              "beeld": "assets/kaart-01.jpg",
+              "titel": "Jouw verhaal",
+              "sub": "wat je hebt meegemaakt"
+            },
+            {
+              "beeld": "assets/kaart-02.jpg",
+              "titel": "Jouw geboortekaart",
+              "sub": "je kosmische blauwdruk"
+            },
+            {
+              "beeld": "assets/kaart-03.jpg",
+              "titel": "Jouw planeten",
+              "sub": "je innerlijke krachten"
+            },
+            {
+              "beeld": "assets/kaart-04.jpg",
+              "titel": "Jouw maanfase",
+              "sub": "het ritme waarmee je aankwam"
+            },
+            {
+              "getal": "1",
+              "titel": "Jouw getallen",
+              "sub": "jouw trilling"
+            },
+            {
+              "beeld": "assets/kaart-06.jpg",
+              "titel": "Jouw Tikkun",
+              "sub": "je zielscorrectie"
+            }
+          ],
+          "slot": "Lees het één keer.",
+          "resultaat": "Resultaat: ik herken mezelf.",
+          "band": {
+            "beeld": "assets/paneel-01.jpg",
+            "tekst": "Verschillende lenzen.\nEén jij."
+          }
+        },
+        {
+          "label": "Fase 2",
+          "titel": "Helderheid",
+          "zin": "Ik begrijp waarom.",
+          "tekst": "De stukken gaan samenhangen. Je ziet het patroon, de verbanden en het grotere geheel.",
+          "rijen": [
+            {
+              "beeld": "assets/laag-01.jpg",
+              "titel": "Het patroon",
+              "sub": "Wat blijft terugkomen?"
+            },
+            {
+              "beeld": "assets/laag-02.jpg",
+              "titel": "De samenhang",
+              "sub": "Waar raken de stukken elkaar?"
+            },
+            {
+              "beeld": "assets/laag-03.jpg",
+              "titel": "Het grotere geheel",
+              "sub": "Zie je de vorm?"
+            }
+          ],
+          "uitgelicht": {
+            "beeld": "assets/a2preview.jpg",
+            "titel": "Jouw Alignment Blueprint",
+            "sub": "het volledige beeld · optionele volgende stap"
+          },
+          "slot": "Zie hoe het samenkomt.",
+          "resultaat": "Resultaat: ik begrijp mezelf.",
+          "band": {
+            "beeld": "assets/paneel-p2.jpg",
+            "tekst": "De stukken komen samen.\nEr ontstaat een groter beeld."
+          }
+        },
+        {
+          "label": "Fase 3",
+          "titel": "Integratie",
+          "zin": "Ik leef het.",
+          "tekst": "Je kennis wordt je dagelijkse praktijk. Drie stappen om je leven te navigeren met meer bewustzijn, helderheid en keuze.",
+          "rijen": [
+            {
+              "beeld": "assets/weg-01.jpg",
+              "titel": "Jouw blauwdruk",
+              "sub": "Ken je basis. Wat blijft."
+            },
+            {
+              "beeld": "assets/weg-02.jpg",
+              "titel": "Jouw ritme",
+              "sub": "Je dagelijkse integratie. Wat beweegt."
+            },
+            {
+              "beeld": "assets/weg-03.jpg",
+              "titel": "SZINN Companion",
+              "sub": "Vraag, spiegel, zie een andere kant."
+            }
+          ],
+          "slot": "Een diepere jij. Elke dag.",
+          "resultaat": "Resultaat: ik leef het.",
+          "band": {
+            "beeld": "assets/start-band.jpg",
+            "tekst": "Dezelfde jij.\nEen bewustere manier van in de wereld staan."
+          }
+        }
+      ],
+      "audio": {
+        "label": "Luister even",
+        "soort": "audio",
+        "bron": "assets/welkom-3.m4a",
+        "duur": "5 min"
+      }
+    },
+    "audio": {
+      "label": "Luister even",
+      "soort": "audio",
+      "bron": "assets/welkom-1.m4a",
+      "duur": "10 sec"
+    },
+    "verder": "Verder",
+    "startnu": "Start nu"
+  },
+  "herkenning": {
+    "titel": "Herkenning",
+    "sub": "Geen uitleg, geen systeem. Lees het hardop als dat kan, en kijk alleen of het klopt. Misschien herken je het, misschien niet. Allebei is goed.",
+    "duur": "Neem er de tijd voor · geen haast · stap voor stap, in jouw tempo",
+    "hero": {
+      "beeld": "assets/welkom-achtergrond.jpg",
+      "label": "Fase 1",
+      "sub": "Eén vraag:",
+      "vraag": "Herken ik mezelf hierin?",
+      "intro": "We gaan jouw reis in. Geen reis om te leren, maar om af te leren. Om te zien en te voelen wie je bent, en de patronen te herkennen die je zijn aangeleerd, zodat je weer op één lijn komt met wie je werkelijk bent.\n\nIn zes korte stappen ontmoet je je verhaal, je geboortekaart, je planeten, je maanfase, je getallen en je Tikkun.",
+      "rechts": "Same energy.\nA different perspective.",
+      "kaderLabel": "Eerste stappen · 1 van 3",
+      "kader": "Hier begin je. Nog niet de blauwdruk, maar de weg erheen. Zes korte stappen, en je mag na elke stap stoppen."
+    },
+    "overzichtkop": "We kijken samen naar waar anderen aan de oppervlakte blijven,\nen bouwen daar wat er nog niet was.",
+    "sluiten": "Sluiten",
+    "terugkop": "Terug naar het overzicht",
+    "volgende": "Volgende",
+    "stappen": [
+      {
+        "beeld": "assets/kaart-01.jpg",
+        "achtergrond": "assets/paneel-01.jpg",
+        "titel": "Jouw verhaal",
+        "kaart": "Wat je herkent voordat er iets wordt uitgelegd.",
+        "sub": "Wat heeft jou gevormd?",
+        "quote": "Dezelfde verhalen\nnieuw bewustzijn",
+        "quoteTonen": true,
+        "blokken": [
+          {
+            "tekst": "Je hebt geleerd om sterk te zijn. Al vroeg merkte je dat er veel van je werd verwacht. Je nam verantwoordelijkheid, hield dingen onder controle en leerde doorgaan, ook op de momenten dat je eigenlijk rust nodig had."
+          },
+          {
+            "tekst": "Je herkent misschien dat je eerst kijkt wat anderen nodig hebben. Dat je je makkelijk aanpast, en pas later merkt wat je zelf wilde. En dat je bij tegenslag eerder vraagt wat jij anders had kunnen doen dan wat er eigenlijk van je gevraagd werd."
+          },
+          {
+            "tekst": "Dit zijn geen fouten. Het zijn de manieren die je hebt geleerd om je door het leven te bewegen. Niets hieronder is nieuw. Het wordt alleen hardop gezegd."
+          },
+          {
+            "type": "afsluiter",
+            "tekst": "“Lees het rustig. Je kijkt alleen of het klopt.”"
+          },
+          {
+            "kop": "De sterke zijn werd vanzelfsprekend",
+            "tekst": "Ergens vroeg hield de sterke zijn op een keuze te zijn en werd het gewoon hoe het was. Je weet niet meer dat je het besloot. Je weet nog dat het waar was, en dat iedereen om je heen eraan gewend raakte. Het ongemakkelijke is dat het werkt. Je bent er goed in. En precies daarom vraagt niemand ooit of het zwaar is."
+          },
+          {
+            "kop": "Je voelt de ruimte voordat er iemand iets zegt",
+            "tekst": "Je komt binnen en je weet het. Wie er niet lekker in zit, wie zich beter voordoet, wat er niet gezegd wordt. Het is niets dat je hebt geoefend, het lijkt meer op horen. En omdat je het opmerkt, begin je je aan te passen voordat je erover hebt nagedacht. Aan het eind van de avond heb je iets gedragen wat niemand je gegeven had."
+          },
+          {
+            "kop": "Je weet wanneer iets af is",
+            "tekst": "Lang voordat het hardop gezegd wordt, voel je het einde aankomen. Een vriendschap, een baan, een huis, een versie van jezelf. Anderen maken nog plannen terwijl jij vanbinnen al stil afscheid aan het nemen bent. Daarom verrassen eindes je zelden, en daarom verlaat je soms een ruimte voordat iemand merkt dat je weg bent."
+          },
+          {
+            "kop": "Je begint langzaam en houdt het het langst vol",
+            "tekst": "Je doet er lang over om te beginnen. Je draait het om, je wacht, je laat het liggen. Mensen die snel bewegen lopen aan het begin op je voor. Dan begin jij, en je stopt niet meer, en één voor één vallen ze af. Wat op twijfel leek was jij die zeker wist dat het zou houden."
+          },
+          {
+            "kop": "Vrijheid en verantwoordelijkheid trekken allebei aan je",
+            "tekst": "Iets in jou heeft ruimte nodig. Open deuren, nog geen vast antwoord, de mogelijkheid om weg te gaan. En iets anders in jou zegt steeds ja tegen nog één ding dat gedragen moet worden. Allebei zijn echt. Die trek ertussen is geen besluiteloosheid. Het zijn twee ware delen van jou die om dezelfde dag vragen."
+          },
+          {
+            "kop": "Gezien worden kost je nog steeds iets",
+            "tekst": "Het werk kun je doen. De ruimte kun je vasthouden. Wat moeilijker is, is ervoor gaan staan met je eigen naam eronder. Vlak voordat je naar voren stapt zit er een kleine aarzeling die niemand anders ziet. En als het daarna aankomt, ga je snel weer verder in plaats van erbij te blijven."
+          },
+          {
+            "kop": "Je doet het liever dan dat je het uitlegt",
+            "tekst": "Vragen duurt langer dan doen. Je hebt bewijs: je vroeg het één keer, het kwam half goed terug, en je hebt het alsnog zelf gedaan. Zo zette de gewoonte zich vast. De prijs zie je die dag niet. Die zie je op de avond dat je klaar bent en er niemand is die weet wat het je kostte."
+          },
+          {
+            "type": "lijst",
+            "kop": "Dit herken je misschien",
+            "items": [
+              "Ik voel snel aan wat anderen nodig hebben.",
+              "Ik neem verantwoordelijkheid, ook als die niet van mij is.",
+              "Ik hoor wat er niet gezegd wordt.",
+              "Ik vind het lastig om echt tot stilstand te komen.",
+              "Ik weet vaak wat er moet gebeuren, niet altijd wat ik wil.",
+              "Ik maak dingen af lang nadat anderen alweer verder zijn.",
+              "Ik ben loyaal, ook als het me iets kost.",
+              "Ik dacht lang dat ik pas iets waard was als ik presteerde."
+            ]
+          },
+          {
+            "tekst": "Niets hiervan is een oordeel. Het is een beschrijving. Een deel klopt vandaag en is over een maand anders, en zo hoort het. Neem mee wat landt. Laat de rest liggen."
+          },
+          {
+            "type": "herinnering",
+            "kop": "Iets om te onthouden",
+            "tekst": "“Ik hoef niet sterker te worden.\nIk mag me herinneren dat ik het al ben.”"
+          },
+          {
+            "type": "invoer",
+            "kop": "Wat herken je?",
+            "sleutel": "verhaal",
+            "plaats": "Schrijf hier wat in je resoneert…"
+          }
+        ]
+      },
+      {
+        "beeld": "assets/kaart-02.jpg",
+        "achtergrond": "assets/paneel-02.jpg",
+        "titel": "Jouw geboortekaart",
+        "kaart": "Je eigen kaart, als beeld.",
+        "sub": "De hemel op het uur dat je aankwam.",
+        "quote": "Hemel\nZelf\nBestemming",
+        "quoteTonen": false,
+        "blokken": [
+          {
+            "tekst": "Je geboortekaart is een kaart van de hemel op het moment dat je werd geboren. Hij laat zien waar de planeten stonden, en samen vormen ze jouw eigen patroon."
+          },
+          {
+            "tekst": "Elke planeet, elk teken en elk huis staat voor een thema in je leven, van je krachten en talenten tot de lessen die je hier tegenkomt. De kaart hieronder is een voorbeeld, zodat je ziet hoe zo'n kaart is opgebouwd. De jouwe komt in de volgende stappen."
+          },
+          {
+            "type": "zwevend",
+            "src": "assets/voorbeeld-chart.jpg",
+            "alt": "voorbeeld geboortekaart",
+            "onder": "Een voorbeeldkaart. De jouwe volgt in de volgende stappen."
+          },
+          {
+            "type": "iconen",
+            "items": [
+              {
+                "teken": "☉︎",
+                "kop": "Jouw energie",
+                "sub": "planeten"
+              },
+              {
+                "teken": "☽︎",
+                "kop": "Jouw gevoel",
+                "sub": "maanfase"
+              },
+              {
+                "teken": "△︎",
+                "kop": "Jouw levensgebieden",
+                "sub": "huizen"
+              }
+            ]
+          },
+          {
+            "type": "herinnering",
+            "kop": "Iets om te onthouden",
+            "tekst": "“Zo boven, zo in jou.\nHetzelfde universum leeft in jou.”"
+          },
+          {
+            "type": "uitklap",
+            "kop": "Wat je hier ziet",
+            "items": [
+              {
+                "titel": "Planeten",
+                "beeld": "assets/kaart-03.jpg",
+                "kort": "De verschillende delen van je persoonlijkheid.",
+                "tekst": "Elke planeet staat voor één manier van zijn. De zon is wat je drijft, de maan is wat je voelt, mercurius is hoe je denkt en spreekt, venus is hoe je liefhebt, mars is hoe je handelt. Het zijn geen krachten die van buitenaf op je inwerken. Het zijn namen voor delen die je allang in jezelf herkent."
+              },
+              {
+                "titel": "Maanfase",
+                "beeld": "assets/kaart-04.jpg",
+                "kort": "Je gevoelsnatuur en je innerlijke ritme.",
+                "tekst": "De maan doet er ongeveer negenentwintig dagen over om van donker naar vol en weer terug te gaan. De fase waarin zij stond bij je geboorte zegt iets over jouw ritme: of je begint op instinct, langzaam opbouwt, of aanvoelt dat iets af is voordat iemand het zegt."
+              },
+              {
+                "titel": "Huizen",
+                "beeld": "assets/kaart-02.jpg",
+                "kort": "Waar de energie landt in je leven.",
+                "tekst": "De kaart is verdeeld in twaalf levensgebieden: werk, liefde, thuis, geld, vriendschap, groei. Een planeet in een huis vertelt je waar die energie in de praktijk opduikt. Dezelfde planeet, een ander huis, een compleet ander dagelijks leven."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "beeld": "assets/kaart-03.jpg",
+        "achtergrond": "assets/paneel-03.jpg",
+        "titel": "Jouw planeten",
+        "kaart": "Twaalf delen van jou, elk met een eigen kaart.",
+        "sub": "De delen waaruit je bestaat.",
+        "quote": "Verschillende krachten\nÉén jij",
+        "quoteTonen": false,
+        "midden": "Dezelfde krachten. Een andere jij.",
+        "blokken": [
+          {
+            "tekst": "Elke planeet staat voor een deel van jou: een energie, een thema, een les. Samen vormen ze een patroon dat bepaalt hoe je denkt, voelt, handelt en groeit."
+          },
+          {
+            "type": "iconen",
+            "items": [
+              {
+                "teken": "☉︎",
+                "kop": "Energie",
+                "sub": "je drive en levenskracht"
+              },
+              {
+                "teken": "♡︎",
+                "kop": "Gevoel",
+                "sub": "hoe je voelt en verbindt"
+              },
+              {
+                "teken": "❀︎",
+                "kop": "Lessen",
+                "sub": "wat je hier tegenkomt"
+              }
+            ]
+          },
+          {
+            "type": "herinnering",
+            "kop": "Iets om te onthouden",
+            "tekst": "“Zo boven, zo in jou.\nDezelfde krachten bewegen in jou.”"
+          },
+          {
+            "type": "planeten",
+            "kop": "Verken je planeten",
+            "tekst": "Tik op een planeet. Elke planeet is een deel van jou dat je waarschijnlijk herkent.",
+            "items": [
+              {
+                "naam": "Zon",
+                "teken": "☉︎",
+                "beeld": "assets/pl-sun.jpg",
+                "kort": "Wat je laat oplichten.",
+                "sub": "Wat je laat oplichten.",
+                "algemeen": "De Zon is je motor. Het is het ding dat je niet uit kunt zetten, de reden dat je opstaat, en het deel van jou dat mensen als eerste ontmoeten en het langst onthouden.",
+                "tekenTeken": "♏︎",
+                "jouw": "Jouw Zon staat in Schorpioen, in huis 4.",
+                "jouwtekst": "Jouw Zon staat in Schorpioen, in het deel van de kaart dat over thuis en familie gaat. Je bent dus nooit gebouwd voor small talk. Je wilt de echte versie, en de gepoetste ruik je van een kilometer afstand. Mensen noemen dat intensiteit. Voor jou is het gewoon eerlijk.",
+                "themas": [
+                  "Diepte",
+                  "Loyaliteit",
+                  "Eerlijkheid",
+                  "Privacy",
+                  "Opnieuw beginnen"
+                ],
+                "herkenning": [
+                  "Jij stelt de vraag waar de rest omheen liep.",
+                  "Doen alsof het goed gaat lukt je niet.",
+                  "Je hebt een deur nodig die dicht kan.",
+                  "Mensen vertellen jou dingen die ze nooit eerder hebben gezegd.",
+                  "Je gaat er helemaal in, of je gaat weg."
+                ],
+                "herinnering": "Je bent niet te intens.\nJe hebt alleen geen zin in nep."
+              },
+              {
+                "naam": "Maan",
+                "teken": "☽︎",
+                "beeld": "assets/pl-moon.jpg",
+                "kort": "Wat je nodig hebt om je veilig te voelen.",
+                "sub": "Wat je nodig hebt om je veilig te voelen.",
+                "algemeen": "De Maan is je binnenweer. Het is wat je als kind nodig had en nu nog steeds nodig hebt, en het trekt zich niets aan van of dat uitkomt.",
+                "tekenTeken": "♏︎",
+                "jouw": "Jouw Maan staat in Schorpioen, in huis 4.",
+                "jouwtekst": "Jouw Maan staat in Schorpioen, in het huis van thuis. Je voelt alles op vol volume, en daarna ga je het in je eentje uitzoeken. Tijd waarin niemand iets van je wil is geen traktatie. Het is onderhoud.",
+                "themas": [
+                  "Diep voelen",
+                  "Alleen zijn",
+                  "Loyaliteit",
+                  "Instinct",
+                  "Rust"
+                ],
+                "herkenning": [
+                  "Je voelt de sfeer in een ruimte voordat iemand iets zegt.",
+                  "Je wordt eerst stil, en dan praat je.",
+                  "Je hebt echte rust nodig, geen scherm.",
+                  "Je onthoudt wat mensen zeiden lang nadat zij het vergeten zijn.",
+                  "Je vertrouwt langzaam, en dan volledig."
+                ],
+                "herinnering": "Tijd voor jezelf nodig hebben\nis niet hetzelfde als mensen buitensluiten."
+              },
+              {
+                "naam": "Mercurius",
+                "teken": "☿︎",
+                "beeld": "assets/pl-mercury.jpg",
+                "kort": "Hoe je hoofd werkt.",
+                "sub": "Hoe je hoofd werkt.",
+                "algemeen": "Mercurius is je denken en je praten. Hoe snel, hoe diep, hoeveel je zegt en hoeveel je houdt.",
+                "tekenTeken": "♏︎",
+                "jouw": "Jouw Mercurius staat in Schorpioen, in huis 4.",
+                "jouwtekst": "Jouw Mercurius staat ook in Schorpioen. Jij scant niet. Jij graaft, en je ziet precies dat ene ding dat niet klopt. En je zegt liever helemaal niets dan de helft van wat je bedoelt.",
+                "themas": [
+                  "Doorzien",
+                  "Precisie",
+                  "Stilte",
+                  "Graven",
+                  "Recht voor zijn raap"
+                ],
+                "herkenning": [
+                  "Jij ziet de tegenstrijdigheid en niemand weet hoe.",
+                  "Oppervlakkig praten kost je meer dan je toegeeft.",
+                  "Je blijft stil tot je zeker weet.",
+                  "Als je het dan zegt, komt het aan.",
+                  "Je leest mensen sneller dan boeken."
+                ],
+                "herinnering": "Je stilte is geen afstand.\nHet is jij die controleert of het waar is."
+              },
+              {
+                "naam": "Venus",
+                "teken": "♀︎",
+                "beeld": "assets/pl-venus.jpg",
+                "kort": "Hoe je liefhebt en waar je van geniet.",
+                "sub": "Hoe je liefhebt en waar je van geniet.",
+                "algemeen": "Venus is plezier, liefde en smaak. Waar je blij van wordt, op wie je valt, en wat jij je tijd waard vindt.",
+                "tekenTeken": "♐︎",
+                "jouw": "Jouw Venus staat in Boogschutter, in huis 5.",
+                "jouwtekst": "Jouw Venus staat in Boogschutter, in het huis van spel. Je hoort liever de waarheid dan een vriendelijke leugen, en je hebt ruimte nodig binnen de liefde. Zet het vast en er gaat iets in jou weg voordat je lichaam vertrekt.",
+                "themas": [
+                  "Vrijheid",
+                  "Eerlijkheid",
+                  "Spel",
+                  "Gulheid",
+                  "Avontuur"
+                ],
+                "herkenning": [
+                  "Je geeft veel, vaak voordat iemand erom vraagt.",
+                  "Je hebt ruimte nodig in een relatie, geen minder liefde.",
+                  "Je haakt af op het moment dat het klein wordt.",
+                  "Jij zegt het eerlijke ding aan tafel.",
+                  "Schoonheid en betekenis winnen het altijd van status."
+                ],
+                "herinnering": "Ruimte willen is geen afstand.\nHet is hoe je eerlijk blijft."
+              },
+              {
+                "naam": "Mars",
+                "teken": "♂︎",
+                "beeld": "assets/pl-mars.jpg",
+                "kort": "Hoe je dingen voor elkaar krijgt.",
+                "sub": "Hoe je dingen voor elkaar krijgt.",
+                "algemeen": "Mars is je machinekamer. Hoe je begint, hoe je doordrukt, en wat er gebeurt als iemand in de weg gaat staan.",
+                "tekenTeken": "♉︎",
+                "jouw": "Jouw Mars staat in Stier, retrograde, in huis 10.",
+                "jouwtekst": "Jouw Mars staat in Stier en hij is retrograde, in het huis van werk. Je doet er eindeloos lang over om te beginnen, en daarna ben je niet meer te stoppen. Je boosheid gaat eerst naar binnen, en daarom komt hij laat en heel helder naar buiten.",
+                "themas": [
+                  "Uithoudingsvermogen",
+                  "Geduld",
+                  "Koppigheid",
+                  "Trage start",
+                  "Gebouwd om te blijven"
+                ],
+                "herkenning": [
+                  "Je denkt er lang over na voordat je begint.",
+                  "Als je eenmaal begint, maak je het af.",
+                  "Je houdt het langer vol dan mensen die veel harder wegsprintten.",
+                  "Je boosheid komt een dag te laat.",
+                  "Je bouwt dingen die moeten houden."
+                ],
+                "herinnering": "Je hoeft niet sneller te bewegen\nom vooruit te komen."
+              },
+              {
+                "naam": "Jupiter",
+                "teken": "♃︎",
+                "beeld": "assets/pl-jupiter.jpg",
+                "kort": "Waar het leven zich voor je opent.",
+                "sub": "Waar het leven zich voor je opent.",
+                "algemeen": "Jupiter is je geluk en je honger. Waar je ja zegt, waar je groeit, en waar je soms meer op je neemt dan erin past.",
+                "tekenTeken": "♒︎",
+                "jouw": "Jouw Jupiter staat in Waterman, in huis 6.",
+                "jouwtekst": "Jouw Jupiter staat in Waterman, in het huis van het dagelijkse werk. Je groeit als je het op je eigen manier mag doen, en je ziet de structuur achter de rommel lang voordat iemand anders hem ziet.",
+                "themas": [
+                  "Je eigen manier",
+                  "Onafhankelijkheid",
+                  "Systemen zien",
+                  "Nuttig zijn",
+                  "Vernieuwing"
+                ],
+                "herkenning": [
+                  "Je wordt onrustig binnen de regels van een ander.",
+                  "Je beste ideeën zijn praktisch, niet zweverig.",
+                  "Je repareert het proces, niet alleen het probleem.",
+                  "Je groeit het snelst met ruimte om te proberen.",
+                  "Je bouwt voor mensen, niet voor de bühne."
+                ],
+                "herinnering": "Jouw manier is niet de omweg.\nHet is de weg."
+              },
+              {
+                "naam": "Saturnus",
+                "teken": "♄︎",
+                "beeld": "assets/pl-saturn.jpg",
+                "kort": "Waar het zwaar is, en waar je sterk wordt.",
+                "sub": "Waar het zwaar is, en waar je sterk wordt.",
+                "algemeen": "Saturnus is de leraar waar niemand om vroeg. Hij laat je zien waar het leven je dezelfde les blijft geven tot je hem eindelijk leert, en daarna geeft hij je meesterschap.",
+                "tekenTeken": "♋︎",
+                "jouw": "Jouw Saturnus staat in Kreeft, retrograde, in huis 11.",
+                "jouwtekst": "Jouw Saturnus staat in Kreeft, in het huis van groepen. Jouw les is ontvangen. Jij bent degene die draagt, organiseert en bij elkaar houdt, en je bent er zo goed in geworden dat niemand ziet dat het zwaar is.",
+                "themas": [
+                  "Verantwoordelijkheid",
+                  "Alleen dragen",
+                  "Grenzen",
+                  "Ontvangen",
+                  "Volwassen worden"
+                ],
+                "herkenning": [
+                  "Je doet het liever zelf dan dat je het vraagt.",
+                  "Jij bent degene op wie mensen leunen.",
+                  "Je merkt het als jij de enige bent die geeft.",
+                  "Je voelt je verantwoordelijk voor de sfeer in de groep.",
+                  "Om hulp vragen voelt nog steeds als een risico."
+                ],
+                "herinnering": "Iemand jou laten helpen\nis geen zwakte. Het is de andere helft."
+              },
+              {
+                "naam": "Uranus",
+                "teken": "♅︎",
+                "beeld": "assets/pl-uranus.jpg",
+                "kort": "Waar je weigert het op hun manier te doen.",
+                "sub": "Waar je weigert het op hun manier te doen.",
+                "algemeen": "Uranus is het deel van jou dat het patroon doorbreekt. Hij is plotseling, hij is eerlijk, en hij vraagt geen toestemming.",
+                "tekenTeken": "♎︎",
+                "jouw": "Jouw Uranus staat in Weegschaal, in huis 4.",
+                "jouwtekst": "Jouw Uranus staat in Weegschaal, in het huis van thuis en familie. Jij hebt gebroken met iets dat je familie vanzelfsprekend vond, en je kunt niet stilzitten binnen een afspraak die alleen op papier eerlijk is.",
+                "themas": [
+                  "Vrijheid",
+                  "Eerlijkheid",
+                  "Anders zijn",
+                  "Verandering",
+                  "Onafhankelijkheid"
+                ],
+                "herkenning": [
+                  "Je hebt een patroon losgelaten dat je familie vasthield.",
+                  "Doen alsof houd je niet lang vol.",
+                  "Je hebt relaties nodig die je vrij laten.",
+                  "Je verandert van koers zodra iets niet meer waar is.",
+                  "Jij bent de vreemde eend, en het staat je goed."
+                ],
+                "herinnering": "Je bent niet lastig.\nJe wilt alleen niet doen alsof."
+              },
+              {
+                "naam": "Neptunus",
+                "teken": "♆︎",
+                "beeld": "assets/pl-neptune.jpg",
+                "kort": "Waar je droomt en waar je wegdrijft.",
+                "sub": "Waar je droomt en waar je wegdrijft.",
+                "algemeen": "Neptunus is verbeelding, verlangen en de zachte rand van de dingen. Hij is prachtig, en hij is ook waar je mensen één keer te vaak het voordeel van de twijfel geeft.",
+                "tekenTeken": "♐︎",
+                "jouw": "Jouw Neptunus staat in Boogschutter, in huis 5.",
+                "jouwtekst": "Jouw Neptunus staat in Boogschutter, in het huis van maken. Je ziet het afgeronde ding voordat het bestaat, en soms is je plan één maat groter dan er in de dag past.",
+                "themas": [
+                  "Verbeelding",
+                  "Grote dromen",
+                  "Aanvoelen",
+                  "Compassie",
+                  "Maken"
+                ],
+                "herkenning": [
+                  "Je ziet het af voordat je begonnen bent.",
+                  "Verhalen raken je meer dan argumenten.",
+                  "Je geeft makkelijk een tweede kans.",
+                  "Als je niets maakt, stapelt het zich op.",
+                  "Je voelt wat er niet gezegd wordt."
+                ],
+                "herinnering": "Groot dromen is niet naïef.\nHet is hoe jij de richting vindt."
+              },
+              {
+                "naam": "Pluto",
+                "teken": "♇︎",
+                "beeld": "assets/pl-pluto.jpg",
+                "kort": "Waar je helemaal naar beneden gaat.",
+                "sub": "Waar je helemaal naar beneden gaat.",
+                "algemeen": "Pluto is wat eindigt zodat er iets anders kan beginnen. Het is macht, waarheid en de composthoop van je leven.",
+                "tekenTeken": "♎︎",
+                "jouw": "Jouw Pluto staat in Weegschaal, in huis 3.",
+                "jouwtekst": "Jouw Pluto staat in Weegschaal, in het huis van praten en schrijven. Bij jou loopt het via woorden. Eén zin van jou kan een hele situatie laten kantelen, en dat is veel macht om luchtig te dragen.",
+                "themas": [
+                  "Waarheid",
+                  "Opnieuw beginnen",
+                  "Invloed",
+                  "Diepte",
+                  "Loslaten"
+                ],
+                "herkenning": [
+                  "Je woorden wegen zwaarder dan je denkt.",
+                  "Je hebt je leven minstens één keer opnieuw opgebouwd.",
+                  "Je ziet het machtsspel in een ruimte.",
+                  "Wat je eenmaal gezien hebt, kun je niet meer niet zien.",
+                  "Je breekt het liever dan dat je doet alsof."
+                ],
+                "herinnering": "Je bent niet te veel.\nJe bent alleen niet oppervlakkig."
+              },
+              {
+                "naam": "Chiron",
+                "teken": "⚷︎",
+                "beeld": "assets/pl-chiron.jpg",
+                "kort": "De zere plek die je gave werd.",
+                "sub": "De zere plek die je gave werd.",
+                "algemeen": "Chiron is de oude blauwe plek. Druk erop en het doet nog steeds pijn, en het is precies de plek waar jij een ander beter kunt helpen dan wie ook.",
+                "tekenTeken": "♈︎",
+                "jouw": "Jouw Chiron staat in Ram, op je Midhemel.",
+                "jouwtekst": "Jouw Chiron staat pal op de top van je kaart, het meest zichtbare punt dat er is. Voorop gaan, gezien worden, de leiding nemen: daar zit de pijn, en daar zit ook jouw werk.",
+                "themas": [
+                  "Moed",
+                  "Gezien worden",
+                  "Leiden",
+                  "Helen",
+                  "Voorop gaan"
+                ],
+                "herkenning": [
+                  "Gezien worden kost je nog steeds iets.",
+                  "Je helpt anderen met wat voor jou ooit moeilijk was.",
+                  "Je twijfelt aan jezelf vlak voordat je naar voren stapt.",
+                  "Jij hebt een weg gemaakt waar er geen was.",
+                  "Mensen vinden je door je litteken, niet door je glans."
+                ],
+                "herinnering": "De plek die pijn deed\nis de plek die jij voor een ander kunt vasthouden."
+              },
+              {
+                "naam": "Noordknoop",
+                "teken": "☊︎",
+                "beeld": "assets/pl-northnode.jpg",
+                "kort": "Waar je naartoe gaat.",
+                "sub": "Waar je naartoe gaat.",
+                "algemeen": "De Noordknoop is de richting die nooit vanzelfsprekend voelt, en altijd levend voelt zodra je er toch heen gaat.",
+                "tekenTeken": "♑︎",
+                "jouw": "Jouw Noordknoop staat in Steenbok, in huis 5.",
+                "jouwtekst": "De jouwe staat in Steenbok, in het huis van spel en scheppen. Geef het vorm, blijf erbij, zet je naam erop. En omdat hij in het huis van vreugde staat: geniet ervan terwijl je bouwt.",
+                "themas": [
+                  "Afmaken",
+                  "Structuur",
+                  "Gezien worden",
+                  "Eigenaarschap",
+                  "Vreugde"
+                ],
+                "herkenning": [
+                  "Je naam erop zetten voelt riskant.",
+                  "Je bent het gelukkigst als je iets van jezelf bouwt.",
+                  "Je moet bewust voor jezelf kiezen.",
+                  "Afmaken telt zwaarder dan beginnen.",
+                  "De vreugde hoort bij het werk, het is niet de beloning."
+                ],
+                "herinnering": "In je eigen naam staan\nis geen arrogantie. Het is jouw richting."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "beeld": "assets/kaart-04.jpg",
+        "achtergrond": "assets/paneel-04.jpg",
+        "titel": "Jouw maanfase",
+        "kaart": "De stand van de maan, uit je eigen kaart.",
+        "sub": "Het ritme in jou.",
+        "quote": "Cycli\nGevoel\nIntuïtie\nStroom",
+        "midden": "Dezelfde maan. Een andere jij.",
+        "quoteTonen": false,
+        "blokken": [
+          {
+            "tekst": "De Maan is je binnenwereld: je gevoel, je instinct en de manier waarop je verbindt. De fase waarin zij stond toen je werd geboren zegt iets over het ritme waarmee je bent aangekomen."
+          },
+          {
+            "type": "maanfases",
+            "kop": "Jouw maanfase bij geboorte",
+            "items": [
+              {
+                "label": "Nieuwe maan",
+                "actief": false,
+                "beeld": "assets/maan-0.jpg"
+              },
+              {
+                "label": "Wassende sikkel",
+                "actief": false,
+                "beeld": "assets/maan-1.jpg"
+              },
+              {
+                "label": "Eerste kwartier",
+                "actief": false,
+                "beeld": "assets/maan-2.jpg"
+              },
+              {
+                "label": "Wassende maan",
+                "actief": false,
+                "beeld": "assets/maan-3.jpg"
+              },
+              {
+                "label": "Volle maan",
+                "actief": false,
+                "beeld": "assets/maan-4.jpg"
+              },
+              {
+                "label": "Afnemende maan",
+                "actief": false,
+                "beeld": "assets/maan-5.jpg"
+              },
+              {
+                "label": "Laatste kwartier",
+                "actief": false,
+                "beeld": "assets/maan-6.jpg"
+              },
+              {
+                "label": "Balsemieke maan",
+                "actief": true,
+                "beeld": "assets/maan-7.jpg"
+              }
+            ]
+          },
+          {
+            "type": "vak",
+            "beeld": "assets/maan-7.jpg",
+            "kop": "Je bent geboren onder een balsemieke maan.",
+            "tekst": "Twee graden voor de nieuwe maan, in het laatste uur van een cyclus, met de maan donker aan de hemel. Balsemieke mensen voelen dat iets af is voordat iemand het hardop zegt. Jij laat vroeg los, neemt stil afscheid, en leeft vaak al in het hoofdstuk dat de anderen nog niet hebben opengeslagen.",
+            "themas": [
+              "Einde voelen",
+              "Loslaten",
+              "Stilte",
+              "Intuïtie",
+              "Een cyclus sluiten"
+            ]
+          },
+          {
+            "type": "duo",
+            "lijst": {
+              "kop": "Dit herken je misschien in jezelf",
+              "items": [
+                "Je weet dat het voorbij is voordat er iets gezegd is.",
+                "Je neemt afscheid zonder het aan te kondigen.",
+                "Je hebt meer rust nodig dan de mensen om je heen.",
+                "Je voelt oude dingen die niet van jou zijn.",
+                "Je bent al bezig met wat er hierna komt."
+              ]
+            },
+            "herinnering": {
+              "kop": "Iets om te onthouden",
+              "tekst": "Vroeg loslaten is niet opgeven.\nHet is hoe jij ruimte maakt."
+            }
+          },
+          {
+            "type": "invoer",
+            "kop": "Waar merk je dit ritme?",
+            "sleutel": "maan",
+            "plaats": "Schrijf hier waar je het terugziet…"
+          }
+        ]
+      },
+      {
+        "beeld": "assets/kaart-05.jpg",
+        "titel": "Jouw getallen",
+        "kaart": "Jouw trilling. De getallen waarmee je geboren bent.",
+        "sub": "Jouw trilling.",
+        "quote": "Getallen\nRitme\nTiming",
+        "midden": "Dezelfde getallen. Een leven dat alleen jij kunt leven.",
+        "quoteTonen": false,
+        "blokken": [
+          {
+            "tekst": "Je naam en je geboortedatum dragen getallen. Niet als trucje, maar als ritme: wat je hier kwam doen, waar je naar verlangt, en waar je nu in de cyclus staat."
+          },
+          {
+            "type": "afsluiter",
+            "tekst": "Alles beweegt. Alles trilt. Het geheim van jouw schepping is jouw trilling."
+          },
+          {
+            "type": "getallen",
+            "kop": "Jouw kerngetallen",
+            "items": [
+              {
+                "getal": "1",
+                "label": "levenspad"
+              },
+              {
+                "getal": "22",
+                "label": "expressie"
+              },
+              {
+                "getal": "11",
+                "label": "zielsverlangen"
+              },
+              {
+                "getal": "9",
+                "label": "jaar 2026"
+              }
+            ],
+            "tekst": "<b>1</b> begint dingen die er nog niet waren. <b>22</b> bouwt iets waar anderen op kunnen staan. <b>11</b> voelt het voordat het uit te leggen is. En <b>9</b> is het jaar waar je nu in zit: opruimen, zodat de 1 in 2027 kan beginnen."
+          },
+          {
+            "type": "vak",
+            "beeld": "assets/kaart-05.jpg",
+            "kop": "Levenspad 1, met een 22 in je naam.",
+            "tekst": "Jij bent degene die voorop gaat, en je bent daar niet altijd blij mee. De 22 vraagt je iets te bouwen dat het moment overleeft, en de 11 eronder betekent dat je de richting aanvoelt lang voordat je hem kunt verdedigen. Dat gat tussen weten en uitleggen is geen gebrek. Het is jouw timing.",
+            "themas": [
+              "Voorop gaan",
+              "Bouwen",
+              "Vooruit voelen",
+              "Afmaken",
+              "Timing"
+            ]
+          },
+          {
+            "type": "uitklap",
+            "kop": "Jouw groeigetallen · dit heette vroeger karma",
+            "items": [
+              {
+                "titel": "Terugkeergetallen",
+                "beeld": "assets/kaart-05.jpg",
+                "kort": "Een thema dat blijft terugkomen. Jij hebt er geen.",
+                "tekst": "Een terugkeergetal ontstaat als een van je kerngetallen vlak voor de laatste stap op 13, 14, 16 of 19 uitkomt. Het wijst op iets dat blijft kloppen tot je het doet. Jouw geboortedatum draagt er geen enkele, en dat is zeldzaam. Geen oude rekening. Wat je wel hebt is een pad dat vraagt om voorop te gaan, en dat is werk genoeg."
+              },
+              {
+                "titel": "Jouw grondtoon",
+                "beeld": "assets/kaart-01.jpg",
+                "kort": "De 5. Vrijheid, beweging, verandering.",
+                "tekst": "Elke letter van je naam draagt een getal, en één daarvan komt vaker voor dan de rest. Die bromt onder alles door, of je erop stuurt of niet. Bij jou is dat de 5: vrijheid, beweging, verandering. Wat betekent dat de vraag nooit is of je vrij mag zijn. De vraag is waarom je jezelf steeds weer vastlegt."
+              },
+              {
+                "titel": "Ongebruikte spieren",
+                "beeld": "assets/kaart-06.jpg",
+                "kort": "Een getal dat in je naam ontbreekt. Bij jou ontbreekt er geen.",
+                "tekst": "Als een getal helemaal niet in je naam voorkomt, is dat geen schuld. Het is een spier die niemand je heeft aangereikt, en die je zelf mag trainen. Vroeger heette dat een karmische les. In je werknaam ontbreekt geen enkel getal, wat bijna nooit voorkomt. Voor het definitieve antwoord hebben we je naam nodig zoals die op je geboorteakte staat, want dat is de naam waaruit de letters worden geteld."
+              }
+            ]
+          },
+          {
+            "type": "html",
+            "kop": "Jouw negenjarige ritme",
+            "html": "<div class=\"ritme\"><div class=\"kopjes\"><div>1 begin<em>je zet iets neer waar niets was</em></div><div>2 geduld<em>het groeit onder de grond, niet erboven</em></div><div>3 stem<em>je laat het zien en horen</em></div><div>4 bouwen<em>het saaie werk dat later alles draagt</em></div><div>5 beweging<em>er breekt iets open, meestal ongevraagd</em></div><div>6 zorg<em>mensen, thuis, verantwoordelijkheid</em></div><div>7 inkeer<em>je trekt je terug, en dat hoort</em></div><div>8 oogst<em>het komt terug als geld, positie of erkenning</em></div><div>9 opruimen<em>je maakt af en laat los</em></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>1973</b><i>0</i><u></u></div><div class=\"jr\"><b>1974</b><i>1</i><u></u></div><div class=\"jr\"><b>1975</b><i>2</i><u></u></div><div class=\"jr\"><b>1976</b><i>3</i><u></u></div><div class=\"jr\"><b>1977</b><i>4</i><u></u></div><div class=\"jr\"><b>1978</b><i>5</i><u></u></div><div class=\"jr\"><b>1979</b><i>6</i><u></u></div><div class=\"jr\"><b>1980</b><i>7</i><u></u></div><div class=\"jr negen\"><b>1981</b><i>8</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>1982</b><i>9</i><u></u></div><div class=\"jr\"><b>1983</b><i>10</i><u></u></div><div class=\"jr\"><b>1984</b><i>11</i><u></u></div><div class=\"jr\"><b>1985</b><i>12</i><u></u></div><div class=\"jr\"><b>1986</b><i>13</i><u></u></div><div class=\"jr\"><b>1987</b><i>14</i><u></u></div><div class=\"jr\"><b>1988</b><i>15</i><u></u></div><div class=\"jr\"><b>1989</b><i>16</i><u></u></div><div class=\"jr negen\"><b>1990</b><i>17</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>1991</b><i>18</i><u></u></div><div class=\"jr\"><b>1992</b><i>19</i><u></u></div><div class=\"jr\"><b>1993</b><i>20</i><u></u></div><div class=\"jr\"><b>1994</b><i>21</i><u></u></div><div class=\"jr\"><b>1995</b><i>22</i><u></u></div><div class=\"jr\"><b>1996</b><i>23</i><u></u></div><div class=\"jr\"><b>1997</b><i>24</i><u></u></div><div class=\"jr\"><b>1998</b><i>25</i><u></u></div><div class=\"jr negen\"><b>1999</b><i>26</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2000</b><i>27</i><u></u></div><div class=\"jr\"><b>2001</b><i>28</i><u></u></div><div class=\"jr\"><b>2002</b><i>29</i><u></u></div><div class=\"jr\"><b>2003</b><i>30</i><u></u></div><div class=\"jr\"><b>2004</b><i>31</i><u></u></div><div class=\"jr\"><b>2005</b><i>32</i><u></u></div><div class=\"jr\"><b>2006</b><i>33</i><u></u></div><div class=\"jr\"><b>2007</b><i>34</i><u></u></div><div class=\"jr negen\"><b>2008</b><i>35</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2009</b><i>36</i><u></u></div><div class=\"jr\"><b>2010</b><i>37</i><u></u></div><div class=\"jr\"><b>2011</b><i>38</i><u></u></div><div class=\"jr\"><b>2012</b><i>39</i><u></u></div><div class=\"jr\"><b>2013</b><i>40</i><u></u></div><div class=\"jr\"><b>2014</b><i>41</i><u></u></div><div class=\"jr\"><b>2015</b><i>42</i><u></u></div><div class=\"jr\"><b>2016</b><i>43</i><u></u></div><div class=\"jr negen\"><b>2017</b><i>44</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2018</b><i>45</i><u></u></div><div class=\"jr\"><b>2019</b><i>46</i><u></u></div><div class=\"jr\"><b>2020</b><i>47</i><u></u></div><div class=\"jr\"><b>2021</b><i>48</i><u></u></div><div class=\"jr\"><b>2022</b><i>49</i><u></u></div><div class=\"jr\"><b>2023</b><i>50</i><u></u></div><div class=\"jr\"><b>2024</b><i>51</i><u></u></div><div class=\"jr\"><b>2025</b><i>52</i><u></u></div><div class=\"jr nu\"><b>2026</b><i>53</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2027</b><i>54</i><u></u></div><div class=\"jr\"><b>2028</b><i>55</i><u></u></div><div class=\"jr\"><b>2029</b><i>56</i><u></u></div><div class=\"jr\"><b>2030</b><i>57</i><u></u></div><div class=\"jr\"><b>2031</b><i>58</i><u></u></div><div class=\"jr\"><b>2032</b><i>59</i><u></u></div><div class=\"jr\"><b>2033</b><i>60</i><u></u></div><div class=\"jr\"><b>2034</b><i>61</i><u></u></div><div class=\"jr negen\"><b>2035</b><i>62</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2036</b><i>63</i><u></u></div><div class=\"jr\"><b>2037</b><i>64</i><u></u></div><div class=\"jr\"><b>2038</b><i>65</i><u></u></div><div class=\"jr\"><b>2039</b><i>66</i><u></u></div><div class=\"jr\"><b>2040</b><i>67</i><u></u></div><div class=\"jr\"><b>2041</b><i>68</i><u></u></div><div class=\"jr\"><b>2042</b><i>69</i><u></u></div><div class=\"jr\"><b>2043</b><i>70</i><u></u></div><div class=\"jr negen\"><b>2044</b><i>71</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2045</b><i>72</i><u></u></div><div class=\"jr\"><b>2046</b><i>73</i><u></u></div><div class=\"jr\"><b>2047</b><i>74</i><u></u></div><div class=\"jr\"><b>2048</b><i>75</i><u></u></div><div class=\"jr\"><b>2049</b><i>76</i><u></u></div><div class=\"jr\"><b>2050</b><i>77</i><u></u></div><div class=\"jr\"><b>2051</b><i>78</i><u></u></div><div class=\"jr\"><b>2052</b><i>79</i><u></u></div><div class=\"jr negen\"><b>2053</b><i>80</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2054</b><i>81</i><u></u></div><div class=\"jr\"><b>2055</b><i>82</i><u></u></div><div class=\"jr\"><b>2056</b><i>83</i><u></u></div><div class=\"jr\"><b>2057</b><i>84</i><u></u></div><div class=\"jr\"><b>2058</b><i>85</i><u></u></div><div class=\"jr\"><b>2059</b><i>86</i><u></u></div><div class=\"jr\"><b>2060</b><i>87</i><u></u></div><div class=\"jr\"><b>2061</b><i>88</i><u></u></div><div class=\"jr negen\"><b>2062</b><i>89</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2063</b><i>90</i><u></u></div><div class=\"jr\"><b>2064</b><i>91</i><u></u></div><div class=\"jr\"><b>2065</b><i>92</i><u></u></div><div class=\"jr\"><b>2066</b><i>93</i><u></u></div><div class=\"jr\"><b>2067</b><i>94</i><u></u></div><div class=\"jr\"><b>2068</b><i>95</i><u></u></div><div class=\"jr\"><b>2069</b><i>96</i><u></u></div><div class=\"jr\"><b>2070</b><i>97</i><u></u></div><div class=\"jr negen\"><b>2071</b><i>98</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2072</b><i>99</i><u></u></div><div class=\"jr\"><b>2073</b><i>100</i><u></u></div><div class=\"jr\"><b>2074</b><i>101</i><u></u></div><div class=\"jr\"><b>2075</b><i>102</i><u></u></div><div class=\"jr\"><b>2076</b><i>103</i><u></u></div><div class=\"jr\"><b>2077</b><i>104</i><u></u></div><div class=\"jr\"><b>2078</b><i>105</i><u></u></div><div class=\"jr\"><b>2079</b><i>106</i><u></u></div><div class=\"jr negen\"><b>2080</b><i>107</i><u></u></div></div></div>",
+            "tekst": "Je leven loopt in rondes van negen jaar, vanaf het jaar dat je geboren werd tot in je honderd. Het donkere vakje is waar je nu staat. De goud gemarkeerde jaren zijn de 1 jaren waarin iets begint, de lichtere de 9 jaren waarin iets wordt afgerond. Kijk terug naar de jaren die je hebt geleefd: klopt het met wat er toen gebeurde?"
+          },
+          {
+            "type": "duo",
+            "lijst": {
+              "kop": "Dit herken je misschien in jezelf",
+              "items": [
+                "Je komt vooraan te staan, of je er nu om vroeg of niet.",
+                "Je wilt iets bouwen dat blijft, niet iets snels.",
+                "Je weet het voordat je het kunt bewijzen.",
+                "Je wordt onrustig als er niets nieuws begint.",
+                "Dit jaar heb je meer opgeruimd dan opgebouwd."
+              ]
+            },
+            "herinnering": {
+              "kop": "Iets om te onthouden",
+              "tekst": "Je bent niet te laat.\nJe zit in je eigen cyclus."
+            }
+          },
+          {
+            "type": "invoer",
+            "kop": "Waar zie je deze trilling terug?",
+            "sleutel": "getallen",
+            "plaats": "Schrijf hier waar je het terugziet…"
+          }
+        ]
+      },
+      {
+        "beeld": "assets/kaart-06.jpg",
+        "titel": "Jouw Tikkun",
+        "kaart": "Je zielscorrectie. De plek waar het werk zit.",
+        "sub": "Je zielscorrectie.",
+        "quote": "Patroon\nHerstel\nVrijheid",
+        "midden": "Het werk is niet om iemand anders te worden.",
+        "quoteTonen": false,
+        "blokken": [
+          {
+            "tekst": "Tikkun is een oud woord voor herstel. Niet het repareren van wat kapot is in jou, maar het ene patroon dat je blijft tegenkomen tot je je omdraait en het aankijkt. Iedereen heeft er een. Meestal lijkt het op het ding waar je juist heel goed in bent."
+          },
+          {
+            "type": "vak",
+            "beeld": "assets/kaart-06.jpg",
+            "kop": "De jouwe is het alleen dragen.",
+            "tekst": "Je leerde vroeg dat vragen je kwetsbaar maakt, dus nam je het gewicht maar. Je bent er zo goed in geworden dat niemand ziet dat het zwaar is. Het herstel is niet dat je minder gaat zorgen. Het is dat je iemand iets van jou laat vasthouden, en dat je je eigen naam zet op wat je bouwt.",
+            "themas": [
+              "Alleen dragen",
+              "Ontvangen",
+              "Vragen",
+              "Je eigen naam",
+              "Vertrouwen"
+            ]
+          },
+          {
+            "type": "duo",
+            "lijst": {
+              "kop": "Dit herken je misschien in jezelf",
+              "items": [
+                "Je doet het liever zelf dan dat je het twee keer uitlegt.",
+                "Jij bent degene op wie iedereen leunt.",
+                "Je merkt het als jij de enige bent die geeft.",
+                "Ja zeggen gaat makkelijk, vragen niet.",
+                "Je bent trots op wat je maakte, en je zegt het bijna nooit hardop."
+              ]
+            },
+            "herinnering": {
+              "kop": "Iets om te onthouden",
+              "tekst": "Je hoeft je plek niet te verdienen\ndoor iedereen te dragen."
+            }
+          },
+          {
+            "type": "invoer",
+            "kop": "Waar herken je deze energie, en waar nog niet?",
+            "sleutel": "tikkun",
+            "plaats": "Allebei mag. Nog niet is ook een antwoord…"
+          }
+        ]
+      }
+    ],
+    "overzichtlabel": "In deze fase zie je zes mogelijke vertrouwde gebieden",
+    "blokken": [
+      {
+        "type": "reflectie",
+        "label": "Jouw reflectie",
+        "kop": "Wat is er bij jou geland?",
+        "tekst": "Wat herkende je direct? En wat voelde juist duidelijk niet van jou?\nSchrijf één inzicht op.",
+        "hint": "Bijvoorbeeld: ik herken dat ik vaak…",
+        "bewaar": "Bewaar mijn inzicht",
+        "printknop": "Print deze fase",
+        "noot": "Je inzicht blijft hier staan, ook als je later terugkomt.",
+        "gedaankop": "Dit heb je nu gedaan",
+        "gedaan": [
+          "Je hebt patronen zichtbaar gemaakt.",
+          "Je hebt gekeken zonder jezelf te hoeven veranderen.",
+          "Je hebt gevoeld wat wel en niet resoneert."
+        ],
+        "citaat": "Herkennen is niet het eindpunt. Het geeft je genoeg afstand om te kunnen zien waarom iets gebeurt."
+      },
+      {
+        "type": "slotbalk",
+        "rond": true,
+        "beeld": "assets/fase2-hero.jpg",
+        "naar": 2,
+        "label": "Volgende beweging · fase 2",
+        "kop": "Van Herkenning naar",
+        "kopcursief": "Helderheid",
+        "tekst": "Nu je kunt zien wat er speelt, gaan we onderzoeken waar het vandaan komt, wat eronder ligt en welke betekenis jij eraan hebt gegeven.",
+        "knop": "Breng me naar Helderheid"
+      },
+      {
+        "type": "stappenbalk",
+        "items": [
+          {
+            "titel": "Herkenning",
+            "sub": "Zien wat is",
+            "hier": true
+          },
+          {
+            "titel": "Helderheid",
+            "sub": "Begrijpen waarom"
+          },
+          {
+            "titel": "Integratie",
+            "sub": "Leven wat je weet"
+          }
+        ]
+      }
+    ],
+    "knoppenUit": true,
+    "intro_bewaard": {
+      "links": {
+        "kop": "Wat betekent <em>herinneren</em><br>wie je bent?",
+        "tekst": "Niet iemand anders worden.\nHerkennen wat er altijd al was, voor de verwachtingen, rollen en verhalen die je hebt geleerd. Het gaat om het opmerken van de patronen, krachten en waarheden die al in je zitten."
+      }
+    },
+    "spiegel": "Jouw start is een blauwdruk. Jij bent hem niet.\nLees dit als een spiegel, niet als een oordeel. Er hoeft nog niets te veranderen."
+  },
+  "helderheid": {
+    "titel": "Helderheid",
+    "sub": "",
+    "duur": "Neem er de tijd voor · geen haast · stap voor stap, in jouw tempo",
+    "pdfLabel": "Overzicht als PDF",
+    "hero": {
+      "beeld": "assets/fase2-hero.jpg",
+      "label": "Fase 2",
+      "sub": "Ik begrijp waarom.",
+      "vraag": "",
+      "intro": "Je kijkt nu dieper. Je ziet de verbanden, de oorsprong en de betekenis. Wat je eerder herkende, krijgt nu context. Hierdoor ontstaat ruimte, begrip en keuze.\n\nIn deze fase ga je van inzicht naar bewustzijn. Je ontdekt hoe oude patronen, overtuigingen en jezelfbeeld met elkaar verbonden zijn.",
+      "rechts": "Same energy\nA different perspective.",
+      "kaderLabel": "Eerste stappen · 2 van 3",
+      "kader": "De tweede van de drie. Je hebt de stukken gezien, hier gaan ze verbinden, zodat de blauwdruk leesbaar wordt."
+    },
+    "overzichtkop": "En drie lagen van helderheid",
+    "sluiten": "Sluiten",
+    "terugkop": "Terug naar het overzicht",
+    "volgende": "Volgende",
+    "afsluiting": "Je hoeft het niet nu te weten. Alles mag er zijn. Verwarring is vaak een fase waarin iets nieuws kan ontstaan.\nJe hebt al een belangrijke stap gezet. Je kijkt niet alleen naar wat er is gebeurd, maar ook naar waarom.",
+    "stappen": [
+      {
+        "beeld": "assets/laag-01.jpg",
+        "achtergrond": "assets/paneel-p1.jpg",
+        "titel": "Het patroon",
+        "kaart": "Terugkerende situaties in je leven. Wat zie je steeds?",
+        "sub": "Waar de stukken samenkomen.",
+        "quote": "Een dieper begrip\nEen helderdere jij",
+        "midden": "Het zijn geen losse delen. Het is één patroon.",
+        "blokken": [
+          {
+            "tekst": "Je hebt het waarschijnlijk allang aan jezelf gemerkt. Andere jaren, andere mensen, ander werk, en ergens middenin sta jij weer, het ding te doen dat je altijd doet. Dat is geen gewoonte die je niet hebt afgeleerd. Dat is een patroon, en een patroon is het eerlijkste wat er over een mens te zeggen valt."
+          },
+          {
+            "tekst": "Alles wat je tot nu toe hebt gelezen is dat ene patroon, van verschillende kanten bekeken. Je verhaal vertelt het in gebeurtenissen. Je getallen vertellen het in ritme. Je planeten vertellen het in karakter. Je maanfase vertelt het in timing. Je Tikkun, de ene correctie waarvoor je gekomen bent, vertelt het in één zin. Vijf talen, één mens."
+          },
+          {
+            "type": "zwevend",
+            "src": "assets/patroon-drieluik.jpg",
+            "alt": "drie systemen, één patroon",
+            "onder": "Drie systemen. Eén patroon."
+          },
+          {
+            "type": "afsluiter",
+            "tekst": "“Het zijn geen losse delen. Het is één patroon. Jij.”"
+          },
+          {
+            "type": "iconen",
+            "items": [
+              {
+                "teken": "○",
+                "kop": "Jouw ontwerp",
+                "sub": "astrologie"
+              },
+              {
+                "teken": "○",
+                "kop": "Jouw trilling",
+                "sub": "getallen"
+              },
+              {
+                "teken": "○",
+                "kop": "Jouw correctie",
+                "sub": "Tikkun"
+              }
+            ]
+          },
+          {
+            "type": "lijst",
+            "kop": "Het thema dat blijft terugkomen",
+            "items": [
+              "Je kunt niet lang aan de oppervlakte blijven. Je wilt de versie die onder het beleefde antwoord ligt, en je blijft zitten tot die komt. Je Zon, je Maan en je Mercurius staan samen in één teken en één huis: wat je bent, wat je voelt en hoe je denkt reiken alle drie naar dezelfde diepte.",
+              "Jij gaat voorop, en daarna draag je het, en dat je het draagt zeg je er niet bij. Je levenspad 1 vraagt je om voorop te gaan. Je Saturnus, de planeet van de plicht, vraagt je om het niet meer alleen te doen.",
+              "Je voelt een einde aankomen voordat iemand het hardop zegt. Vaak ben je in je hoofd al half de kamer uit. Je bent geboren op een balsemieke maan, de laatste sikkel voor het donker, dus afsluiten is je eigen taal. Je Noordknoop, de richting waarin je groeit, vraagt je om het begin er ook bij te bouwen.",
+              "Je houdt al jaren een groep bij elkaar en je naam staat er nergens op. Je Tikkun en je knopen wijzen dezelfde kant op: van iedereen dragen naar je eigen werk ondertekenen."
+            ]
+          },
+          {
+            "type": "herinnering",
+            "kop": "Iets om te onthouden",
+            "tekst": "Je bent geen vijf losse lezingen.\nJe bent één patroon, vijf keer gelezen."
+          },
+          {
+            "type": "invoer",
+            "kop": "Wat herken je?",
+            "sleutel": "patroon",
+            "plaats": "Schrijf hier je gedachten…"
+          }
+        ]
+      },
+      {
+        "beeld": "assets/laag-02.jpg",
+        "achtergrond": "assets/paneel-p2.jpg",
+        "titel": "De samenhang",
+        "kaart": "Hoe jouw systeem, astrologie, numerologie en Tikkun, met elkaar verbonden is.",
+        "sub": "Hoe het op elkaar inwerkt.",
+        "quote": "Verschillende lenzen\nEén waarheid",
+        "midden": "Verschillende gezichtspunten. Eén jij.",
+        "blokken": [
+          {
+            "tekst": "In de eerste laag zag je het thema terugkomen. Deze laag gaat over waarom het terugkomt. Niet omdat de systemen elkaar naschrijven, maar omdat ze alle drie naar dezelfde mens kijken en haar in hun eigen woorden beschrijven."
+          },
+          {
+            "tekst": "Astrologie leest je karakter: waar je van gemaakt bent, en wat je vanuit je onderbewuste automatisch aandrijft, onder de laag waar je bewust beslist. Dat zijn de stemmen die tegen je praten als er niemand kijkt. Numerologie leest je timing: het ritme waarin je leeft, waar je daar nu in zit, en hoe je daar mee om zou kunnen gaan in plaats van ertegenin. Tikkun leest je correctie: het ene dat blijft terugkomen tot je het anders doet. Alle drie zeggen ze iets over jou, elke keer vanuit een ander perspectief. En waar twee van de drie hetzelfde zeggen, hoef je je niet meer af te vragen of het klopt."
+          },
+          {
+            "type": "afsluiter",
+            "tekst": "“Verschillende lenzen. Eén waarheid.”"
+          },
+          {
+            "type": "lijst",
+            "kop": "Vijf plekken waar twee systemen hetzelfde zeggen",
+            "items": [
+              "Jij bent degene naar wie mensen toe komen. Je bent dat al zo lang dat het niet in je opkwam om je af te vragen of het zwaar was. Je Zuidknoop, de plek waar je vandaan komt, staat in het teken van familie en erbij horen, en Saturnus, de planeet van de plicht, staat er precies bovenop. Je Tikkun zegt het in één regel: het alleen dragen.",
+              "Ergens ligt iets wat jij hebt gemaakt met de naam van een ander erop, of met helemaal geen naam. Je Noordknoop, de richting waarin je groeit, en je levenspad 1 wijzen dezelfde kant op: zet je eigen naam op je eigen werk, hardop, waar mensen het kunnen zien.",
+              "Je wordt stil voordat je groot wordt, en mensen lezen dat als twijfel. Dat is het niet. Drie van je planeten staan samen in de achterkamer van je kaart, en de planeet die je de wereld in duwt beweegt langzaam en eerst naar binnen. Alles wat echt is gebeurt binnen voordat het naar buiten komt. Dat is niet traag. Dat is jouw volgorde.",
+              "Dit jaar voelde meer als opruimen dan als bouwen. Je bent geboren op een balsemieke maan, de afsluitende sikkel van de cyclus, dus einden komen bij jou vroeg. En 2026 is voor jou een persoonlijk 9 jaar, het jaar dat dingen afmaakt. Je aard en je timing zeggen hetzelfde woord: afmaken. De 1, het jaar om iets neer te zetten waar niets was, gaat open in 2027.",
+              "Je wilt vrij zijn en je tekent steeds voor één verantwoordelijkheid erbij. Het getal dat het hardst meebromt in je naam is de 5, vrijheid. De planeet die je gevormd heeft is Saturnus, de plicht. Die trek is geen besluiteloosheid. Het zijn twee echte delen van jou, allebei opgeschreven."
+            ]
+          },
+          {
+            "type": "uitklap",
+            "kop": "Kijk bij drie ervan wat langer",
+            "items": [
+              {
+                "titel": "Saturnus op je Zuidknoop",
+                "beeld": "assets/pl-saturn.jpg",
+                "kort": "De oudste afspraak die je maakte.",
+                "tekst": "De Zuidknoop is waar je vandaan komt, de plek die zo vertrouwd voelt dat hij niet op een keuze lijkt. De jouwe staat in Kreeft in huis 11: zorgen voor de groep, de mensen om je heen bij elkaar houden. Saturnus staat er pal op, en Saturnus maakt dingen zwaar en serieus en van jou om te dragen. Die zorg was voor jou dus nooit zacht. Er zat een rekening aan vast. En omdat Saturnus retrograde is, werd die rekening vooral door jou aan jezelf gepresenteerd. Dit is precies het patroon dat je Tikkun benoemt. Drie systemen, één zin: je leerde de groep te dragen en het gewicht nooit te noemen."
+              },
+              {
+                "titel": "Schorpioen binnen, Stier buiten",
+                "beeld": "assets/pl-mars.jpg",
+                "kort": "Waarom de stap zo lang duurt, en waarom hij houdt.",
+                "tekst": "Drie van je planeten staan samen in Schorpioen in huis 4, de privékamer achterin de kaart. Daar woon je eigenlijk: diep, zonder haast, bereid om te kijken naar wat anderen omzeilen. Er recht tegenover, in huis 10 waar de wereld meekijkt, staat Mars in Stier en hij is retrograde. Mars is hoe je duwt. In Stier duwt hij langzaam, en retrograde duwt hij eerst naar binnen voordat hij naar buiten duwt. Dus jij bent bijna nooit de eerste die iets roept, en bijna altijd degene die er nog staat als de snelle mensen alweer verder zijn."
+              },
+              {
+                "titel": "Het 9 jaar en de balsemieke maan",
+                "beeld": "assets/maan-7.jpg",
+                "kort": "Waarom dit jaar voelt als opruimen in plaats van bouwen.",
+                "tekst": "Een balsemieke maan is de laatste streep licht voor het donker, het einde van een cyclus. Daar ben jij geboren, en daarom komen eindes bij jou vroeg aan en verlaat je vaak een ruimte voordat iemand zegt dat het voorbij is. Tel daar het jaar bij op waarin je zit: 2026 is een persoonlijk 9, het opruimjaar, waarin dingen worden afgemaakt en teruggegeven. Je natuur en je timing wijzen op dit moment dezelfde kant op. Als dit jaar meer aanvoelde als loslaten dan als beginnen, dan hapert er niets. Dan zijn die twee het met elkaar eens."
+              }
+            ]
+          },
+          {
+            "type": "duo",
+            "lijst": {
+              "kop": "Dit herken je misschien in je week",
+              "items": [
+                "Je pakt het ding op dat niemand had toegewezen, en voelt het op vrijdag in je lijf.",
+                "Je weet het antwoord vroeg en wacht tot je het kunt verdedigen.",
+                "Je wilt vrij zijn en je tekent voor nog één verantwoordelijkheid.",
+                "Je wordt eerst stil voordat je groot wordt.",
+                "Je bent dit jaar dingen aan het afmaken in plaats van beginnen."
+              ]
+            },
+            "herinnering": {
+              "kop": "Iets om te onthouden",
+              "tekst": "Als twee systemen hetzelfde zeggen,\nis dat geen toeval.\nDat ben jij, twee keer gelezen."
+            }
+          },
+          {
+            "type": "invoer",
+            "kop": "Waar zie je het terug in je week?",
+            "sleutel": "verbinding",
+            "plaats": "Schrijf hier je gedachten…"
+          }
+        ]
+      },
+      {
+        "beeld": "assets/laag-03.jpg",
+        "achtergrond": "assets/paneel-03.jpg",
+        "titel": "Het grotere geheel",
+        "kaart": "Een ruimer perspectief. Je ziet de energie, wat er werkelijk in jouw leven speelt.",
+        "sub": "Jouw blauwdruk, op één blad.",
+        "quote": "Eén blad\nJouw hele beeld",
+        "midden": "Houd het dichtbij. Kom terug als je een vraag hebt.",
+        "blokken": [
+          {
+            "tekst": "Inmiddels is er waarschijnlijk het een en ander geland, en het een en ander ook niet, en allebei zegt iets. Doe nu een stap terug tot de details vervagen. De tekens, de huizen en de getallen worden zacht, en wat overblijft is een vorm. Die vorm is waar deze hele fase om draait."
+          },
+          {
+            "tekst": "Met een vorm valt beter te leven dan met een lijst. Je hoeft niet te onthouden welke planeet waar staat. Je hoeft alleen te onthouden hoe je in elkaar zit, en wat er blijft vragen om te veranderen."
+          },
+          {
+            "type": "afsluiter",
+            "tekst": "“Eén blad. Jouw hele beeld.”"
+          },
+          {
+            "type": "lijst",
+            "kop": "Jouw blauwdruk in één adem",
+            "items": [
+              "Waar je vandaan komt: de groep, bij elkaar gehouden door jou, en niemand die vroeg of dat zwaar was.",
+              "Wat je draagt: de gewoonte om het gewicht te nemen in plaats van het risico van het vragen.",
+              "Hoe je gebouwd bent: eerst diep en privé, dan pas zichtbaar en langzaam, en allebei is echt.",
+              "Wat je hier komt bouwen: iets met je eigen naam erop, dat het moment overleeft.",
+              "Wat dit jaar vraagt: afmaken, opruimen, teruggeven. Niet beginnen.",
+              "Wat er daarna opengaat: een 1 jaar in 2027, en 1 jaren zijn om iets neer te zetten waar niets was."
+            ]
+          },
+          {
+            "type": "vak",
+            "beeld": "assets/laag-03.jpg",
+            "kop": "Elly in één zin.",
+            "tekst": "Iemand die de diepte in gaat waar anderen aan de oppervlakte blijven, langzaam en voorgoed bouwt, meer heeft gedragen dan zij ooit noemde, en nu gevraagd wordt om te stoppen met het alleen dragen en haar eigen naam te zetten op wat zij heeft gemaakt.",
+            "themas": [
+              "Diepte",
+              "Bouwen",
+              "Dragen",
+              "Je eigen naam",
+              "Vrijheid"
+            ]
+          },
+          {
+            "type": "vel",
+            "src": "assets/a2preview.jpg",
+            "alt": "jouw A2 blauwdruk",
+            "kop": "Jouw overzicht op één blad",
+            "tekst": "Je getallen, je elementen, je planeten, je maanfase, je negenjarige ritme en je Tikkun, naast elkaar. Dit is het overzicht, niet de hele blauwdruk. De dertien secties staan in het volledige document."
+          },
+          {
+            "type": "herinnering",
+            "kop": "Iets om te onthouden",
+            "tekst": "Je hoeft het niet allemaal tegelijk vast te houden.\nDaar is het blad voor."
+          },
+          {
+            "type": "invoer",
+            "kop": "Als je je eigen zin moest schrijven, wat zou er staan?",
+            "sleutel": "geheel",
+            "plaats": "Schrijf hier je gedachten…"
+          }
+        ]
+      }
+    ],
+    "blokken": [
+      {
+        "type": "blauwdruk",
+        "anker": "a2",
+        "beeld": "assets/a2-tafel.jpg",
+        "label": "Jouw integratie",
+        "kop": "Eén blad. Jouw hele beeld.",
+        "tekst": "Alle inzichten nu bij elkaar in jouw persoonlijke blauwdruk.\nZo zie je in één overzicht jouw patronen, talenten, lessen en richting.",
+        "items": [
+          "Astrologie",
+          "Patronen",
+          "Numerologie",
+          "Zelfbeeld",
+          "Tikkun",
+          "Verdieping"
+        ],
+        "pdf": "",
+        "noot": "“Inzicht geeft niet alleen begrip, maar ook keuze.\nEn waar er keuze is, ontstaat vrijheid.”",
+        "printKop": "Print jouw overzicht",
+        "print": [
+          {
+            "knop": "Print A4",
+            "sub": "handzaam",
+            "href": "downloads/SZINN-overzicht-A4-nl.pdf"
+          },
+          {
+            "knop": "Print A3",
+            "sub": "meer detail",
+            "href": "downloads/SZINN-overzicht-A3-nl.pdf"
+          },
+          {
+            "knop": "Print A2",
+            "sub": "jouw hele overzicht",
+            "href": "downloads/SZINN-overzicht-A2-nl.pdf"
+          }
+        ]
+      },
+      {
+        "type": "slotbalk",
+        "beeld": "assets/fase2-slot.jpg",
+        "naar": 3,
+        "knop": "Verder → Integratie",
+        "kop": "Nu gaat het kloppen.",
+        "tekst": "Herkenning liet je zien wat bekend voelt.\nHelderheid laat je zien hoe de stukken samenhangen.\nIn Integratie ga je ermee leven.",
+        "terug": 1,
+        "terugKnop": "Terug naar Herkenning"
+      },
+      {
+        "type": "stappenbalk",
+        "items": [
+          {
+            "titel": "Herkenning",
+            "sub": "Zien wat is"
+          },
+          {
+            "titel": "Helderheid",
+            "sub": "Begrijpen waarom",
+            "hier": true
+          },
+          {
+            "titel": "Integratie",
+            "sub": "Leven wat je weet"
+          }
+        ]
+      }
+    ],
+    "slotregel": "Genoeg voor vandaag is ook goed. Het blijft staan.",
+    "knoppenUit": true,
+    "spiegel": "Je hoeft het niet eens te zijn met wat je ziet. Begrijpen komt eerst, kiezen komt daarna.",
+    "afsluitkop": "Genoeg voor vandaag",
+    "knoppenLabel": "Deze fase bewaren"
+  },
+  "integratie": {
+    "titel": "Integratie",
+    "sub": "",
+    "duur": "Neem er de tijd voor · geen haast · stap voor stap, in jouw tempo",
+    "hero": {
+      "beeld": "assets/fase3-hero.jpg",
+      "label": "Fase 3",
+      "sub": "Dit was de handleiding.",
+      "vraag": "",
+      "intro": "Dit waren de drie fases: je weet nu hoe je blauwdruk in elkaar zit en waar je hem terugvindt. Het echte beginnen gebeurt niet hier, maar in je dashboard. Daar staat je eigen blauwdruk, en daar staat je dagelijkse integratie klaar.",
+      "kaderLabel": "Van handleiding naar dashboard",
+      "kader": "Hierna sluit je deze reis af en open je je dashboard. Je blauwdruk en je dagelijkse ritme wachten daar op je."
+    },
+    "afsluiting": "Dit was het begin. Je hebt Herkenning, Helderheid en Integratie doorlopen, en vanaf hier is het van jou.\nJe blauwdruk blijft staan. Kom terug zodra er een vraag opkomt.",
+    "blokken": [
+      {
+        "type": "vormen",
+        "kop": "Dit heb je gedaan",
+        "rechts": "drie fases, één beweging",
+        "tekst": "Je bent hier niet zomaar beland. Je hebt drie fases doorlopen, en elke fase liet iets anders zien. Kijk ze even na en vink af wat je gehad hebt.",
+        "items": [
+          {
+            "teken": "1",
+            "label": "Fase 1",
+            "titel": "Herkenning",
+            "zin": "Ik zie mezelf.",
+            "tekst": "Je hebt je verhaal gelezen, je kaart bekeken, je planeten, je maanfase, je getallen en je Tikkun. Je hebt gezien wat er is, zonder het meteen te hoeven veranderen.",
+            "voor": "afgerond",
+            "knop": "Terug naar Herkenning",
+            "naar": 1,
+            "beeld": "assets/welkom-achtergrond.jpg",
+            "vink": "Fase 1 afvinken",
+            "vinkAan": "Fase 1 afgevinkt"
+          },
+          {
+            "teken": "2",
+            "label": "Fase 2",
+            "titel": "Helderheid",
+            "zin": "Ik begrijp waarom.",
+            "tekst": "Je hebt de losse stukken naast elkaar gelegd en gezien waar ze elkaar raken. Het patroon, de samenhang en het grotere geheel. Niet meer los, maar één beeld.",
+            "voor": "afgerond",
+            "knop": "Terug naar Helderheid",
+            "naar": 2,
+            "beeld": "assets/fase2-hero.jpg",
+            "vink": "Fase 2 afvinken",
+            "vinkAan": "Fase 2 afgevinkt"
+          },
+          {
+            "teken": "3",
+            "label": "Fase 3",
+            "titel": "Integratie",
+            "zin": "Ik leef het.",
+            "tekst": "En hier ben je nu. Van weten naar doen, in je eigen dagen en in je eigen tempo. Hieronder staan de drie stappen, en daarna open je je dashboard.",
+            "voor": "je bent hier",
+            "hier": true,
+            "beeld": "assets/fase3-hero.jpg",
+            "vink": "Fase 3 afvinken",
+            "vinkAan": "Fase 3 afgevinkt"
+          }
+        ],
+        "afvinken": true,
+        "vinkId": "terugblik"
+      },
+      {
+        "type": "wegen",
+        "kop": "En nu je volgende stap",
+        "rechts": "in deze volgorde",
+        "items": [
+          {
+            "beeld": "assets/weg-01.jpg",
+            "wanneer": "eerst",
+            "titel": "Lees je blauwdruk",
+            "sub": "Laat het landen.",
+            "tekst": "Begin hier en doe verder niets. Lees je blauwdruk in stukken, leg hem weg, pak hem weer op. Geef het een paar dagen om te zakken. Wat je nu herkent leest volgende week anders.",
+            "items": [
+              "Lees één sectie tegelijk",
+              "Merk op wat je herkent",
+              "Merk op waar je weerstand voelt",
+              "Doe er nog niets mee"
+            ],
+            "knop": "Ga naar mijn blauwdruk",
+            "href": "{blauwdruk}",
+            "meerkop": "Waarom wachten helpt",
+            "meer": "Herkenning heeft tijd nodig om kennis te worden. Als je meteen gaat doen, maak je van je blauwdruk nog een takenlijst. Laat het eerst een spiegel zijn.",
+            "nieuw": true
+          },
+          {
+            "beeld": "assets/weg-02.jpg",
+            "wanneer": "na een paar dagen",
+            "titel": "Begin je dagelijkse ritme",
+            "sub": "Werk met vandaag.",
+            "tekst": "Zodra je blauwdruk vertrouwd voelt, begin je met de dagelijkse begeleiding. Kort in de ochtend, kort in de avond. De hemel van vandaag naast je eigen kaart.",
+            "items": [
+              "Zie wat er vandaag beweegt",
+              "Check even bij jezelf in",
+              "Kies één richting",
+              "Sluit de dag af in de avond"
+            ],
+            "knop": "Vandaag beginnen",
+            "href": "{dashboard}",
+            "nieuw": true,
+            "meerkop": "Hoe je begint",
+            "meer": "Begin alleen met de ochtend. Voeg de avond toe zodra de ochtend een gewoonte is. Een dag overslaan is geen probleem, dit is een ritme, geen reeks.",
+            "proef": "Zit in je elf dagen"
+          },
+          {
+            "beeld": "assets/weg-03.jpg",
+            "wanneer": "als er vragen komen",
+            "titel": "Praat met je Companion",
+            "sub": "Zie het van een andere kant.",
+            "tekst": "Na een week of twee komen de vragen: waarom blijft dit gebeuren, wat betekent dit voor deze keuze. Dat is het moment voor de Companion. Hij kent je blauwdruk, dus je hoeft jezelf niet eerst uit te leggen.",
+            "items": [
+              "Stel je echte vraag",
+              "Kijk vanuit een andere hoek",
+              "Zie de samenhang",
+              "Beslist nooit voor jou"
+            ],
+            "knop": "Companion openen",
+            "href": "{dashboard}",
+            "nieuw": true,
+            "meerkop": "Meer hierover",
+            "meer": "De Companion is een spiegel met geheugen, geen orakel. Hij werkt het best als je een echte situatie meeneemt in plaats van een algemene vraag. In ontwikkeling.",
+            "proef": "Zit in je elf dagen"
+          }
+        ]
+      },
+      {
+        "type": "slotbalk",
+        "rond": true,
+        "beeld": "assets/weg-02.jpg",
+        "label": "Dagelijkse integratie",
+        "kop": "Elf dagen proberen,",
+        "kopcursief": "daarna kies je zelf.",
+        "tekst": "Stap 1 is van jou, voor altijd. Stap 2 en 3 horen bij de dagelijkse integratie: een apart deel van € 3,69 per maand, maandelijks opzegbaar.\nJe begint met elf dagen. Je betaalt pas als je daarna doorgaat.",
+        "knop": "Start je elf dagen",
+        "href": "{dashboard}",
+        "nieuw": true,
+        "naast": {
+          "kop": "Wat je die elf dagen krijgt",
+          "items": [
+            {
+              "teken": "blad",
+              "tekst": "Je dashboard, met je blauwdruk erin",
+              "bron": true
+            },
+            {
+              "teken": "blad",
+              "tekst": "De dagelijkse integratie, ochtend en avond",
+              "bron": true
+            },
+            {
+              "teken": "blad",
+              "tekst": "De SZINN Companion, die je blauwdruk al kent",
+              "bron": true
+            },
+            {
+              "teken": "blad",
+              "tekst": "Liever via WhatsApp? Dat kan erbij",
+              "bron": true
+            }
+          ]
+        }
+      },
+      {
+        "type": "afsluiter",
+        "tekst": "“Integratie is waar kennis je leven wordt.”",
+        "merk": "Alignment creates a brighter you"
+      },
+      {
+        "type": "stappenbalk",
+        "items": [
+          {
+            "titel": "Herkenning",
+            "sub": "Zien wat is"
+          },
+          {
+            "titel": "Helderheid",
+            "sub": "Begrijpen waarom"
+          },
+          {
+            "titel": "Integratie",
+            "sub": "Leven wat je weet",
+            "hier": true
+          }
+        ]
+      }
+    ],
+    "afsluitkop": "De drie eerste stappen zijn af.",
+    "spiegel": "Dit is niet wie je bent. Dit is de energie waarmee je mag werken.",
+    "knoppenLabel": "Deze fase bewaren"
+  },
+  "handleiding": "Handleiding",
+  "navigatie": {
+    "plek": "handleiding",
+    "plekLabel": "Handleiding",
+    "menu": [
+      {
+        "label": "Handleiding",
+        "teken": "boek",
+        "href": "index.html"
+      },
+      {
+        "label": "Mijn Ritme",
+        "teken": "klok",
+        "href": "{dashboard}"
+      },
+      {
+        "label": "Blueprint",
+        "teken": "bloem",
+        "href": "{blauwdruk}"
+      },
+      {
+        "label": "Mijn persoonlijke Quote",
+        "teken": "quote",
+        "href": "{dashboard}"
+      },
+      {
+        "label": "Cadeau geven",
+        "teken": "cadeau",
+        "href": "{dashboard}"
+      },
+      {
+        "label": "FAQ",
+        "teken": "vraag",
+        "href": "{dashboard}"
+      }
+    ],
+    "citaat": {
+      "tekst": "Alles wat je zoekt, was al in je aanwezig. Dit is je herinnering.",
+      "naam": "Elly Elizabeth Korving"
+    }
+  }
+}
