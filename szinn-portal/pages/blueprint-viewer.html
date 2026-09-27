@@ -260,6 +260,8 @@
         }
 
         const frame = document.getElementById('blueprint-frame');
+        // Kit v4-Blueprints zijn een PDF; Chrome toont geen PDF in een gesandboxed frame.
+        if (order.pipeline === 'kit-v4') frame.removeAttribute('sandbox');
         frame.src = `${order.blueprintUrl}?lang=${lang}`;
 
         frame.addEventListener('load', () => {

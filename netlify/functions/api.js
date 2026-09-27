@@ -256,7 +256,7 @@ app.get(['/portaal/journey/client.json', '/portaal/journey/client-nl.json', '/po
     const textsAll = await blueprintStore().get(`${order.id}.texts.json`, { type: 'json' }).catch(() => null);
     res.json(buildJourneyJSON({
       lang, order, chart, numerology,
-      texts: textsAll ? textsAll[lang] : null,
+      texts: textsAll ? (textsAll[lang] || textsAll.nl) : null,
       ready: true, userName: user.name || '',
     }));
   } catch (err) {
@@ -369,6 +369,7 @@ function toOrder(o) {
     blueprintUrl: o.blueprint_url,
     blueprintLanguages: o.blueprint_languages || null,
     pdfAvailable: !!o.pdf_available,
+    pipeline: o.pipeline || null,
     generationError: o.status === 'failed' ? (o.generation_error || 'onbekende fout') : null,
     scores: (o.alignment_score != null) ? {
       alignment: o.alignment_score, astro: o.astro_score,
@@ -1460,6 +1461,10 @@ app.get('/szinn-portal/blueprints/:filename', async (req, res) => {
   const orderId = req.params.filename.replace(/\.html$/, '');
   const order = await authorizedOrder(req, orderId);
   if (!order) return res.status(403).send('<h1>Geen toegang</h1><p>Log in op je dashboard om je blueprint te bekijken.</p>');
+  // Kit v4: de opgeleverde Blueprint is de PDF zelf (masterprompt 7.3/10), die op de worker staat.
+  if (order.pipeline === 'kit-v4' && order.status === 'completed') {
+    return res.redirect(302, require('../../lib/kit-worker').signedFileUrl(order.id, 'digitaal'));
+  }
 
   const lang = req.query.lang === 'en' ? 'en' : 'nl';
   const store = blueprintStore();
@@ -1495,6 +1500,9 @@ async function triggerPdf(orderId, lang) {
 app.get('/api/orders/:id/pdf', async (req, res) => {
   const order = await authorizedOrder(req, req.params.id);
   if (!order) return res.status(403).json({ error: 'Geen toegang' });
+  if (order.pipeline === 'kit-v4' && order.status === 'completed') {
+    return res.redirect(302, require('../../lib/kit-worker').signedFileUrl(order.id, 'digitaal'));
+  }
   const lang  = req.query.lang === 'en' ? 'en' : 'nl';
   const store = blueprintStore();
   const name  = (order.client_name || order.id).replace(/[^\w\-]+/g, '-');
@@ -1644,6 +1652,71 @@ app.post('/api/admin/regenerate/:orderId', async (req, res) => {
   await saveDB(db);
   const ok = await triggerGeneration(order.id, order);
   res.json({ ok, orderId: order.id });
+});
+
+// ── Blueprint-worker (kit v4) ────────────────────────────────────────────────
+// De worker meldt hier het resultaat van een generatie. Bij succes staan de
+// PDF's op de worker; hier worden alleen de dashboard-teksten en de status bewaard.
+app.post('/api/internal/blueprint-result', async (req, res) => {
+  const kit = require('../../lib/kit-worker');
+  const { orderId, ok, error, hold, texts, mail, rondes, secret } = req.body || {};
+  if (!kit.validCallbackSecret(secret)) return res.status(403).json({ error: 'forbidden' });
+  const db = await loadDB();
+  const order = db.orders.find(o => o.id === orderId);
+  if (!order) return res.status(404).json({ error: 'order niet gevonden' });
+  const { sendReadyEmail, sendAdminAlert } = require('../../lib/email');
+
+  if (!ok) {
+    order.status = 'failed';
+    order.generation_error = String(error || 'onbekende fout').slice(0, 2000);
+    await saveDB(db);
+    await sendAdminAlert({ orderId, error: order.generation_error, attempts: hold ? 'tegengehouden vóór generatie' : 'kit v4, 4 rondes' })
+      .catch(e => console.error('admin-alert mislukt:', e.message));
+    return res.json({ ok: true });
+  }
+
+  await blueprintStore().setJSON(`${orderId}.texts.json`, {
+    orderId, generatedAt: new Date().toISOString(), model: 'kit-v4', nl: texts,
+  });
+  order.status = 'completed';
+  order.completed_at = new Date().toISOString();
+  order.blueprint_url = `/szinn-portal/blueprints/${orderId}.html`;
+  order.blueprint_languages = ['nl'];
+  order.pdf_available = true;
+  order.generation_error = null;
+  order.pipeline = 'kit-v4';
+  await saveDB(db);
+  console.log(`${orderId}: kit-v4 opgeleverd (${rondes} ronde(s), 3× audit OK)`);
+
+  const user = db.users.find(u => u.id === order.user_id);
+  if (user) {
+    await sendReadyEmail({ to: user.email, name: order.client_name || user.name, orderId, lang: 'nl', personal: mail })
+      .catch(e => console.error('klaar-mail mislukt:', e.message));
+  }
+  res.json({ ok: true });
+});
+
+// Drukbestanden en auditrapport (Print&Bind) — alleen admin.
+app.get('/api/admin/order/:id/file/:soort', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  if (!['digitaal', 'binnenwerk', 'omslag', 'audit'].includes(req.params.soort)) return res.status(400).json({ error: 'Onbekend bestand' });
+  const db = await loadDB();
+  const order = db.orders.find(o => o.id === req.params.id);
+  if (!order || order.pipeline !== 'kit-v4') return res.status(404).json({ error: 'Geen kit-Blueprint voor deze order' });
+  res.redirect(302, require('../../lib/kit-worker').signedFileUrl(order.id, req.params.soort, 600));
+});
+
+// Omslag opnieuw bouwen met de echte rugbreedte die Print&Bind bij het uploaden toont.
+app.post('/api/admin/order/:id/spine', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  const mm = parseFloat(String(req.body?.mm || '').replace(',', '.'));
+  if (!(mm >= 1 && mm <= 60)) return res.status(400).json({ error: 'Rugbreedte in mm (1–60)' });
+  try {
+    await require('../../lib/kit-worker').setSpine(req.params.id, mm);
+    res.json({ ok: true, mm });
+  } catch (err) {
+    res.status(502).json({ error: err.message });
+  }
 });
 
 app.get('/api/admin/prompt/:orderId', async (req, res) => {

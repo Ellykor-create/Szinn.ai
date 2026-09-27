@@ -1,0 +1,5 @@
+weasyprint>=60
+pyswisseph>=2.10
+fonttools>=4.40
+pymupdf>=1.23
+anthropic>=1.8
