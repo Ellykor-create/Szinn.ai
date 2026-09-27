@@ -8,3 +8,7 @@ blueprints/
 
 # Local Netlify folder
 .netlify
+
+# Blueprint-kit en voorbeeldbestanden bevatten klantgegevens — nooit committen
+new_modules/
+.venv-bp/

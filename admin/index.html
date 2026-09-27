@@ -382,6 +382,11 @@ function renderOrders(orders) {
           ${canGenerate ? `<button class="btn btn-green btn-sm" onclick="regenerateOrder('${o.id}', '${o.status}')">⟳ ${o.status === 'failed' ? 'Herstart generatie' : 'Genereer'}</button>` : ''}
           ${canGenerate ? `<button class="btn btn-ghost btn-sm" onclick="openPromptModal('${o.id}', '${o.client_name.replace(/'/g,"\\'")}')">Prompt (handmatig)</button>` : '<span style="font-size:11px;color:var(--muted)">Geen intake-data</span>'}
           ${hasBlueprint ? `<a href="${o.blueprint_url}" target="_blank" class="btn btn-ghost btn-sm">Bekijk Blueprint</a>` : ''}
+          ${o.pipeline === 'kit-v4' && o.status === 'completed' ? `
+            <a href="/api/admin/order/${o.id}/file/binnenwerk" class="btn btn-ghost btn-sm">Binnenwerk</a>
+            <a href="/api/admin/order/${o.id}/file/omslag" class="btn btn-ghost btn-sm">Omslag</a>
+            <a href="/api/admin/order/${o.id}/file/audit" class="btn btn-ghost btn-sm">Auditrapport</a>
+            <span style="display:inline-flex;gap:4px;align-items:center"><input id="rug-${o.id}" inputmode="decimal" placeholder="rug mm" style="width:64px;font-size:11px;padding:4px 6px" title="Rugbreedte die Print&amp;Bind bij het uploaden toont"><button class="btn btn-ghost btn-sm" onclick="setSpine('${o.id}')">Omslag bijwerken</button></span>` : ''}
         </div>
       </td>
     </tr>`;
@@ -552,6 +557,17 @@ async function savePromptSettings() {
     status.textContent = '';
     showToast('Fout: ' + (data.error || r.status), true);
   }
+}
+
+// ── Print&Bind: omslag opnieuw met de echte rugbreedte (kit v4) ───────────────
+async function setSpine(orderId) {
+  const mm = document.getElementById(`rug-${orderId}`).value.trim();
+  if (!mm) { showToast('Vul de rugbreedte in mm in (Print&Bind toont die bij het uploaden)', true); return; }
+  const r = await fetch(`/api/admin/order/${orderId}/spine`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ mm }),
+  });
+  const data = await r.json().catch(() => ({}));
+  showToast(r.ok ? `✓ Omslag wordt opnieuw gebouwd met rug ${data.mm} mm en 3× gecontroleerd — download over een minuut opnieuw` : 'Fout: ' + (data.error || r.status), !r.ok);
 }
 
 // ── Automatische (her)generatie via de pipeline ───────────────────────────────

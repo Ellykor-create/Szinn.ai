@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<!-- lang wordt door journey.js gezet vanuit het veld "taal" in de klantdata -->
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SZINN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,500;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="journey.css">
+<script src="/szinn-portal/js/auth.js"></script>
+<script>
+/* Zelfde guard als de rest van het portaal: zonder login door naar /portaal/inloggen.
+   De pagina blijft verborgen tot de check klaar is, zodat er niets voorbij flitst. */
+document.documentElement.style.visibility='hidden';
+SzinnAuth.requireAuth().then(function(ok){ if(ok) document.documentElement.style.visibility=''; });
+</script>
+</head>
+<body>
+
+<!-- ══ de navigatie ══════════════════════════════════════════════════════
+     Eén zijbalk voor drie plekken: het dashboard, de blauwdruk en deze
+     handleiding. Wat verschilt is het gekleurde blok dat zegt waar je bent,
+     en wat eronder staat: in de handleiding je reis, elders het menu.
+     Alles eromheen is overal hetzelfde, zodat je nooit hoeft te zoeken.
+     journey.js vult dit uit het veld "navigatie" in de klantdata. -->
+<aside class="zijbalk">
+  <div class="zmerk">
+    <img src="assets/logo_licht.png" alt="">
+    <b>SZINN</b>
+    <span id="z-merkonder">Alignment Blueprint</span>
+  </div>
+
+  <!-- alleen op een telefoon: waar je nu bent, en de knop die de rest uitklapt -->
+  <span class="znu" id="z-nu"></span>
+  <button class="zmenu" id="z-menu" type="button" aria-expanded="false" aria-controls="z-uit">
+    <i></i><i></i><i></i><span class="vzw">menu</span>
+  </button>
+
+  <!-- waar je bent. Geen knop: je staat er al, dus er valt niets te klikken.
+       De kleur zegt welke van de drie plekken het is. -->
+  <span class="zplek" id="z-plek" hidden>
+    <i class="zteken" id="z-plekteken" aria-hidden="true"></i><span></span>
+  </span>
+
+  <!-- taalkeuze, onder het blok dat zegt waar je bent -->
+  <div class="ztaal taalkies" id="z-taal" hidden></div>
+
+  <div class="zuit" id="z-uit">
+
+    <!-- de reis: alleen in de handleiding -->
+    <div class="zfasekop" id="z-fasekop" hidden></div>
+    <nav class="fase" id="z-reis" aria-label="fases">
+      <button class="zstart" id="naar-start" type="button">
+        <i class="zteken" aria-hidden="true">
+          <svg viewBox="0 0 20 20"><path d="M3 9.2 10 3.5l7 5.7"/><path d="M5 8.6V16h10V8.6"/></svg>
+        </i><span><u></u><small></small></span></button>
+      <button><i>1</i><u>Fase 1</u><small>Herkenning</small></button>
+      <button><i>2</i><u>Fase 2</u><small>Helderheid</small></button>
+      <button><i>3</i><u>Fase 3</u><small>Integratie</small></button>
+    </nav>
+
+    <!-- het menu: op de andere twee plekken, gevuld uit navigatie.menu -->
+    <nav class="zmenulijst" id="z-menulijst" hidden aria-label="menu"></nav>
+
+    <div class="zscheider"></div>
+
+    <blockquote class="zcitaat" id="z-citaat" hidden>
+      <p></p><cite></cite>
+    </blockquote>
+
+    <div class="zscheider"></div>
+
+    <div class="zaccount" id="z-account" hidden>
+      <a class="zprofiel" id="z-profiel">
+        <span class="zfoto" id="z-foto"></span>
+        <span class="znaam"><b></b><small></small></span>
+      </a>
+      <a class="zuitlog" id="z-uitlog" hidden>
+        <i class="zteken" aria-hidden="true">
+          <svg viewBox="0 0 20 20"><path d="M12 3.5H4.5v13H12"/><path d="M9.5 10h7"/>
+          <path d="M14 7.2 16.8 10 14 12.8"/></svg>
+        </i><span></span>
+      </a>
+    </div>
+
+    <div class="zscheider"></div>
+    <em class="zmerkregel" id="z-merkregel"></em>
+  </div>
+</aside>
+
+<!-- op een tablet klapt de zijbalk terug tot een strook met tekens -->
+<button class="zopen" id="z-open" type="button" aria-controls="z-uit" aria-expanded="false">
+  <span class="vzw">menu</span><i></i><i></i><i></i>
+</button>
+
+<div class="zfases" id="z-fases"></div>
+
+<!-- welkomstscherm: drie panelen die je naar links schuift.
+     Paneel 2 en 3 worden door journey.js gevuld uit welkom.vraag en welkom.reis. -->
+<div class="drempel" id="drempel" hidden>
+  <!-- De teller (1 / 2) en de rij fasenamen stonden hier. Ze zijn weggehaald:
+       in de hoeken hoort alleen de taalkeuze te staan. Waar je bent lees je
+       aan de stippen aan de zijkant. -->
+  <div class="dtaal taalkies" id="d-taal" hidden></div>
+
+  <div class="dspoor" id="d-spoor">
+
+    <section class="dpaneel dp1" id="dp-1">
+      <img class="dbg" src="assets/welkom-achtergrond.jpg" alt="">
+      <div class="dwaas"></div>
+      <div class="dbinnen">
+        <div class="dmerk">
+          <img src="assets/logo_licht.png" alt="">
+          <b>SZINN</b>
+          <span>Alignment · Awareness · Living</span>
+        </div>
+
+        <video id="d-video" class="dvideo" playsinline controls preload="metadata"
+               poster="assets/intro-poster.jpg" hidden>
+          <source src="assets/intro.mp4" type="video/mp4">
+        </video>
+
+        <h1 id="d-titel"></h1>
+        <p id="d-tekst"></p>
+        <button class="knop" id="d-start" hidden></button>
+        <!-- de duidelijke stap vooruit. De ronde pijl onderin blijft, maar die
+             is te stil om de enige weg vooruit te zijn. -->
+        <button class="knop dverder" id="d-verder" data-schuif="volgende" hidden></button>
+        <div class="druit">&#10022;</div>
+        <em id="d-slot"></em>
+      </div>
+      <small class="dvoet">szinn.ai</small>
+    </section>
+
+    <section class="dpaneel dp2" id="dp-2"></section>
+    <section class="dpaneel dp3" id="dp-3"></section>
+
+  </div>
+
+  <div class="dvoetwaas" aria-hidden="true"></div>
+
+  <div class="dpijlen">
+    <button class="dpijl vorige" id="d-vorige" hidden aria-label="vorige">&#8249;</button>
+    <button class="dpijl volgende" id="d-volgende" aria-label="volgende">&#8250;</button>
+    <button class="dpijl starten" id="d-startbalk" data-start hidden>&#8594;</button>
+  </div>
+  <div class="dstippen" id="d-stippen"></div>
+</div>
+
+<main class="wrap">
+  <p class="slotmelding" id="melding" hidden></p>
+  <section class="scherm aan" id="herkenning"></section>
+  <section class="scherm" id="helderheid"></section>
+  <section class="scherm" id="integratie"></section>
+</main>
+
+<script src="journey.js"></script>
+</body>
+</html>

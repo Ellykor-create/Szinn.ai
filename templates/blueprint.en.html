@@ -325,14 +325,14 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
 <section class="score-sec" id="dashboard">
   <div class="score-header">
     <h2>Your <em>Dashboard</em></h2>
-    <p>This dashboard is not a report card. Through four lenses it shows where your energy stands right now in relation to your full potential. A strongly activated layer means movement; a lightly activated layer means untouched terrain, the place with the greatest potential. Read it as a compass, not as a final verdict.</p>
+    <p>This is not a report card and not a calculated score. The four labels below are interpretive status labels: they indicate how strongly a layer is in view right now. A strongly activated layer means there is movement. A lightly activated layer is not failure, it is untouched terrain: the place where there is most to gain. Read it as a compass.</p>
   </div>
   <div class="score-grid">{{SCORE_CARDS}}</div>
   <div class="feedback">
     <div class="feedback-label">How to read this dashboard</div>
     <div class="feedback-grid">
-      <div class="fb-block"><h4>This is not a final verdict</h4><p>It is a snapshot of where your energy stands right now in relation to your full potential. A lightly activated layer means untouched terrain, not failure. A strongly activated layer means movement, not perfection.</p></div>
-      <div class="fb-block"><h4>The practices below activate the layers</h4><p>Every section in this Blueprint touches at least one layer. The more you integrate the energy of your chart, the more will start to move. This is not a static document, but a living navigation instrument.</p></div>
+      <div class="fb-block"><h4>This is not a final verdict</h4><p>It is a snapshot. A lightly activated layer means untouched terrain, not failure. A strongly activated layer means movement, not perfection. Next month this will look different, and that is how it should be.</p></div>
+      <div class="fb-block"><h4>The practices activate the layers</h4><p>Every section after this touches at least one of these four. The more you work with them, the more will shift. This is not a document to read and put away, it is an instrument to navigate with.</p></div>
     </div>
   </div>
   <div class="score-closing"><p>{{AI_DASH_CLOSING}}</p></div>
@@ -366,7 +366,7 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
   <p>Clarity — not the clarity of knowing all the answers, but the clarity of knowing who you are. Apart from what you do, apart from what others think of you, apart from the roles you carry. Clarity about your energy, your qualities, your shadow sides and the direction your growth is asking for.</p>
   <p>Direction — not a destination, but a compass bearing. A sense of moving from alignment instead of from reaction. When you know who you are and where you stand, the next step becomes visible by itself.</p>
   <p>Integration — the capstone and at the same time the hardest part. Knowledge is not enough. Integration is the moment insight actually changes behaviour. That you not only understand but live it. Not only know it but embody it.</p>
-  <p>The name SZINN carries three layers that form the core of this system. Sin is the sympathetic nervous system in overdrive, the masculine energy of structure and force that tips into stress and burnout. Zin is the parasympathetic nervous system in balance, the feminine energy of receiving and creation. Sinn is the conscious movement between the two, the childlike creative energy that arises when you learn to dance between masculine and feminine instead of being stuck on one side. This is not a spiritual concept. This is biology. And it makes the method accessible to everyone.</p>
+  <p>The name SZINN carries three layers that form the core of this system. Within this model, Sin stands for the sympathetic nervous system overshooting, the masculine energy of structure and force that can tip into stress and burnout. Zin stands for the parasympathetic nervous system in balance, the feminine energy of receiving and creation. They are model terms, not medical categories. Sinn is the conscious movement between the two, the childlike creative energy that arises when you learn to dance between masculine and feminine instead of being stuck on one side. Sin, Sinn and Zin is a SZINN model that combines elements of physiology with symbolic language. It is not a biological classification, and precisely that combination makes the method accessible.</p>
   <p>This Blueprint is not a prediction and not a judgment. It is a mirror. It shows what is already present in you: patterns that repeat, strengths waiting to be used consciously, and a direction your soul already knows. The question is not whether these things live in you. The question is whether you are ready to recognise them.</p>
   <div class="ngrid">
     <div class="ncell"><div class="nlbl">Recognition</div><div class="nval">Who am I?</div><div class="ndesc">Your core, apart from roles and expectations</div></div>
@@ -392,7 +392,7 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
   <h2>Sin · Sinn · <em>Zin</em></h2>
   <p>How can you live from flow? We are switched on all the time. We look for validation, direction and rest in what happens around us, while the only real movement runs from the inside out. In SZINN we work with a journey of awareness that moves from life happens to me, to life is for me, to life flows through me, to I create my life. Every phase begins with honesty about where you truly stand right now.</p>
   <p>Creation arises in the movement between two energies. The masculine energy of direction, action and focus, and the feminine energy of receiving, trusting and letting go. Neither is better. Both are needed.</p>
-  <p>In the SZINN method we call this Sin, Sinn and Zin. Sin is the sympathetic nervous system in overdrive, the masculine energy that tips into stress and burnout. Zin is the parasympathetic nervous system in balance, the feminine energy of receiving and creating. Sinn is the conscious movement between the two, the creative energy that arises when you learn to dance between masculine and feminine instead of being stuck on one side. This is not a spiritual concept. This is biology.</p>
+  <p>In the SZINN method we call this Sin, Sinn and Zin. Within this model, Sin stands for the sympathetic nervous system overshooting, the masculine energy that can tip into stress and burnout. Zin stands for the parasympathetic nervous system in balance, the feminine energy of receiving and creating. They are model terms, not medical categories. Sinn is the conscious movement between the two, the creative energy that arises when you learn to dance between masculine and feminine instead of being stuck on one side. This is not a loose spiritual concept: the model leans on physiology and translates it into symbolic language.</p>
   <p>There are three layers you always work on simultaneously. Sin is the body layer: your nervous system, your rhythm, your rest or fatigue. Sinn is the meaning layer: the question whether what you do has meaning, whether it truly fits. Zin is the intention layer: the direction you choose, consciously or not.</p>
   {{AI_FLOW_BODY}}
   <div class="ngrid">{{FLOW_GRID}}</div>
@@ -403,12 +403,13 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
 <section class="section" id="astrology">
   <div class="sec-num">04 — Astrology</div>
   <h2>The <em>birth chart</em> of {{CLIENT_NAME}}</h2>
-  <p>Placidus house system · Astronomical ephemeris · Calculated from {{BIRTH_DATE_LONG}}, {{BIRTH_TIME}} {{BIRTH_CITY}}</p>
+  <p>Placidus house system · Astronomical ephemeris · True lunar node · Calculated from {{BIRTH_DATE_LONG}}, {{BIRTH_TIME}} {{BIRTH_CITY}}</p>
+  {{ASC_NOTE}}
   <p>A birth chart is not a prediction. It is an energetic fingerprint, a snapshot of the sky at the exact moment you arrived on this earth, at that specific place. The positions of the planets at that moment are seen as symbolic forces that resonate with who you are and how your energy works. Think of it as a map. The map does not determine how you travel, but it does show which mountains exist, where the rivers run and which roads are already there. You always decide how you move.</p>
-  <p>A birth chart consists of three layers you always read together. The planets are the forces, archetypes of human experience. The signs are the quality through which those forces express themselves. The houses are the terrain: they tell you where in your life an energy plays out. The aspects, the angles between planets, describe how those energies are in conversation within you. A retrograde planet works inward instead of outward: more focused on reflection and deepening than on direct outer expression.</p>
+  <p>A birth chart consists of three layers you always read together. The planets are the forces, archetypes of human experience. The signs are the quality through which those forces express themselves. The houses are the terrain: they tell you where in your life an energy plays out. The aspects, the angles between planets, describe how those energies are in conversation within you. Within astrology a retrograde planet is read as turned inward instead of outward: more focused on reflection and deepening than on direct outer expression.</p>
   <p>Energy is neutral. It is not good or bad, it only wants to move. The patterns you have lived unconsciously are like channels the water flows through by itself. Becoming aware does not mean stopping those channels, but choosing which bed you want to dig from now on.</p>
   <h3>What the planets mean</h3>
-  <p>The Sun is who you are when you are free, your life purpose and your way of shining. The Moon is what you need inside, your emotional nature and how you feel safe. The Ascendant is how you enter the world, how others first experience you. Mercury is how you think and communicate. Venus is what you attract and what you are drawn to. Mars is how you act and what drives you. Jupiter is where you grow and expand. Saturn is where your life lessons live, what asks for structure and patience. Uranus, Neptune and Pluto are generational forces describing the larger field. Chiron is the wounded healer, the place where you carry a deep wound and can heal others precisely there. The MC is your calling, what you come to bring into the world.</p>
+  <p>Within astrology the Sun is associated with who you are when you are free, your life purpose and your way of shining. The Moon is what you need inside, your emotional nature and how you feel safe. The Ascendant is how you enter the world, how others first experience you. Mercury is how you think and communicate. Venus is what you attract and what you are drawn to. Mars is how you act and what drives you. Jupiter is where you grow and expand. Saturn is where your life lessons live, what asks for structure and patience. Uranus, Neptune and Pluto are generational forces describing the larger field. Chiron is traditionally called the wounded healer: the place where you carry a deep wound and precisely there can help others heal. Within astrology the MC is often associated with your public role, career, direction and visibility.</p>
   <h3>The twelve houses</h3>
   <div class="ngrid">
     <div class="ncell"><div class="nlbl">House 1</div><div class="nval">Identity &amp; body</div><div class="ndesc">How you enter the world, how you appear. Begins at the Ascendant.</div></div>
@@ -424,11 +425,16 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
     <div class="ncell"><div class="nlbl">House 11</div><div class="nval">Community</div><div class="ndesc">Friendships, networks and the future you build together.</div></div>
     <div class="ncell"><div class="nlbl">House 12</div><div class="nval">The hidden life</div><div class="ndesc">Spirituality, the unconscious, what you rarely show. The layer beneath all layers.</div></div>
   </div>
-  <h3>The aspects</h3>
-  <p>Aspects are the angles planets make with each other. They describe how the energies within you are in conversation. A conjunction (0°) is fusion. A sextile (60°) is an opportunity. A square (90°) is friction that creates growth. A trine (120°) is flowing support. An opposition (180°) is a tension asking for balance.</p>
   <table class="ptab">
-    <thead><tr><th>Planet</th><th>Position</th><th>House</th><th>Quality</th></tr></thead>
+    <thead><tr><th>Point</th><th>Position</th><th>House</th><th>Quality</th></tr></thead>
     <tbody>{{PLANET_TABLE_ROWS}}
+    </tbody>
+  </table>
+  <h3>The aspects in your chart</h3>
+  <p>Aspects are the angles planets make with each other. A conjunction (0°) is fusion. A sextile (60°) is an opportunity you have to pick up. A square (90°) is friction that forces growth. A trine (120°) is flowing support. An opposition (180°) is tension asking for balance. The smaller the orb, the tighter the aspect works.</p>
+  <table class="ptab">
+    <thead><tr><th>Aspect</th><th>Orb</th><th>What it does</th></tr></thead>
+    <tbody>{{ASPECT_ROWS}}
     </tbody>
   </table>
   <h3>Striking patterns in your chart</h3>
@@ -462,7 +468,7 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
   <div class="sec-num">06 — Numerology</div>
   <h2>The <em>numbers</em> of {{CLIENT_NAME}}</h2>
   <p>Pythagorean system · Calculated from {{BIRTH_DATE_LONG}} and your birth name · Master numbers not reduced</p>
-  <p>Numerology is the study of the symbolic and energetic meaning of numbers. The system we use is based on the teachings of Pythagoras: every number from 1 to 9 carries its own energy, its own character, its own movement. It does not predict what will happen; it makes visible which energies and patterns are active in your life. Numbers do not lie. They mirror.</p>
+  <p>Numerology is the study of the symbolic and energetic meaning of numbers. We use the so-called Pythagorean numerology system, in which letters are linked to numbers. The system carries his name, but was not directly developed by Pythagoras. Within it, every number from 1 to 9 carries its own energy, its own character, its own movement. It does not predict what will happen; it makes visible which energies and patterns are active in your life. Within this method, numbers are a symbolic mirror. They are not proof and not an objective determination.</p>
   <div class="ngrid">
     <div class="ncell"><div class="nlbl">1 · Pioneer</div><div class="nval">Beginning &amp; courage</div><div class="ndesc">The courage to go first. Shadow: wilfulness.</div></div>
     <div class="ncell"><div class="nlbl">2 · The bridge</div><div class="nval">Connection</div><div class="ndesc">Sensitivity and cooperation. Shadow: dependence.</div></div>
@@ -474,10 +480,11 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
     <div class="ncell"><div class="nlbl">8 · Master builder</div><div class="nval">Power</div><div class="ndesc">Harvest, authority, manifestation. Shadow: control.</div></div>
     <div class="ncell"><div class="nlbl">9 · Sage</div><div class="nval">Completion</div><div class="ndesc">Compassion and surrender, letting go. Shadow: martyrdom.</div></div>
   </div>
-  <p>The master numbers 11 (the seer), 22 (the master builder) and 33 (the master teacher) carry a heightened vibration of their base number. They bring more potential, but also ask for more awareness and inner development. We work with your official birth name as registered on your birth certificate, not a nickname or married name: that is the energetic signature with which you started this life.</p>
-  <h3>The five core numbers</h3>
+  <p>Within this tradition, 11 (the seer), 22 (the master builder) and 33 (the master teacher) are regarded as master numbers. They carry a heightened vibration of their base number. They bring more potential, but also ask for more awareness and inner development. We work with your official birth name as registered on your birth certificate, not a nickname or married name: within this numerology tradition the full birth name is the symbolic starting point for the calculation.</p>
+  <h3>The six core numbers</h3>
   <p>The Life Path, calculated from your birth date, is the central energy of this life, your main theme and the lesson you came to learn. It never changes. The Personal Year, from your birth day, birth month and the current year, is the energy available this year, as part of a nine-year cycle. The Expression number, from your full birth name, is how you express yourself in the world: your talents and capacities. The Soul Urge, from the vowels in your name, is what your soul truly longs for, the most intimate number. The Personality number, from the consonants, is how others perceive you before they really know you.</p>
   <div class="ngrid">{{CORE_NUMBERS_GRID}}</div>
+  <p style="font-size:13.5px;color:var(--muted)"><strong style="color:var(--ink)">About the three name numbers.</strong> Expression, Soul Urge and Personality are calculated from your full official birth name as it appears on your birth certificate, not from the name on the cover of this document. If you recalculate them with just your first and last name, you will get different numbers; that is not a calculation error but the difference between an everyday name and a birth name. If your registered name differs from what was provided, let us know and these three will be recalculated.</p>
   <h3>Life Path {{LIFE_PATH}} — {{AI_LIFEPATH_TITLE}}</h3>
   {{AI_LIFEPATH_BODY}}
   <h3>Personal Year {{PERSONAL_YEAR}} ({{GEN_YEAR}})</h3>
@@ -491,7 +498,7 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
 <section class="section" id="tikkun">
   <div class="sec-num">07 — Kabbalah &amp; Tikkun</div>
   <h2>The <em>soul task</em> of {{CLIENT_NAME}}</h2>
-  <p>Tikkun is a Hebrew word. It means correction, repair, healing. In the Kabbalistic tradition it refers to the specific task your soul took upon itself in this life: what has it come to heal, to learn and to transform? It is not a punishment and not a flaw. It is a direction, a choice your soul made before you arrived here. It is the reason certain patterns keep returning, until you see through them.</p>
+  <p>Tikkun is a Hebrew word. It means correction, repair, healing. In the Kabbalistic tradition it refers to the specific task your soul took upon itself in this life: what has it come to heal, to learn and to transform? It is not a punishment and not a flaw. Within the spiritual interpretation of this Blueprint, Tikkun refers to directions of development and themes that invite growth, repair and transformation. Within this frame it can help to explore why certain patterns keep returning.</p>
   <p>Where numerology tells you which energy you bring, and astrology shows how that energy unfolds, Tikkun goes a layer deeper. It does not ask who you are or how you function. It asks why you are here, at the level of the soul.</p>
   <p>Tikkun describes three things together. The core wound is the theme that sits deepest, that appeared earliest and worked through longest: the place where your pain and your gift share the same address. The repetition pattern shows which themes keep returning in relationships, work and choices. And the soul task is the direction: what you had to learn the hardest is often exactly what you can later pass on most deeply. The intention is not to solve your Tikkun, but to learn to dance with it.</p>
   {{TIKKUN_CARDS}}
@@ -507,15 +514,15 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
 {{MANDALA_SVG}}
   </div>
   <p style="font-size:15px;color:var(--muted);max-width:480px;margin:0 auto;line-height:1.8">This pattern is like a QR code of your soul. It is not meant to be understood with the head, but to be felt with the body. Breathe into it for six seconds, out for six seconds. Notice what moves.</p>
-  <p>Sacred geometry is not something you understand. It is something you recognise. Your mandala is not an image to decipher, but a frequency to recognise. Look at it the way you look at the sun: not to analyse, but to receive.</p>
-  <blockquote>Breath sequence 6 · 6 · 6 · 6 — six seconds in, six seconds hold, six seconds out, six seconds still.</blockquote>
-  <p>It lets your breath become complete, calms your nervous system and brings you back to stillness. Hang it somewhere you see it daily. Use it in moments of choice or doubt, not to find an answer but to return to yourself.</p>
+  <p>Sacred geometry is not something you understand. It is something you recognise. Your mandala is not an image to decipher, but an image to recognise. Look at it the way you look at the sun: not to analyse, but to receive.</p>
+  <blockquote>Six seconds in, six seconds out. The mandala is visually designed to guide that rhythm. This is an optional practice, not a requirement.</blockquote>
+  <p>It lets your breath become complete and directs your attention to breathing and body. Calm, conscious breathing can be relaxing for many people. Hang it somewhere you see it daily. Use it in moments of choice or doubt, not to find an answer but to return to yourself.</p>
 </section>
 <section class="section" id="summary">
   <div class="sec-num">09 — Overview &amp; Summary</div>
   <h2>{{CLIENT_NAME}} <em>in one sentence</em></h2>
   <blockquote>"{{AI_SUMMARY_ONELINER}}"</blockquote>
-  <p>You have moved through four systems that each describe the same thing from a different angle: who you are, what you carry and what you came here to do. Astrology showed how your energy works. Numerology gave you the numbers present at your birth. Kabbalah went a layer deeper: why you are here. Sacred geometry gave you a language your body already knows. Four languages, one truth. There is an energy in you larger than the story you tell about yourself, a direction deeper than the goals you consciously pursue, and a gift hidden precisely behind the place that has asked the most of you.</p>
+  <p>You have moved through four systems that each describe the same thing from a different angle: who you are, what you carry and what you came here to do. Astrology showed how your energy works. Numerology gave you the numbers present at your birth. Kabbalah went a layer deeper: why you are here. The mandala translated it into a form your body recognises before your head does. The different symbolic systems each offer their own lens and are interpreted in a similar direction within this Blueprint. There is an energy in you larger than the story you tell about yourself, a direction deeper than the goals you consciously pursue, and a gift hidden precisely behind the place that has asked the most of you.</p>
   <table class="ptab">
     <tbody>{{SUMMARY_ROWS}}</tbody>
   </table>
@@ -532,7 +539,7 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
   <p>Your daily and seasonal rhythm based on your chart.</p>
   <p>You are not a machine. A machine works the same every day — same input, same output, without rhythm, without season, without ebb and flow. You are earth, fire, ether, air and water. And water moves in cycles. It rises and falls, fills and withdraws, is sometimes clear and sometimes murky. Not because something is wrong, but because that is the nature of living energy.</p>
   <h3>The moon as compass</h3>
-  <p>Of all the cycles that structure life, the lunar cycle is the most direct and most personally felt. The moon moves the water of the oceans, and your body consists largely of water. The cycle lasts about twenty-nine and a half days and moves through four main phases, each carrying its own quality of energy.</p>
+  <p>Of all the cycles that structure life, the lunar cycle is the most direct and most personally felt. The gravity of the moon has a demonstrable influence on the tides. Within spiritual traditions the lunar cycle is also used symbolically as a model for rhythm, reflection and change. The cycle lasts about twenty-nine and a half days and moves through four main phases, each carrying its own quality of energy.</p>
   <div class="ngrid">
     <div class="ncell"><div class="nlbl">New moon</div><div class="nval">Sowing</div><div class="ndesc">The darkest point, with the most potential. A moment for intention, not for action.</div></div>
     <div class="ncell"><div class="nlbl">Waxing moon</div><div class="nval">Building</div><div class="ndesc">The energy becomes more active and outward. Becoming visible and taking steps.</div></div>
@@ -543,7 +550,9 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
   <p>{{AI_ENERGY_RHYTHM}}</p>
   <div class="ngrid">{{ENERGY_GRID}}</div>
   <h3>The elements in your chart</h3>
+  {{ELEMENT_INTRO}}
   <div class="nsplit">{{ELEMENT_CARDS}}</div>
+  {{MODALITY_CARD}}
 </section>
 
 <section class="section" id="integration">
@@ -551,32 +560,32 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
   <h2>Your personal <em>upgrade plan</em></h2>
   <div class="note" style="margin-bottom:28px">
     <p><strong>Your four layers at this moment:</strong><br>
-    Astrology — {{AI_LAYERS_ASTRO}}<br>
-    Numerology — {{AI_LAYERS_NUM}}<br>
-    Soul direction — {{AI_LAYERS_SOUL}}<br>
-    Personal Year — {{AI_LAYERS_YEAR}}<br><br>
+    Astrology: {{AI_LAYERS_ASTRO}}<br>
+    Numerology: {{AI_LAYERS_NUM}}<br>
+    Soul direction: {{AI_LAYERS_SOUL}}<br>
+    Personal Year: {{AI_LAYERS_YEAR}}<br><br>
     The practices below focus on where the most movement is possible. For you, right now, that is above all: <strong>{{AI_LAYERS_FOCUS}}</strong></p>
   </div>
   <p>This is the hardest part. Not because it is complicated, but because it asks for honesty. Knowledge changes nothing. Recognition changes nothing. Even the deepest spiritual experience changes nothing unless it is followed by one thing: a different choice. In an ordinary moment, on an ordinary day.</p>
   <h3>The world is your mirror</h3>
   <p>The most real, honest and direct mirror you have is the world around you. The people in your life, the situations that keep returning, the things that irritate, touch, impress or repel you. Everything you see outside yourself is a reflection of what lives within you. The moment you recognise this clearly, you stop repeating unconsciously and start creating consciously.</p>
   <h3>Shadow sides as mirror</h3>
-  <p>What irritates you in another carries a quality that also lives in you, otherwise it would not touch you. What you admire in another carries a quality that also lives in you, not yet fully claimed but present, otherwise you would not recognise it. Every judgment about another is a mirror. The question is never what is wrong with them, but always: what does this reaction want to show me about myself?</p>
+  <p>What irritates you in another can sometimes touch on a quality, need, value or boundary of your own. What you admire in another can make visible a quality or value that is meaningful to you. A judgment can be a mirror of your own values, needs or boundaries. Besides what is happening with the other person, you can explore what your reaction makes visible about yourself.</p>
   <h3>Your shadow sides are not your enemies</h3>
   <p>{{AI_SHADOW_BODY}}</p>
   <h3>Your six gifts</h3>
-  <p>There is something that sets you apart from everything around you: six faculties that allow you to stop, look and choose differently. Intuition is the knowing that arrives before reasoning does. Imagination is the ability to see something that does not yet exist. Memory is the ability to recognise patterns across time. Reasoning is the ability to make connections. Perception is how you see — and how you see it determines what you experience. Willpower is the ability to choose instead of react automatically. These six gifts are always available. They do not wait for a good moment.</p>
+  <p>In this Blueprint we work with six human faculties as an interpretive framework. They allow you to stop, to look and to choose differently. Intuition is the knowing that arrives before reasoning does. Imagination is the ability to see something that does not yet exist. Memory is the ability to recognise patterns across time. Reasoning is the ability to make connections. Perception is how you see — and how you see it determines what you experience. Willpower is the ability to choose instead of react automatically. These six gifts are always available. They do not wait for a good moment.</p>
   <h3>How your six gifts light up in your chart</h3>
   <p>Your six gifts are the power of your chart in pure form. The more consciously you use them, the more your chart’s energy flows.</p>
   <div class="gifts-grid">{{GIFT_CARDS}}</div>
   <h3>The breath as key</h3>
   <p>{{AI_BREATH_BODY}}</p>
   <h3>Integration in six movements</h3>
-  <p>The moment you feel resistance, stop. Do not run away, do not push through. Stop. And breathe, deep and conscious, with an out-breath longer than the in-breath. Feel what is there, without judgment. Look at it with the eyes of someone curious instead of afraid. Experience it fully, because what you fully experience and breathe through no longer has power over you. And then release what has done its work. Stop, breathe, feel, look, experience, release. The breath runs through all of it.</p>
+  <p>The moment you feel resistance, stop. Do not run away, do not push through. Stop. And breathe, deep and conscious, with an out-breath longer than the in-breath. Feel what is there, without judgment. Look at it with the eyes of someone curious instead of afraid. Experience it fully. Conscious experiencing and calm breathing can help create distance from a strong reaction, and make room for a different choice. And then release what has done its work. Stop, breathe, feel, look, experience, release. The breath runs through all of it.</p>
   <h3>The mandala as daily integration tool</h3>
   <p>Your mandala is the geometric mirror of who you are. The moment you recognise a pattern — an irritation or a reaction that asks more energy than the situation deserves — look at your mandala for a moment and return to yourself, to the frequency you emit when you are conscious instead of reactive.</p>
   <h3>AI as daily conversation partner</h3>
-  <p>AI knows your Blueprint — feed it in. AI can help you connect what you have read here with what you experience today. Not as a therapist, but as a conversation partner who knows your context and asks you the questions you are not yet asking yourself. The power is not in the answers, but in the formulating. Because what you formulate becomes visible, and what is visible you can choose.</p>
+  <p>You can share your Blueprint with AI and use AI as a conversation partner for reflection. AI can help you connect what you have read here with what you experience today. Not as a therapist, but as a conversation partner who knows your context and asks you the questions you are not yet asking yourself. The power is not in the answers, but in the formulating. Because what you formulate becomes visible, and what is visible you can choose.</p>
   <h3>Daily practices</h3>
   {{PRACTICES}}
   <h3>Six AI prompts for your chart</h3>
@@ -584,7 +593,7 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
   <p class="ptitle">Click the button to copy a prompt</p>
   {{PROMPT_CARDS}}
   <h3>Personal calendar — {{CAL_RANGE}}</h3>
-  <p>Your personal month numbers are calculated from Personal Year {{PERSONAL_YEAR}}. Every month carries its own colour of energy. The more consciously you follow this rhythm, the more you move with the current of your year.</p>
+  {{AI_CAL_INTRO}}
   <div class="cal-grid">{{CALENDAR_MONTHS}}</div>
 </section>
 <section class="section" id="deepening">
@@ -605,7 +614,8 @@ footer p{font-size:13px;color:var(--muted);line-height:1.9}
   <p><strong>Talk to a human.</strong> AI can mirror you, but a good conversation with someone who knows you and dares to challenge you goes further: someone who does not confirm what you already know, but asks the question you would rather avoid. The combination of this document plus a living conversation is more powerful than either on its own.</p>
   <h3>In closing</h3>
   {{AI_CLOSING_BODY}}
-  <h3>Sources, deepening &amp; next steps</h3><p>This document is the beginning. Not the end. Here are directions for those who want to go deeper.</p><p style="font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin:24px 0 9px;font-weight:600">Complementary systems to explore</p><div style="display:flex;flex-direction:column;gap:9px;margin:0 0 18px"><div style="border-left:2px solid var(--goldl);padding:5px 0 5px 15px;font-size:14px;line-height:1.6;color:var(--muted)"><strong style="color:var(--ink);font-weight:600">Western astrology</strong> is the tradition this Blueprint is built on.</div><div style="border-left:2px solid var(--goldl);padding:5px 0 5px 15px;font-size:14px;line-height:1.6;color:var(--muted)"><strong style="color:var(--ink);font-weight:600">Human Design</strong> describes your energetic type and decision strategy.</div><div style="border-left:2px solid var(--goldl);padding:5px 0 5px 15px;font-size:14px;line-height:1.6;color:var(--muted)"><strong style="color:var(--ink);font-weight:600">Gene Keys</strong> is a poetic transformation system based on the I Ching.</div><div style="border-left:2px solid var(--goldl);padding:5px 0 5px 15px;font-size:14px;line-height:1.6;color:var(--muted)"><strong style="color:var(--ink);font-weight:600">Vedic astrology (Jyotish)</strong> adds karma, dharma and life phases.</div><div style="border-left:2px solid var(--goldl);padding:5px 0 5px 15px;font-size:14px;line-height:1.6;color:var(--muted)"><strong style="color:var(--ink);font-weight:600">I Ching</strong> is a living oracle system that speaks the language of flow.</div><div style="border-left:2px solid var(--goldl);padding:5px 0 5px 15px;font-size:14px;line-height:1.6;color:var(--muted)"><strong style="color:var(--ink);font-weight:600">Quantum physics</strong> shows that the observer influences reality.</div></div><p>There are so many paths to deepen and rediscover who you truly are. Everyone has their own way in this.</p><p style="font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin:24px 0 9px;font-weight:600">How to keep working with your Blueprint</p><p>Do not read it in one sitting. Read a section. Sit with it. Come back. Use the reflection questions as a daily practice. Work with your mandala. And use the AI prompts to keep the conversation with yourself going.</p><blockquote style="text-align:center;border-left:none;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:28px 22px;margin:30px 0 10px;opacity:.85">Vibration is your attraction. Awareness is how you get to know that vibration. And creation is what arises when you stop surviving and start living.<br><br>You were never lost. You are on your way back to yourself.</blockquote><p style="text-align:center;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin:0 0 4px">SZINN · Alignment Blueprint™</p>
+  <h3>Sources, deepening &amp; next steps</h3><p>This document is the beginning. Not the end. Here are directions for those who want to go deeper.</p><p style="font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin:24px 0 9px;font-weight:600">Complementary systems to explore</p><div style="display:flex;flex-direction:column;gap:9px;margin:0 0 18px"><div style="border-left:2px solid var(--goldl);padding:5px 0 5px 15px;font-size:14px;line-height:1.6;color:var(--muted)"><strong style="color:var(--ink);font-weight:600">Western astrology</strong> is the tradition this Blueprint is built on.</div><div style="border-left:2px solid var(--goldl);padding:5px 0 5px 15px;font-size:14px;line-height:1.6;color:var(--muted)"><strong style="color:var(--ink);font-weight:600">Human Design</strong> describes your energetic type and decision strategy.</div><div style="border-left:2px solid var(--goldl);padding:5px 0 5px 15px;font-size:14px;line-height:1.6;color:var(--muted)"><strong style="color:var(--ink);font-weight:600">Gene Keys</strong> is a poetic transformation system based on the I Ching.</div><div style="border-left:2px solid var(--goldl);padding:5px 0 5px 15px;font-size:14px;line-height:1.6;color:var(--muted)"><strong style="color:var(--ink);font-weight:600">Vedic astrology (Jyotish)</strong> adds karma, dharma and life phases.</div><div style="border-left:2px solid var(--goldl);padding:5px 0 5px 15px;font-size:14px;line-height:1.6;color:var(--muted)"><strong style="color:var(--ink);font-weight:600">I Ching</strong> is a living oracle system that speaks the language of flow.</div><div style="border-left:2px solid var(--goldl);padding:5px 0 5px 15px;font-size:14px;line-height:1.6;color:var(--muted)"><strong style="color:var(--ink);font-weight:600">Quantum physics</strong> shows that a measurement influences the outcome of that measurement, something often used as a metaphor for attention.</div></div><p>There are so many paths to deepen and rediscover who you truly are. Everyone has their own way in this.</p><p style="font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin:24px 0 9px;font-weight:600">How to keep working with your Blueprint</p><p>Do not read it in one sitting. Read a section. Sit with it. Come back. Use the reflection questions as a daily practice. Work with your mandala. And use the AI prompts to keep the conversation with yourself going.</p><blockquote style="text-align:center;border-left:none;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:28px 22px;margin:30px 0 10px;opacity:.85">Vibration is your attraction. Awareness is how you get to know that vibration. And creation is what arises when you stop surviving and start living.<br><br>You were never lost. You are on your way back to yourself.</blockquote><p style="text-align:center;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--gold);margin:0 0 4px">SZINN · Alignment Blueprint™</p>
+  <p style="font-size:13.5px;color:var(--muted);line-height:1.7"><strong style="color:var(--ink)">About the method.</strong> This Blueprint combines astrology, numerology and spiritual traditions as symbolic systems for self-reflection. The astronomical positions and the numerological calculations can be checked and reproduced. The meanings attached to them are interpretive and do not constitute a scientific diagnosis, prediction or determination of personality. Use them as an invitation to recognition, inquiry and conversation, not as absolute truth.</p>
   <p style="font-size:13px;color:var(--muted)">SZINN · {{CLIENT_NAME}} · Blueprint {{GEN_YEAR}} · Personal and confidential</p>
 </section>
 <footer>

@@ -1,0 +1,1599 @@
+{
+  "taal": "en",
+  "talen": [
+    {
+      "code": "nl",
+      "label": "Nederlands",
+      "kort": "NL",
+      "data": "client-nl.json"
+    },
+    {
+      "code": "en",
+      "label": "English",
+      "kort": "EN",
+      "data": "client.json"
+    }
+  ],
+  "naam": "Elly Elizabeth Korving",
+  "voornaam": "Elly",
+  "dashboard": "/portaal/",
+  "blauwdruk": "downloads/SZINN-blueprint.pdf",
+  "voettekst": "© 2026 Elly Elizabeth Korving · Alterego BV · szinn.ai",
+  "slotmelding": "This step opens once you have read the one before it. One thing at a time.",
+  "labels": {
+    "fases": [
+      [
+        "Recognition",
+        "I see myself."
+      ],
+      [
+        "Clarity",
+        "I understand why."
+      ],
+      [
+        "Integration",
+        "I live it."
+      ]
+    ],
+    "dashboard": "Dashboard",
+    "start": "↻ start",
+    "printen": "Print",
+    "fasenummer": "Phase ",
+    "merkregel": "Remember who you are.",
+    "merkonder": "Alignment · Awareness · Living",
+    "sluiten": "Close",
+    "terugkop": "Back to overview",
+    "terug": "Back",
+    "volgende": "Next",
+    "kernthemas": "Key themes",
+    "herkenning": "You may recognise this in yourself",
+    "herinnering": "A reminder for you",
+    "watHerkenJe": "What do you recognise?",
+    "schrijfhier": "Write your thoughts here…",
+    "zelfdeLicht": "Same light. Different expression.",
+    "terugPlaneten": "← Back to planets",
+    "meerInfo": "More information",
+    "downloaden": "Download",
+    "bestellen": "Order a print",
+    "openen": "Open",
+    "jeBentHier": "You are here",
+    "welkom": "Welcome",
+    "welkomTekst": "Everything is ready for you.",
+    "welkomKnop": "Begin",
+    "foutKop": "Your blueprint is not loading",
+    "foutTekst": "The data could not be retrieved. Please try again later.",
+    "fasesKop": "Your journey",
+    "spiegelkop": "Read this",
+    "spiegelregel": "This is not who you are. This is the energy you get to work with.",
+    "merkOnder": "Alignment Blueprint",
+    "zijStart": "Start",
+    "zijStartSub": "Begin here",
+    "zijDagelijks": "Daily integration",
+    "zijAccount": "My account",
+    "zijUitloggen": "Log out",
+    "disclaimer": "This blueprint and these pages were put together with the help of AI. AI can get things wrong: check what matters to you, and trust your own reading when something does not fit. Everything here is meant for self-insight and reflection. It is not medical, psychological, legal or financial advice, and it is not a prediction. You remain the one who decides about you.",
+    "meerOnder": "scroll",
+    "handleiding": "Guide",
+    "afvinken": "Tick off",
+    "afgevinkt": "Ticked off"
+  },
+  "welkom": {
+    "altijd": true,
+    "titel": "Welcome, Elly.",
+    "tekst": "Your first steps into your blueprint.<br>Three phases, at your own pace. There is no rush.",
+    "knop": "Your remembering starts here",
+    "reis": {
+      "kop": "The Journey",
+      "sub": "Three phases to get you started with your blueprint",
+      "uitleg": "This is the beginning, not the whole of it. The three phases below walk you into your blueprint step by step, so that afterwards you can work with it yourself.",
+      "rechts": "Not a ladder\nbut a spiral.",
+      "knop": "Start your journey",
+      "voet": [
+        "Know yourself.\nNavigate consciously.\nLive a more aligned life.",
+        "More insight.\nMore choice.\nA more you."
+      ],
+      "fases": [
+        {
+          "label": "Phase 1",
+          "titel": "Recognition",
+          "zin": "I see myself.",
+          "tekst": "A complete overview of who you are, seen through six lenses.",
+          "raster": [
+            {
+              "beeld": "assets/kaart-01.jpg",
+              "titel": "Your Story",
+              "sub": "what you have experienced"
+            },
+            {
+              "beeld": "assets/kaart-02.jpg",
+              "titel": "Your Birth Chart",
+              "sub": "your cosmic blueprint"
+            },
+            {
+              "beeld": "assets/kaart-03.jpg",
+              "titel": "Your Planets",
+              "sub": "your inner forces"
+            },
+            {
+              "beeld": "assets/kaart-04.jpg",
+              "titel": "Your Moon Phase",
+              "sub": "the rhythm you arrived with"
+            },
+            {
+              "getal": "1",
+              "titel": "Your Numbers",
+              "sub": "your vibration"
+            },
+            {
+              "beeld": "assets/kaart-06.jpg",
+              "titel": "Your Tikkun",
+              "sub": "your soul correction"
+            }
+          ],
+          "slot": "Read it once.",
+          "resultaat": "Result: I recognise myself.",
+          "band": {
+            "beeld": "assets/paneel-01.jpg",
+            "tekst": "Different lenses.\nOne you."
+          }
+        },
+        {
+          "label": "Phase 2",
+          "titel": "Clarity",
+          "zin": "I understand why.",
+          "tekst": "The pieces begin to connect. You start to see the pattern, the relationships and the bigger picture.",
+          "rijen": [
+            {
+              "beeld": "assets/laag-01.jpg",
+              "titel": "The Pattern",
+              "sub": "What keeps showing up?"
+            },
+            {
+              "beeld": "assets/laag-02.jpg",
+              "titel": "The Connection",
+              "sub": "Where do the pieces meet?"
+            },
+            {
+              "beeld": "assets/laag-03.jpg",
+              "titel": "The Bigger Picture",
+              "sub": "Can you see the whole?"
+            }
+          ],
+          "uitgelicht": {
+            "beeld": "assets/a2preview.jpg",
+            "titel": "Your Alignment Blueprint",
+            "sub": "the complete view · optional next step"
+          },
+          "slot": "See how it all comes together.",
+          "resultaat": "Result: I understand myself.",
+          "band": {
+            "beeld": "assets/paneel-p2.jpg",
+            "tekst": "The pieces meet.\nA larger view emerges."
+          }
+        },
+        {
+          "label": "Phase 3",
+          "titel": "Integration",
+          "zin": "I live it.",
+          "tekst": "Your knowledge becomes your daily practice. Three steps to navigate your life with more awareness, clarity and choice.",
+          "rijen": [
+            {
+              "beeld": "assets/weg-01.jpg",
+              "titel": "Your Blueprint",
+              "sub": "Know your foundation. What stays."
+            },
+            {
+              "beeld": "assets/weg-02.jpg",
+              "titel": "Your Rhythm",
+              "sub": "Your daily integration. What moves."
+            },
+            {
+              "beeld": "assets/weg-03.jpg",
+              "titel": "SZINN Companion",
+              "sub": "Ask, reflect, see another perspective."
+            }
+          ],
+          "slot": "A deeper you. Every day.",
+          "resultaat": "Result: I live it.",
+          "band": {
+            "beeld": "assets/start-band.jpg",
+            "tekst": "Same you.\nA more conscious way of being in the world."
+          }
+        }
+      ],
+      "audio": {
+        "label": "Listen first",
+        "soort": "audio",
+        "bron": "assets/welkom-3.m4a",
+        "duur": "5 min"
+      }
+    },
+    "audio": {
+      "label": "Listen first",
+      "soort": "audio",
+      "bron": "assets/welkom-1.m4a",
+      "duur": "10 sec"
+    },
+    "verder": "Continue",
+    "startnu": "Start now"
+  },
+  "herkenning": {
+    "titel": "Recognition",
+    "sub": "No explanation, no system. Read it out loud if you can, and only check whether it is true. Maybe you recognise it, maybe you don't. Both are fine.",
+    "duur": "Take your time · no rush · step by step, at your own pace",
+    "hero": {
+      "beeld": "assets/welkom-achtergrond.jpg",
+      "label": "Phase 1",
+      "sub": "One question:",
+      "vraag": "Do I recognise myself in this?",
+      "intro": "We are entering your journey. Not a journey to learn, but to unlearn. To see and to feel who you are, and to recognise the patterns you have been shown, so you can come back in line with who you really are.\n\nIn six short steps you will meet your story, your birth chart, your planets, your moon phase, your numbers and your Tikkun. Open one, close it, come back tomorrow. Nothing here expires.",
+      "rechts": "Same energy.\nA different perspective.",
+      "kaderLabel": "First steps · 1 of 3",
+      "kader": "This is where you begin. Not the blueprint yet, but the way in. Six short steps, and you may stop after any of them."
+    },
+    "stappen": [
+      {
+        "titel": "Your story",
+        "beeld": "assets/kaart-01.jpg",
+        "kaart": "What you recognise before anything is explained.",
+        "sub": "What shaped you?",
+        "quote": "Same stories\nnew awareness",
+        "blokken": [
+          {
+            "tekst": "You learned to be strong. Early on you noticed that a lot was expected of you. You took responsibility, kept things under control and learned to carry on, also when what you actually needed was rest."
+          },
+          {
+            "tekst": "You may recognise that you first look at what other people need. That you adjust easily, and only notice later what you wanted yourself. And that when something does not work, you ask sooner what you could have done differently than what was really being asked of you."
+          },
+          {
+            "tekst": "These are not mistakes. They are the ways you learned to move through life. Nothing below is new. It is only being said out loud."
+          },
+          {
+            "type": "afsluiter",
+            "tekst": "“Read it slowly. You are only checking whether it is true.”"
+          },
+          {
+            "kop": "Being the strong one became normal",
+            "tekst": "Somewhere early on, being the strong one stopped being a choice and became simply how things were. You do not remember deciding it. You remember it being true, and everyone around you getting used to it. The awkward part is that it works. You are good at it. Which is exactly why nobody ever asks whether it is heavy."
+          },
+          {
+            "kop": "You feel the room before anyone speaks",
+            "tekst": "You walk in and you know. Who is off, who is performing, what is not being said. It is not something you trained, it is closer to hearing. And because you notice it, you begin adjusting before you have even thought about it. By the end of the evening you have carried something nobody handed you."
+          },
+          {
+            "kop": "You know when something is finished",
+            "tekst": "Long before it is said out loud, you feel the ending arrive. A friendship, a job, a house, a version of yourself. Other people are still making plans while you have quietly started saying goodbye on the inside. That is why endings rarely surprise you, and why you sometimes leave a room before anyone notices you have gone."
+          },
+          {
+            "kop": "You start slowly and you outlast everyone",
+            "tekst": "You take a long time to begin. You turn it over, you wait, you let it sit. People who move fast get ahead of you at the start. Then you begin, and you do not stop, and one by one they fall away. What looked like hesitation was you making sure it would hold."
+          },
+          {
+            "kop": "Freedom and responsibility both pull at you",
+            "tekst": "Something in you needs room. Open doors, no fixed answer yet, the possibility of leaving. And something else in you keeps saying yes to one more thing that needs carrying. Both are real. The pull between them is not indecision. It is two true parts of you asking for the same day."
+          },
+          {
+            "kop": "Being seen still costs you something",
+            "tekst": "You can do the work. You can hold the room. What is harder is standing in front of it with your own name on it. Right before you step forward there is a small hesitation nobody else can see. And afterwards, when it lands, you move on quickly rather than staying in it."
+          },
+          {
+            "kop": "You would rather do it than explain it",
+            "tekst": "Asking takes longer than doing. You have proof: you asked once, it came back half right, and you fixed it yourself anyway. So the habit set. The cost does not show up that day. It shows up on the evening you are done and there is nobody who knows what it took."
+          },
+          {
+            "type": "lijst",
+            "kop": "You may recognise this",
+            "items": [
+              "I sense quickly what other people need.",
+              "I take responsibility, also when it is not mine.",
+              "I hear what is not being said.",
+              "I find it hard to really come to a stop.",
+              "I often know what has to be done, not always what I want.",
+              "I finish things long after other people have moved on.",
+              "I am loyal, also when it costs me something.",
+              "For a long time I thought I was only worth something when I performed."
+            ]
+          },
+          {
+            "tekst": "None of this is a verdict. It is a description. Some of it will be true today and different next month, and that is how it should be. Take what lands. Leave the rest."
+          },
+          {
+            "type": "herinnering",
+            "kop": "A reminder for you",
+            "tekst": "“I do not have to become stronger.\nI may remember that I already am.”"
+          },
+          {
+            "type": "invoer",
+            "kop": "What do you recognise?",
+            "sleutel": "verhaal",
+            "plaats": "Write here what resonates in you…"
+          }
+        ],
+        "achtergrond": "assets/paneel-01.jpg",
+        "quoteTonen": true
+      },
+      {
+        "titel": "Your birth chart",
+        "beeld": "assets/kaart-02.jpg",
+        "kaart": "Your own chart, as an image.",
+        "sub": "The sky at the hour you arrived.",
+        "blokken": [
+          {
+            "tekst": "Your birth chart is a map of the sky at the moment you were born. It shows where the planets stood, and together they form your own pattern."
+          },
+          {
+            "tekst": "Each planet, sign and house stands for a theme in your life, from your strengths and talents to the lessons you are here to meet. The chart below is an example, so you can see how one is built. Yours comes in the next steps."
+          },
+          {
+            "type": "zwevend",
+            "src": "assets/voorbeeld-chart.jpg",
+            "alt": "example birth chart",
+            "onder": "An example chart. Yours follows in the next steps."
+          },
+          {
+            "type": "iconen",
+            "items": [
+              {
+                "teken": "☉︎",
+                "kop": "Your energy",
+                "sub": "planets"
+              },
+              {
+                "teken": "☽︎",
+                "kop": "Your emotions",
+                "sub": "moon phase"
+              },
+              {
+                "teken": "△︎",
+                "kop": "Your life areas",
+                "sub": "houses"
+              }
+            ]
+          },
+          {
+            "type": "herinnering",
+            "kop": "A reminder for you",
+            "tekst": "“As above, so within you.\nThe same universe lives in you.”"
+          },
+          {
+            "type": "uitklap",
+            "kop": "What you are looking at",
+            "items": [
+              {
+                "titel": "Planets",
+                "beeld": "assets/kaart-03.jpg",
+                "kort": "The different parts of your personality.",
+                "tekst": "Every planet stands for one way of being. The sun is what drives you, the moon is what you feel, mercury is how you think and speak, venus is how you love, mars is how you act. They are not forces acting on you from outside. They are names for parts you already recognise in yourself."
+              },
+              {
+                "titel": "Moon phase",
+                "beeld": "assets/kaart-04.jpg",
+                "kort": "Your emotional nature and inner rhythm.",
+                "tekst": "The moon travels through a cycle of about twenty nine days, from dark to full and back. The phase she stood in at your birth says something about your rhythm: whether you begin on instinct, build slowly, or sense when something is finished before anyone says so."
+              },
+              {
+                "titel": "Houses",
+                "beeld": "assets/kaart-02.jpg",
+                "kort": "Where the energy lands in your life.",
+                "tekst": "The chart is divided into twelve areas of life: work, love, home, money, friendship, growth. A planet in a house tells you where that energy shows up in practice. Same planet, different house, a completely different daily life."
+              }
+            ]
+          }
+        ],
+        "achtergrond": "assets/paneel-02.jpg",
+        "quote": "Sky\nSelf\nPurpose",
+        "quoteTonen": false
+      },
+      {
+        "titel": "Your planets",
+        "beeld": "assets/kaart-03.jpg",
+        "kaart": "Twelve cards. What each one does and how you recognise it.",
+        "sub": "The forces within you.",
+        "blokken": [
+          {
+            "tekst": "Each planet stands for a part of you: an energy, a theme, a lesson. Together they form a pattern that shapes how you think, feel, act and grow."
+          },
+          {
+            "type": "iconen",
+            "items": [
+              {
+                "teken": "☉︎",
+                "kop": "Energy",
+                "sub": "your drive and life force"
+              },
+              {
+                "teken": "♡︎",
+                "kop": "Emotions",
+                "sub": "how you feel and connect"
+              },
+              {
+                "teken": "❀︎",
+                "kop": "Lessons",
+                "sub": "what you are here to meet"
+              }
+            ]
+          },
+          {
+            "type": "herinnering",
+            "kop": "A reminder for you",
+            "tekst": "“As above, so within you.\nThe same forces move in you.”"
+          },
+          {
+            "type": "planeten",
+            "kop": "Explore your planets",
+            "tekst": "Tap a planet. Each one is a part of you that you will probably recognise.",
+            "items": [
+              {
+                "naam": "Sun",
+                "teken": "☉︎",
+                "beeld": "assets/pl-sun.jpg",
+                "kort": "What lights you up.",
+                "sub": "What lights you up.",
+                "algemeen": "The Sun is your engine. It is the thing you cannot switch off, the reason you get out of bed, the part of you people meet first and remember longest.",
+                "tekenTeken": "♏︎",
+                "jouw": "Your Sun is in Scorpio, in house 4.",
+                "jouwtekst": "Your Sun sits in Scorpio, in the part of the chart that holds home and family. Which means you were never built for small talk. You want the real version, and you can smell the polished one from across the room. People think that is intensity. To you it is just honest.",
+                "themas": [
+                  "Depth",
+                  "Loyalty",
+                  "Honesty",
+                  "Privacy",
+                  "Starting over"
+                ],
+                "herkenning": [
+                  "You ask the question the room was avoiding.",
+                  "You cannot pretend to be fine when you are not.",
+                  "You need a door that closes.",
+                  "People tell you things they have told nobody.",
+                  "You are all in, or you walk away."
+                ],
+                "herinnering": "You are not too intense.\nYou are simply not interested in fake."
+              },
+              {
+                "naam": "Moon",
+                "teken": "☽︎",
+                "beeld": "assets/pl-moon.jpg",
+                "kort": "What you need to feel safe.",
+                "sub": "What you need to feel safe.",
+                "algemeen": "The Moon is your inner weather. It is what you needed as a child and still need now, and it does not care whether it is convenient.",
+                "tekenTeken": "♏︎",
+                "jouw": "Your Moon is in Scorpio, in house 4.",
+                "jouwtekst": "Your Moon is in Scorpio, in the house of home. You feel everything at full volume, and then you go and sort it out alone. Time where nobody wants anything from you is not a treat. It is maintenance.",
+                "themas": [
+                  "Feeling deeply",
+                  "Time alone",
+                  "Loyalty",
+                  "Instinct",
+                  "Rest"
+                ],
+                "herkenning": [
+                  "You know the mood in a room before anyone speaks.",
+                  "You go quiet first, then you talk.",
+                  "You need real rest, not scrolling.",
+                  "You remember what people said long after they forgot.",
+                  "You trust slowly, and then completely."
+                ],
+                "herinnering": "Needing time alone\nis not shutting people out."
+              },
+              {
+                "naam": "Mercury",
+                "teken": "☿︎",
+                "beeld": "assets/pl-mercury.jpg",
+                "kort": "How your mind works.",
+                "sub": "How your mind works.",
+                "algemeen": "Mercury is your thinking and your talking. How fast, how deep, how much you say and how much you keep.",
+                "tekenTeken": "♏︎",
+                "jouw": "Your Mercury is in Scorpio, in house 4.",
+                "jouwtekst": "Your Mercury is in Scorpio too. You do not skim. You dig, and you notice the thing that does not add up. And you would rather say nothing at all than say half of what you mean.",
+                "themas": [
+                  "Seeing through",
+                  "Precision",
+                  "Silence",
+                  "Digging",
+                  "Straight talk"
+                ],
+                "herkenning": [
+                  "You spot the inconsistency and nobody knows how.",
+                  "Small talk exhausts you more than you admit.",
+                  "You stay quiet until you are sure.",
+                  "When you finally say it, it lands.",
+                  "You read people faster than you read books."
+                ],
+                "herinnering": "Your silence is not distance.\nIt is you making sure it is true."
+              },
+              {
+                "naam": "Venus",
+                "teken": "♀︎",
+                "beeld": "assets/pl-venus.jpg",
+                "kort": "How you love and what you enjoy.",
+                "sub": "How you love and what you enjoy.",
+                "algemeen": "Venus is pleasure, love and taste. What makes you happy, who you fall for, and what you think is worth your time.",
+                "tekenTeken": "♐︎",
+                "jouw": "Your Venus is in Sagittarius, in house 5.",
+                "jouwtekst": "Your Venus is in Sagittarius, in the house of play. You would rather hear the truth than a kind lie, and you need room to move inside love. Cage it and something in you leaves before your body does.",
+                "themas": [
+                  "Freedom",
+                  "Honesty",
+                  "Play",
+                  "Generosity",
+                  "Adventure"
+                ],
+                "herkenning": [
+                  "You give a lot, often before anyone asks.",
+                  "You need space inside a relationship, not less love.",
+                  "You lose interest the moment it gets small.",
+                  "You say the honest thing at the dinner table.",
+                  "Beauty and meaning beat status every time."
+                ],
+                "herinnering": "Wanting room is not distance.\nIt is how you stay honest."
+              },
+              {
+                "naam": "Mars",
+                "teken": "♂︎",
+                "beeld": "assets/pl-mars.jpg",
+                "kort": "How you get things done.",
+                "sub": "How you get things done.",
+                "algemeen": "Mars is your engine room. How you start, how you push, and what happens when someone gets in your way.",
+                "tekenTeken": "♉︎",
+                "jouw": "Your Mars is in Taurus, retrograde, in house 10.",
+                "jouwtekst": "Your Mars is in Taurus and it is retrograde, sitting in the house of work. You take forever to start, and then you cannot be stopped. Your anger goes inward first, which is why it arrives late and very clear.",
+                "themas": [
+                  "Staying power",
+                  "Patience",
+                  "Stubbornness",
+                  "Slow start",
+                  "Built to last"
+                ],
+                "herkenning": [
+                  "You think it over long before you begin.",
+                  "Once you start, you finish.",
+                  "You outlast people who set off much faster.",
+                  "Your anger shows up a day late.",
+                  "You build things meant to hold."
+                ],
+                "herinnering": "You do not have to move faster\nto move forward."
+              },
+              {
+                "naam": "Jupiter",
+                "teken": "♃︎",
+                "beeld": "assets/pl-jupiter.jpg",
+                "kort": "Where life opens up for you.",
+                "sub": "Where life opens up for you.",
+                "algemeen": "Jupiter is your luck and your appetite. Where you say yes, where you grow, and where you sometimes take on more than fits.",
+                "tekenTeken": "♒︎",
+                "jouw": "Your Jupiter is in Aquarius, in house 6.",
+                "jouwtekst": "Your Jupiter is in Aquarius, in the house of daily work. You grow when you are allowed to do it your own way, and you see the structure behind the mess long before anyone else does.",
+                "themas": [
+                  "Doing it your way",
+                  "Independence",
+                  "Seeing systems",
+                  "Being useful",
+                  "Renewal"
+                ],
+                "herkenning": [
+                  "You get restless inside other people's rules.",
+                  "Your best ideas are practical, not lofty.",
+                  "You fix the process, not just the problem.",
+                  "You grow fastest with room to experiment.",
+                  "You build for people, not for show."
+                ],
+                "herinnering": "Your way is not the detour.\nIt is the road."
+              },
+              {
+                "naam": "Saturn",
+                "teken": "♄︎",
+                "beeld": "assets/pl-saturn.jpg",
+                "kort": "Where it is hard, and where you get strong.",
+                "sub": "Where it is hard, and where you get strong.",
+                "algemeen": "Saturn is the teacher nobody asked for. It shows you where life keeps handing you the same lesson until you finally learn it, and then it hands you mastery.",
+                "tekenTeken": "♋︎",
+                "jouw": "Your Saturn is in Cancer, retrograde, in house 11.",
+                "jouwtekst": "Your Saturn is in Cancer, in the house of groups. Your lesson is receiving. You are the one who carries, organises and holds, and you got so good at it that nobody notices it is heavy.",
+                "themas": [
+                  "Responsibility",
+                  "Carrying it alone",
+                  "Boundaries",
+                  "Receiving",
+                  "Growing up"
+                ],
+                "herkenning": [
+                  "You would rather do it yourself than ask.",
+                  "You are the one people lean on.",
+                  "You notice when you are the only one giving.",
+                  "You feel responsible for the mood of the group.",
+                  "Asking for help still feels like a risk."
+                ],
+                "herinnering": "Letting someone help you\nis not weakness. It is the other half."
+              },
+              {
+                "naam": "Uranus",
+                "teken": "♅︎",
+                "beeld": "assets/pl-uranus.jpg",
+                "kort": "Where you refuse to do it their way.",
+                "sub": "Where you refuse to do it their way.",
+                "algemeen": "Uranus is the part of you that breaks the pattern. It is sudden, it is honest, and it does not ask permission.",
+                "tekenTeken": "♎︎",
+                "jouw": "Your Uranus is in Libra, in house 4.",
+                "jouwtekst": "Your Uranus is in Libra, in the house of home and family. You broke with something your family took for granted, and you cannot sit still inside an agreement that is only fair on paper.",
+                "themas": [
+                  "Freedom",
+                  "Honesty",
+                  "Being different",
+                  "Change",
+                  "Independence"
+                ],
+                "herkenning": [
+                  "You left a pattern your family kept.",
+                  "You cannot pretend for long.",
+                  "You need relationships that leave you free.",
+                  "You change course the moment something stops being true.",
+                  "You are the odd one, and it suits you."
+                ],
+                "herinnering": "You are not difficult.\nYou are unwilling to pretend."
+              },
+              {
+                "naam": "Neptune",
+                "teken": "♆︎",
+                "beeld": "assets/pl-neptune.jpg",
+                "kort": "Where you dream and where you drift.",
+                "sub": "Where you dream and where you drift.",
+                "algemeen": "Neptune is imagination, longing and the soft edge of things. It is beautiful, and it is also where you give people the benefit of the doubt one time too many.",
+                "tekenTeken": "♐︎",
+                "jouw": "Your Neptune is in Sagittarius, in house 5.",
+                "jouwtekst": "Your Neptune is in Sagittarius, in the house of creating. You see the finished thing before it exists, and sometimes your plan is one size larger than the day has room for.",
+                "themas": [
+                  "Imagination",
+                  "Big dreams",
+                  "Sensing things",
+                  "Compassion",
+                  "Making"
+                ],
+                "herkenning": [
+                  "You see it finished before you have started.",
+                  "Stories move you more than arguments.",
+                  "You give second chances easily.",
+                  "If you do not make something, it builds up.",
+                  "You feel what is not being said."
+                ],
+                "herinnering": "Dreaming big is not naive.\nIt is how you find the direction."
+              },
+              {
+                "naam": "Pluto",
+                "teken": "♇︎",
+                "beeld": "assets/pl-pluto.jpg",
+                "kort": "Where you go all the way down.",
+                "sub": "Where you go all the way down.",
+                "algemeen": "Pluto is what ends so something else can begin. It is power, truth and the compost heap of your life.",
+                "tekenTeken": "♎︎",
+                "jouw": "Your Pluto is in Libra, in house 3.",
+                "jouwtekst": "Your Pluto is in Libra, in the house of talking and writing. For you it runs through words. One sentence from you can tip a whole situation, which is a lot of power to carry lightly.",
+                "themas": [
+                  "Truth",
+                  "Starting over",
+                  "Influence",
+                  "Depth",
+                  "Letting go"
+                ],
+                "herkenning": [
+                  "Your words weigh more than you think.",
+                  "You have rebuilt your life at least once.",
+                  "You see the power play in a room.",
+                  "You cannot unsee what you have seen.",
+                  "You would rather break it than fake it."
+                ],
+                "herinnering": "You are not too much.\nYou are simply not shallow."
+              },
+              {
+                "naam": "Chiron",
+                "teken": "⚷︎",
+                "beeld": "assets/pl-chiron.jpg",
+                "kort": "The sore spot that became your gift.",
+                "sub": "The sore spot that became your gift.",
+                "algemeen": "Chiron is the old bruise. Press it and it still hurts, and it is exactly the place where you can help someone else better than anyone.",
+                "tekenTeken": "♈︎",
+                "jouw": "Your Chiron is in Aries, on your Midheaven.",
+                "jouwtekst": "Your Chiron sits right on the top of your chart, the most visible point there is. Going first, being seen, taking the lead: that is where it stings, and that is also your work.",
+                "themas": [
+                  "Courage",
+                  "Being seen",
+                  "Leading",
+                  "Healing",
+                  "Going first"
+                ],
+                "herkenning": [
+                  "Being seen still costs you something.",
+                  "You help others do what was once hard for you.",
+                  "You doubt yourself right before you step forward.",
+                  "You made a way where there was none.",
+                  "People find you through your scar, not your polish."
+                ],
+                "herinnering": "The place that hurt\nis the place you can hold for someone else."
+              },
+              {
+                "naam": "North Node",
+                "teken": "☊︎",
+                "beeld": "assets/pl-northnode.jpg",
+                "kort": "Where you are heading.",
+                "sub": "Where you are heading.",
+                "algemeen": "The North Node is the direction that never feels natural, and always feels alive once you go there anyway.",
+                "tekenTeken": "♑︎",
+                "jouw": "Your North Node is in Capricorn, in house 5.",
+                "jouwtekst": "Yours is in Capricorn, in the house of play and creation. Give it form, stay with it, put your name on it. And, since it lives in the house of joy, enjoy it while you build.",
+                "themas": [
+                  "Finishing",
+                  "Structure",
+                  "Being seen",
+                  "Ownership",
+                  "Joy"
+                ],
+                "herkenning": [
+                  "Putting your name on it feels risky.",
+                  "You are happiest building something of your own.",
+                  "You have to choose yourself on purpose.",
+                  "Finishing matters more than starting.",
+                  "The joy is part of the work, not the prize."
+                ],
+                "herinnering": "Standing in your own name\nis not arrogance. It is your direction."
+              }
+            ]
+          }
+        ],
+        "achtergrond": "assets/paneel-03.jpg",
+        "quote": "Different forces\nOne you",
+        "quoteTonen": false
+      },
+      {
+        "titel": "Your moon phase",
+        "beeld": "assets/kaart-04.jpg",
+        "kaart": "The phase of the moon, drawn from your own chart.",
+        "sub": "The rhythm within you.",
+        "blokken": [
+          {
+            "tekst": "The Moon is your inner world: your feelings, your instinct and the way you connect. The phase she was in when you were born says something about the rhythm you arrived with."
+          },
+          {
+            "type": "maanfases",
+            "kop": "Your moon phase at birth",
+            "items": [
+              {
+                "label": "New Moon",
+                "actief": false,
+                "beeld": "assets/maan-0.jpg"
+              },
+              {
+                "label": "Waxing Crescent",
+                "actief": false,
+                "beeld": "assets/maan-1.jpg"
+              },
+              {
+                "label": "First Quarter",
+                "actief": false,
+                "beeld": "assets/maan-2.jpg"
+              },
+              {
+                "label": "Waxing Gibbous",
+                "actief": false,
+                "beeld": "assets/maan-3.jpg"
+              },
+              {
+                "label": "Full Moon",
+                "actief": false,
+                "beeld": "assets/maan-4.jpg"
+              },
+              {
+                "label": "Waning Gibbous",
+                "actief": false,
+                "beeld": "assets/maan-5.jpg"
+              },
+              {
+                "label": "Last Quarter",
+                "actief": false,
+                "beeld": "assets/maan-6.jpg"
+              },
+              {
+                "label": "Waning Crescent",
+                "actief": true,
+                "beeld": "assets/maan-7.jpg"
+              }
+            ]
+          },
+          {
+            "type": "vak",
+            "beeld": "assets/maan-7.jpg",
+            "kop": "You were born under a balsamic moon.",
+            "tekst": "Two degrees before the new moon, in the last hour of a cycle, with the moon dark in the sky. Balsamic people feel when something is finished before anyone says it out loud. You let go early, you take your leave quietly, and you often already live in the chapter the others have not opened yet.",
+            "themas": [
+              "Sensing endings",
+              "Letting go",
+              "Quiet",
+              "Intuition",
+              "Closing a cycle"
+            ]
+          },
+          {
+            "type": "duo",
+            "lijst": {
+              "kop": "You may recognise this in yourself",
+              "items": [
+                "You know it is over before anything is said.",
+                "You take your leave without announcing it.",
+                "You need more rest than the people around you.",
+                "You feel old things that are not yours.",
+                "You are already busy with what comes next."
+              ]
+            },
+            "herinnering": {
+              "kop": "A reminder for you",
+              "tekst": "Letting go early is not giving up.\nIt is how you make room."
+            }
+          },
+          {
+            "type": "invoer",
+            "kop": "Where do you notice this rhythm?",
+            "sleutel": "maan",
+            "plaats": "Write here where you see it again…"
+          }
+        ],
+        "achtergrond": "assets/paneel-04.jpg",
+        "quote": "Cycles\nEmotions\nIntuition\nFlow",
+        "midden": "Same moon. A different you.",
+        "quoteTonen": false
+      },
+      {
+        "titel": "Your numbers",
+        "beeld": "assets/kaart-05.jpg",
+        "kaart": "Your vibration. The numbers you were born with.",
+        "sub": "Your vibration.",
+        "blokken": [
+          {
+            "tekst": "Your name and your birth date carry numbers. Not as a trick, but as a rhythm: what you came here to do, what you long for, and where you are in the cycle right now."
+          },
+          {
+            "type": "afsluiter",
+            "tekst": "Everything moves. Everything vibrates. The secret of your creation is your vibration."
+          },
+          {
+            "type": "getallen",
+            "kop": "Your core numbers",
+            "items": [
+              {
+                "getal": "1",
+                "label": "life path"
+              },
+              {
+                "getal": "22",
+                "label": "expression"
+              },
+              {
+                "getal": "11",
+                "label": "soul urge"
+              },
+              {
+                "getal": "9",
+                "label": "year 2026"
+              }
+            ],
+            "tekst": "<b>1</b> starts things that were not there before. <b>22</b> builds something other people can stand on. <b>11</b> feels it before it can be explained. And <b>9</b> is the year you are in now: clearing out, so the 1 can begin in 2027."
+          },
+          {
+            "type": "vak",
+            "beeld": "assets/kaart-05.jpg",
+            "kop": "Life path 1, with a 22 in your name.",
+            "tekst": "You are the one who goes first, and you are not always thrilled about it. The 22 asks you to build something that outlives the moment, and the 11 underneath means you sense the direction long before you can defend it. That gap between knowing and explaining is not a flaw. It is your timing.",
+            "themas": [
+              "Going first",
+              "Building",
+              "Sensing ahead",
+              "Finishing",
+              "Timing"
+            ]
+          },
+          {
+            "type": "uitklap",
+            "kop": "Your growth numbers · this used to be called karma",
+            "items": [
+              {
+                "titel": "Returning numbers",
+                "beeld": "assets/kaart-05.jpg",
+                "kort": "A theme that keeps coming back. You have none.",
+                "tekst": "A returning number appears when one of your core numbers lands on 13, 14, 16 or 19 just before its final step. It points at something that keeps knocking until you do it. Your birth date carries none of them, which is rare. No old bill to pay. What you do have is a path that asks you to go first, and that is work enough."
+              },
+              {
+                "titel": "Your keynote",
+                "beeld": "assets/kaart-01.jpg",
+                "kort": "The 5. Freedom, movement, change.",
+                "tekst": "Every letter of your name carries a number, and one of them shows up more than the rest. That one hums underneath everything, whether you steer by it or not. Yours is the 5: freedom, movement, change. Which means the question is never whether you are allowed to be free. It is why you keep tying yourself down."
+              },
+              {
+                "titel": "Untrained muscles",
+                "beeld": "assets/kaart-06.jpg",
+                "kort": "A number missing from your name. Yours has none.",
+                "tekst": "When a number never appears in your name, it is not a debt. It is a muscle nobody handed you, and you get to train it yourself. This used to be called a karmic lesson. On your working name not a single number is missing, which almost never happens. For the final answer we need your name as it stands on your birth certificate, because that is the name the letters are counted from."
+              }
+            ]
+          },
+          {
+            "type": "html",
+            "kop": "Your nine year rhythm",
+            "html": "<div class=\"ritme\"><div class=\"kopjes\"><div>1 begin<em>you put something where there was nothing</em></div><div>2 patience<em>it grows below ground, not above</em></div><div>3 voice<em>you let it be seen and heard</em></div><div>4 build<em>the dull work that carries everything later</em></div><div>5 movement<em>something breaks open, usually unasked</em></div><div>6 care<em>people, home, responsibility</em></div><div>7 retreat<em>you withdraw, and that belongs</em></div><div>8 harvest<em>it returns as money, position or recognition</em></div><div>9 clearing<em>you finish and let go</em></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>1973</b><i>0</i><u></u></div><div class=\"jr\"><b>1974</b><i>1</i><u></u></div><div class=\"jr\"><b>1975</b><i>2</i><u></u></div><div class=\"jr\"><b>1976</b><i>3</i><u></u></div><div class=\"jr\"><b>1977</b><i>4</i><u></u></div><div class=\"jr\"><b>1978</b><i>5</i><u></u></div><div class=\"jr\"><b>1979</b><i>6</i><u></u></div><div class=\"jr\"><b>1980</b><i>7</i><u></u></div><div class=\"jr negen\"><b>1981</b><i>8</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>1982</b><i>9</i><u></u></div><div class=\"jr\"><b>1983</b><i>10</i><u></u></div><div class=\"jr\"><b>1984</b><i>11</i><u></u></div><div class=\"jr\"><b>1985</b><i>12</i><u></u></div><div class=\"jr\"><b>1986</b><i>13</i><u></u></div><div class=\"jr\"><b>1987</b><i>14</i><u></u></div><div class=\"jr\"><b>1988</b><i>15</i><u></u></div><div class=\"jr\"><b>1989</b><i>16</i><u></u></div><div class=\"jr negen\"><b>1990</b><i>17</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>1991</b><i>18</i><u></u></div><div class=\"jr\"><b>1992</b><i>19</i><u></u></div><div class=\"jr\"><b>1993</b><i>20</i><u></u></div><div class=\"jr\"><b>1994</b><i>21</i><u></u></div><div class=\"jr\"><b>1995</b><i>22</i><u></u></div><div class=\"jr\"><b>1996</b><i>23</i><u></u></div><div class=\"jr\"><b>1997</b><i>24</i><u></u></div><div class=\"jr\"><b>1998</b><i>25</i><u></u></div><div class=\"jr negen\"><b>1999</b><i>26</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2000</b><i>27</i><u></u></div><div class=\"jr\"><b>2001</b><i>28</i><u></u></div><div class=\"jr\"><b>2002</b><i>29</i><u></u></div><div class=\"jr\"><b>2003</b><i>30</i><u></u></div><div class=\"jr\"><b>2004</b><i>31</i><u></u></div><div class=\"jr\"><b>2005</b><i>32</i><u></u></div><div class=\"jr\"><b>2006</b><i>33</i><u></u></div><div class=\"jr\"><b>2007</b><i>34</i><u></u></div><div class=\"jr negen\"><b>2008</b><i>35</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2009</b><i>36</i><u></u></div><div class=\"jr\"><b>2010</b><i>37</i><u></u></div><div class=\"jr\"><b>2011</b><i>38</i><u></u></div><div class=\"jr\"><b>2012</b><i>39</i><u></u></div><div class=\"jr\"><b>2013</b><i>40</i><u></u></div><div class=\"jr\"><b>2014</b><i>41</i><u></u></div><div class=\"jr\"><b>2015</b><i>42</i><u></u></div><div class=\"jr\"><b>2016</b><i>43</i><u></u></div><div class=\"jr negen\"><b>2017</b><i>44</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2018</b><i>45</i><u></u></div><div class=\"jr\"><b>2019</b><i>46</i><u></u></div><div class=\"jr\"><b>2020</b><i>47</i><u></u></div><div class=\"jr\"><b>2021</b><i>48</i><u></u></div><div class=\"jr\"><b>2022</b><i>49</i><u></u></div><div class=\"jr\"><b>2023</b><i>50</i><u></u></div><div class=\"jr\"><b>2024</b><i>51</i><u></u></div><div class=\"jr\"><b>2025</b><i>52</i><u></u></div><div class=\"jr nu\"><b>2026</b><i>53</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2027</b><i>54</i><u></u></div><div class=\"jr\"><b>2028</b><i>55</i><u></u></div><div class=\"jr\"><b>2029</b><i>56</i><u></u></div><div class=\"jr\"><b>2030</b><i>57</i><u></u></div><div class=\"jr\"><b>2031</b><i>58</i><u></u></div><div class=\"jr\"><b>2032</b><i>59</i><u></u></div><div class=\"jr\"><b>2033</b><i>60</i><u></u></div><div class=\"jr\"><b>2034</b><i>61</i><u></u></div><div class=\"jr negen\"><b>2035</b><i>62</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2036</b><i>63</i><u></u></div><div class=\"jr\"><b>2037</b><i>64</i><u></u></div><div class=\"jr\"><b>2038</b><i>65</i><u></u></div><div class=\"jr\"><b>2039</b><i>66</i><u></u></div><div class=\"jr\"><b>2040</b><i>67</i><u></u></div><div class=\"jr\"><b>2041</b><i>68</i><u></u></div><div class=\"jr\"><b>2042</b><i>69</i><u></u></div><div class=\"jr\"><b>2043</b><i>70</i><u></u></div><div class=\"jr negen\"><b>2044</b><i>71</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2045</b><i>72</i><u></u></div><div class=\"jr\"><b>2046</b><i>73</i><u></u></div><div class=\"jr\"><b>2047</b><i>74</i><u></u></div><div class=\"jr\"><b>2048</b><i>75</i><u></u></div><div class=\"jr\"><b>2049</b><i>76</i><u></u></div><div class=\"jr\"><b>2050</b><i>77</i><u></u></div><div class=\"jr\"><b>2051</b><i>78</i><u></u></div><div class=\"jr\"><b>2052</b><i>79</i><u></u></div><div class=\"jr negen\"><b>2053</b><i>80</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2054</b><i>81</i><u></u></div><div class=\"jr\"><b>2055</b><i>82</i><u></u></div><div class=\"jr\"><b>2056</b><i>83</i><u></u></div><div class=\"jr\"><b>2057</b><i>84</i><u></u></div><div class=\"jr\"><b>2058</b><i>85</i><u></u></div><div class=\"jr\"><b>2059</b><i>86</i><u></u></div><div class=\"jr\"><b>2060</b><i>87</i><u></u></div><div class=\"jr\"><b>2061</b><i>88</i><u></u></div><div class=\"jr negen\"><b>2062</b><i>89</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2063</b><i>90</i><u></u></div><div class=\"jr\"><b>2064</b><i>91</i><u></u></div><div class=\"jr\"><b>2065</b><i>92</i><u></u></div><div class=\"jr\"><b>2066</b><i>93</i><u></u></div><div class=\"jr\"><b>2067</b><i>94</i><u></u></div><div class=\"jr\"><b>2068</b><i>95</i><u></u></div><div class=\"jr\"><b>2069</b><i>96</i><u></u></div><div class=\"jr\"><b>2070</b><i>97</i><u></u></div><div class=\"jr negen\"><b>2071</b><i>98</i><u></u></div></div><div class=\"ritmerij\"><div class=\"jr een\"><b>2072</b><i>99</i><u></u></div><div class=\"jr\"><b>2073</b><i>100</i><u></u></div><div class=\"jr\"><b>2074</b><i>101</i><u></u></div><div class=\"jr\"><b>2075</b><i>102</i><u></u></div><div class=\"jr\"><b>2076</b><i>103</i><u></u></div><div class=\"jr\"><b>2077</b><i>104</i><u></u></div><div class=\"jr\"><b>2078</b><i>105</i><u></u></div><div class=\"jr\"><b>2079</b><i>106</i><u></u></div><div class=\"jr negen\"><b>2080</b><i>107</i><u></u></div></div></div>",
+            "tekst": "Your life runs in rounds of nine years, from the year you were born to your hundreds. The dark square is where you stand now. The gold marked years are the 1 years where something begins, the lighter ones the 9 years where something is completed. Look back at the ones you have lived: does it match what happened then?"
+          },
+          {
+            "type": "duo",
+            "lijst": {
+              "kop": "You may recognise this in yourself",
+              "items": [
+                "You end up in front, whether or not you asked for it.",
+                "You want to build something that lasts, not something quick.",
+                "You know it before you can prove it.",
+                "You get restless when nothing new is starting.",
+                "This year you have been clearing more than building."
+              ]
+            },
+            "herinnering": {
+              "kop": "A reminder for you",
+              "tekst": "You are not late.\nYou are on your own cycle."
+            }
+          },
+          {
+            "type": "invoer",
+            "kop": "Where do you see this vibration?",
+            "sleutel": "getallen",
+            "plaats": "Write here where you see it again…"
+          }
+        ],
+        "quote": "Numbers\nRhythm\nTiming",
+        "midden": "Same numbers. A life only you can live.",
+        "quoteTonen": false
+      },
+      {
+        "titel": "Your Tikkun",
+        "beeld": "assets/kaart-06.jpg",
+        "kaart": "Your soul correction. The place where the work is.",
+        "sub": "Your soul correction.",
+        "blokken": [
+          {
+            "tekst": "Tikkun is an old word for repair. Not repairing what is broken in you, but the one pattern you keep meeting until you turn and face it. Everybody has one. It usually looks like the thing you are very good at."
+          },
+          {
+            "type": "vak",
+            "beeld": "assets/kaart-06.jpg",
+            "kop": "Yours is carrying it alone.",
+            "tekst": "You learned early that asking makes you vulnerable, so you took the weight instead. You got so good at it that nobody sees it is heavy. The repair is not to care less. It is to let someone hold something of yours, and to put your own name on what you build.",
+            "themas": [
+              "Carrying alone",
+              "Receiving",
+              "Asking",
+              "Your own name",
+              "Trust"
+            ]
+          },
+          {
+            "type": "duo",
+            "lijst": {
+              "kop": "You may recognise this in yourself",
+              "items": [
+                "You would rather do it yourself than explain it twice.",
+                "You are the one everyone leans on.",
+                "You notice when you are the only one giving.",
+                "Saying yes is easy, asking is not.",
+                "You are proud of what you made, and you rarely say so out loud."
+              ]
+            },
+            "herinnering": {
+              "kop": "A reminder for you",
+              "tekst": "You do not have to earn your place\nby carrying everyone."
+            }
+          },
+          {
+            "type": "invoer",
+            "kop": "Where do you recognise this energy, and where not yet?",
+            "sleutel": "tikkun",
+            "plaats": "Both are fine. Not yet is an answer too…"
+          }
+        ],
+        "quote": "Pattern\nRepair\nFreedom",
+        "midden": "The work is not to become someone else.",
+        "quoteTonen": false
+      }
+    ],
+    "overzichtkop": "Together we look where others stay at the surface,\nand build there what was not there yet.",
+    "sluiten": "Close",
+    "terugkop": "Back to overview",
+    "volgende": "Next",
+    "overzichtlabel": "In this phase you meet six places that may feel familiar",
+    "blokken": [
+      {
+        "type": "reflectie",
+        "label": "Your reflection",
+        "kop": "What landed with you?",
+        "tekst": "What did you recognise straight away? And what clearly did not feel like yours?\nWrite down one insight.",
+        "hint": "For example: I recognise that I often…",
+        "bewaar": "Keep my insight",
+        "printknop": "Print this phase",
+        "noot": "Your insight stays here, also when you come back later.",
+        "gedaankop": "This is what you just did",
+        "gedaan": [
+          "You made your patterns visible.",
+          "You looked without having to change yourself.",
+          "You felt what does and does not resonate."
+        ],
+        "citaat": "Recognising is not the end point. It gives you enough distance to see why something happens."
+      },
+      {
+        "type": "slotbalk",
+        "rond": true,
+        "beeld": "assets/fase2-hero.jpg",
+        "naar": 2,
+        "label": "Next movement · phase 2",
+        "kop": "From Recognition into",
+        "kopcursief": "Clarity",
+        "tekst": "Now that you can see what is at work, we go looking for where it comes from, what lies underneath it and what meaning you gave it.",
+        "knop": "Take me to Clarity"
+      },
+      {
+        "type": "stappenbalk",
+        "items": [
+          {
+            "titel": "Recognition",
+            "sub": "Seeing what is",
+            "hier": true
+          },
+          {
+            "titel": "Clarity",
+            "sub": "Understanding why"
+          },
+          {
+            "titel": "Integration",
+            "sub": "Living what you know"
+          }
+        ]
+      }
+    ],
+    "knoppenUit": true,
+    "intro_bewaard": {
+      "links": {
+        "kop": "What does <em>remembering</em><br>who you are mean?",
+        "tekst": "Not becoming someone new.\nRecognising what has always been there, before the expectations, roles and stories you learned. It is about noticing the patterns, strengths and truths that are already within you."
+      }
+    },
+    "spiegel": "Your starting point is a blueprint. You are not the blueprint.\nRead this as a mirror, not as a verdict. Nothing needs to change yet."
+  },
+  "helderheid": {
+    "titel": "Clarity",
+    "sub": "",
+    "duur": "Take your time · no rush · step by step, at your own pace",
+    "pdfLabel": "Overview as PDF",
+    "blokken": [
+      {
+        "type": "blauwdruk",
+        "anker": "a2",
+        "beeld": "assets/a2-tafel.jpg",
+        "label": "Your integration",
+        "kop": "One page. Your whole picture.",
+        "tekst": "All the insights together now, in your own blueprint.\nOne overview that shows you your patterns, talents, lessons and direction.",
+        "items": [
+          "Astrology",
+          "Patterns",
+          "Numerology",
+          "Self-image",
+          "Tikkun",
+          "Depth"
+        ],
+        "pdf": "",
+        "noot": "“Insight gives you more than understanding, it gives you choice.\nAnd where there is choice, freedom begins.”",
+        "printKop": "Print your overview",
+        "print": [
+          {
+            "knop": "Print A4",
+            "sub": "easy to carry",
+            "href": "downloads/SZINN-overview-A4-en.pdf"
+          },
+          {
+            "knop": "Print A3",
+            "sub": "more detail",
+            "href": "downloads/SZINN-overview-A3-en.pdf"
+          },
+          {
+            "knop": "Print A2",
+            "sub": "your whole overview",
+            "href": "downloads/SZINN-overview-A2-en.pdf"
+          }
+        ]
+      },
+      {
+        "type": "slotbalk",
+        "beeld": "assets/fase2-slot.jpg",
+        "naar": 3,
+        "knop": "Next → Integration",
+        "kop": "Now it starts to make sense.",
+        "tekst": "Recognition showed you what feels familiar.\nClarity shows you how the pieces connect.\nIntegration is where you begin to live it.",
+        "terug": 1,
+        "terugKnop": "Back to Recognition"
+      },
+      {
+        "type": "stappenbalk",
+        "items": [
+          {
+            "titel": "Recognition",
+            "sub": "Seeing what is"
+          },
+          {
+            "titel": "Clarity",
+            "sub": "Understanding why",
+            "hier": true
+          },
+          {
+            "titel": "Integration",
+            "sub": "Living what you know"
+          }
+        ]
+      }
+    ],
+    "hero": {
+      "beeld": "assets/fase2-hero.jpg",
+      "label": "Phase 2",
+      "sub": "I understand why.",
+      "vraag": "",
+      "intro": "You are looking deeper now. You see the connections, the origin and the meaning. What you recognised earlier is given context. That is what makes room, understanding and choice.\n\nIn this phase you move from insight into awareness. You discover how old patterns, beliefs and your self-image are tied to one another.",
+      "rechts": "Same energy\nA different perspective.",
+      "kaderLabel": "First steps · 2 of 3",
+      "kader": "The second of the three. You have met the pieces, here they start to connect, so the blueprint becomes readable."
+    },
+    "afsluiting": "You do not have to know it yet. All of it is allowed to be here. Confusion is often the phase in which something new can begin.\nYou have already taken a real step. You are looking not only at what happened, but also at why.",
+    "overzichtkop": "And three layers of clarity",
+    "sluiten": "Close",
+    "terugkop": "Back to overview",
+    "volgende": "Next",
+    "stappen": [
+      {
+        "titel": "The pattern",
+        "kaart": "The situations that keep returning in your life. What do you keep seeing?",
+        "beeld": "assets/laag-01.jpg",
+        "sub": "Where the pieces come together.",
+        "achtergrond": "assets/paneel-p1.jpg",
+        "quote": "A deeper understanding\nA brighter you",
+        "midden": "It is not separate parts. It is one pattern.",
+        "blokken": [
+          {
+            "tekst": "You have probably noticed it about yourself already. Different years, different people, different work, and somewhere in the middle of it there you are again, doing the thing you always do. That is not a habit you failed to break. That is a pattern, and a pattern is the most honest thing there is to say about a person."
+          },
+          {
+            "tekst": "Everything you have read so far is that one pattern, seen from different sides. Your story tells it in events. Your numbers tell it in rhythm. Your planets tell it in character. Your moon phase tells it in timing. Your Tikkun, the one correction you came here to make, tells it in a single sentence. Five languages, one person."
+          },
+          {
+            "type": "zwevend",
+            "src": "assets/patroon-drieluik.jpg",
+            "alt": "three systems, one pattern",
+            "onder": "Three systems. One pattern."
+          },
+          {
+            "type": "afsluiter",
+            "tekst": "“It is not separate parts. It is one pattern. You.”"
+          },
+          {
+            "type": "iconen",
+            "items": [
+              {
+                "teken": "○",
+                "kop": "Your design",
+                "sub": "astrology"
+              },
+              {
+                "teken": "○",
+                "kop": "Your vibration",
+                "sub": "numbers"
+              },
+              {
+                "teken": "○",
+                "kop": "Your correction",
+                "sub": "Tikkun"
+              }
+            ]
+          },
+          {
+            "type": "lijst",
+            "kop": "The theme that keeps returning",
+            "items": [
+              "You cannot stay on the surface for long. You want the version underneath the polite answer, and you will sit there until it comes. Your Sun, your Moon and your Mercury stand together in one sign and one house: what you are, what you feel and how you think all reach for the same depth.",
+              "You go first, and then you carry it, and you do not mention that you are carrying it. Your life path 1 asks you to lead. Your Saturn, the planet of duty, asks you to stop doing it alone.",
+              "You feel an ending coming before anyone says it out loud. Often you are already halfway out of the room. You were born on a balsamic moon, the last sliver before the dark, so closing is your native language. Your North Node, the direction you grow in, is asking you to build the opening too.",
+              "You have held a group together for years and your name is nowhere on it. Your Tikkun and your nodes point at the same move: from carrying everybody to signing your own work."
+            ]
+          },
+          {
+            "type": "herinnering",
+            "kop": "A reminder for you",
+            "tekst": "You are not five separate readings.\nYou are one pattern, read five ways."
+          },
+          {
+            "type": "invoer",
+            "kop": "What do you recognise?",
+            "sleutel": "patroon",
+            "plaats": "Write your thoughts here…"
+          }
+        ]
+      },
+      {
+        "titel": "The connection",
+        "kaart": "How your systems, astrology, numerology and Tikkun, are connected to each other.",
+        "beeld": "assets/laag-02.jpg",
+        "sub": "How it all works together.",
+        "quote": "Different lenses\nOne truth",
+        "midden": "Different perspectives. One you.",
+        "blokken": [
+          {
+            "tekst": "In the first layer you saw the theme come back. This one is about why it comes back. Not because the systems copy each other, but because they are all looking at the same person and describing her in their own words."
+          },
+          {
+            "tekst": "Astrology reads your character: what you are made of, and what drives you automatically from underneath, below the level where you decide things. Those are the voices that talk to you when nobody is watching. Numerology reads your timing: the rhythm you live in, where you are in it right now, and how you could work with that instead of against it. Tikkun reads your correction: the one thing that keeps coming back until you do it differently. All three are saying something about you, each time from a different angle. And where two of them say the same thing, you can stop wondering whether it is true."
+          },
+          {
+            "type": "afsluiter",
+            "tekst": "“Different lenses. One truth.”"
+          },
+          {
+            "type": "lijst",
+            "kop": "Five places where two systems say the same thing",
+            "items": [
+              "You are the one people come to. You have been that person so long that it never occurred to you to ask whether it was heavy. Your South Node, the place you come from, sits in the sign of family and belonging, and Saturn, the planet of duty, sits right on top of it. Your Tikkun says it in one line: carrying it alone.",
+              "Somewhere there is something you made that has somebody else's name on it, or no name at all. Your North Node, the direction you grow in, and your life path 1 point at the same move: put your own name on your own work, out loud, where people can see it.",
+              "You go quiet before you go big, and people read it as hesitation. It is not. Three of your planets stand together in the private room at the back of your chart, and the planet that pushes you out into the world moves slowly and inward first. Everything real happens inside before it comes out. That is not slow. That is your order.",
+              "This year has felt more like clearing than building. You were born on a balsamic moon, the closing sliver of the cycle, so endings arrive early for you. And 2026 is a personal 9, the year that finishes things. Your nature and your timing are saying the same word: finish. The 1, the year for putting something where there was nothing, opens in 2027.",
+              "You want to be free and you keep signing up for one more responsibility. The number that hums loudest in your name is the 5, freedom. The planet that shaped you is Saturn, duty. That pull is not indecision. It is two real parts of you, both written down."
+            ]
+          },
+          {
+            "type": "uitklap",
+            "kop": "Look closer at three of them",
+            "items": [
+              {
+                "titel": "Saturn on your South Node",
+                "beeld": "assets/pl-saturn.jpg",
+                "kort": "The oldest agreement you made.",
+                "tekst": "The South Node is where you come from, the place that feels so familiar it does not look like a choice. Yours is in Cancer in house 11: caring for the group, holding the family of people around you together. Saturn sits right on it, and Saturn makes things heavy and serious and yours to carry. So the caring was never soft for you. It came with a bill. And because Saturn is retrograde, the bill was mostly presented by you, to yourself. This is the same pattern your Tikkun names. Three systems, one sentence: you learned to carry the group and to never mention the weight."
+              },
+              {
+                "titel": "Scorpio inside, Taurus outside",
+                "beeld": "assets/pl-mars.jpg",
+                "kort": "Why the move takes so long, and why it holds.",
+                "tekst": "Three of your planets stand together in Scorpio in house 4, the private room at the back of the chart. That is where you actually live: deep, unhurried, willing to look at what other people walk around. Opposite it, in house 10 where the world watches, stands Mars in Taurus and it is retrograde. Mars is how you push. In Taurus it pushes slowly, and retrograde it pushes inward before it pushes out. Which means you will almost never be first out loud, and almost always be the one still standing when the fast ones have moved on."
+              },
+              {
+                "titel": "The 9 year and the balsamic moon",
+                "beeld": "assets/maan-7.jpg",
+                "kort": "Why this year feels like clearing rather than building.",
+                "tekst": "A balsamic moon is the last sliver before the dark, the end of a cycle. You were born there, which is why endings arrive early for you and why you often leave a room before anyone announces it is over. Add the year you are in: 2026 is a personal 9, the clearing year, the one where things get finished and handed back. Your nature and your timing are pointing the same way right now. If this year has felt like letting go rather than starting, that is not a stall. That is the two of them agreeing."
+              }
+            ]
+          },
+          {
+            "type": "duo",
+            "lijst": {
+              "kop": "You may recognise this in your week",
+              "items": [
+                "You take on the thing nobody assigned, and then feel it in your body on Friday.",
+                "You know the answer early and wait until you can defend it.",
+                "You want to be free and you keep signing up for one more responsibility.",
+                "You go quiet before you go big.",
+                "You are finishing things this year rather than starting them."
+              ]
+            },
+            "herinnering": {
+              "kop": "A reminder for you",
+              "tekst": "When two systems say the same thing,\nit is not a coincidence.\nIt is you, read twice."
+            }
+          },
+          {
+            "type": "invoer",
+            "kop": "Where do you see it in your week?",
+            "sleutel": "verbinding",
+            "plaats": "Write your thoughts here…"
+          }
+        ],
+        "achtergrond": "assets/paneel-p2.jpg"
+      },
+      {
+        "titel": "The bigger picture",
+        "kaart": "A wider perspective. You see the energy, what is really at work in your life.",
+        "beeld": "assets/laag-03.jpg",
+        "sub": "Your blueprint, on one page.",
+        "quote": "One page\nYour whole picture",
+        "midden": "Keep it close. Come back when you have a question.",
+        "blokken": [
+          {
+            "tekst": "By now some of it will have landed and some of it will not have, and both of those tell you something. Step back far enough that the details blur. The signs, the houses and the numbers go soft, and what is left is a shape. That shape is what this whole phase is for."
+          },
+          {
+            "tekst": "A shape is easier to live with than a list. You do not have to remember which planet sits where. You only have to remember what you are like, and what keeps asking you to change."
+          },
+          {
+            "type": "afsluiter",
+            "tekst": "“One page. Your whole picture.”"
+          },
+          {
+            "type": "lijst",
+            "kop": "Your blueprint in one breath",
+            "items": [
+              "Where you come from: the group, held together by you, and nobody asking whether that was heavy.",
+              "What you carry: the habit of taking the weight rather than the risk of asking.",
+              "How you are built: deep and private first, visible and slow second, and both are real.",
+              "What you are here to build: something with your own name on it, that outlives the moment.",
+              "What this year asks: finish, clear, hand back. Not start.",
+              "What opens next: a 1 year in 2027, and 1 years are for putting something where there was nothing."
+            ]
+          },
+          {
+            "type": "vak",
+            "beeld": "assets/laag-03.jpg",
+            "kop": "Elly in one sentence.",
+            "tekst": "Someone who goes into the depth where others stay on the surface, builds slowly and for keeps, has carried more than she ever mentioned, and is being asked now to stop carrying it alone and put her own name on the thing she made.",
+            "themas": [
+              "Depth",
+              "Building",
+              "Carrying",
+              "Your own name",
+              "Freedom"
+            ]
+          },
+          {
+            "type": "vel",
+            "src": "assets/a2preview.jpg",
+            "alt": "your A2 blueprint",
+            "kop": "Your overview on one sheet",
+            "tekst": "Your numbers, your elements, your planets, your moon phase, your nine year rhythm and your Tikkun, next to each other. This is the overview, not the whole blueprint. The thirteen sections live in the full document."
+          },
+          {
+            "type": "herinnering",
+            "kop": "A reminder for you",
+            "tekst": "You do not have to hold all of it at once.\nThat is what the sheet is for."
+          },
+          {
+            "type": "invoer",
+            "kop": "If you had to write your own sentence, what would it say?",
+            "sleutel": "geheel",
+            "plaats": "Write your thoughts here…"
+          }
+        ],
+        "achtergrond": "assets/paneel-03.jpg"
+      }
+    ],
+    "slotregel": "Enough for today is also good. It will keep.",
+    "knoppenUit": true,
+    "spiegel": "You do not have to agree with what you see. Understanding comes first, choosing comes after.",
+    "afsluitkop": "Enough for today",
+    "knoppenLabel": "Keep this phase"
+  },
+  "integratie": {
+    "titel": "Integration",
+    "sub": "",
+    "duur": "Take your time · no rush · step by step, at your own pace",
+    "blokken": [
+      {
+        "type": "vormen",
+        "kop": "This is what you have done",
+        "rechts": "three phases, one movement",
+        "tekst": "You did not end up here by chance. You walked through three phases, and each one showed you something different. Look them over and tick off what you have done.",
+        "items": [
+          {
+            "teken": "1",
+            "label": "Phase 1",
+            "titel": "Recognition",
+            "zin": "I see myself.",
+            "tekst": "You read your story, looked at your chart, your planets, your moon phase, your numbers and your Tikkun. You saw what is there, without having to change it straight away.",
+            "voor": "completed",
+            "knop": "Back to Recognition",
+            "naar": 1,
+            "beeld": "assets/welkom-achtergrond.jpg",
+            "vink": "Tick off phase 1",
+            "vinkAan": "Phase 1 ticked off"
+          },
+          {
+            "teken": "2",
+            "label": "Phase 2",
+            "titel": "Clarity",
+            "zin": "I understand why.",
+            "tekst": "You laid the separate pieces side by side and saw where they touch. The pattern, the connection and the bigger picture. No longer loose, but one image.",
+            "voor": "completed",
+            "knop": "Back to Clarity",
+            "naar": 2,
+            "beeld": "assets/fase2-hero.jpg",
+            "vink": "Tick off phase 2",
+            "vinkAan": "Phase 2 ticked off"
+          },
+          {
+            "teken": "3",
+            "label": "Phase 3",
+            "titel": "Integration",
+            "zin": "I live it.",
+            "tekst": "And here you are now. From knowing to doing, in your own days and at your own pace. Below are the three steps, and after that you open your dashboard.",
+            "voor": "you are here",
+            "hier": true,
+            "beeld": "assets/fase3-hero.jpg",
+            "vink": "Tick off phase 3",
+            "vinkAan": "Phase 3 ticked off"
+          }
+        ],
+        "afvinken": true,
+        "vinkId": "terugblik"
+      },
+      {
+        "type": "wegen",
+        "kop": "And now your next step",
+        "rechts": "in this order",
+        "items": [
+          {
+            "beeld": "assets/weg-01.jpg",
+            "wanneer": "first",
+            "titel": "Read your blueprint",
+            "sub": "Let it land.",
+            "tekst": "Start here and do nothing else. Read your blueprint in parts, put it away, pick it up again. Give it a few days to settle. What you recognise now will read differently next week.",
+            "items": [
+              "Read one section at a time",
+              "Notice what you recognise",
+              "Notice what you resist",
+              "Do not act on it yet"
+            ],
+            "knop": "Go to my blueprint",
+            "href": "{blauwdruk}",
+            "meerkop": "Why waiting matters",
+            "meer": "Recognition needs time to become knowledge. If you start doing straight away, you turn your blueprint into another to do list. Let it be a mirror first.",
+            "nieuw": true
+          },
+          {
+            "beeld": "assets/weg-02.jpg",
+            "wanneer": "after a few days",
+            "titel": "Start your daily rhythm",
+            "sub": "Work with today.",
+            "tekst": "Once your blueprint feels familiar, begin the daily guidance. A short moment in the morning, a short one in the evening. Today's sky held against your own chart.",
+            "items": [
+              "See what is moving today",
+              "Check in with yourself",
+              "Choose one direction",
+              "Close the day in the evening"
+            ],
+            "knop": "Start today",
+            "href": "{dashboard}",
+            "nieuw": true,
+            "meerkop": "How to begin",
+            "meer": "Start with the morning only. Add the evening once the morning has become a habit. Missing a day is not a problem, this is a rhythm, not a streak.",
+            "proef": "Included in your eleven days"
+          },
+          {
+            "beeld": "assets/weg-03.jpg",
+            "wanneer": "when questions come",
+            "titel": "Talk with your Companion",
+            "sub": "See another perspective.",
+            "tekst": "After a week or two the questions arrive: why does this keep happening, what does this mean for this choice. That is the moment for the Companion. It knows your blueprint, so you never have to explain yourself first.",
+            "items": [
+              "Ask your real question",
+              "Look from another angle",
+              "See the connections",
+              "Never decides for you"
+            ],
+            "knop": "Open Companion",
+            "href": "{dashboard}",
+            "nieuw": true,
+            "meerkop": "More information",
+            "meer": "The Companion is a mirror with memory, not an oracle. It works best when you bring a real situation rather than a general question. In development.",
+            "proef": "Included in your eleven days"
+          }
+        ]
+      },
+      {
+        "type": "slotbalk",
+        "rond": true,
+        "beeld": "assets/weg-02.jpg",
+        "label": "Daily integration",
+        "kop": "Eleven days to try,",
+        "kopcursief": "then you choose.",
+        "tekst": "Step 1 is yours, for good. Steps 2 and 3 belong to the daily integration: a separate part at € 3.69 a month, cancel any month.\nYou start with eleven days. You only pay if you carry on after that.",
+        "knop": "Start your eleven days",
+        "href": "{dashboard}",
+        "nieuw": true,
+        "naast": {
+          "kop": "What those eleven days give you",
+          "items": [
+            {
+              "teken": "blad",
+              "tekst": "Your dashboard, with your blueprint in it",
+              "bron": true
+            },
+            {
+              "teken": "blad",
+              "tekst": "The daily integration, morning and evening",
+              "bron": true
+            },
+            {
+              "teken": "blad",
+              "tekst": "The SZINN Companion, which already knows your blueprint",
+              "bron": true
+            },
+            {
+              "teken": "blad",
+              "tekst": "Prefer WhatsApp? That can come with it",
+              "bron": true
+            }
+          ]
+        }
+      },
+      {
+        "type": "afsluiter",
+        "tekst": "“Integration is where knowledge becomes your life.”",
+        "merk": "Alignment creates a brighter you"
+      },
+      {
+        "type": "stappenbalk",
+        "items": [
+          {
+            "titel": "Recognition",
+            "sub": "Seeing what is"
+          },
+          {
+            "titel": "Clarity",
+            "sub": "Understanding why"
+          },
+          {
+            "titel": "Integration",
+            "sub": "Living what you know",
+            "hier": true
+          }
+        ]
+      }
+    ],
+    "hero": {
+      "beeld": "assets/fase3-hero.jpg",
+      "label": "Phase 3",
+      "sub": "That was the guide.",
+      "vraag": "",
+      "intro": "Those were the three phases: you now know how your blueprint is put together and where to find it again. The real beginning does not happen here, but in your dashboard. That is where your own blueprint lives, and where your daily integration is waiting.",
+      "kaderLabel": "From guide to dashboard",
+      "kader": "From here you close this journey and open your dashboard. Your blueprint and your daily rhythm are waiting there."
+    },
+    "afsluiting": "This was the beginning. You have walked through Recognition, Clarity and Integration, and from here it is yours.\nYour blueprint stays where it is. Come back to it whenever a question arrives.",
+    "afsluitkop": "The three first steps are done.",
+    "spiegel": "This is not who you are. This is the energy you get to work with.",
+    "knoppenLabel": "Keep this phase"
+  },
+  "handleiding": "Guide",
+  "navigatie": {
+    "plek": "handleiding",
+    "plekLabel": "Guide",
+    "menu": [
+      {
+        "label": "Guide",
+        "teken": "boek",
+        "href": "index.html"
+      },
+      {
+        "label": "My Rhythm",
+        "teken": "klok",
+        "href": "{dashboard}"
+      },
+      {
+        "label": "Blueprint",
+        "teken": "bloem",
+        "href": "{blauwdruk}"
+      },
+      {
+        "label": "My personal quote",
+        "teken": "quote",
+        "href": "{dashboard}"
+      },
+      {
+        "label": "Give as a gift",
+        "teken": "cadeau",
+        "href": "{dashboard}"
+      },
+      {
+        "label": "FAQ",
+        "teken": "vraag",
+        "href": "{dashboard}"
+      }
+    ],
+    "citaat": {
+      "tekst": "Everything you are looking for was already in you. This is you remembering.",
+      "naam": "Elly Elizabeth Korving"
+    }
+  }
+}

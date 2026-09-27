@@ -41,6 +41,20 @@ const DEMO_ORDER_ID   = 'ORD-DEMO-0001';
 const SALES_EMAIL     = (process.env.SALES_ACCOUNT_EMAIL || 'morgan@szinn.ai').trim().toLowerCase();
 const SALES_PASSWORD  = process.env.SALES_ACCOUNT_PASSWORD || 'SzinnSales2026';
 const SALES_ORDER_ID  = 'ORD-SALES-MORGAN';
+// Permanente super-accounts (demo/verkoop): gratis dashboard, onbeperkte Companion
+// én dagelijkse reminder. E-mail/wachtwoord per account via env, sensible defaults.
+const SUPER_ACCOUNTS = [
+  { email: SALES_EMAIL, password: SALES_PASSWORD, name: 'Morgan', orderId: SALES_ORDER_ID },
+  { email: (process.env.ELLY_ACCOUNT_EMAIL || 'elly@szinn.ai').trim().toLowerCase(),
+    password: process.env.ELLY_ACCOUNT_PASSWORD || 'SzinnElly2026', name: 'Elly', orderId: 'ORD-SALES-ELLY' },
+  { email: (process.env.DANILLO_ACCOUNT_EMAIL || 'danillo@udefine.nl').trim().toLowerCase(),
+    password: process.env.DANILLO_ACCOUNT_PASSWORD || 'SzinnDanillo2026', name: 'Danillo', orderId: 'ORD-SALES-DANILLO' },
+];
+// Wie onbeperkte Companion + permanente toegang krijgt. Default = de super-accounts;
+// override met SUPER_EMAILS (comma-separated) zonder de code aan te raken.
+const SUPER_EMAILS = (process.env.SUPER_EMAILS || SUPER_ACCOUNTS.map(a => a.email).join(','))
+  .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
+const isSuperEmail = (email) => !!email && SUPER_EMAILS.includes(email.trim().toLowerCase());
 const TRIGGER_SECRET  = process.env.INTERNAL_TRIGGER_SECRET || JWT_SECRET;
 
 // Zorgt dat er een admin-account in de database staat (idempotent).
@@ -114,51 +128,58 @@ async function ensureDemoData(db) {
 // SZINN te demonstreren en te verkopen. dashboard_access='on' omzeilt trial/abonnement.
 // Idempotent, lui geseed bij eerste login (zoals het demo-account).
 async function ensureSalesData(db) {
-  let user = db.users.find(u => u.email.toLowerCase() === SALES_EMAIL);
-  const orderExists = user && db.orders.some(o => o.id === SALES_ORDER_ID);
-  if (orderExists && user.dashboard_access === 'on') return false;
+  let changed = false;
+  for (const acc of SUPER_ACCOUNTS) {
+    let user = db.users.find(u => u.email.toLowerCase() === acc.email);
+    const orderExists = user && db.orders.some(o => o.id === acc.orderId);
+    const hasChannel = user && (user.notify_channel === 'email' || user.notify_channel === 'whatsapp');
+    if (orderExists && user.dashboard_access === 'on' && hasChannel) continue;
+    changed = true;
 
-  if (!user) {
-    user = {
-      id: db.nextUserId++, email: SALES_EMAIL,
-      password: bcrypt.hashSync(SALES_PASSWORD, 10),
-      name: 'Morgan', created_at: new Date().toISOString(),
-    };
-    db.users.push(user);
+    if (!user) {
+      user = {
+        id: db.nextUserId++, email: acc.email,
+        password: bcrypt.hashSync(acc.password, 10),
+        name: acc.name, created_at: new Date().toISOString(),
+      };
+      db.users.push(user);
+    }
+    user.dashboard_access = 'on';   // permanente toegang, geen betaling nodig
+    // Dagelijkse reading-reminder aan; een bewuste 'whatsapp'-keuze laten we staan.
+    if (user.notify_channel !== 'email' && user.notify_channel !== 'whatsapp') user.notify_channel = 'email';
+
+    if (!orderExists) {
+      const demo = require('../../lib/demo-blueprint');
+      const now = new Date().toISOString();
+      const order = {
+        id: acc.orderId, user_id: user.id, type: 'personal', status: 'completed',
+        view_token: crypto.randomBytes(16).toString('hex'),
+        client_name: demo.intake.clientName, birth_date: demo.intake.birthDate,
+        birth_time: demo.intake.birthTime,
+        birth_location: `${demo.intake.birthCity}, ${demo.intake.birthCountry}`,
+        birth_lat: demo.intake.lat, birth_lng: demo.intake.lng, birth_tz: demo.intake.tz,
+        full_birth_name: demo.intake.birthName,
+        blueprint_language: 'nl',
+        intake_data: JSON.stringify(demo.intake.raw || {}),
+        created_at: now, completed_at: now,
+        blueprint_url: `/szinn-portal/blueprints/${acc.orderId}.html`,
+        blueprint_languages: ['nl'], pdf_available: false,
+        alignment_score: null, astro_score: null, numerology_score: null,
+        soul_direction_score: null, personal_year_score: null,
+      };
+      db.orders.push(order);
+
+      const { buildContext } = require('../../lib/pipeline');
+      const { renderBlueprint } = require('../../lib/template');
+      const ctx = buildContext(order);
+      const html = renderBlueprint({ ...ctx, ai: demo.texts, lang: 'nl' });
+      const store = blueprintStore();
+      await store.set(`${acc.orderId}.nl.html`, html);
+      await store.setJSON(`${acc.orderId}.texts.json`, { orderId: acc.orderId, demo: true, nl: demo.texts, en: demo.texts });
+      console.log(`Sales-blueprint aangemaakt voor ${acc.email}`);
+    }
   }
-  user.dashboard_access = 'on'; // permanente toegang, geen betaling nodig
-
-  if (!orderExists) {
-    const demo = require('../../lib/demo-blueprint');
-    const now = new Date().toISOString();
-    const order = {
-      id: SALES_ORDER_ID, user_id: user.id, type: 'personal', status: 'completed',
-      view_token: crypto.randomBytes(16).toString('hex'),
-      client_name: demo.intake.clientName, birth_date: demo.intake.birthDate,
-      birth_time: demo.intake.birthTime,
-      birth_location: `${demo.intake.birthCity}, ${demo.intake.birthCountry}`,
-      birth_lat: demo.intake.lat, birth_lng: demo.intake.lng, birth_tz: demo.intake.tz,
-      full_birth_name: demo.intake.birthName,
-      blueprint_language: 'nl',
-      intake_data: JSON.stringify(demo.intake.raw || {}),
-      created_at: now, completed_at: now,
-      blueprint_url: `/szinn-portal/blueprints/${SALES_ORDER_ID}.html`,
-      blueprint_languages: ['nl'], pdf_available: false,
-      alignment_score: null, astro_score: null, numerology_score: null,
-      soul_direction_score: null, personal_year_score: null,
-    };
-    db.orders.push(order);
-
-    const { buildContext } = require('../../lib/pipeline');
-    const { renderBlueprint } = require('../../lib/template');
-    const ctx = buildContext(order);
-    const html = renderBlueprint({ ...ctx, ai: demo.texts, lang: 'nl' });
-    const store = blueprintStore();
-    await store.set(`${SALES_ORDER_ID}.nl.html`, html);
-    await store.setJSON(`${SALES_ORDER_ID}.texts.json`, { orderId: SALES_ORDER_ID, demo: true, nl: demo.texts, en: demo.texts });
-    console.log(`Sales-blueprint aangemaakt voor ${SALES_EMAIL}`);
-  }
-  return true;
+  return changed;
 }
 
 // Start de blueprint-generatie als background function (15 min limiet).
@@ -204,6 +225,61 @@ function clearAuthCookie(res) {
   }));
 }
 
+// ── Herkenning-journey: klantdata + kaartbeeld per gebruiker ─────────────────
+// De redirects in netlify.toml sturen /portaal/journey/client*.json en
+// chart.svg hierheen; de rest van de journey-map blijft statisch. Zonder
+// voltooide blueprint komt de vergrendelde variant terug (alleen welkom).
+async function journeyContext(req) {
+  if (!req.auth) return null;
+  const db = await loadDB();
+  const user = db.users.find(u => u.id === req.auth.userId);
+  if (!user) return null;
+  const order = db.orders
+    .filter(o => o.user_id === user.id && o.status === 'completed')
+    .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))[0] || null;
+  return { user, order };
+}
+app.get(['/portaal/journey/client.json', '/portaal/journey/client-nl.json', '/portaal/journey/client-en.json'], async (req, res) => {
+  const ctx = await journeyContext(req);
+  if (!ctx) return res.status(401).json({ error: 'Niet ingelogd' });
+  const { buildJourneyJSON } = require('../../lib/journey-data');
+  const { user, order } = ctx;
+  let lang = req.path.endsWith('client-en.json') ? 'en' : req.path.endsWith('client-nl.json') ? 'nl' : null;
+  if (!lang) lang = (order && order.blueprint_language === 'en') ? 'en' : 'nl';
+  res.set('Cache-Control', 'no-store');
+  if (!order) {
+    return res.json(buildJourneyJSON({ lang, ready: false, userName: user.name || '' }));
+  }
+  try {
+    const { buildContext } = require('../../lib/pipeline');
+    const { chart, numerology } = buildContext(order);
+    const textsAll = await blueprintStore().get(`${order.id}.texts.json`, { type: 'json' }).catch(() => null);
+    res.json(buildJourneyJSON({
+      lang, order, chart, numerology,
+      texts: textsAll ? (textsAll[lang] || textsAll.nl) : null,
+      ready: true, userName: user.name || '',
+    }));
+  } catch (err) {
+    console.error('journey-data mislukt:', err.message);
+    res.json(buildJourneyJSON({ lang, ready: false, userName: user.name || '' }));
+  }
+});
+app.get('/portaal/journey/chart.svg', async (req, res) => {
+  const ctx = await journeyContext(req);
+  if (!ctx || !ctx.order) return res.status(404).end();
+  try {
+    const { buildContext } = require('../../lib/pipeline');
+    const { generateBirthChartSVG } = require('../../lib/generate-blueprint');
+    const { chart } = buildContext(ctx.order);
+    res.set('Content-Type', 'image/svg+xml');
+    res.set('Cache-Control', 'no-store');
+    res.send(generateBirthChartSVG(chart));
+  } catch (err) {
+    console.error('chart.svg mislukt:', err.message);
+    res.status(500).end();
+  }
+});
+
 // ── Auth ──────────────────────────────────────────────────────────────────────
 app.post('/api/auth/login', async (req, res) => {
   const { email, password } = req.body;
@@ -213,7 +289,7 @@ app.post('/api/auth/login', async (req, res) => {
   // Demo-account + voorbeeld-blueprint aanmaken zodra iemand ermee inlogt.
   if (email.trim().toLowerCase() === DEMO_EMAIL) {
     if (await ensureDemoData(db)) await saveDB(db);
-  } else if (email.trim().toLowerCase() === SALES_EMAIL) {
+  } else if (isSuperEmail(email)) {
     if (await ensureSalesData(db)) await saveDB(db);
   }
   const user = db.users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
@@ -293,6 +369,7 @@ function toOrder(o) {
     blueprintUrl: o.blueprint_url,
     blueprintLanguages: o.blueprint_languages || null,
     pdfAvailable: !!o.pdf_available,
+    pipeline: o.pipeline || null,
     generationError: o.status === 'failed' ? (o.generation_error || 'onbekende fout') : null,
     scores: (o.alignment_score != null) ? {
       alignment: o.alignment_score, astro: o.astro_score,
@@ -1085,6 +1162,7 @@ async function hasSubscriptionAccess(db, req) {
   if (user.dashboard_access === 'off') return false;
   if (user.dashboard_access === 'on') return true;
   if (user.email.toLowerCase() === DEMO_EMAIL || user.email.toLowerCase() === 'demo-plus@szinn.ai') return true;
+  if (isSuperEmail(user.email)) return true;
   return subIsActive(await userSubscription(db, user));
 }
 
@@ -1133,7 +1211,7 @@ function bumpCompanionUsage(user, paid) {
 async function accessState(db, req) {
   const user = req.auth ? db.users.find(u => u.id === req.auth.userId) : null;
   const unlimited = !stripeConfigured() || !!req.auth?.isAdmin ||
-    (!!user && (user.email.toLowerCase() === DEMO_EMAIL || user.email.toLowerCase() === 'demo-plus@szinn.ai'));
+    (!!user && (user.email.toLowerCase() === DEMO_EMAIL || user.email.toLowerCase() === 'demo-plus@szinn.ai' || isSuperEmail(user.email)));
   if (!user) {
     return { user: null, paid: false, trial: false, unlimited, dashboardOpen: unlimited,
       trialDaysLeft: 0, companionUsed: 0, companionLimit: unlimited ? Infinity : 0, companionLeft: unlimited ? Infinity : 0 };
@@ -1383,6 +1461,10 @@ app.get('/szinn-portal/blueprints/:filename', async (req, res) => {
   const orderId = req.params.filename.replace(/\.html$/, '');
   const order = await authorizedOrder(req, orderId);
   if (!order) return res.status(403).send('<h1>Geen toegang</h1><p>Log in op je dashboard om je blueprint te bekijken.</p>');
+  // Kit v4: de opgeleverde Blueprint is de PDF zelf (masterprompt 7.3/10), die op de worker staat.
+  if (order.pipeline === 'kit-v4' && order.status === 'completed') {
+    return res.redirect(302, require('../../lib/kit-worker').signedFileUrl(order.id, 'digitaal'));
+  }
 
   const lang = req.query.lang === 'en' ? 'en' : 'nl';
   const store = blueprintStore();
@@ -1418,6 +1500,9 @@ async function triggerPdf(orderId, lang) {
 app.get('/api/orders/:id/pdf', async (req, res) => {
   const order = await authorizedOrder(req, req.params.id);
   if (!order) return res.status(403).json({ error: 'Geen toegang' });
+  if (order.pipeline === 'kit-v4' && order.status === 'completed') {
+    return res.redirect(302, require('../../lib/kit-worker').signedFileUrl(order.id, 'digitaal'));
+  }
   const lang  = req.query.lang === 'en' ? 'en' : 'nl';
   const store = blueprintStore();
   const name  = (order.client_name || order.id).replace(/[^\w\-]+/g, '-');
@@ -1567,6 +1652,71 @@ app.post('/api/admin/regenerate/:orderId', async (req, res) => {
   await saveDB(db);
   const ok = await triggerGeneration(order.id, order);
   res.json({ ok, orderId: order.id });
+});
+
+// ── Blueprint-worker (kit v4) ────────────────────────────────────────────────
+// De worker meldt hier het resultaat van een generatie. Bij succes staan de
+// PDF's op de worker; hier worden alleen de dashboard-teksten en de status bewaard.
+app.post('/api/internal/blueprint-result', async (req, res) => {
+  const kit = require('../../lib/kit-worker');
+  const { orderId, ok, error, hold, texts, mail, rondes, secret } = req.body || {};
+  if (!kit.validCallbackSecret(secret)) return res.status(403).json({ error: 'forbidden' });
+  const db = await loadDB();
+  const order = db.orders.find(o => o.id === orderId);
+  if (!order) return res.status(404).json({ error: 'order niet gevonden' });
+  const { sendReadyEmail, sendAdminAlert } = require('../../lib/email');
+
+  if (!ok) {
+    order.status = 'failed';
+    order.generation_error = String(error || 'onbekende fout').slice(0, 2000);
+    await saveDB(db);
+    await sendAdminAlert({ orderId, error: order.generation_error, attempts: hold ? 'tegengehouden vóór generatie' : 'kit v4, 4 rondes' })
+      .catch(e => console.error('admin-alert mislukt:', e.message));
+    return res.json({ ok: true });
+  }
+
+  await blueprintStore().setJSON(`${orderId}.texts.json`, {
+    orderId, generatedAt: new Date().toISOString(), model: 'kit-v4', nl: texts,
+  });
+  order.status = 'completed';
+  order.completed_at = new Date().toISOString();
+  order.blueprint_url = `/szinn-portal/blueprints/${orderId}.html`;
+  order.blueprint_languages = ['nl'];
+  order.pdf_available = true;
+  order.generation_error = null;
+  order.pipeline = 'kit-v4';
+  await saveDB(db);
+  console.log(`${orderId}: kit-v4 opgeleverd (${rondes} ronde(s), 3× audit OK)`);
+
+  const user = db.users.find(u => u.id === order.user_id);
+  if (user) {
+    await sendReadyEmail({ to: user.email, name: order.client_name || user.name, orderId, lang: 'nl', personal: mail })
+      .catch(e => console.error('klaar-mail mislukt:', e.message));
+  }
+  res.json({ ok: true });
+});
+
+// Drukbestanden en auditrapport (Print&Bind) — alleen admin.
+app.get('/api/admin/order/:id/file/:soort', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  if (!['digitaal', 'binnenwerk', 'omslag', 'audit'].includes(req.params.soort)) return res.status(400).json({ error: 'Onbekend bestand' });
+  const db = await loadDB();
+  const order = db.orders.find(o => o.id === req.params.id);
+  if (!order || order.pipeline !== 'kit-v4') return res.status(404).json({ error: 'Geen kit-Blueprint voor deze order' });
+  res.redirect(302, require('../../lib/kit-worker').signedFileUrl(order.id, req.params.soort, 600));
+});
+
+// Omslag opnieuw bouwen met de echte rugbreedte die Print&Bind bij het uploaden toont.
+app.post('/api/admin/order/:id/spine', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  const mm = parseFloat(String(req.body?.mm || '').replace(',', '.'));
+  if (!(mm >= 1 && mm <= 60)) return res.status(400).json({ error: 'Rugbreedte in mm (1–60)' });
+  try {
+    await require('../../lib/kit-worker').setSpine(req.params.id, mm);
+    res.json({ ok: true, mm });
+  } catch (err) {
+    res.status(502).json({ error: err.message });
+  }
 });
 
 app.get('/api/admin/prompt/:orderId', async (req, res) => {
@@ -1797,6 +1947,15 @@ if (require.main === module) {
     assert.strictEqual((await accessState({ users: [expired()] }, req)).dashboardOpen, false);
     assert.strictEqual((await accessState({ users: [expired({ dashboard_access: 'on' })] }, req)).dashboardOpen, true);
     assert.strictEqual((await accessState({ users: [{ ...expired({ dashboard_access: 'off' }), created_at: iso(0) }] }, req)).dashboardOpen, false);
+    // Super-account (in SUPER_EMAILS): onbeperkte Companion (Infinity) + dashboard open,
+    // óók zonder proef/abonnement. Gewoon verlopen account blijft eindig → regressiebewaking.
+    assert.strictEqual(isSuperEmail('elly@szinn.ai'), true);
+    assert.strictEqual(isSuperEmail('x@y.z'), false);
+    const superAcc = await accessState({ users: [expired({ email: 'elly@szinn.ai' })] }, req);
+    assert.strictEqual(superAcc.unlimited, true);
+    assert.strictEqual(superAcc.companionLimit, Infinity);
+    assert.strictEqual(superAcc.dashboardOpen, true);
+    assert.strictEqual((await accessState({ users: [expired()] }, req)).companionLimit === Infinity, false);
     // Heractivering: intakeAccess geeft toegang mét grant-marker; zonder grant dicht.
     const a = await intakeAccess(req, { users: [expired({ intake_grant: true })] }, {});
     assert.strictEqual(a.ok, true);
