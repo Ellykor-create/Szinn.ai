@@ -1,5 +1,5 @@
 data/
 __pycache__/
 # De SZINN-kit (masterprompt, basistekst, beelden) is beschermd en bevat klantgegevens:
-# nooit in de (openbare) repo. Wordt via `railway up` rechtstreeks naar de worker geüpload.
+# nooit in de (openbare) repo. Staat in de private runner-repo (UDefine1/szinn-blueprint-runner).
 kit/

@@ -3,16 +3,13 @@
 datalaag → schrijflaag (Claude) → vormcontrole → bouwen (digitaal + binnenwerk + omslag) → audit.py 3× →
 bij ✗ de betreffende tekst herschrijven en opnieuw bouwen (regenerate, not patch) → oplevering via callback.
 
-HTTP (alles behalve /health en /files vraagt header X-Worker-Secret):
-  POST /jobs                 {orderId, order, callbackUrl}   → 202, job in de wachtrij
-  POST /jobs/<id>/rug        {mm}                            → omslag opnieuw met de echte rugbreedte van Print&Bind
-  PUT  /corpus/<bestand>     (body = pdf/txt)                → eerder opgeleverde Blueprint voor de overname-controle
-  GET  /files/<id>/<soort>?exp=&sig=                         → digitaal | binnenwerk | omslag | audit (HMAC-getekend)
-Omgeving: WORKER_SECRET, ANTHROPIC_API_KEY, DATA_DIR (/data), PORT, BLUEPRINT_MODEL."""
-import glob, hashlib, hmac, html, json, os, queue, re, shutil, subprocess, sys, tempfile, threading, time, traceback, urllib.request
+Draait als GitHub Actions-workflow in de private runner-repo (kit + .github/workflows/blueprint.yml), één run per job.
+Opslag is de repo zelf: release "order-<id>" (PDF's, auditrapport, job.tar.gz voor de rugbreedte) en release
+"corpus" (eerder opgeleverde Blueprints voor de overname-controle). netlify/edge-functions/kit-files.js serveert ze.
+Omgeving: ORDER_ID, ORDER_JSON (job) of RUG (mm), CALLBACK_URL, WORKER_SECRET, ANTHROPIC_API_KEY, DATA_DIR,
+BLUEPRINT_MODEL, GITHUB_REPOSITORY + GH_TOKEN (voor gh)."""
+import glob, html, json, os, re, shutil, subprocess, sys, tempfile, time, traceback, urllib.request
 from datetime import datetime
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import urlparse, parse_qs
 
 import datalaag, writer
 
@@ -223,138 +220,94 @@ def genereer(job):
     plain = re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', ruwe_html)))
     open(os.path.join(CORPUS, f"SZINN_Alignment_Blueprint_{re.sub(r'[^A-Za-zÀ-ÿ]', '', f['voornaam'])}_{oid}_3delen.txt"), 'w').write(plain)
     open(os.path.join(job_dir, 'audit.md'), 'w').write(rapport(f, bool(intake.strip()), uitvoer, ronde))
-    json.dump({'dir': job_dir, 'base': base}, open(os.path.join(DATA, 'orders', oid, 'current.json'), 'w'))
+    # relatief t.o.v. DATA: de rugbreedte-run pakt job.tar.gz uit op een andere runner
+    json.dump({'dir': os.path.relpath(job_dir, DATA), 'base': os.path.relpath(base, DATA)}, open(os.path.join(DATA, 'orders', oid, 'current.json'), 'w'))
     return dict(ok=True, texts=dashboard_teksten(content), mail=content['mail'], files=['digitaal', 'binnenwerk', 'omslag', 'audit'], rondes=ronde)
 
 
-def rug(oid, mm):
+def huidig(oid):
     cur = json.load(open(os.path.join(DATA, 'orders', oid, 'current.json')))
-    f = json.load(open(os.path.join(cur['dir'], 'facts.json')))
-    base = bouwen(cur['dir'], mm)
-    ok, fouten, uitvoer = audit(cur['dir'], base, f, oid, bool(open(os.path.join(cur['dir'], 'intake.txt')).read().strip()))
+    return os.path.join(DATA, cur['dir']), os.path.join(DATA, cur['base'])
+
+
+def rug(oid, mm):
+    job_dir, _ = huidig(oid)
+    f = json.load(open(os.path.join(job_dir, 'facts.json')))
+    base = bouwen(job_dir, mm)
+    ok, fouten, uitvoer = audit(job_dir, base, f, oid, bool(open(os.path.join(job_dir, 'intake.txt')).read().strip()))
     if not ok:
         raise RuntimeError(f'audit na rugbreedte {mm} mm: {fouten}')
-    with open(os.path.join(cur['dir'], 'audit.md'), 'a') as a:
+    with open(os.path.join(job_dir, 'audit.md'), 'a') as a:
         a.write(f'\n\n## Omslag opnieuw met rugbreedte {mm} mm ({datetime.now():%Y-%m-%d %H:%M})\n```\n{uitvoer.strip()}\n```\n')
 
 
-# ---------- wachtrij ----------
-# ponytail: één job tegelijk, wachtrij in het geheugen; een herstart van de worker verliest wachtende jobs (admin: "Herstart generatie").
-Q = queue.Queue()
+# ---------- opslag: releases in de runner-repo ----------
+def gh(*args):
+    r = subprocess.run(['gh', *args, '-R', os.environ['GITHUB_REPOSITORY']], capture_output=True, text=True)
+    if r.returncode:
+        raise RuntimeError(f'gh {" ".join(args[:2])}: {r.stderr.strip()[-500:]}')
+    return r.stdout
 
 
-def werker():
-    while True:
-        job = Q.get()
-        oid = job['orderId']
-        res = None
+def haal_corpus():
+    try:
+        gh('release', 'download', 'corpus', '-D', CORPUS, '--clobber')
+    except RuntimeError as e:  # nog geen corpus: de eerste Blueprint vergelijkt met niets
+        print(f'corpus: {e}', flush=True)
+
+
+def haal_job(oid):
+    tar = os.path.join(DATA, 'job.tar.gz')
+    gh('release', 'download', f'order-{oid}', '-p', 'job.tar.gz', '-O', tar, '--clobber')
+    subprocess.run(['tar', '-xzf', tar, '-C', DATA], check=True)
+
+
+def opslaan(oid, nieuw=False):
+    """PDF's, auditrapport en de jobmap (zonder pdf/html, voor de rugbreedte) naar release order-<id>.
+    Nieuw = de vorige versie gaat eruit (bestandsnamen kunnen wijzigen) en deze Blueprint gaat in het corpus."""
+    job_dir, b = huidig(oid)
+    bb = b.replace('_3delen', '')
+    audit_md = os.path.join(DATA, os.path.basename(bb) + '_auditrapport.md')
+    shutil.copy(os.path.join(job_dir, 'audit.md'), audit_md)
+    tar = os.path.join(DATA, 'job.tar.gz')
+    subprocess.run(['tar', '-czf', tar, '--exclude=*.pdf', '--exclude=*.html', '-C', DATA,
+                    os.path.relpath(job_dir, DATA), os.path.join('orders', oid, 'current.json')], check=True)
+    tag = f'order-{oid}'
+    if nieuw:
         try:
-            if job.get('rug'):
-                rug(oid, job['rug']); log(oid, f"omslag opnieuw met rug {job['rug']} mm")
-            else:
-                res = genereer(job)
-        except Tegenhouden as e:
-            log(oid, f'tegengehouden: {e}'); res = dict(ok=False, hold=True, error=f'Niet automatisch opgeleverd: {e}')
-        except Exception as e:  # noqa: BLE001 — elke fout moet als 'failed' bij Netlify aankomen
-            traceback.print_exc(); res = dict(ok=False, error=str(e)[:2000]) if not job.get('rug') else None
-        finally:
-            Q.task_done()
-        if res is not None and job.get('callbackUrl'):
-            callback(job['callbackUrl'], {'orderId': oid, **res})
-
-
-# ---------- HTTP ----------
-def teken(oid, soort, exp):
-    return hmac.new(SECRET.encode(), f'{oid}:{soort}:{exp}'.encode(), hashlib.sha256).hexdigest()
-
-
-BESTAND = {'digitaal': '{b}.pdf', 'binnenwerk': '{bb}_BOEK_binnenwerk.pdf', 'omslag': '{bb}_BOEK_omslag.pdf'}
-
-
-class H(BaseHTTPRequestHandler):
-    def _json(self, code, obj):
-        body = json.dumps(obj).encode()
-        self.send_response(code); self.send_header('Content-Type', 'application/json'); self.send_header('Content-Length', str(len(body)))
-        self.end_headers(); self.wfile.write(body)
-
-    def _auth(self):
-        if not SECRET or not hmac.compare_digest(self.headers.get('X-Worker-Secret', ''), SECRET):
-            self._json(403, {'error': 'forbidden'}); return False
-        return True
-
-    def _body(self):
-        return self.rfile.read(int(self.headers.get('Content-Length') or 0))
-
-    def do_GET(self):
-        u = urlparse(self.path)
-        if u.path == '/health':
-            return self._json(200, {'ok': True, 'wachtrij': Q.qsize()})
-        m = re.match(r'^/files/([\w-]+)/(digitaal|binnenwerk|omslag|audit)$', u.path)
-        if not m:
-            return self._json(404, {'error': 'niet gevonden'})
-        oid, soort = m.groups(); q = parse_qs(u.query)
-        exp = q.get('exp', ['0'])[0]; sig = q.get('sig', [''])[0]
-        if not SECRET or not exp.isdigit() or int(exp) < time.time() or not hmac.compare_digest(sig, teken(oid, soort, exp)):
-            return self._json(403, {'error': 'link verlopen of ongeldig'})
+            gh('release', 'delete', tag, '--yes', '--cleanup-tag')
+        except RuntimeError:
+            pass
+    try:
+        gh('release', 'view', tag)
+    except RuntimeError:
+        gh('release', 'create', tag, '--title', tag, '--notes', 'SZINN Blueprint (kit v4)')
+    gh('release', 'upload', tag, b + '.pdf', bb + '_BOEK_binnenwerk.pdf', bb + '_BOEK_omslag.pdf', audit_md, tar, '--clobber')
+    if nieuw:
         try:
-            cur = json.load(open(os.path.join(DATA, 'orders', oid, 'current.json')))
-        except FileNotFoundError:
-            return self._json(404, {'error': 'nog geen Blueprint'})
-        b = cur['base']; bb = b.replace('_3delen', '')
-        pad = os.path.join(cur['dir'], 'audit.md') if soort == 'audit' else BESTAND[soort].format(b=b, bb=bb)
-        if not os.path.exists(pad):
-            return self._json(404, {'error': 'bestand ontbreekt'})
-        naam = os.path.basename(bb) + '_auditrapport.md' if soort == 'audit' else os.path.basename(pad)
-        self.send_response(200)
-        self.send_header('Content-Type', 'text/markdown; charset=utf-8' if soort == 'audit' else 'application/pdf')
-        self.send_header('Content-Disposition', f'{"inline" if soort == "digitaal" else "attachment"}; filename="{naam}"')
-        self.send_header('Access-Control-Allow-Origin', '*')  # de getekende link is de autorisatie; viewer haalt de PDF via fetch()
-        self.send_header('Content-Length', str(os.path.getsize(pad))); self.end_headers()
-        with open(pad, 'rb') as fh:
-            shutil.copyfileobj(fh, self.wfile)
-
-    def do_POST(self):
-        if not self._auth():
-            return
-        try:
-            data = json.loads(self._body() or b'{}')
-        except ValueError:
-            return self._json(400, {'error': 'geen geldige JSON'})
-        if self.path == '/jobs':
-            if not data.get('orderId') or not data.get('order'):
-                return self._json(400, {'error': 'orderId en order zijn verplicht'})
-            Q.put({'orderId': data['orderId'], 'order': data['order'], 'callbackUrl': data.get('callbackUrl')})
-            return self._json(202, {'ok': True, 'wachtrij': Q.qsize()})
-        m = re.match(r'^/jobs/([\w-]+)/rug$', self.path)
-        if m:
-            try:
-                mm = float(data.get('mm'))
-                assert 1 <= mm <= 60
-            except (TypeError, ValueError, AssertionError):
-                return self._json(400, {'error': 'rugbreedte in mm (1–60) verplicht'})
-            if not os.path.exists(os.path.join(DATA, 'orders', m.group(1), 'current.json')):
-                return self._json(404, {'error': 'nog geen Blueprint voor deze order'})
-            Q.put({'orderId': m.group(1), 'rug': mm})
-            return self._json(202, {'ok': True})
-        self._json(404, {'error': 'niet gevonden'})
-
-    def do_PUT(self):
-        if not self._auth():
-            return
-        m = re.match(r'^/corpus/([\w.\-]+\.(pdf|txt|html))$', self.path)
-        if not m:
-            return self._json(400, {'error': 'bestandsnaam moet eindigen op .pdf, .txt of .html'})
-        open(os.path.join(CORPUS, os.path.basename(m.group(1))), 'wb').write(self._body())
-        self._json(201, {'ok': True, 'corpus': len(os.listdir(CORPUS))})
-
-    def log_message(self, *a):
-        pass
+            gh('release', 'view', 'corpus')
+        except RuntimeError:
+            gh('release', 'create', 'corpus', '--title', 'corpus', '--notes', 'Eerder opgeleverde Blueprints (overname-controle)')
+        gh('release', 'upload', 'corpus', *glob.glob(os.path.join(CORPUS, f'*_{oid}_3delen.txt')), '--clobber')
 
 
 if __name__ == '__main__':
-    if not SECRET:
-        sys.exit('WORKER_SECRET ontbreekt')
-    threading.Thread(target=werker, daemon=True).start()
-    port = int(os.environ.get('PORT', 8080))
-    print(f'SZINN blueprint-worker op :{port} · data {DATA} · model {writer.MODEL}', flush=True)
-    ThreadingHTTPServer(('', port), H).serve_forever()
+    oid = os.environ['ORDER_ID']
+    haal_corpus()
+    if os.environ.get('RUG'):
+        mm = float(os.environ['RUG'])
+        if not 1 <= mm <= 60:
+            sys.exit('rugbreedte in mm (1–60) verplicht')
+        haal_job(oid); rug(oid, mm); opslaan(oid)
+        log(oid, f'omslag opnieuw met rug {mm} mm')
+        sys.exit(0)
+    try:
+        res = genereer({'orderId': oid, 'order': json.loads(os.environ['ORDER_JSON'])})
+        opslaan(oid, nieuw=True)  # eerst opslaan, dan pas melden: de klant krijgt direct een werkende link
+    except Tegenhouden as e:
+        log(oid, f'tegengehouden: {e}'); res = dict(ok=False, hold=True, error=f'Niet automatisch opgeleverd: {e}')
+    except Exception as e:  # noqa: BLE001 — elke fout moet als 'failed' bij Netlify aankomen
+        traceback.print_exc(); res = dict(ok=False, error=str(e)[:2000])
+    if os.environ.get('CALLBACK_URL') and not callback(os.environ['CALLBACK_URL'], {'orderId': oid, **res}):
+        sys.exit('callback mislukt')
+    sys.exit(0 if res['ok'] else 1)
