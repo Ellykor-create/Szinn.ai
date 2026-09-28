@@ -30,7 +30,11 @@ export default async (req) => {
   const repo = Netlify.env.get('BLUEPRINT_RUNNER_REPO') || 'UDefine1/szinn-blueprint-runner';
   const auth = { Authorization: `Bearer ${Netlify.env.get('GITHUB_RUNNER_TOKEN')}`, 'X-GitHub-Api-Version': '2022-11-28' };
   const rel = await fetch(`https://api.github.com/repos/${repo}/releases/tags/order-${oid}`, { headers: { ...auth, Accept: 'application/vnd.github+json' } });
-  if (rel.status === 404) return fout(404, 'nog geen Blueprint');
+  if (rel.status === 404) {
+    // Vóór de overstap opgeleverd: staat nog op de Railway-worker (zelfde handtekening). Weg zodra Railway is opgezegd.
+    const oud = (Netlify.env.get('BLUEPRINT_WORKER_URL') || '').replace(/\/$/, '');
+    return oud ? Response.redirect(`${oud}/files/${oid}/${soort}${u.search}`, 302) : fout(404, 'nog geen Blueprint');
+  }
   if (!rel.ok) return fout(502, `GitHub HTTP ${rel.status}`);
   const asset = (await rel.json()).assets.find(a => a.name.endsWith(SOORT[soort]));
   if (!asset) return fout(404, 'bestand ontbreekt');
