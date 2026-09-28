@@ -2659,6 +2659,8 @@ Object.assign(SZINN_PH, {
   window.zetTaal=function(l){
     _zet(l); window.SZINN_LANG=l;
     try{ localStorage.setItem('szinn_lang', l); }catch(e){}
+    // Taalvoorkeur ook op het account: de dagelijkse reminder volgt hem.
+    fetch('/api/settings/lang',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},body:JSON.stringify({lang:l})}).catch(function(){});
     // Serverteksten (dagduiding, pijlers, dagboek) in de nieuwe taal ophalen.
     if(window.SZINN_REFETCH) window.SZINN_REFETCH(l);
   };

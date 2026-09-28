@@ -44,9 +44,13 @@ async function sendReminder(u, order, channel) {
   if (channel === 'off') return { sent: false, reason: 'kanaal uit' };
   if (channel === 'whatsapp' && !u.phone) return { sent: false, reason: 'geen telefoonnummer' };
   if (channel === 'email' && !u.email) return { sent: false, reason: 'geen e-mailadres' };
-  const lang = order.blueprint_language === 'en' ? 'en' : 'nl';
+  // Taal: de voorkeur die de klant zelf koos (login/dashboard), anders de
+  // taal van de blueprint. Template 'szinn' bestaat in nl én en.
+  const lang = u.lang === 'en' || u.lang === 'nl' ? u.lang
+    : (order.blueprint_language === 'en' ? 'en' : 'nl');
   const textsAll = await blueprintStore().get(`${order.id}.texts.json`, { type: 'json' });
-  const t = (textsAll && (textsAll[lang] || textsAll.nl)) || {};
+  // Alleen teksten in dezelfde taal als de template; anders de vaste fallback.
+  const t = (textsAll && textsAll[lang]) || {};
   const fb = FALLBACK[lang];
   const thema = (t.summary && t.summary.oneLiner) || fb.thema;
   const focus = (t.integration && t.integration.layers && t.integration.layers.focus) || fb.focus;

@@ -9,7 +9,8 @@ const SzinnAuth = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
-        body: JSON.stringify({ email, password, lang: en ? 'en' : 'nl' })
+        body: JSON.stringify({ email, password, lang: en ? 'en' : 'nl',
+          langPref: (typeof localStorage !== 'undefined' && localStorage.getItem('szinn_lang')) || undefined })
       });
     } catch {
       throw new Error(en

@@ -295,6 +295,9 @@ app.post('/api/auth/login', async (req, res) => {
   const user = db.users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
   if (!user || !bcrypt.compareSync(password, user.password))
     return res.status(401).json({ error: en ? 'Incorrect email address or password' : 'Onjuist e-mailadres of wachtwoord' });
+  // Expliciet gekozen taal (knop op login/dashboard) = voorkeur voor reminders.
+  const pref = req.body?.langPref;
+  if ((pref === 'en' || pref === 'nl') && user.lang !== pref) { user.lang = pref; await saveDB(db); }
   setAuthCookie(res, { userId: user.id, email: user.email, name: user.name, isAdmin: !!user.is_admin });
   res.json({ id: user.id, email: user.email, name: user.name, initials: user.name.substring(0,2).toUpperCase(), isAdmin: !!user.is_admin });
 });
@@ -951,6 +954,18 @@ app.post('/api/settings/notifications', async (req, res) => {
   if (phone) u.phone = phone;
   await saveDB(db);
   res.json({ ok: true, channel, phone: u.phone || '' });
+});
+
+// Taalwissel in het dashboard: bepaalt de taal van de dagelijkse reminder.
+app.post('/api/settings/lang', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const lang = req.body?.lang;
+  if (lang !== 'en' && lang !== 'nl') return res.status(400).json({ error: 'Ongeldige taal' });
+  const db = await loadDB();
+  const u = db.users.find(u => u.id === req.auth.userId);
+  if (!u) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
+  if (u.lang !== lang) { u.lang = lang; await saveDB(db); }
+  res.json({ ok: true, lang });
 });
 
 // ── Zelf je wachtwoord wijzigen (vanuit het dashboard) ────────────────────────
@@ -1910,10 +1925,10 @@ app.post('/api/admin/user/:userId/reset-intake', async (req, res) => {
 
 // Testknop: stuurt de dagelijkse reminder nú naar één account, via dezelfde
 // code als de 12:00-job, en geeft de respons van Meta/Resend terug.
-// Body: { email, channel?: 'whatsapp'|'email', phone? } — phone alleen voor deze test.
+// Body: { email, channel?: 'whatsapp'|'email', phone?, lang? } — phone/lang alleen voor deze test.
 app.post('/api/admin/test-reminder', async (req, res) => {
   if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
-  const { email, channel, phone } = req.body || {};
+  const { email, channel, phone, lang } = req.body || {};
   const db = await loadDB();
   const user = db.users.find(u => (u.email || '').toLowerCase() === String(email || '').toLowerCase());
   if (!user) return res.status(404).json({ error: 'Gebruiker niet gevonden' });
@@ -1921,7 +1936,7 @@ app.post('/api/admin/test-reminder', async (req, res) => {
   if (!order) return res.status(400).json({ error: 'Geen voltooide blueprint' });
   try {
     const { sendReminder } = require('./daily-whatsapp');
-    res.json(await sendReminder(phone ? { ...user, phone } : user, order, channel));
+    res.json(await sendReminder({ ...user, ...(phone && { phone }), ...(lang && { lang }) }, order, channel));
   } catch (err) {
     res.status(502).json({ error: err.message });
   }
