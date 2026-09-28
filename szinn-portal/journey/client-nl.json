@@ -71,7 +71,6 @@
     "zijDagelijks": "Dagelijkse integratie",
     "zijAccount": "Mijn account",
     "zijUitloggen": "Uitloggen",
-    "disclaimer": "Deze blauwdruk en deze pagina's zijn samengesteld met behulp van AI. AI kan fouten maken: controleer wat belangrijk voor je is en houd je eigen waarneming aan als iets niet klopt. Alles wat hier staat is bedoeld voor zelfinzicht en reflectie. Het is geen medisch, psychologisch, juridisch of financieel advies en geen voorspelling. Jij blijft degene die over jezelf gaat.",
     "meerOnder": "scroll",
     "handleiding": "Handleiding",
     "afvinken": "Afvinken",
@@ -1079,7 +1078,6 @@
     "sluiten": "Sluiten",
     "terugkop": "Terug naar het overzicht",
     "volgende": "Volgende",
-    "afsluiting": "Je hoeft het niet nu te weten. Alles mag er zijn. Verwarring is vaak een fase waarin iets nieuws kan ontstaan.\nJe hebt al een belangrijke stap gezet. Je kijkt niet alleen naar wat er is gebeurd, maar ook naar waarom.",
     "stappen": [
       {
         "beeld": "assets/laag-01.jpg",
@@ -1359,10 +1357,8 @@
         ]
       }
     ],
-    "slotregel": "Genoeg voor vandaag is ook goed. Het blijft staan.",
     "knoppenUit": true,
     "spiegel": "Je hoeft het niet eens te zijn met wat je ziet. Begrijpen komt eerst, kiezen komt daarna.",
-    "afsluitkop": "Genoeg voor vandaag",
     "knoppenLabel": "Deze fase bewaren"
   },
   "integratie": {

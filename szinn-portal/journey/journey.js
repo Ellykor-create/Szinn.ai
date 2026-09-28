@@ -527,7 +527,7 @@
                   '<span class="bwbeeld">' +
                     (x.beeld
                       ? '<span class="bwcirkel"><img src="' + veilig(x.beeld) + '" alt="' +
-                        veilig(x.beeldtekst || "") + '" loading="lazy"></span>'
+                        veilig(x.beeldtekst || "") + '"></span>'
                       : '<span class="bwcirkel leeg">' + glyph(x.teken) + '</span>') +
                     (i < bwn - 1 ? '<i class="bwpijl" aria-hidden="true">&#8250;</i>' : "") +
                   '</span>' +
@@ -947,9 +947,14 @@
     /* alles onder de stappen komt in een eigen omhulsel, zodat een fase daar
        een andere kleurstelling kan krijgen dan bovenaan */
     h += '<div class="faseonder">';
-    /* de stappenbalk hoort helemaal onderaan, na de slottekst en de knop */
-    var blokken = (f.blokken || []).filter(function (b) { return b.type !== "stappenbalk"; });
-    var balken = (f.blokken || []).filter(function (b) { return b.type === "stappenbalk"; });
+    /* geen stappenbalk onderaan: de slotknop wijst de weg, de balk bovenin
+       doet de rest. Twee navigaties onder elkaar liet mensen zoeken. */
+    /* de slotbalk met de knop naar de volgende stap komt helemaal onderaan,
+       na de afsluiting, zodat je hem pas tegenkomt als je klaar bent */
+    var blokken = (f.blokken || []).filter(function (b) {
+      return b.type !== "stappenbalk" && b.type !== "slotbalk";
+    });
+    var slot = (f.blokken || []).filter(function (b) { return b.type === "slotbalk"; });
     h += blokken.map(function (b) {
       var inhoud = blokHTML(b);
       return b.anker ? '<div id="blok-' + veilig(b.anker) + '">' + inhoud + '</div>' : inhoud;
@@ -977,13 +982,7 @@
            veilig(f.verder) + ' &rarr;</button></div>';
     }
     if (f.slotregel) h += '<p class="sub kalm">' + veilig(f.slotregel) + '</p>';
-    h += balken.map(blokHTML).join("");
-    h += '<footer><span>' + veilig(data.voettekst || "") + '</span><em>' +
-         veilig(T("merkregel")) + '</em></footer>';
-    /* de kleine letter staat onder elke fase, niet één keer ergens weggestopt */
-    if (T("disclaimer")) {
-      h += '<p class="disclaimer">' + veilig(T("disclaimer")).replace(/\n/g, "<br>") + '</p>';
-    }
+    h += slot.map(blokHTML).join("");
     h += '</div>';
     el(naam).innerHTML = h;
     herstelReflectie(naam);
@@ -1859,8 +1858,6 @@
       (r.voet ? '<div class="dreisvoet">' + r.voet.map(function (t) {
           return '<span>' + veilig(t).replace(/\n/g, "<br>") + '</span>';
         }).join("") + '</div>' : "") +
-      (T("disclaimer") ? '<p class="disclaimer dreisklein">' +
-        veilig(T("disclaimer")).replace(/\n/g, "<br>") + '</p>' : "") +
       '</div>';
   }
 

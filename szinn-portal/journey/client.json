@@ -71,7 +71,6 @@
     "zijDagelijks": "Daily integration",
     "zijAccount": "My account",
     "zijUitloggen": "Log out",
-    "disclaimer": "This blueprint and these pages were put together with the help of AI. AI can get things wrong: check what matters to you, and trust your own reading when something does not fit. Everything here is meant for self-insight and reflection. It is not medical, psychological, legal or financial advice, and it is not a prediction. You remain the one who decides about you.",
     "meerOnder": "scroll",
     "handleiding": "Guide",
     "afvinken": "Tick off",
@@ -1140,7 +1139,6 @@
       "kaderLabel": "First steps · 2 of 3",
       "kader": "The second of the three. You have met the pieces, here they start to connect, so the blueprint becomes readable."
     },
-    "afsluiting": "You do not have to know it yet. All of it is allowed to be here. Confusion is often the phase in which something new can begin.\nYou have already taken a real step. You are looking not only at what happened, but also at why.",
     "overzichtkop": "And three layers of clarity",
     "sluiten": "Close",
     "terugkop": "Back to overview",
@@ -1358,10 +1356,8 @@
         "achtergrond": "assets/paneel-03.jpg"
       }
     ],
-    "slotregel": "Enough for today is also good. It will keep.",
     "knoppenUit": true,
     "spiegel": "You do not have to agree with what you see. Understanding comes first, choosing comes after.",
-    "afsluitkop": "Enough for today",
     "knoppenLabel": "Keep this phase"
   },
   "integratie": {
