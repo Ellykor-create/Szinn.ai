@@ -390,10 +390,9 @@ app.get('/api/orders', async (req, res) => {
 
 app.get('/api/orders/:id', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
-  const db    = await loadDB();
-  // De viewer opent met ?t=<view_token>; oude links gebruiken nog het volgnummer.
-  // Resolve op beide, net als de blueprint-serve-route (authorizedOrder).
-  const order = db.orders.find(o => (o.view_token === req.params.id || o.id === req.params.id) && o.user_id === req.auth.userId);
+  // Zelfde regel als de blueprint- en PDF-route: eigenaar óf admin (anders bleef de
+  // viewer voor een ingelogde admin op "Laden…" en daarna "niet gevonden" staan).
+  const order = await authorizedOrder(req, req.params.id);
   if (!order) return res.status(404).json({ error: 'Aanvraag niet gevonden' });
   res.json(toOrder(order));
 });
