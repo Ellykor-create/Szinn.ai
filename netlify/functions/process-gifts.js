@@ -4,6 +4,7 @@
 // cadeaus met send_date <= vandaag worden verstuurd en daarna op 'sent' gezet.
 
 const { loadDB, saveDB } = require('../../lib/db');
+const { connectLambda } = require('@netlify/blobs');
 const { sendGiftEmail } = require('../../lib/email');
 
 function isDue(sendDate) {
@@ -11,7 +12,9 @@ function isDue(sendDate) {
   return sendDate <= new Date().toISOString().slice(0, 10);
 }
 
-exports.handler = async () => {
+exports.handler = async (event) => {
+  // Zonder connectLambda geen Netlify Blobs in een klassieke Lambda-handler.
+  try { connectLambda(event); } catch (e) { console.error('connectLambda:', e.message); }
   const db = await loadDB();
   const due = (db.giftCodes || []).filter(g => g.status === 'pending' && isDue(g.send_date));
   let sent = 0;

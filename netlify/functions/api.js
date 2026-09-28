@@ -1879,6 +1879,7 @@ app.get('/api/admin/users', async (req, res) => {
     // Dagelijkse reminder: kanaal zoals de 12:00-job het kiest, en of hij vandaag gaat.
     notify: u.notify_channel || (u.phone ? 'whatsapp' : 'off'), hasPhone: !!u.phone, lang: u.lang || null,
     reminder: reminderGoes(u),
+    lastReminder: u.last_reminder || null,
   })).sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
   res.json(users);
 });
@@ -1951,6 +1952,13 @@ app.post('/api/admin/test-reminder', async (req, res) => {
   } catch (err) {
     res.status(502).json({ error: err.message });
   }
+});
+
+// De hele 12:00-run nu draaien (zelfde code als de ingeplande functie).
+// Body: { dryRun?: true } — dryRun laat alleen zien wie wat zou krijgen.
+app.post('/api/admin/run-daily', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  res.json(await require('./daily-whatsapp').runDaily({ dryRun: !!req.body?.dryRun }));
 });
 
 // ── Foutafhandelaar ─────────────────────────────────────────────────────────────

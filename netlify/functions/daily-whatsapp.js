@@ -9,7 +9,8 @@
 // UTC en versturen alleen wanneer het op dát moment 12:xx in Amsterdam is —
 // zo klopt het in zomer- én wintertijd en vuurt het precies één keer per dag.
 
-const { loadDB, blueprintStore } = require('../../lib/db');
+const { loadDB, saveDB, blueprintStore } = require('../../lib/db');
+const { connectLambda } = require('@netlify/blobs');
 const { sendWhatsApp } = require('../../lib/whatsapp');
 const { sendDailyReadingEmail } = require('../../lib/email');
 const { subIsActive, stripeConfigured, trialStartedAt } = require('../../lib/stripe');
@@ -72,10 +73,10 @@ function hasReminderAccess(u) {
 
 exports.sendReminder = sendReminder;
 exports.hasReminderAccess = hasReminderAccess;
-exports.handler = async () => {
-  const hourNL = Number(new Intl.DateTimeFormat('nl-NL', { timeZone: 'Europe/Amsterdam', hour: '2-digit', hour12: false }).format(new Date()));
-  if (hourNL !== 12) return { statusCode: 200, body: 'buiten NL-venster' };
-
+// Stuurt de reminder naar iedereen die er recht op heeft en bewaart per account
+// het resultaat (user.last_reminder), zodat de admin kan zien of hij uitging.
+// dryRun: alleen laten zien wie wat zou krijgen, niets versturen of opslaan.
+async function runDaily({ dryRun = false } = {}) {
   const db = await loadDB();
   // Per gebruiker de (meest recente) voltooide order — volgorde maakt niet uit
   // voor thema/focus, die komen uit de blueprint-teksten van die order.
@@ -84,17 +85,34 @@ exports.handler = async () => {
     if (o.status === 'completed') completedByUser.set(o.user_id, o);
   }
 
-  let sent = 0;
+  const report = [];
   for (const u of db.users || []) {
     const order = completedByUser.get(u.id);
-    if (!order) continue;
-    if (!hasReminderAccess(u)) continue;
+    if (!order || !hasReminderAccess(u)) continue;
+    const channel = u.notify_channel || (u.phone ? 'whatsapp' : 'off');
+    if (dryRun) { report.push({ email: u.email, channel, lang: u.lang || order.blueprint_language || 'nl' }); continue; }
     try {
-      if ((await sendReminder(u, order)).sent) sent++;
+      const r = await sendReminder(u, order);
+      u.last_reminder = { at: new Date().toISOString(), ok: r.sent, channel: r.channel || channel, info: r.reason || r.result?.language || null };
     } catch (err) {
       console.error(`daily-whatsapp voor user ${u.id} mislukt:`, err.message);
+      u.last_reminder = { at: new Date().toISOString(), ok: false, channel, info: err.message.slice(0, 200) };
     }
+    report.push({ email: u.email, ...u.last_reminder });
   }
-  console.log(`daily-whatsapp: ${sent} reading-app(s) verstuurd.`);
+  if (!dryRun) await saveDB(db);
+  const sent = report.filter(r => r.ok).length;
+  console.log(`daily-whatsapp: ${sent}/${report.length} reminder(s) verstuurd.`, JSON.stringify(report));
+  return { sent, report };
+}
+
+exports.runDaily = runDaily;
+exports.handler = async (event) => {
+  // Klassieke Lambda-handler: zonder connectLambda geen Netlify Blobs → loadDB
+  // faalt en gaat er niemand iets uit (oorzaak gemiste 12:00-run 28-09-2026).
+  try { connectLambda(event); } catch (e) { console.error('connectLambda:', e.message); }
+  const hourNL = Number(new Intl.DateTimeFormat('nl-NL', { timeZone: 'Europe/Amsterdam', hour: '2-digit', hour12: false }).format(new Date()));
+  if (hourNL !== 12) return { statusCode: 200, body: 'buiten NL-venster' };
+  const { sent } = await runDaily();
   return { statusCode: 200, body: JSON.stringify({ sent }) };
 };
