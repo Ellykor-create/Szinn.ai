@@ -1861,6 +1861,12 @@ app.post('/api/admin/order/:orderId/status', async (req, res) => {
 app.get('/api/admin/users', async (req, res) => {
   if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
   const db = await loadDB();
+  const { hasReminderAccess } = require('./daily-whatsapp');
+  const reminderGoes = (u) => {
+    const ch = u.notify_channel || (u.phone ? 'whatsapp' : 'off');
+    return hasReminderAccess(u) && (ch === 'email' || (ch === 'whatsapp' && !!u.phone))
+      && db.orders.some(o => o.user_id === u.id && o.status === 'completed');
+  };
   const users = db.users.filter(u => !u.is_admin).map(u => ({
     id: u.id, email: u.email, name: u.name, created_at: u.created_at,
     dashboard_access: u.dashboard_access || 'auto',
@@ -1868,6 +1874,9 @@ app.get('/api/admin/users', async (req, res) => {
     subActive: subIsActive(u.subscription),
     trialDaysLeft: trialDaysLeft(u),
     blueprints: db.orders.filter(o => o.user_id === u.id && o.status === 'completed').length,
+    // Dagelijkse reminder: kanaal zoals de 12:00-job het kiest, en of hij vandaag gaat.
+    notify: u.notify_channel || (u.phone ? 'whatsapp' : 'off'), hasPhone: !!u.phone, lang: u.lang || null,
+    reminder: reminderGoes(u),
   })).sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
   res.json(users);
 });

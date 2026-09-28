@@ -61,7 +61,17 @@ async function sendReminder(u, order, channel) {
   return { sent: !result?.skipped, channel, result };
 }
 
+// Toegang: demo, lopend abonnement, óf binnen de 11-daagse proef. Zonder
+// Stripe-sleutel (lokaal) niet blokkeren.
+function hasReminderAccess(u) {
+  const email = (u.email || '').toLowerCase();
+  return !stripeConfigured() || DEMO_EMAILS.includes(email)
+    || SUPER_EMAILS.includes(email) || u.dashboard_access === 'on'
+    || subIsActive(u.subscription) || withinTrial(u);
+}
+
 exports.sendReminder = sendReminder;
+exports.hasReminderAccess = hasReminderAccess;
 exports.handler = async () => {
   const hourNL = Number(new Intl.DateTimeFormat('nl-NL', { timeZone: 'Europe/Amsterdam', hour: '2-digit', hour12: false }).format(new Date()));
   if (hourNL !== 12) return { statusCode: 200, body: 'buiten NL-venster' };
@@ -78,13 +88,7 @@ exports.handler = async () => {
   for (const u of db.users || []) {
     const order = completedByUser.get(u.id);
     if (!order) continue;
-    // Toegang: demo, lopend abonnement, óf binnen de 11-daagse proef. Zonder
-    // Stripe-sleutel (lokaal) niet blokkeren.
-    const email = (u.email || '').toLowerCase();
-    const hasAccess = !stripeConfigured() || DEMO_EMAILS.includes(email)
-      || SUPER_EMAILS.includes(email) || u.dashboard_access === 'on'
-      || subIsActive(u.subscription) || withinTrial(u);
-    if (!hasAccess) continue;
+    if (!hasReminderAccess(u)) continue;
     try {
       if ((await sendReminder(u, order)).sent) sent++;
     } catch (err) {
