@@ -1326,8 +1326,10 @@ app.post('/api/subscription/cancel', async (req, res) => {
 // NL-centrisch: leidende 0 wordt 31. ponytail: enkel NL/E.164, uitbreiden zodra nodig.
 function normalizePhone(raw) {
   if (!raw) return null;
-  let d = String(raw).replace(/[^\d]/g, '');
+  // 06…, +31 6…, 0031 6… en +31 06… worden allemaal 316…; ander land via +/00.
+  let d = String(raw).replace(/[^\d]/g, '').replace(/^00/, '');
   if (d.startsWith('0')) d = '31' + d.slice(1);
+  d = d.replace(/^310/, '31');
   return d.length >= 10 ? d : null;
 }
 
@@ -1994,6 +1996,9 @@ if (require.main === module) {
   const p = {}; bumpCompanionUsage(p, true);
   assert.strictEqual(p.companion_usage.month, currentMonthKey());
   assert.strictEqual(p.companion_usage.monthCount, 1);
+  for (const raw of ['0637296448', '+31 6 37296448', '0031637296448', '+31 0637296448'])
+    assert.strictEqual(normalizePhone(raw), '31637296448', raw);
+  assert.strictEqual(normalizePhone('+32 470 12 34 56'), '32470123456');
   console.log('api quota self-check ok');
 
   // Admin-overrides: dashboard-toegang + intake-heractivering (geen Stripe/Blobs nodig).
