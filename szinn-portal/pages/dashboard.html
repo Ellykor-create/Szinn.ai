@@ -2223,7 +2223,10 @@ try{ if(localStorage.getItem('szinn_theme')==='dark') document.body.classList.ad
       <p>Kies hoe je elke dag een seintje krijgt dat je reading klaarstaat.</p>
       <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
         <label><input type="radio" name="notifyChannel" value="whatsapp"><span>Via WhatsApp</span></label>
-        <input class="field" id="notifyPhone" type="tel" style="display:none" placeholder="Telefoonnummer, bijv. +31 6 12345678"/>
+        <div id="notifyPhoneRow" style="display:none;gap:8px">
+          <select class="field" id="notifyCC" aria-label="Landcode" style="width:auto;flex:0 0 auto"><option value="31">🇳🇱 +31</option><option value="32">🇧🇪 +32</option><option value="49">🇩🇪 +49</option><option value="33">🇫🇷 +33</option><option value="44">🇬🇧 +44</option><option value="34">🇪🇸 +34</option><option value="39">🇮🇹 +39</option><option value="351">🇵🇹 +351</option><option value="43">🇦🇹 +43</option><option value="41">🇨🇭 +41</option><option value="352">🇱🇺 +352</option><option value="353">🇮🇪 +353</option><option value="45">🇩🇰 +45</option><option value="46">🇸🇪 +46</option><option value="47">🇳🇴 +47</option><option value="597">🇸🇷 +597</option><option value="599">🇨🇼 +599</option><option value="297">🇦🇼 +297</option><option value="1">🇺🇸 +1</option></select>
+          <input class="field" id="notifyPhone" type="tel" autocomplete="tel-national" placeholder="Telefoonnummer, bijv. 6 12345678"/>
+        </div>
         <label><input type="radio" name="notifyChannel" value="email"><span>Via e-mail</span> <span id="notifyEmail" style="opacity:.6;font-size:13px"></span></label>
         <label><input type="radio" name="notifyChannel" value="off"><span>Geen meldingen</span></label>
       </div>
@@ -2579,7 +2582,7 @@ Object.assign(SZINN_EN, {
   'Je bericht is verstuurd. We lezen alles wat binnenkomt.': 'Your message has been sent. We read everything that comes in.',
 });
 Object.assign(SZINN_PH, {
-  'Telefoonnummer, bijv. +31 6 12345678': 'Phone number, e.g. +31 6 12345678',
+  'Telefoonnummer, bijv. 6 12345678': 'Phone number, e.g. 6 12345678',
   'Huidig wachtwoord': 'Current password',
   'Nieuw wachtwoord (min. 8 tekens)': 'New password (min. 8 characters)',
   'Bevestig nieuw wachtwoord': 'Confirm new password',
@@ -3343,7 +3346,7 @@ document.addEventListener('keydown', function(e){ if(e.key==='Escape'&&settingsV
 // ── Meldingsvoorkeur (WhatsApp / e-mail / uit) ──────────────────────────────
 function syncNotifyPhone(){
   var wa=document.querySelector('input[name="notifyChannel"]:checked');
-  $('notifyPhone').style.display=(wa&&wa.value==='whatsapp')?'block':'none';
+  $('notifyPhoneRow').style.display=(wa&&wa.value==='whatsapp')?'flex':'none';
 }
 document.querySelectorAll('input[name="notifyChannel"]').forEach(function(r){ r.addEventListener('change', syncNotifyPhone); });
 function loadNotifications(){
@@ -3351,17 +3354,30 @@ function loadNotifications(){
     if(!d) return;
     var radio=document.querySelector('input[name="notifyChannel"][value="'+d.channel+'"]');
     if(radio) radio.checked=true;
-    if(d.phone) $('notifyPhone').value=d.phone;
+    if(d.phone){
+      // opgeslagen als 316…: landcode in de lijst zetten, de rest in het vakje
+      var cc=[].map.call($('notifyCC').options,function(o){ return o.value; })
+        .sort(function(a,b){ return b.length-a.length; })
+        .filter(function(c){ return d.phone.indexOf(c)===0; })[0];
+      if(cc){ $('notifyCC').value=cc; $('notifyPhone').value=d.phone.slice(cc.length); }
+      else $('notifyPhone').value='+'+d.phone;
+    }
     if(d.email) set('notifyEmail','('+d.email+')');
     syncNotifyPhone();
   }).catch(function(){});
+}
+// Landcode uit de lijst + nummer zonder voorloopnul; zelf +/00 getypt wint.
+function volledigNummer(){
+  var n=$('notifyPhone').value.trim();
+  if(!n || /^(\+|00)/.test(n)) return n;
+  return '+'+$('notifyCC').value+n.replace(/\D/g,'').replace(/^0+/,'');
 }
 $('notifySave').addEventListener('click', function(){
   var ch=document.querySelector('input[name="notifyChannel"]:checked');
   if(!ch){ $('notifyMsg').textContent=EN()?'Choose an option first.':'Kies eerst een optie.'; return; }
   var b=$('notifySave'); b.disabled=true;
   fetch('/api/settings/notifications',{method:'POST',credentials:'same-origin',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({channel:ch.value,phone:$('notifyPhone').value})})
+    body:JSON.stringify({channel:ch.value,phone:volledigNummer()})})
     .then(function(r){ return r.json().then(function(d){ return {ok:r.ok,d:d}; }); })
     .then(function(x){ $('notifyMsg').textContent=x.ok?(EN()?'Preference saved ✓':'Voorkeur opgeslagen ✓'):(x.d.error||(EN()?'Could not save.':'Opslaan mislukt.')); })
     .catch(function(){ $('notifyMsg').textContent=EN()?'Could not save. Try again.':'Opslaan mislukt. Probeer opnieuw.'; })
