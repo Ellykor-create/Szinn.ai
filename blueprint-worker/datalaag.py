@@ -10,6 +10,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS = os.path.join(HERE, 'kit', 'scripts')
 sys.path.insert(0, SCRIPTS)
 from szinn_numerologie import lp, reduceer, naamgetal, naamdelen, normaliseer, splits, groeigetallen, MEESTERS  # noqa: E402
+from verdieping import verdieping  # noqa: E402
 
 MAANDEN = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december']
 TEKENS = ['Ram', 'Stier', 'Tweelingen', 'Kreeft', 'Leeuw', 'Maagd', 'Weegschaal', 'Schorpioen', 'Boogschutter', 'Steenbok', 'Waterman', 'Vissen']
@@ -200,7 +201,7 @@ def bouw(order, vandaag=None):
         pj=PJ, pj_jaar=vandaag.year, pj_stappen=datum_stappen(d, mo, vandaag.year)[0],
         pj2=PJ2, pj2_jaar=vandaag.year + 1, pj2_stappen=datum_stappen(d, mo, vandaag.year + 1)[0],
         ondertoon=ondertoon, naamgetallen=naamgetallen, groei=groeigetallen(naam, d, mo, y), maanden=maanden,
-        retrograde=[n for n in TIEN + ['Chiron'] if pos[n]['rx']],
+        retrograde=[n for n in TIEN + ['Chiron'] if pos[n]['rx']], verdieping=verdieping(chart, vandaag),
     )
     return facts, chart, chart_out + '\n' + trans_out
 

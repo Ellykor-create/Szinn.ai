@@ -522,6 +522,7 @@ app.post('/api/gift/process', async (req, res) => {
 
 // ── AI Companion & dashboard-data ────────────────────────────────────────────
 const { companionChat, companionConfigured, companionTurn, emptyCompanionState } = require('../../lib/companion-llm');
+const { signT, PY_INFO_EN, LP_INFO_EN, dayContext, companionSystem, todaysReading } = require('../../lib/daily-reading');
 
 // Verzamelt alles wat het dashboard en de companion nodig hebben voor deze
 // gebruiker: laatste order, berekende kaart/getallen (laag 1) en de
@@ -534,126 +535,14 @@ async function companionContext(userId, langOverride) {
   const order = orders.find(o => o.status === 'completed') || orders[0] || null;
   if (!order || order.status !== 'completed') return { order };
 
-  const lang = langOverride === 'en' ? 'en'
-    : langOverride === 'nl' ? 'nl'
-    : (order.blueprint_language === 'en' ? 'en' : 'nl');
   const textsAll = await blueprintStore().get(`${order.id}.texts.json`, { type: 'json' });
-  const texts = textsAll ? (textsAll[lang] || textsAll.nl) : null;
-
-  const { buildContext } = require('../../lib/pipeline');
-  const { calcPersonalMonths, calcPersonalDay, DAY_INFO } = require('../../lib/numerology');
-  const { currentSky } = require('../../lib/astro');
-
-  const ctx = buildContext(order);
-  const now = new Date();
-  const pm = calcPersonalMonths(order.birth_date, now, 1)[0];
-  const pd = calcPersonalDay(pm.number, now.getDate());
-  const sky = currentSky(now);
-
-  const [, bm, bd] = order.birth_date.split('-').map(Number);
-  let solar = new Date(now.getFullYear(), bm - 1, bd);
-  if (solar < now) solar = new Date(now.getFullYear() + 1, bm - 1, bd);
-
-  return { order, ctx, texts, lang, now, pm, pd, sky, solar, dayInfo: DAY_INFO };
+  return dayContext(order, textsAll, langOverride);
 }
 
 function fmtPos(p) {
   return p && p.sign !== '?'
     ? { sign: p.sign, signEn: p.signEn, deg: p.deg, min: p.min, house: p.house || null, retro: !!p.retrograde }
     : null;
-}
-
-// ── Engelse vertalingen voor de companion (labels + dagduiding) ───────────────
-const SIGN_EN = {
-  Ram: 'Aries', Stier: 'Taurus', Tweelingen: 'Gemini', Kreeft: 'Cancer',
-  Leeuw: 'Leo', Maagd: 'Virgo', Weegschaal: 'Libra', Schorpioen: 'Scorpio',
-  Boogschutter: 'Sagittarius', Steenbok: 'Capricorn', Waterman: 'Aquarius', Vissen: 'Pisces',
-};
-const signT = (lang, s) => (lang === 'en' ? (SIGN_EN[s] || s) : s);
-const DAY_INFO_EN = {
-  1: 'Day 1 carries a new beginning. Take the initiative yourself today.',
-  2: 'Day 2 asks for patience and cooperation. Listen and attune.',
-  3: 'Day 3 carries expression and joy. Share what lives inside you.',
-  4: 'Day 4 carries ground and structure. Build, organise, finish.',
-  5: 'Day 5 brings movement and change. Leave room for the unexpected.',
-  6: 'Day 6 is about care and harmony. Give attention to your people and your home.',
-  7: 'Day 7 asks for depth and stillness. Turn inward for a moment.',
-  8: 'Day 8 carries decisiveness and form. Act, complete.',
-  9: 'Day 9 closes. Let go of what is finished and be gentle.',
-  11: 'Master day 11: heightened intuition. Follow your feeling before you reason it away.',
-  22: 'Master day 22: build concretely on your greatest vision today.',
-};
-const PY_INFO_EN = {
-  1: { theme: 'New beginning',        energy: 'sowing, starting, choosing direction, taking initiative' },
-  2: { theme: 'Cooperation',          energy: 'patience, deepening relationships, listening, receiving' },
-  3: { theme: 'Expression & Joy',     energy: 'creativity, visibility, communicating, playing' },
-  4: { theme: 'Building & Structure', energy: 'hard work, laying foundations, discipline, order' },
-  5: { theme: 'Change',               energy: 'freedom, movement, new experiences, letting go' },
-  6: { theme: 'Responsibility',       energy: 'home, care, balance, relationships, being of service' },
-  7: { theme: 'Inner year',           energy: 'reflection, study, rest, spiritual deepening' },
-  8: { theme: 'Harvest & Power',      energy: 'material matters, business, reaping results, leadership' },
-  9: { theme: 'Completion & Release', energy: 'rounding off, forgiving, making room for the new' },
-};
-const LP_INFO_EN = {
-  1:  { name: 'Leader & Pioneer',        challenge: 'self-centredness' },
-  2:  { name: 'Mediator & Partner',      challenge: 'dependency' },
-  3:  { name: 'Creative Expresser',      challenge: 'scattering' },
-  4:  { name: 'Builder & Organiser',     challenge: 'rigidity' },
-  5:  { name: 'Freedom Seeker',          challenge: 'impatience' },
-  6:  { name: 'Caregiver & Guardian',    challenge: 'perfectionism' },
-  7:  { name: 'Seeker & Philosopher',    challenge: 'isolation' },
-  8:  { name: 'Material Master',         challenge: 'materialism' },
-  9:  { name: 'Humanitarian & Completer', challenge: 'difficulty letting go' },
-  11: { name: 'Spiritual Lightbringer', challenge: 'sensitivity' },
-  22: { name: 'Master Builder',          challenge: 'perfectionism' },
-  33: { name: 'Master Teacher',          challenge: 'self-sacrifice' },
-};
-
-// Deterministische dagduiding, opgebouwd uit blueprint-teksten en berekeningen.
-// Dient ook als vangnet wanneer de AI (tijdelijk) niet beschikbaar is.
-function dayFromBlueprint(c) {
-  const t = c.texts || {};
-  const en = c.lang === 'en';
-  const dayIdx = Math.floor(c.now.getTime() / 86400000);
-  const questions = (t.reflection && t.reflection.questions) || [];
-  const giftNames = en
-    ? ['intuition', 'imagination', 'memory', 'reasoning', 'perception', 'willpower']
-    : ['intuïtie', 'verbeeldingskracht', 'geheugen', 'redeneren', 'waarneming', 'wilskracht'];
-  const g1 = giftNames[dayIdx % 6], g2 = giftNames[(dayIdx + 2) % 6];
-  const natalMoon = c.ctx.chart.planets.moon;
-  const py = c.ctx.numerology.personalYear;
-  const moonSign = signT(c.lang, c.sky.moonSign || c.sky.moon.sign);
-  const pyInfo = en ? (PY_INFO_EN[py] || PY_INFO_EN[9]) : c.ctx.numerology.personalYearInfo;
-  if (en) return {
-    thema: (t.summary && t.summary.oneLiner) || 'Your blueprint as a compass for today',
-    focus: (t.integration && t.integration.layers && t.integration.layers.focus) || 'Take one small, concrete step',
-    vraag: questions.length ? questions[dayIdx % questions.length] : 'What asks for your attention today?',
-    lucht: `The moon is in ${moonSign} today, ${c.sky.waxing ? 'waxing' : 'waning'}. Your own moon is in ${signT('en', natalMoon.sign)}: use today's energy without losing your own foundation.`,
-    numFocus: DAY_INFO_EN[c.pd] || DAY_INFO_EN[9],
-    numReminder: `Year ${py} asks for ${pyInfo.theme.toLowerCase()}: ${pyInfo.energy.toLowerCase()}.`,
-    gaven: `Today ${g1} and ${g2} light up. Lean consciously on these two capacities.`,
-  };
-  return {
-    thema: (t.summary && t.summary.oneLiner) || 'Jouw blueprint als kompas voor vandaag',
-    focus: (t.integration && t.integration.layers && t.integration.layers.focus) || 'Zet één kleine, concrete stap',
-    vraag: questions.length ? questions[dayIdx % questions.length] : 'Wat vraagt vandaag om jouw aandacht?',
-    lucht: `De maan staat vandaag in ${moonSign}, ${c.sky.waxing ? 'wassend' : 'afnemend'}. Jouw eigen maan staat in ${natalMoon.sign}: gebruik de energie van vandaag zonder je eigen basis te verliezen.`,
-    numFocus: c.dayInfo[c.pd] || c.dayInfo[9],
-    numReminder: `Jaar ${py} vraagt om ${(c.ctx.numerology.personalYearInfo.theme || '').toLowerCase()}: ${(c.ctx.numerology.personalYearInfo.energy || '').toLowerCase()}.`,
-    gaven: `Vandaag lichten ${g1} en ${g2} op. Leun bewust op deze twee vermogens.`,
-  };
-}
-
-function companionSystem(c) {
-  const P = c.ctx.chart.planets;
-  const n = c.ctx.numerology;
-  const line = (p) => `${p.sign} ${p.deg}°${String(p.min).padStart(2, '0')}'${p.house ? ` (Huis ${p.house})` : ''}`;
-  return `Je bent de SZINN Companion, de ingebouwde begeleider in het dagelijkse dashboard van ${c.ctx.intake.clientName}.
-Toon: warm, gegrond, helder, nooit zweverig, geen new-age clichés. Spreek aan met jij/jouw, nooit u. Geen voorspellingen, geen medische, psychologische of financiële claims. Je bent een spiegel, geen orakel. ${c.ctx.intake.clientName} is altijd de enige expert over zichzelf.
-Je REKENT NOOIT zelf astrologie of numerologie. Gebruik uitsluitend deze vaste, geverifieerde gegevens en verzin niets nieuws:
-Zon ${line(P.sun)}; Maan ${line(P.moon)}; Ascendant ${line(P.ascendant)}; Noordknoop ${line(P.northNode)}; Zuidknoop ${line(P.southNode)}; Chiron ${line(P.chiron)}.
-Levenspad ${n.lifePath}; Persoonlijk Jaar ${n.personalYear} (${n.personalYearInfo.theme}); Persoonlijke Maand ${c.pm.number}; Persoonlijke Dag ${c.pd}.
-Vandaag: maan in ${c.sky.moon.sign}, ${c.sky.waxing ? 'wassend' : 'afnemend'}. Datum: ${c.now.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}.${c.texts && c.texts.summary && c.texts.summary.oneLiner ? `\nKern van de blueprint: ${c.texts.summary.oneLiner}` : ''}${c.lang === 'en' ? '\nIMPORTANT: The user uses the English dashboard. Reply entirely in English (use English zodiac sign names), while keeping the same warm, grounded tone.' : ''}`;
 }
 
 // Alle blueprint-data voor de dashboardblokken
@@ -675,8 +564,13 @@ app.get('/api/companion/blueprint', async (req, res) => {
 
   // De dagelijks veranderende duiding hoort bij dashboard-toegang (proef of
   // abonnement); de blueprint zelf (eenmalig gekocht) blijft altijd zichtbaar.
-  const acc = await accessState(await loadDB(), req);
+  const db = await loadDB();
+  const acc = await accessState(db, req);
   const subscribed = acc.dashboardOpen;
+  // Dagduiding van vandaag (transits op de eigen kaart), per dag gecachet en
+  // dezelfde als in het 12:00-appje.
+  const day = subscribed ? await todaysReading(acc.user, c) : null;
+  if (day && day.fresh) await saveDB(db);
 
   res.json({
     subscribed,
@@ -716,7 +610,7 @@ app.get('/api/companion/blueprint', async (req, res) => {
       nextFullMoon: c.sky.nextFullMoon ? { date: c.sky.nextFullMoon.date, sign: signT(c.lang, c.sky.nextFullMoon.sign) } : null,
       solarReturn: { date: c.solar, sign: signT(c.lang, P.sun.sign) },
     },
-    day: subscribed ? dayFromBlueprint(c) : null,
+    day: day && day.reading,
     texts: c.texts,
     mandala: generateMiniMandalaSVG(c.ctx.chart),
     blueprintUrl: c.order.blueprint_url,
@@ -725,7 +619,7 @@ app.get('/api/companion/blueprint', async (req, res) => {
   });
 });
 
-// Dagduiding vernieuwen: AI-versie met de blueprint-fallback als vangnet
+// Dagduiding van vandaag (zelfde cache als /api/companion/blueprint en het 12:00-appje)
 app.post('/api/companion/day', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
   // Dagelijkse duiding hoort bij dashboard-toegang (proef of abonnement).
@@ -738,30 +632,10 @@ app.post('/api/companion/day', async (req, res) => {
   const c = await companionContext(req.auth.userId, req.body?.lang || req.query.lang);
   if (!c.ctx) return res.status(400).json({ error: 'Nog geen voltooide blueprint' });
 
-  const fallback = dayFromBlueprint(c);
-  if (!companionConfigured()) return res.json({ source: 'blueprint', ...fallback });
-
-  try {
-    const str = { type: 'string' };
-    const schema = {
-      type: 'object', additionalProperties: false,
-      properties: { thema: str, focus: str, vraag: str, lucht: str, numFocus: str, numReminder: str, gaven: str },
-      required: ['thema', 'focus', 'vraag', 'lucht', 'numFocus', 'numReminder', 'gaven'],
-    };
-    const userPrompt = c.lang === 'en'
-      ? `Generate today's daily reading in ENGLISH, fully grounded in the fixed data. Fields: thema (short powerful sentence), focus (one concrete small step), vraag (one reflection question), lucht (2-3 sentences about today's moon linked to the natal moon), numFocus (1 sentence for Personal Day ${c.pd}), numReminder (1 sentence for Personal Year ${c.ctx.numerology.personalYear}), gaven (1 sentence: which 2 of the six gifts light up today and why).`
-      : `Genereer de dagduiding voor vandaag, volledig gegrond in de vaste gegevens. Velden: thema (korte krachtige zin), focus (één concrete kleine stap), vraag (één reflectievraag), lucht (2-3 zinnen over de maanstand vandaag gekoppeld aan de geboortemaan), numFocus (1 zin bij Persoonlijke Dag ${c.pd}), numReminder (1 zin bij Persoonlijk Jaar ${c.ctx.numerology.personalYear}), gaven (1 zin: welke 2 van de zes gaven vandaag oplichten en waarom).`;
-    const reading = await companionChat({
-      system: companionSystem(c),
-      messages: [{ role: 'user', content: userPrompt }],
-      maxTokens: 700,
-      jsonSchema: schema,
-    });
-    res.json({ source: 'ai', ...reading });
-  } catch (err) {
-    console.error('companion/day AI-fout:', err.message);
-    res.json({ source: 'blueprint', ...fallback });
-  }
+  const db = await loadDB();
+  const { reading, source, fresh } = await todaysReading(db.users.find(u => u.id === req.auth.userId), c);
+  if (fresh) await saveDB(db);
+  res.json({ source, ...reading });
 });
 
 // AI-geschreven Guidance-kaarten (astrologie, numerologie, kabbalah/tikkun, maan)

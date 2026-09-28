@@ -2,7 +2,8 @@
 // Ingeplande functie: stuurt elke gebruiker met een voltooide blueprint rond
 // 12:00 NL-tijd een dagelijkse reading-reminder via het gekozen kanaal
 // (WhatsApp of e-mail), met een mini sneak-peek (thema + focus) uit de
-// blueprint-teksten. Toegang: proef (11 dagen) of lopend abonnement.
+// dagduiding van vandaag (lib/daily-reading: transits op de eigen kaart), dus
+// elke dag anders. Toegang: proef (11 dagen) of lopend abonnement.
 // Netlify-tegenhanger van de setInterval-job in server.js.
 //
 // Netlify-cron draait op UTC en kent geen tijdzone. We plannen 10:00 én 11:00
@@ -14,6 +15,7 @@ const { connectLambda } = require('@netlify/blobs');
 const { sendWhatsApp } = require('../../lib/whatsapp');
 const { sendDailyReadingEmail } = require('../../lib/email');
 const { subIsActive, stripeConfigured, trialStartedAt } = require('../../lib/stripe');
+const { dayContext, todaysReading } = require('../../lib/daily-reading');
 
 // Proefperiode: TRIAL_DAYS gratis dashboard + reminders vanaf het moment dat de
 // klant de proef start (gelijk aan api.js). Daarna alleen met een abonnement.
@@ -23,11 +25,6 @@ function withinTrial(user) {
   if (!start) return false;
   return (Date.now() - new Date(start).getTime()) / 86400000 < TRIAL_DAYS;
 }
-
-const FALLBACK = {
-  nl: { thema: 'Jouw blueprint als kompas voor vandaag', focus: 'Zet één kleine, concrete stap' },
-  en: { thema: 'Your blueprint as a compass for today',  focus: 'Take one small, concrete step' },
-};
 
 // De dagelijkse reading hoort bij het abonnement; demo-accounts uitgezonderd.
 // Zonder Stripe-sleutel (lokaal) niet blokkeren — gelijk aan hasSubscriptionAccess in api.js.
@@ -50,11 +47,11 @@ async function sendReminder(u, order, channel) {
   const lang = u.lang === 'en' || u.lang === 'nl' ? u.lang
     : (order.blueprint_language === 'en' ? 'en' : 'nl');
   const textsAll = await blueprintStore().get(`${order.id}.texts.json`, { type: 'json' });
-  // Alleen teksten in dezelfde taal als de template; anders de vaste fallback.
-  const t = (textsAll && textsAll[lang]) || {};
-  const fb = FALLBACK[lang];
-  const thema = (t.summary && t.summary.oneLiner) || fb.thema;
-  const focus = (t.integration && t.integration.layers && t.integration.layers.focus) || fb.focus;
+  // Zelfde reading als de dagkaart op het dashboard; zet hem ook in de cache
+  // op `u` (runDaily slaat de DB op). WhatsApp-parameters mogen geen regeleindes.
+  const { reading } = await todaysReading(u, dayContext(order, textsAll, lang));
+  const thema = reading.thema.replace(/\s+/g, ' ').trim();
+  const focus = reading.focus.replace(/\s+/g, ' ').trim();
   const firstName = (u.name || order.client_name || '').trim().split(/\s+/)[0] || (lang === 'en' ? 'there' : 'daar');
   const result = channel === 'email'
     ? await sendDailyReadingEmail({ to: u.email, name: u.name, theme: thema, focus, lang })
@@ -85,12 +82,14 @@ async function runDaily({ dryRun = false } = {}) {
     if (o.status === 'completed') completedByUser.set(o.user_id, o);
   }
 
+  // Parallel: elke reading is een AI-call en de scheduled function heeft een
+  // tijdslimiet. ponytail: alles tegelijk, batchen zodra er honderden users zijn.
   const report = [];
-  for (const u of db.users || []) {
+  await Promise.all((db.users || []).map(async (u) => {
     const order = completedByUser.get(u.id);
-    if (!order || !hasReminderAccess(u)) continue;
+    if (!order || !hasReminderAccess(u)) return;
     const channel = u.notify_channel || (u.phone ? 'whatsapp' : 'off');
-    if (dryRun) { report.push({ email: u.email, channel, lang: u.lang || order.blueprint_language || 'nl' }); continue; }
+    if (dryRun) { report.push({ email: u.email, channel, lang: u.lang || order.blueprint_language || 'nl' }); return; }
     try {
       const r = await sendReminder(u, order);
       u.last_reminder = { at: new Date().toISOString(), ok: r.sent, channel: r.channel || channel, info: r.reason || r.result?.language || null };
@@ -99,7 +98,7 @@ async function runDaily({ dryRun = false } = {}) {
       u.last_reminder = { at: new Date().toISOString(), ok: false, channel, info: err.message.slice(0, 200) };
     }
     report.push({ email: u.email, ...u.last_reminder });
-  }
+  }));
   if (!dryRun) await saveDB(db);
   const sent = report.filter(r => r.ok).length;
   console.log(`daily-whatsapp: ${sent}/${report.length} reminder(s) verstuurd.`, JSON.stringify(report));

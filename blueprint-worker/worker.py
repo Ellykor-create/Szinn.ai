@@ -194,7 +194,7 @@ def genereer(job):
     groepen = writer.schrijf(f, intake, log=lambda m: log(oid, m))
     laatste = []
     for ronde in range(1, MAX_RONDES + 1):
-        vorm = writer.vormcontrole(groepen, f)
+        vorm = writer.vormcontrole(groepen, f, leesbaar=ronde <= 2)
         if vorm:
             laatste = sum(vorm.values(), [])
             log(oid, f'ronde {ronde}: vormcontrole {vorm}')

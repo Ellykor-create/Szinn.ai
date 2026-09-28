@@ -2969,11 +2969,40 @@ document.querySelectorAll('.meerdank').forEach(function(knop){
 
   function taalnu(){ return document.documentElement.lang==='en' ? 'en' : 'nl'; }
 
+  // Persoonlijke kaarten uit de eigen blueprint (window.SZINN_BP, gezet door
+  // laadBlueprint). Zonder voltooide blueprint blijven de vaste ZINNEN.
+  var lijst=[];
+  function platte(h){ var d=document.createElement('div'); d.innerHTML=h||''; return (d.textContent||'').trim(); }
+  function zinnenUit(h){
+    return (platte(h).match(/[^.!?]+[.!?]+(?=\s|$)/g)||[]).map(function(s){ return s.trim(); });
+  }
+  function eigenZinnen(){
+    var bp=window.SZINN_BP; if(!bp) return null;
+    var t=bp.texts||{}, C=bp.chart||{}, N=bp.numerology||{}, en=taalnu()==='en', uit=[];
+    function sn(p){ return en?(p.signEn||p.sign):p.sign; }
+    function voeg(kop, tekst){ tekst=platte(tekst); if(tekst && tekst.length<=150) uit.push({kop:kop, t:tekst}); }
+    voeg(en?'My blueprint':'Mijn blauwdruk', t.introQuote);
+    voeg(en?'Who I am':'Wie ik ben', t.hero&&t.hero.core);
+    if(C.sun&&C.moon&&C.ascendant)
+      voeg(en?'My chart':'Mijn kaart', (en?'Sun in ':'Zon in ')+sn(C.sun)+' · '+(en?'Moon in ':'Maan in ')+sn(C.moon)+' · '+sn(C.ascendant)+' Ascendant');
+    if(N.lifePath!=null)
+      voeg((en?'Life path ':'Levenspad ')+N.lifePath, (t.numerology&&t.numerology.lifePathTitle)||N.lifePathName);
+    voeg(en?'My soul direction':'Mijn zielsrichting', t.nodes&&zinnenUit(t.nodes.north)[0]);
+    voeg(en?'My path':'Mijn weg', t.summary&&t.summary.tikkunSub);
+    // Gaven: eerste zin noemt de plaatsing, de tweede is de gave zelf.
+    ((t.integration&&t.integration.gifts)||[]).slice(0,3).forEach(function(g){
+      voeg(en?'My gift':'Mijn gave', zinnenUit(g)[1]);
+    });
+    voeg(en?'This year':'Dit jaar', t.hero&&t.hero.alignYear);
+    voeg(en?'My chance':'Mijn kans', t.dashboard&&zinnenUit(t.dashboard.closing).slice(0,2).join(' '));
+    return uit.length ? uit : null;
+  }
+
   function bouwZinnen(){
     var r=document.getElementById('qtZinnen'); r.innerHTML='';
-    ZINNEN.forEach(function(z,i){
+    lijst.forEach(function(z,i){
       var b=document.createElement('button');
-      b.textContent=(i+1); b.className=(i===zin?'on':''); b.setAttribute('aria-label', z[taalnu()]);
+      b.textContent=z.kop||(i+1); b.className=(i===zin?'on':''); b.setAttribute('aria-label', z.t);
       b.addEventListener('click', function(){ zin=i; bouwZinnen(); teken(); });
       r.appendChild(b);
     });
@@ -3016,9 +3045,9 @@ document.querySelectorAll('.meerdank').forEach(function(knop){
     }
 
     // zin
-    var t=ZINNEN[zin][taalnu()];
+    var t=lijst[zin].t, kop=lijst[zin].kop;
     var basis = formaat==='vk' ? 74 : 82;
-    var maat = t.length>60 ? basis-14 : basis;
+    var maat = t.length>110 ? basis-24 : t.length>60 ? basis-14 : basis;
     ctx.textAlign='center'; ctx.fillStyle='#FBF7EF';
     ctx.shadowColor='rgba(13,10,7,.55)'; ctx.shadowBlur=formaat==='vk'?26:32; ctx.shadowOffsetY=2;
     ctx.font='italic 500 '+maat+'px "Cormorant Garamond", Georgia, serif';
@@ -3026,6 +3055,14 @@ document.querySelectorAll('.meerdank').forEach(function(knop){
     var lh2=maat*1.28, start=H/2 - (regels.length-1)*lh2/2;
     regels.forEach(function(r,i){ ctx.fillText(r, mid, start+i*lh2); });
     ctx.shadowColor='transparent'; ctx.shadowBlur=0; ctx.shadowOffsetY=0;
+
+    // kop boven de zin (alleen bij persoonlijke kaarten)
+    if(kop){
+      ctx.fillStyle='#C9A96E'; ctx.font='400 '+(formaat==='vk'?24:28)+'px "Jost", sans-serif';
+      ctx.save(); ctx.letterSpacing='7px';
+      ctx.fillText(kop.toUpperCase(), mid, start - maat - (formaat==='vk'?22:34));
+      ctx.restore();
+    }
 
     // gouden lijn met sterretje
     var y = start + regels.length*lh2 + (formaat==='vk'?26:40);
@@ -3043,7 +3080,10 @@ document.querySelectorAll('.meerdank').forEach(function(knop){
     ctx.restore();
   }
 
-  function open_(){ bouwZinnen(); teken(); laag.classList.add('aan'); document.body.style.overflow='hidden'; }
+  function open_(){
+    lijst=eigenZinnen()||ZINNEN.map(function(z){ return {t:z[taalnu()]}; });
+    if(zin>=lijst.length) zin=0;
+    bouwZinnen(); teken(); laag.classList.add('aan'); document.body.style.overflow='hidden'; }
   function dicht(){ laag.classList.remove('aan'); document.body.style.overflow=''; }
   ['qtMenu','qtRust'].forEach(function(id){
     var k=document.getElementById(id);
@@ -4017,6 +4057,7 @@ function laadBlueprint(){
     .then(function(data){
       if(data.status==='completed'){
         BP=data;
+        window.SZINN_BP=data; // voor de persoonlijke deelkaarten
         document.body.classList.remove('coming-soon');
         $('pendingNote').style.display='none';
         fillFromBlueprint(data);

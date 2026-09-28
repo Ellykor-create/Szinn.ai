@@ -147,6 +147,8 @@ Werkregels voor deze pipeline (aanvullend op de masterprompt):
 7. Geen namen van andere mensen dan die de klant zelf in de intake noemt. Noem geen andere geboortedata dan die van de klant; schrijf data in de kalender zonder jaartal.
 8. Houd je exact aan de gevraagde aantallen. Lever alleen de JSON volgens het schema.
 9. Eenvoudige taal (B1-niveau): schrijf zoals je tegen een vriendin praat. Korte zinnen (gemiddeld 15 woorden of minder), gewone woorden, één gedachte per zin. Geen abstracte of spirituele vaktaal (manifestatie, polariteit, archetypisch, transformatief, resoneren, integreren, paradigma, essentie, katalysator) en geen dure woorden waar een gewoon woord bestaat ("mogelijk maken" wordt "helpen", "fundamenteel" wordt "diep"). Astrologische en numerologische termen mogen wel, maar alleen met de uitleg in gewone taal uit de masterprompt.
+10. Schrijf voor iemand zonder enige kennis van astrologie. Maak elke duiding concreet met een alledaags moment dat de lezer uit het eigen leven kent (een gesprek, een werkdag, een avond thuis, een ruzie, een keuze), zodat die denkt "dat ben ik". Heeft de intake iets over dat thema, sluit dan aan bij wat de klant daar vertelt. Geen algemeenheden die op iedereen passen ("je bent soms onzeker", "je houdt van mensen"): benoem juist wat deze kaart onderscheidt, en hoe twee plaatsingen samen iets specifieks laten zien.
+11. Gebruik de VERDIEPING als rode draad: de chartheerser, de eindheerser, waardigheden en aspectpatronen laten zien welke plaatsingen in deze kaart het zwaarst wegen. Geef die het meeste gewicht, laat ze in meerdere hoofdstukken terugkomen en leg verbanden ertussen, zodat het document als één verhaal over deze mens leest in plaats van een losse opsomming. Vertaal de techniek naar gewone taal (niet "je hebt een T-kruis", wel wat de lezer ervan merkt, met de techniek tussen haakjes). Progressies (hoe de kaart zich door de jaren ontwikkelt) en levenscycli gebruik je voor het nu: benoem ze bij het persoonlijk jaar en in de introductie of de integratie. Levenscycli schrijf je als leeftijd ("rond je 29e"), nooit als datum.
 
 === MASTERPROMPT v4 ===
 """ + MASTERPROMPT
@@ -167,6 +169,7 @@ def feiten_tekst(f, intake):
                'RETROGRADE: ' + (', '.join(f['retrograde']) or 'geen'), '',
                'ASPECTTABEL (orb tot 5°, deze sleutels exact gebruiken):'] + [f"  {a['sleutel']} · orb {a['orb']}" for a in f['aspecten_tabel']]
     regels += ['ALLE ASPECTEN tot 6° (voor duiding):', '  ' + '; '.join(f['aspecten_alle']), '',
+               'VERDIEPING (berekend; de rode draden van deze kaart):'] + [f'  {v}' for v in f.get('verdieping', [])] + ['',
                f"GEBOORTETIJD: Ascendant wisselt van teken over {f['asc_marge_min']} minuten. Gevoelige plaatsingen: {'; '.join(f['gevoelig']) or 'geen'}. "
                f"Wisselt van huis bij ±2 minuten: {', '.join(f['wankel']) or 'geen'}. Ascendant binnen 2° van een tekengrens: {'ja' if f['asc_grens'] else 'nee'}.", '',
                'NUMEROLOGIE (Pythagoras, Decoz):',
@@ -251,14 +254,44 @@ def _pad(d, pad):
     return d
 
 
-def vormcontrole(groepen, f):
-    """Geeft {groep: [problemen]} terug; leeg = in orde."""
+VAKTAAL = re.compile(r'\b(manifestatie\w*|polariteit\w*|archetypisch\w*|transformatie[fv]\w*|resoner\w*|integreer\w*|integreren|paradigma\w*|essentie|katalysator\w*)\b', re.I)
+MAX_ZIN = 30   # woorden, bron tussen haakjes niet meegeteld; regel 9 vraagt gemiddeld 15
+
+
+def _teksten(d, pad=''):
+    if isinstance(d, str):
+        yield pad, d
+    elif isinstance(d, dict):
+        for k, v in d.items():
+            if k not in ('prompts', 'mail'):   # AI-prompts en mail mogen langer
+                yield from _teksten(v, f'{pad}.{k}'.lstrip('.'))
+    elif isinstance(d, list):
+        for i, v in enumerate(d):
+            yield from _teksten(v, f'{pad}[{i}]')
+
+
+def leesbaarheid(c):
+    """B1-controle (regel 9): vaktaal en te lange zinnen, met de vindplaats erbij."""
+    p = []
+    for pad, t in _teksten(c):
+        p += [f'{pad}: vaktaal "{w}"; zeg het in gewone woorden' for w in dict.fromkeys(m.group(0) for m in VAKTAAL.finditer(t))]
+        for zin in re.split(r'(?<=[.!?])\s+', re.sub(r'\([^)]*\)', '', t)):
+            n = len(re.findall(r"[\wà-ÿ']+", zin))
+            if n > MAX_ZIN:
+                p.append(f'{pad}: zin van {n} woorden ("{zin[:60]}…"); knip op in korte zinnen')
+    return p[:8]
+
+
+def vormcontrole(groepen, f, leesbaar=True):
+    """Geeft {groep: [problemen]} terug; leeg = in orde. leesbaar=False slaat de B1-controle over (mag oplevering niet blokkeren)."""
     fouten = {}
     for g, c in groepen.items():
         p = [f'{pad}: {len(_pad(c, pad))} in plaats van precies {n}' for pad, n in AANTAL[g] if len(_pad(c, pad)) != n]
         tekst = json.dumps(c, ensure_ascii=False)
         if '—' in tekst:
             p.append('em-dash (—) gebruikt; herschrijf die zinnen zonder em-dash')
+        if leesbaar:
+            p += leesbaarheid(c)
         if g in ('A', 'B', 'C'):
             cit = re.findall(r'(?:\\"|[“”])([^"“”\\]{6,200})(?:\\"|[“”])', tekst)
             if cit:
