@@ -1500,7 +1500,7 @@
         "kopcursief": "daarna kies je zelf.",
         "tekst": "Stap 1 is van jou, voor altijd. Stap 2 en 3 horen bij de dagelijkse integratie: een apart deel van € 3,69 per maand, maandelijks opzegbaar.\nJe begint met elf dagen. Je betaalt pas als je daarna doorgaat.",
         "knop": "Start je elf dagen",
-        "href": "{dashboard}",
+        "href": "{dashboard}?start=trial",
         "nieuw": true,
         "naast": {
           "kop": "Wat je die elf dagen krijgt",

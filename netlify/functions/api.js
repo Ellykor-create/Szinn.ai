@@ -680,6 +680,7 @@ app.get('/api/companion/blueprint', async (req, res) => {
     paid: acc.paid,
     trial: acc.trial,
     trialDaysLeft: acc.trialDaysLeft,
+    trialAvailable: acc.trialAvailable,
     companionLimit: Number.isFinite(acc.companionLimit) ? acc.companionLimit : null,
     companionLeft: Number.isFinite(acc.companionLeft) ? acc.companionLeft : null,
     status: 'completed',
@@ -975,7 +976,7 @@ app.post('/api/settings/password', async (req, res) => {
 // gebruiker rustig kan invullen (en een concept later kan afmaken).
 const {
   stripeReq, stripeConfigured,
-  createSubscriptionCheckout, createGiftCheckout, summarizeSub, subIsActive, refreshSubIfStale, cancelSubscription,
+  createSubscriptionCheckout, createGiftCheckout, summarizeSub, subIsActive, trialStartedAt, refreshSubIfStale, cancelSubscription,
 } = require('../../lib/stripe');
 const INTAKE_PAY_LINK = process.env.INTAKE_PAY_LINK || 'https://buy.stripe.com/fZu9AL8g20KT5xgdpO0kE00';
 // Engelse betaallink (eigen redirect naar /intake-en); zolang die er nog niet
@@ -1174,8 +1175,9 @@ const TRIAL_COMPANION_LIMIT  = parseInt(process.env.TRIAL_COMPANION_LIMIT || '3'
 const SUB_COMPANION_LIMIT    = parseInt(process.env.SUB_COMPANION_LIMIT || '10', 10);
 
 function trialDaysLeft(user) {
-  if (!user?.created_at) return 0;
-  const elapsedDays = (Date.now() - new Date(user.created_at).getTime()) / 86400000;
+  const start = trialStartedAt(user);
+  if (!start) return 0;
+  const elapsedDays = (Date.now() - new Date(start).getTime()) / 86400000;
   return Math.max(0, Math.ceil(TRIAL_DAYS - elapsedDays));
 }
 function currentMonthKey(d = new Date()) {
@@ -1226,8 +1228,19 @@ async function accessState(db, req) {
   const companionLimit = unlimited ? Infinity : (dashboardOpen ? limit : 0);
   const companionLeft  = unlimited ? Infinity : Math.max(0, companionLimit - used);
   return { user, paid, trial, unlimited, dashboardOpen, trialDaysLeft: left,
+    trialAvailable: !paid && !trialStartedAt(user),
     companionUsed: used, companionLimit, companionLeft };
 }
+
+// "Start je elf dagen": zet de startdatum van de proef, één keer per account.
+app.post('/api/trial/start', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const db = await loadDB();
+  const user = db.users.find(u => u.id === req.auth.userId);
+  if (!user) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
+  if (!trialStartedAt(user)) { user.trial_started_at = new Date().toISOString(); await saveDB(db); }
+  res.json({ ok: true, trialDaysLeft: trialDaysLeft(user) });
+});
 
 app.post('/api/subscription/checkout', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
@@ -1273,6 +1286,7 @@ app.get('/api/subscription/status', async (req, res) => {
     configured: stripeConfigured(),
     trial: acc.trial,
     trialDaysLeft: acc.trialDaysLeft,
+    trialAvailable: acc.trialAvailable,
     paid: acc.paid,
   });
 });
@@ -1888,9 +1902,29 @@ app.post('/api/admin/user/:userId/reset-intake', async (req, res) => {
   db.orders = db.orders.filter(o => o.user_id !== user.id);
   delete user.intake_draft;                     // eventueel opgeslagen concept weg
   user.intake_grant = true;                     // nieuwe intake zonder betaling
-  user.created_at = new Date().toISOString();   // proef van 11 dagen herstart
+  delete user.trial_started_at;                 // proef van 11 dagen mag opnieuw starten
+  user.created_at = new Date().toISOString();
   await saveDB(db);
   res.json({ ok: true, removed });
+});
+
+// Testknop: stuurt de dagelijkse reminder nú naar één account, via dezelfde
+// code als de 12:00-job, en geeft de respons van Meta/Resend terug.
+// Body: { email, channel?: 'whatsapp'|'email', phone? } — phone alleen voor deze test.
+app.post('/api/admin/test-reminder', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  const { email, channel, phone } = req.body || {};
+  const db = await loadDB();
+  const user = db.users.find(u => (u.email || '').toLowerCase() === String(email || '').toLowerCase());
+  if (!user) return res.status(404).json({ error: 'Gebruiker niet gevonden' });
+  const order = [...db.orders].reverse().find(o => o.user_id === user.id && o.status === 'completed');
+  if (!order) return res.status(400).json({ error: 'Geen voltooide blueprint' });
+  try {
+    const { sendReminder } = require('./daily-whatsapp');
+    res.json(await sendReminder(phone ? { ...user, phone } : user, order, channel));
+  } catch (err) {
+    res.status(502).json({ error: err.message });
+  }
 });
 
 // ── Foutafhandelaar ─────────────────────────────────────────────────────────────
@@ -1922,7 +1956,8 @@ if (require.main === module) {
   const dayMs = 86400000;
   const iso = (ms) => new Date(Date.now() - ms).toISOString();
   // Proefperiode: vers account → volle TRIAL_DAYS; verlopen → 0.
-  assert.strictEqual(trialDaysLeft({ created_at: iso(0) }), TRIAL_DAYS);
+  assert.strictEqual(trialDaysLeft({ created_at: iso(0) }), 0, 'proef start pas bij klik');
+  assert.strictEqual(trialDaysLeft({ created_at: iso(0), trial_started_at: iso(0) }), TRIAL_DAYS);
   assert.strictEqual(trialDaysLeft({ created_at: iso((TRIAL_DAYS + 1) * dayMs) }), 0);
   assert.strictEqual(trialDaysLeft({}), 0);
   // Companion-quota lezen: proef telt totaal, abonnement per maand (stale = reset).
@@ -1945,7 +1980,7 @@ if (require.main === module) {
     // Proef voorbij, geen abonnement → dicht; override 'on' → open; 'off' wint van de proef.
     assert.strictEqual((await accessState({ users: [expired()] }, req)).dashboardOpen, false);
     assert.strictEqual((await accessState({ users: [expired({ dashboard_access: 'on' })] }, req)).dashboardOpen, true);
-    assert.strictEqual((await accessState({ users: [{ ...expired({ dashboard_access: 'off' }), created_at: iso(0) }] }, req)).dashboardOpen, false);
+    assert.strictEqual((await accessState({ users: [{ ...expired({ dashboard_access: 'off' }), trial_started_at: iso(0) }] }, req)).dashboardOpen, false);
     // Super-account (in SUPER_EMAILS): onbeperkte Companion (Infinity) + dashboard open,
     // óók zonder proef/abonnement. Gewoon verlopen account blijft eindig → regressiebewaking.
     assert.strictEqual(isSuperEmail('elly@szinn.ai'), true);

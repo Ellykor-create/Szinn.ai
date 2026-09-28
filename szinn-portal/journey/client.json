@@ -1489,7 +1489,7 @@
         "kopcursief": "then you choose.",
         "tekst": "Step 1 is yours, for good. Steps 2 and 3 belong to the daily integration: a separate part at € 3.69 a month, cancel any month.\nYou start with eleven days. You only pay if you carry on after that.",
         "knop": "Start your eleven days",
-        "href": "{dashboard}",
+        "href": "{dashboard}?start=trial",
         "nieuw": true,
         "naast": {
           "kop": "What those eleven days give you",

@@ -3377,8 +3377,12 @@ $('notifySave').addEventListener('click', function(){
 
 // ── Abonnement (€3,69/mnd): daily + reminders + companion ───────────────────
 function unlockDashboard(){ document.body.classList.remove('locked'); }
+var TRIAL_AVAILABLE=false;
 function showDayUpsell(){
   document.body.classList.add('locked');
+  $('heroSubBtn').textContent = TRIAL_AVAILABLE
+    ? (EN()?'Start your eleven free days →':'Start je elf dagen gratis →')
+    : (EN()?'Unlock your daily guidance — €3.69/mo':'Ontgrendel je dagelijkse duiding — €3,69/mnd');
   set('dTheme', EN()?'Unlock your daily guidance':'Ontgrendel je dagelijkse duiding');
   set('dFocus', EN()
     ? 'Your daily reading, reminders and the Companion are part of the SZINN subscription — €3.69 per month, cancel monthly.'
@@ -3451,7 +3455,11 @@ $('subBtn').addEventListener('click', function(){
   }
   confirmSubscribe(this);
 });
-$('heroSubBtn').addEventListener('click', function(){ confirmSubscribe(this); });
+$('heroSubBtn').addEventListener('click', function(){
+  if(!TRIAL_AVAILABLE) return confirmSubscribe(this);
+  this.disabled=true;
+  startTrial().then(function(){ location.reload(); });
+});
 // Terug van Stripe (?sub_session=…): abonnement bevestigen, URL opschonen.
 (function(){
   var sid=new URLSearchParams(location.search).get('sub_session');
@@ -3616,6 +3624,7 @@ function fillFromBlueprint(d){
   // Dagduiding (deterministisch uit blueprint). Zonder abonnement stuurt de
   // server day:null mee → toon de uitnodiging.
   SUBSCRIBED = d.subscribed!==false;
+  TRIAL_AVAILABLE = !!d.trialAvailable;
   applyDay(d.day);
   if(!SUBSCRIBED) showDayUpsell();
 
@@ -3964,8 +3973,16 @@ function zetDatums(){
   set('heroDate','SZINN · '+datum);
 }
 
+// Vanuit de journey ("Start je elf dagen") komt de klant binnen met
+// ?start=trial: dan start de proef hier, vóór de blueprint geladen wordt.
+function startTrial(){
+  return fetch('/api/trial/start',{method:'POST',credentials:'same-origin'})
+    .then(function(r){ if(r.ok) history.replaceState(null,'',location.pathname+location.hash); })
+    .catch(function(){});
+}
 function laadBlueprint(){
-  return fetch('/api/companion/blueprint?lang='+(EN()?'en':'nl'),{credentials:'same-origin'})
+  var eerst=/[?&]start=trial\b/.test(location.search) ? startTrial() : Promise.resolve();
+  return eerst.then(function(){ return fetch('/api/companion/blueprint?lang='+(EN()?'en':'nl'),{credentials:'same-origin'}); })
     .then(function(r){ return r.json(); })
     .then(function(data){
       if(data.status==='completed'){

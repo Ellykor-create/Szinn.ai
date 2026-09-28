@@ -12,14 +12,15 @@
 const { loadDB, blueprintStore } = require('../../lib/db');
 const { sendWhatsApp } = require('../../lib/whatsapp');
 const { sendDailyReadingEmail } = require('../../lib/email');
-const { subIsActive, stripeConfigured } = require('../../lib/stripe');
+const { subIsActive, stripeConfigured, trialStartedAt } = require('../../lib/stripe');
 
-// Proefperiode: verse accounts krijgen TRIAL_DAYS gratis dashboard + reminders
-// (gelijk aan api.js). Daarna alleen nog met een lopend abonnement.
+// Proefperiode: TRIAL_DAYS gratis dashboard + reminders vanaf het moment dat de
+// klant de proef start (gelijk aan api.js). Daarna alleen met een abonnement.
 const TRIAL_DAYS = parseInt(process.env.TRIAL_DAYS || '11', 10);
-function withinTrial(createdAt) {
-  if (!createdAt) return false;
-  return (Date.now() - new Date(createdAt).getTime()) / 86400000 < TRIAL_DAYS;
+function withinTrial(user) {
+  const start = trialStartedAt(user);
+  if (!start) return false;
+  return (Date.now() - new Date(start).getTime()) / 86400000 < TRIAL_DAYS;
 }
 
 const FALLBACK = {
@@ -35,6 +36,28 @@ const DEMO_EMAILS = [(process.env.DEMO_EMAIL || 'demo@szinn.ai').trim().toLowerC
 const SUPER_EMAILS = (process.env.SUPER_EMAILS || 'morgan@szinn.ai,elly@szinn.ai,danillo@udefine.nl')
   .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
 
+// Eén reminder via het gekozen kanaal (of `channel` om te forceren, voor de
+// admin-testknop). Geeft de ruwe respons van Meta/Resend terug; gooit bij fouten.
+async function sendReminder(u, order, channel) {
+  // Kanaalkeuze: onbekend/leeg valt terug op WhatsApp mits er een nummer is.
+  channel = channel || u.notify_channel || (u.phone ? 'whatsapp' : 'off');
+  if (channel === 'off') return { sent: false, reason: 'kanaal uit' };
+  if (channel === 'whatsapp' && !u.phone) return { sent: false, reason: 'geen telefoonnummer' };
+  if (channel === 'email' && !u.email) return { sent: false, reason: 'geen e-mailadres' };
+  const lang = order.blueprint_language === 'en' ? 'en' : 'nl';
+  const textsAll = await blueprintStore().get(`${order.id}.texts.json`, { type: 'json' });
+  const t = (textsAll && (textsAll[lang] || textsAll.nl)) || {};
+  const fb = FALLBACK[lang];
+  const thema = (t.summary && t.summary.oneLiner) || fb.thema;
+  const focus = (t.integration && t.integration.layers && t.integration.layers.focus) || fb.focus;
+  const firstName = (u.name || order.client_name || '').trim().split(/\s+/)[0] || (lang === 'en' ? 'there' : 'daar');
+  const result = channel === 'email'
+    ? await sendDailyReadingEmail({ to: u.email, name: u.name, theme: thema, focus, lang })
+    : await sendWhatsApp({ to: u.phone, lang, params: [firstName, thema, focus] });
+  return { sent: !result?.skipped, channel, result };
+}
+
+exports.sendReminder = sendReminder;
 exports.handler = async () => {
   const hourNL = Number(new Intl.DateTimeFormat('nl-NL', { timeZone: 'Europe/Amsterdam', hour: '2-digit', hour12: false }).format(new Date()));
   if (hourNL !== 12) return { statusCode: 200, body: 'buiten NL-venster' };
@@ -56,27 +79,10 @@ exports.handler = async () => {
     const email = (u.email || '').toLowerCase();
     const hasAccess = !stripeConfigured() || DEMO_EMAILS.includes(email)
       || SUPER_EMAILS.includes(email) || u.dashboard_access === 'on'
-      || subIsActive(u.subscription) || withinTrial(u.created_at);
+      || subIsActive(u.subscription) || withinTrial(u);
     if (!hasAccess) continue;
-    // Kanaalkeuze: onbekend/leeg valt terug op WhatsApp mits er een nummer is.
-    const channel = u.notify_channel || (u.phone ? 'whatsapp' : 'off');
-    if (channel === 'off') continue;
-    if (channel === 'whatsapp' && !u.phone) continue;
     try {
-      const lang = order.blueprint_language === 'en' ? 'en' : 'nl';
-      const textsAll = await blueprintStore().get(`${order.id}.texts.json`, { type: 'json' });
-      const t = (textsAll && (textsAll[lang] || textsAll.nl)) || {};
-      const fb = FALLBACK[lang];
-      const thema = (t.summary && t.summary.oneLiner) || fb.thema;
-      const focus = (t.integration && t.integration.layers && t.integration.layers.focus) || fb.focus;
-      const firstName = (u.name || order.client_name || '').trim().split(/\s+/)[0] || (lang === 'en' ? 'there' : 'daar');
-      if (channel === 'email') {
-        if (!u.email) continue;
-        await sendDailyReadingEmail({ to: u.email, name: u.name, theme: thema, focus, lang });
-      } else {
-        await sendWhatsApp({ to: u.phone, lang, params: [firstName, thema, focus] });
-      }
-      sent++;
+      if ((await sendReminder(u, order)).sent) sent++;
     } catch (err) {
       console.error(`daily-whatsapp voor user ${u.id} mislukt:`, err.message);
     }
