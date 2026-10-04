@@ -811,7 +811,7 @@
         '</div>' +
         (k.blokken || []).map(blokHTML).join("") +
         '<div class="knoppen strak plnav"><button class="knop licht" data-sluit>&#8249; ' +
-          '<span class="plkort">' + veilig(T("terug", "Terug")) + '</span>' +
+          '<span class="plkort">' + veilig(T("terug")) + '</span>' +
           '<span class="pllang">' + veilig(T("terugkop", f.terugkop)) + '</span></button>' +
           (k.midden ? '<span class="plmidden">' + veilig(k.midden) + '</span>' : "") +
           '<span class="plteller">' + (i + 1) + ' / ' + f.stappen.length + '</span>' +

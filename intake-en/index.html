@@ -563,7 +563,7 @@
     margin-top: 2px; cursor: pointer;
     accent-color: var(--gold);
   }
-  .consent-label { font-size: 13px; color: var(--ink2); line-height: 1.7; cursor: pointer; }
+  .consent-label { flex: 1; font-size: 13px; color: var(--ink2); line-height: 1.7; cursor: pointer; } /* hele rij tikbaar */
   .consent-label a { color: var(--gold); text-decoration: none; }
   .consent-label a:hover { text-decoration: underline; }
   .consent-label strong { font-weight: 500; color: var(--ink); }
@@ -605,6 +605,17 @@
   .btn{padding:12px 20px;font-size:10px;}
   .btn-submit{padding:14px 24px;}
   .section-title{font-size:clamp(24px,7vw,36px);}
+  /* Logo zit in de hero-foto: tekst eronder laten beginnen */
+  .header-hero-content{padding:132px 20px 40px;}
+  /* 16px voorkomt auto-zoom bij focus in iOS Safari */
+  .field input,.field select,.field textarea{font-size:16px;}
+  /* Navigatie: Volgende bovenaan op volle breedte, overige knoppen eronder (zo nodig elk een eigen rij) */
+  .nav{flex-wrap:wrap;gap:10px;margin-top:40px;padding-top:24px;}
+  .nav .btn{flex:1 1 auto;justify-content:center;white-space:nowrap;min-height:44px;}
+  .nav .btn-next{order:-1;flex-basis:100%;margin-left:0;}
+  /* Grotere tikvlakken voor tekstlinks */
+  .coord-clear,.manual-toggle{padding:10px 0;text-align:left;}
+  .manual-toggle{margin-top:0;}
 }
 </style>
 </head>
@@ -1392,7 +1403,10 @@ function show(i) {
   if (sec) { sec.classList.add('visible'); }
   updateProgress(i);
   current = i;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Alleen omhoog scrollen naar de stap (net onder de sticky voortgangsbalk), niet terug naar de hero
+  const pw = document.getElementById('progress-wrap');
+  const top = sec ? sec.getBoundingClientRect().top + window.scrollY - (pw ? pw.offsetHeight : 0) - 16 : 0;
+  if (window.scrollY > top) window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
 }
 
 // Open reflection questions are required per step — the client must fill them all in, otherwise no blueprint.

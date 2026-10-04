@@ -562,7 +562,7 @@
     margin-top: 2px; cursor: pointer;
     accent-color: var(--gold);
   }
-  .consent-label { font-size: 13px; color: var(--ink2); line-height: 1.7; cursor: pointer; }
+  .consent-label { flex: 1; font-size: 13px; color: var(--ink2); line-height: 1.7; cursor: pointer; } /* hele rij tikbaar */
   .consent-label a { color: var(--gold); text-decoration: none; }
   .consent-label a:hover { text-decoration: underline; }
   .consent-label strong { font-weight: 500; color: var(--ink); }
@@ -600,10 +600,21 @@
   .header-hero{min-height:320px;}
   .header h1{font-size:clamp(28px,8vw,42px);}
   .main{padding:48px 16px 80px;}
-  .progress-wrap{padding:16px;}
+  .progress-wrap{padding:16px 124px 16px 16px;} /* ruimte voor de vaste taalknop rechtsboven */
   .btn{padding:12px 20px;font-size:10px;}
   .btn-submit{padding:14px 24px;}
   .section-title{font-size:clamp(24px,7vw,36px);}
+  /* Logo zit in de hero-foto: tekst eronder laten beginnen */
+  .header-hero-content{padding:132px 20px 40px;}
+  /* 16px voorkomt auto-zoom bij focus in iOS Safari */
+  .field input,.field select,.field textarea{font-size:16px;}
+  /* Navigatie: Volgende bovenaan op volle breedte, overige knoppen eronder (zo nodig elk een eigen rij) */
+  .nav{flex-wrap:wrap;gap:10px;margin-top:40px;padding-top:24px;}
+  .nav .btn{flex:1 1 auto;justify-content:center;white-space:nowrap;min-height:44px;}
+  .nav .btn-next{order:-1;flex-basis:100%;margin-left:0;}
+  /* Grotere tikvlakken voor tekstlinks */
+  .coord-clear,.manual-toggle{padding:10px 0;text-align:left;}
+  .manual-toggle{margin-top:0;}
 }
 </style>
 </head>
@@ -614,6 +625,7 @@
 .lang-switch{position:fixed;top:14px;right:14px;z-index:1000;display:flex;gap:2px;background:rgba(20,16,10,0.55);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border:1px solid rgba(201,169,110,0.4);border-radius:999px;padding:3px;}
 .lang-btn{font-family:'Jost',sans-serif;font-size:12px;letter-spacing:0.08em;padding:5px 12px;border:0;border-radius:999px;background:transparent;color:#E8DDCB;cursor:pointer;transition:all .2s;}
 .lang-btn.active{background:#C9A96E;color:#1a140c;font-weight:600;}
+@media (max-width:480px){.lang-switch{top:7px;right:10px;}.lang-btn{padding:9px 14px;}}
 </style>
 <div class="lang-switch" role="group" aria-label="Language / Taal">
   <button type="button" id="btn-nl" class="lang-btn active" onclick="setLang('nl')">NL</button>
@@ -880,7 +892,7 @@
   <!-- ── SECTIE 1: PERSOONLIJKE VERDIEPING ── -->
   <section class="form-section" id="section-1">
     <p class="section-eyebrow">Stap 2 — Persoonlijke verdieping</p>
-    <h2 class="section-title">Wat <em>speelt er</em> in jou?</em> in jou?</h2>
+    <h2 class="section-title">Wat <em>speelt er</em> in jou?</h2>
     <p class="section-intro">Schrijf wat als eerste opkomt. Er is geen goed of fout — alleen jouw eerlijke antwoord telt.</p>
 
     <div class="field">
@@ -948,7 +960,7 @@
   <!-- ── SECTIE 2: WERK & RICHTING ── -->
   <section class="form-section" id="section-2">
     <p class="section-eyebrow">Stap 3 — Werk &amp; richting</p>
-    <h2 class="section-title">Hoe voelt <em>je werk?</em></em></h2>
+    <h2 class="section-title">Hoe voelt <em>je werk?</em></h2>
     <p class="section-intro">Werk is meer dan wat je doet — het is hoe je je verhoudt tot je bijdrage en richting.</p>
 
     <div class="field">
@@ -1000,7 +1012,7 @@
   <!-- ── SECTIE 3: ENERGIE & BALANS ── -->
   <section class="form-section" id="section-3">
     <p class="section-eyebrow">Stap 4 — Energie &amp; balans</p>
-    <h2 class="section-title">Wat <em>laadt jou op?</em></em></h2>
+    <h2 class="section-title">Wat <em>laadt jou op?</em></h2>
     <p class="section-intro">Energie is de basis van alles wat je creëert. Laat zien wat je voedt en wat je uitput.</p>
 
     <div class="field">
@@ -1043,7 +1055,7 @@
   <!-- ── SECTIE 4: RELATIES & VERBINDING ── -->
   <section class="form-section" id="section-4">
     <p class="section-eyebrow">Stap 5 — Relaties &amp; verbinding</p>
-    <h2 class="section-title">Hoe <em>verbind</em> jij?</em> jij?</h2>
+    <h2 class="section-title">Hoe <em>verbind</em> jij?</h2>
     <p class="section-intro">Relaties zijn een spiegel van wat er in jezelf speelt. Wat zie je als je eerlijk kijkt?</p>
 
     <div class="field">
@@ -1074,7 +1086,7 @@
   <!-- ── SECTIE 5: TOEKOMST & DOELEN ── -->
   <section class="form-section" id="section-5">
     <p class="section-eyebrow">Stap 6 — Toekomst &amp; doelen</p>
-    <h2 class="section-title">Waar ga <em>je naartoe?</em></em></h2>
+    <h2 class="section-title">Waar ga <em>je naartoe?</em></h2>
     <p class="section-intro">Wat wil je bereiken en wat staat er nu nog tussen jou en dat doel?</p>
 
     <div class="field">
@@ -1114,7 +1126,7 @@
   <!-- ── SECTIE 6: ZELFREFLECTIE & PATRONEN ── -->
   <section class="form-section" id="section-6">
     <p class="section-eyebrow">Stap 7 — Zelfreflectie &amp; patronen</p>
-    <h2 class="section-title">Wat <em>houdt jou</em> klein?</em> klein?</h2>
+    <h2 class="section-title">Wat <em>houdt jou</em> klein?</h2>
     <p class="section-intro">De eerlijkste vragen. Schrijf zonder oordeel — dit is voor jou, niet voor iemand anders.</p>
 
     <div class="field">
@@ -1157,7 +1169,7 @@
   <!-- ── SECTIE 7: BEWUSTZIJN & CREATIE ── -->
   <section class="form-section" id="section-7">
     <p class="section-eyebrow">Stap 8 — Bewustzijn &amp; creatie</p>
-    <h2 class="section-title">Hoe <em>schep jij</em> je werkelijkheid?</em> je werkelijkheid?</h2>
+    <h2 class="section-title">Hoe <em>schep jij</em> je werkelijkheid?</h2>
     <p class="section-intro">De diepste laag. Durf eerlijk te zijn — dit zijn de antwoorden die je Blueprint het meest persoonlijk maken.</p>
 
     <div class="field">
@@ -1378,7 +1390,10 @@ function show(i) {
   if (sec) { sec.classList.add('visible'); }
   updateProgress(i);
   current = i;
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Alleen omhoog scrollen naar de stap (net onder de sticky voortgangsbalk), niet terug naar de hero
+  const pw = document.getElementById('progress-wrap');
+  const top = sec ? sec.getBoundingClientRect().top + window.scrollY - (pw ? pw.offsetHeight : 0) - 16 : 0;
+  if (window.scrollY > top) window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
 }
 
 // Verplichte open vragen per stap — de klant moet alles invullen, anders geen blueprint.

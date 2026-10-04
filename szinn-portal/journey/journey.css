@@ -4157,6 +4157,45 @@ a.knop{ display:inline-flex; align-items:center; justify-content:center; }
   font-size:1.35em; padding:22px 64px; letter-spacing:.14em;
 }
 
+/* ══ mobiel: laatste correcties ═══════════════════════════════════════
+   Deze regels staan bewust achteraan, anders winnen de oudere balkregels. */
+/* het welkomstscherm ligt boven alles: de balk bovenin (die hierboven met
+   display:grid !important staat) hoort er dan niet overheen */
+body.drempelopen .zijbalk,
+body:has(#drempel:not([hidden])) .zijbalk{ display:none !important; }
+
+@media (max-width:820px){
+  /* fase 2 en 3: de hero schoof 6px buiten beeld omdat de negatieve marge
+     (clamp, min. 22px) groter was dan de 16px rand van .wrap op mobiel */
+  #helderheid{ margin:0 -16px; padding-left:16px; padding-right:16px; }
+  #helderheid .hero, #integratie .hero{ margin-left:-16px; margin-right:-16px; }
+
+  /* 16px voorkomt inzoomen op iOS bij het schrijfveld en het nummerveld */
+  .rveld, .wremnr{ font-size:16px; }
+
+  /* de stap als eigen scherm: het achtergrondbeeld (een ontwerpschets met de
+     kaartenrij erin) schemerde door de tekst heen; nu dicht, alleen onderin
+     komt het beeld nog even door */
+  .opaneel[data-open] .okruimel{ background:
+    linear-gradient(180deg, #1A1410 0%, #1A1410 72%, rgba(26,20,16,.82) 100%),
+    var(--paneelbeeld) center bottom / cover no-repeat, #1A1410; }
+
+  /* raakvlakken van minstens 44px; zichtbaar blijft het ongeveer gelijk */
+  .zijbalk{ grid-template-columns:44px 1fr auto; }
+  .zijbalk .zmenu{ flex-basis:44px; width:44px; height:44px; padding:14px 10px; }
+  .taalkies button, .zijbalk .ztaal button{ min-width:44px; min-height:44px; padding:0 4px;
+    border-bottom:0; text-underline-offset:5px; }
+  .taalkies button.aan{ text-decoration:underline 1px rgba(201,169,110,.7); }
+  .taalkies{ gap:0; }
+  .dtaal{ top:8px; left:6px; }
+  .opaneel[data-open] .osluit{ min-height:44px; padding:0 14px; }
+  .dstippen{ gap:4px; }
+  .dstippen button{ min-width:44px; min-height:44px; }
+
+  /* paneel 2: 'verder' boven de maanstippen in plaats van eroverheen */
+  .videovol.speelt .dp1 .dverder{ bottom:calc(22px + 44px + 14px); }
+}
+
 /* ── print ───────────────────────────────────────────────────
    Het scherm is donker met lichte tekst; een browser print standaard zonder
    achtergronden, dus die lichte tekst viel op wit papier weg. Op papier
