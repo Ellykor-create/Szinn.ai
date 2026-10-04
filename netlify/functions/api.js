@@ -757,11 +757,11 @@ app.post('/api/companion/chat', async (req, res) => {
       : 'Je proefperiode van 11 dagen is voorbij. Neem het abonnement (€3,69/mnd) om verder te praten met je Companion.', subscribe: true });
   if (acc.companionLeft <= 0)
     return res.status(429).json({ error: acc.paid
-      ? (lang === 'en' ? `You've reached your ${SUB_COMPANION_LIMIT} Companion questions for this month. They renew next month.`
-                       : `Je hebt je ${SUB_COMPANION_LIMIT} Companion-vragen voor deze maand bereikt. Ze vernieuwen volgende maand.`)
+      ? (lang === 'en' ? `You've used your ${SUB_COMPANION_LIMIT} Companion questions for this month. Buy 5 extra questions for €3.69 or wait until next month.`
+                       : `Je hebt je ${SUB_COMPANION_LIMIT} Companion-vragen voor deze maand gebruikt. Koop 5 extra vragen voor €3,69 of wacht tot volgende maand.`)
       : (lang === 'en' ? `You've used your ${TRIAL_COMPANION_LIMIT} trial questions. Subscribe (€3.69/month) for ${SUB_COMPANION_LIMIT} questions a month.`
                        : `Je hebt je ${TRIAL_COMPANION_LIMIT} proefvragen gebruikt. Neem het abonnement (€3,69/mnd) voor ${SUB_COMPANION_LIMIT} vragen per maand.`),
-      subscribe: !acc.paid, limitReached: true });
+      subscribe: !acc.paid, topup: acc.paid, limitReached: true });
 
   let system = lang === 'en'
     ? 'You are the SZINN AI Companion — warm, clear, practical. No bullet points. Write flowing sentences in English.'
@@ -800,7 +800,38 @@ app.get('/api/companion/history', async (req, res) => {
     trial: acc.trial, paid: acc.paid,
     companionLeft: Number.isFinite(acc.companionLeft) ? acc.companionLeft : null,
     companionLimit: Number.isFinite(acc.companionLimit) ? acc.companionLimit : null,
+    extra: acc.companionExtra || 0, topup: acc.paid,
   });
+});
+
+// ── Companion-bijkoop: 5 extra vragen (€3,69 eenmalig), alleen voor abonnees ──
+app.post('/api/companion/topup/checkout', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  if (!stripeConfigured()) return res.status(501).json({ error: 'Stripe nog niet ingesteld (STRIPE_SECRET_KEY).' });
+  const db = await loadDB();
+  const acc = await accessState(db, req);
+  if (!acc.user) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
+  if (!acc.paid) return res.status(400).json({ error: 'Extra vragen zijn er voor abonnees.', subscribe: true });
+  const session = await createCompanionTopupCheckout({ email: acc.user.email, userId: acc.user.id, baseUrl: SITE_URL });
+  res.json({ url: session.url });
+});
+
+// Terug van Stripe (?topup_session=…): betaling verifiëren en de extra vragen
+// bijschrijven — idempotent per sessie-id (herladen telt niet dubbel).
+app.post('/api/companion/topup/confirm', async (req, res) => {
+  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const sid = String(req.body?.session_id || '').trim();
+  if (!sid) return res.status(400).json({ error: 'session_id verplicht' });
+  const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(sid)}`);
+  if (s.mode !== 'payment' || s.payment_status !== 'paid' || String(s.client_reference_id) !== String(req.auth.userId))
+    return res.status(400).json({ error: 'Deze betaalsessie hoort niet bij dit account.' });
+  const db = await loadDB();
+  const user = db.users.find(u => u.id === req.auth.userId);
+  if (!user) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
+  if (addCompanionTopup(user, sid, TOPUP_QUESTIONS)) await saveDB(db);
+  const acc = await accessState(db, req);
+  res.json({ ok: true, extra: user.companion_usage.extra,
+    companionLeft: Number.isFinite(acc.companionLeft) ? acc.companionLeft : null });
 });
 
 // ── Meldingsvoorkeur (WhatsApp / e-mail / uit) voor de dagelijkse reminder ────
@@ -865,7 +896,8 @@ app.post('/api/settings/password', async (req, res) => {
 // gebruiker rustig kan invullen (en een concept later kan afmaken).
 const {
   stripeReq, stripeConfigured,
-  createSubscriptionCheckout, createGiftCheckout, summarizeSub, subIsActive, trialStartedAt, refreshSubIfStale, cancelSubscription,
+  createSubscriptionCheckout, createGiftCheckout, createCompanionTopupCheckout, TOPUP_QUESTIONS,
+  summarizeSub, subIsActive, trialStartedAt, refreshSubIfStale, cancelSubscription,
 } = require('../../lib/stripe');
 const INTAKE_PAY_LINK = process.env.INTAKE_PAY_LINK || 'https://buy.stripe.com/fZu9AL8g20KT5xgdpO0kE00';
 // Engelse betaallink (eigen redirect naar /intake-en); zolang die er nog niet
@@ -1087,10 +1119,22 @@ function bumpCompanionUsage(user, paid) {
   if (paid) {
     const mk = currentMonthKey();
     if (u.month !== mk) { u.month = mk; u.monthCount = 0; }
-    u.monthCount = (u.monthCount || 0) + 1;
+    // Maandlimiet op → een bijgekochte vraag gaat af (u.extra vervalt niet per maand).
+    if (u.monthCount >= SUB_COMPANION_LIMIT && u.extra > 0) u.extra -= 1;
+    else u.monthCount = (u.monthCount || 0) + 1;
   } else {
     u.trial = (u.trial || 0) + 1;
   }
+}
+
+// Bijkoop boeken; true als deze sessie nieuw was (caller doet saveDB).
+function addCompanionTopup(user, sessionId, n) {
+  const u = user.companion_usage || (user.companion_usage = { trial: 0, month: null, monthCount: 0 });
+  u.topups = u.topups || [];
+  if (u.topups.includes(sessionId)) return false;
+  u.topups.push(sessionId);
+  u.extra = (u.extra || 0) + n;
+  return true;
 }
 
 // Centrale toegangsstatus voor dashboard + Companion.
@@ -1115,10 +1159,12 @@ async function accessState(db, req) {
   const dashboardOpen = override === 'off' ? false : (unlimited || paid || trial);
   const { used, limit } = companionUsedAndLimit(user, paid);
   const companionLimit = unlimited ? Infinity : (dashboardOpen ? limit : 0);
-  const companionLeft  = unlimited ? Infinity : Math.max(0, companionLimit - used);
+  // Bijgekochte vragen tellen alleen voor abonnees met open dashboard.
+  const companionExtra = (paid && dashboardOpen) ? (user.companion_usage?.extra || 0) : 0;
+  const companionLeft  = unlimited ? Infinity : Math.max(0, companionLimit - used) + companionExtra;
   return { user, paid, trial, unlimited, dashboardOpen, trialDaysLeft: left,
     trialAvailable: !paid && !trialStartedAt(user),
-    companionUsed: used, companionLimit, companionLeft };
+    companionUsed: used, companionLimit, companionLeft, companionExtra };
 }
 
 // "Start je elf dagen": zet de startdatum van de proef, één keer per account.
@@ -1855,7 +1901,7 @@ module.exports.handler = async (event, context) => {
   return serverlessHandler(event, context);
 };
 module.exports.app = app;   // t.b.v. lokale tests; Netlify gebruikt alleen .handler
-module.exports._quota = { trialDaysLeft, currentMonthKey, companionUsedAndLimit, bumpCompanionUsage,
+module.exports._quota = { trialDaysLeft, currentMonthKey, companionUsedAndLimit, bumpCompanionUsage, addCompanionTopup,
   TRIAL_DAYS, TRIAL_COMPANION_LIMIT, SUB_COMPANION_LIMIT };
 
 // Zelf-check (offline, geen Blobs/Stripe): node netlify/functions/api.js
@@ -1878,6 +1924,20 @@ if (require.main === module) {
   const p = {}; bumpCompanionUsage(p, true);
   assert.strictEqual(p.companion_usage.month, currentMonthKey());
   assert.strictEqual(p.companion_usage.monthCount, 1);
+  // Bijkoop: idempotent per sessie; extra pas na de maandlimiet; niet weg bij maandwissel.
+  assert.strictEqual(addCompanionTopup(p, 'cs_1', 5), true);
+  assert.strictEqual(addCompanionTopup(p, 'cs_1', 5), false, 'zelfde sessie telt één keer');
+  assert.strictEqual(p.companion_usage.extra, 5);
+  bumpCompanionUsage(p, true);
+  assert.strictEqual(p.companion_usage.extra, 5, 'onder de limiet: extra onaangeroerd');
+  p.companion_usage.monthCount = SUB_COMPANION_LIMIT;
+  bumpCompanionUsage(p, true);
+  assert.strictEqual(p.companion_usage.extra, 4, 'na de limiet gaat er een extra vraag af');
+  assert.strictEqual(p.companion_usage.monthCount, SUB_COMPANION_LIMIT);
+  p.companion_usage.month = '1999-01';
+  bumpCompanionUsage(p, true);
+  assert.strictEqual(p.companion_usage.extra, 4, 'nieuwe maand: eerst de gratis vragen');
+  assert.strictEqual(p.companion_usage.monthCount, 1);
   for (const raw of ['0637296448', '+31 6 37296448', '0031637296448', '+31 0637296448'])
     assert.strictEqual(normalizePhone(raw), '31637296448', raw);
   assert.strictEqual(normalizePhone('+32 470 12 34 56'), '32470123456');
@@ -1891,6 +1951,10 @@ if (require.main === module) {
     // Proef voorbij, geen abonnement → dicht; override 'on' → open; 'off' wint van de proef.
     assert.strictEqual((await accessState({ users: [expired()] }, req)).dashboardOpen, false);
     assert.strictEqual((await accessState({ users: [expired({ dashboard_access: 'on' })] }, req)).dashboardOpen, true);
+    // Abonnee met lege maand + 5 extra → 5 over; proefgebruiker krijgt geen extra.
+    const full = { month: currentMonthKey(), monthCount: SUB_COMPANION_LIMIT, extra: 5 };
+    assert.strictEqual((await accessState({ users: [expired({ dashboard_access: 'on', companion_usage: full })] }, req)).companionLeft, 5);
+    assert.strictEqual((await accessState({ users: [{ ...expired({ companion_usage: { trial: 3, extra: 5 } }), trial_started_at: iso(0) }] }, req)).companionLeft, 0);
     assert.strictEqual((await accessState({ users: [{ ...expired({ dashboard_access: 'off' }), trial_started_at: iso(0) }] }, req)).dashboardOpen, false);
     // Super-account (in SUPER_EMAILS): onbeperkte Companion (Infinity) + dashboard open,
     // óók zonder proef/abonnement. Gewoon verlopen account blijft eindig → regressiebewaking.

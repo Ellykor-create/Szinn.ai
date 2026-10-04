@@ -1464,7 +1464,8 @@
             "nieuw": true,
             "meerkop": "Hoe je begint",
             "meer": "Begin alleen met de ochtend. Voeg de avond toe zodra de ochtend een gewoonte is. Een dag overslaan is geen probleem, dit is een ritme, geen reeks.",
-            "proef": "Zit in je elf dagen"
+            "proef": "Zit in je elf dagen",
+            "reminder": { "vink": "Ik wil dagelijkse reminders van SZINN ontvangen", "whatsapp": "Via WhatsApp", "email": "Via e-mail", "nummer": "Telefoonnummer met landcode, bijv. +31 6 12345678", "knop": "Opslaan", "ok": "Opgeslagen ✓", "fout": "Opslaan mislukt. Probeer opnieuw." }
           },
           {
             "beeld": "assets/weg-03.jpg",

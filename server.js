@@ -1148,7 +1148,8 @@ app.post('/api/feedback', (req, res) => {
 // dashboard via een Stripe Checkout-sessie; status wordt hooguit één keer per
 // dag bij Stripe ververst (geen webhook nodig).
 const {
-  createSubscriptionCheckout, createGiftCheckout, summarizeSub, subIsActive, refreshSubIfStale, cancelSubscription,
+  createSubscriptionCheckout, createGiftCheckout, createCompanionTopupCheckout, TOPUP_QUESTIONS,
+  summarizeSub, subIsActive, refreshSubIfStale, cancelSubscription,
 } = require('./lib/stripe');
 const DEMO_SUB_EMAILS = ['demo@szinn.ai', 'demo-plus@szinn.ai', 'sara@voorbeeld.nl'];
 
@@ -1273,6 +1274,10 @@ function saveCompanionState(userId, state) {
 // 10 Companion-vragen per kalendermaand (zelfde venster als de Netlify-functie).
 // Admin/demo-accounts en lokaal draaien zonder Stripe-sleutel blijven onbeperkt.
 const SUB_COMPANION_LIMIT = parseInt(process.env.SUB_COMPANION_LIMIT || '10', 10);
+// Resterend = gratis maandvragen + bijgekochte extra (die vervallen niet).
+function companionLeftFor(userId) {
+  return Math.max(0, SUB_COMPANION_LIMIT - companionQuota.monthCount(db, userId)) + companionQuota.extraCredits(db, userId);
+}
 function companionUnlimited(req) {
   if (!stripeConfigured() || req.session.isAdmin) return true;
   const u = db.prepare('SELECT email FROM users WHERE id = ?').get(req.session.userId);
@@ -1302,14 +1307,14 @@ app.post('/api/companion/chat', async (req, res) => {
   if (!(await hasSubscriptionAccess(req)))
     return res.status(402).json({ error: 'De Companion hoort bij het SZINN-abonnement.', subscribe: true });
 
-  // Abonnement: 10 vragen aan SZINN Companion per kalendermaand.
+  // Abonnement: 10 vragen aan SZINN Companion per kalendermaand (+ bijgekochte extra).
   const unlimited = companionUnlimited(req);
-  if (!unlimited && companionQuota.monthCount(db, req.session.userId) >= SUB_COMPANION_LIMIT)
+  if (!unlimited && companionLeftFor(req.session.userId) <= 0)
     return res.status(429).json({
       error: lang === 'en'
-        ? `You've used your ${SUB_COMPANION_LIMIT} SZINN Companion questions for this month. They renew next month.`
-        : `Je hebt je ${SUB_COMPANION_LIMIT} vragen aan SZINN Companion voor deze maand gebruikt. Volgende maand staan er weer ${SUB_COMPANION_LIMIT} voor je klaar.`,
-      limitReached: true,
+        ? `You've used your ${SUB_COMPANION_LIMIT} Companion questions for this month. Buy 5 extra questions for €3.69 or wait until next month.`
+        : `Je hebt je ${SUB_COMPANION_LIMIT} Companion-vragen voor deze maand gebruikt. Koop 5 extra vragen voor €3,69 of wacht tot volgende maand.`,
+      topup: true, limitReached: true,
     });
 
   let system = lang === 'en'
@@ -1325,11 +1330,8 @@ app.post('/api/companion/chat', async (req, res) => {
   try {
     const content = await companionTurn({ state, userMessage, baseSystem: system, name, intakeRaw, lang });
     saveCompanionState(req.session.userId, state);
-    if (!unlimited) companionQuota.bump(db, req.session.userId); // teller +1 na een gelukte beurt
-    res.json({
-      content,
-      companionLeft: unlimited ? null : Math.max(0, SUB_COMPANION_LIMIT - companionQuota.monthCount(db, req.session.userId)),
-    });
+    if (!unlimited) companionQuota.bump(db, req.session.userId, SUB_COMPANION_LIMIT); // teller +1 na een gelukte beurt
+    res.json({ content, companionLeft: unlimited ? null : companionLeftFor(req.session.userId) });
   } catch (err) {
     console.error('Companion API error:', err.message);
     res.status(500).json({ error: 'De AI Companion is tijdelijk niet beschikbaar.' });
@@ -1337,10 +1339,52 @@ app.post('/api/companion/chat', async (req, res) => {
 });
 
 // Gespreksgeschiedenis voor het dashboard (nieuwe sessie gaat verder waar de vorige ophield).
-app.get('/api/companion/history', (req, res) => {
+app.get('/api/companion/history', async (req, res) => {
   if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
   const state = loadCompanionState(req.session.userId);
-  res.json({ messages: (state?.messages || []).slice(-30) });
+  const unlimited = companionUnlimited(req);
+  const paid = await hasSubscriptionAccess(req);
+  res.json({
+    messages: (state?.messages || []).slice(-30),
+    trial: false, paid,
+    companionLeft: unlimited ? null : companionLeftFor(req.session.userId),
+    companionLimit: unlimited ? null : SUB_COMPANION_LIMIT,
+    extra: companionQuota.extraCredits(db, req.session.userId), topup: paid,
+  });
+});
+
+// ── Companion-bijkoop: 5 extra vragen (€3,69 eenmalig), alleen voor abonnees ──
+app.post('/api/companion/topup/checkout', async (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  if (!stripeConfigured()) return res.status(501).json({ error: 'Stripe nog niet ingesteld (STRIPE_SECRET_KEY).' });
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.session.userId);
+  if (!user) return res.status(401).json({ error: 'Gebruiker niet gevonden' });
+  if (!(await hasSubscriptionAccess(req))) return res.status(400).json({ error: 'Extra vragen zijn er voor abonnees.', subscribe: true });
+  const baseUrl = process.env.SITE_URL || `${req.protocol}://${req.get('host')}`;
+  try {
+    const session = await createCompanionTopupCheckout({ email: user.email, userId: user.id, baseUrl });
+    res.json({ url: session.url });
+  } catch (e) {
+    console.error('bijkoop-checkout mislukt:', e.message);
+    res.status(500).json({ error: 'Kon de betaalpagina niet openen. Probeer het later opnieuw.' });
+  }
+});
+
+// Terug van Stripe (?topup_session=…): verifiëren en idempotent bijschrijven.
+app.post('/api/companion/topup/confirm', async (req, res) => {
+  if (!req.session.userId) return res.status(401).json({ error: 'Niet ingelogd' });
+  const sid = String(req.body?.session_id || '').trim();
+  if (!sid) return res.status(400).json({ error: 'session_id verplicht' });
+  try {
+    const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(sid)}`);
+    if (s.mode !== 'payment' || s.payment_status !== 'paid' || String(s.client_reference_id) !== String(req.session.userId))
+      return res.status(400).json({ error: 'Deze betaalsessie hoort niet bij dit account.' });
+    const extra = companionQuota.addTopup(db, req.session.userId, sid, TOPUP_QUESTIONS);
+    res.json({ ok: true, extra, companionLeft: companionUnlimited(req) ? null : companionLeftFor(req.session.userId) });
+  } catch (e) {
+    console.error('bijkoop bevestigen mislukt:', e.message);
+    res.status(500).json({ error: 'Kon de extra vragen niet bevestigen.' });
+  }
 });
 
 // ── Intake-toegang: alleen na betaling of met cadeaucode (pariteit Netlify) ───

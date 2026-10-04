@@ -1453,7 +1453,8 @@
             "nieuw": true,
             "meerkop": "How to begin",
             "meer": "Start with the morning only. Add the evening once the morning has become a habit. Missing a day is not a problem, this is a rhythm, not a streak.",
-            "proef": "Included in your eleven days"
+            "proef": "Included in your eleven days",
+            "reminder": { "vink": "I want to receive daily reminders from SZINN", "whatsapp": "Via WhatsApp", "email": "Via email", "nummer": "Phone number with country code, e.g. +44 7700 900123", "knop": "Save", "ok": "Saved ✓", "fout": "Could not save. Please try again." }
           },
           {
             "beeld": "assets/weg-03.jpg",

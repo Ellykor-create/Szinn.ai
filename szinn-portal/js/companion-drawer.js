@@ -38,6 +38,10 @@
       hint: 'Je gesprekken blijven altijd van jou.',
       trialNote: 'Proefperiode — nog {n} van {limit} gratis Companion-vragen. Daarna hoort de Companion bij het abonnement (€3,69/mnd).',
       trialNoteDone: 'Proefperiode — je {limit} gratis Companion-vragen zijn op. Neem het abonnement (€3,69/mnd) om verder te praten.',
+      paidNote: 'Nog {n} van {limit} vragen deze maand',
+      paidExtra: ' (+ {extra} extra)',
+      topupNote: 'Je Companion-vragen voor deze maand zijn op. Koop 5 extra vragen of wacht tot volgende maand.',
+      topupBtn: '5 extra vragen — €3,69',
     },
     en: {
       launch: 'Companion',
@@ -56,6 +60,10 @@
       hint: 'Your conversations always remain yours.',
       trialNote: 'Trial — {n} of {limit} free Companion questions left. After that the Companion is part of the subscription (€3.69/month).',
       trialNoteDone: 'Trial — your {limit} free Companion questions are used up. Subscribe (€3.69/month) to keep talking.',
+      paidNote: '{n} of {limit} questions left this month',
+      paidExtra: ' (+ {extra} extra)',
+      topupNote: 'Your Companion questions for this month are used up. Buy 5 extra questions or wait until next month.',
+      topupBtn: '5 extra questions — €3.69',
     },
   }[lang];
 
@@ -84,6 +92,8 @@
   '.szc-body{flex:1;overflow-y:auto;padding:18px 22px}' +
   '.szc-trialnote{margin:10px 0 4px;padding:9px 13px;border:1px solid rgba(166,124,58,.28);border-radius:12px;' +
     'background:rgba(201,169,110,.12);font-size:11.5px;line-height:1.5;color:#7a6533}' +
+  '.szc-topup{display:block;margin-top:8px;padding:7px 14px;border:none;border-radius:999px;cursor:pointer;' +
+    'background:linear-gradient(135deg,#C9A96E,#A67C3A);color:#FFFDF8;font-family:"Jost",sans-serif;font-size:12px;letter-spacing:.03em}' +
   '.szc-bubble{background:#F6F0E6;border:1px solid rgba(166,124,58,.16);border-radius:16px 16px 16px 4px;' +
     'padding:14px 16px;font-size:13.5px;line-height:1.7;color:#3a332a;max-width:92%}' +
   '.szc-soon{margin-top:18px;text-align:center;padding:18px 16px;border:1px dashed rgba(166,124,58,.4);' +
@@ -225,14 +235,41 @@
       })();
     };
 
-    // Proefmelding: "nog X van 3 gratis vragen" — alleen tijdens de proef.
-    var trialActive = false, trialLimit = null;
-    var renderTrialNote = function (trial, left, limit) {
+    // Quotummelding: proef "nog X van 3 gratis vragen"; abonnee "nog X van 10
+    // deze maand (+ extra)" en bij 0 een knop om 5 extra vragen te kopen.
+    var trialActive = false, trialLimit = null, paidActive = false, topupOffered = false, extraLeft = 0;
+    var buyTopup = function (btn, el) {
+      btn.disabled = true;
+      fetch('/api/companion/topup/checkout', { method: 'POST', credentials: 'same-origin' })
+        .then(function (r) { return r.json(); })
+        .then(function (j) {
+          if (j.url) { window.location.href = j.url; return; }
+          btn.disabled = false; el.firstChild.textContent = j.error || T.errMsg;
+        })
+        .catch(function () { btn.disabled = false; el.firstChild.textContent = T.errMsg; });
+    };
+    var renderTrialNote = function (left) {
       var el = drawer.querySelector('#szc-trialnote');
       if (!el) return;
-      if (!trial || limit == null || left == null) { el.style.display = 'none'; return; }
-      el.textContent = (left > 0 ? T.trialNote : T.trialNoteDone)
-        .replace('{n}', left).replace('{limit}', limit);
+      if (left == null || !(trialActive || paidActive)) { el.style.display = 'none'; return; }
+      el.textContent = '';
+      var txt = document.createElement('span');
+      el.appendChild(txt);
+      if (trialActive) {
+        txt.textContent = (left > 0 ? T.trialNote : T.trialNoteDone).replace('{n}', left).replace('{limit}', trialLimit);
+      } else if (left > 0) {
+        extraLeft = Math.min(extraLeft, left); // extra gaat pas op na de maandvragen
+        txt.textContent = T.paidNote.replace('{n}', left - extraLeft).replace('{limit}', trialLimit) +
+          (extraLeft ? T.paidExtra.replace('{extra}', extraLeft) : '');
+      } else {
+        txt.textContent = T.topupNote;
+        if (topupOffered) {
+          var btn = document.createElement('button');
+          btn.type = 'button'; btn.className = 'szc-topup'; btn.textContent = T.topupBtn;
+          btn.addEventListener('click', function () { buyTopup(btn, el); });
+          el.appendChild(btn);
+        }
+      }
       el.style.display = 'block';
     };
 
@@ -246,7 +283,8 @@
         .then(function (j) {
           (j.messages || []).forEach(function (m) { bubble(m.role === 'user' ? 'user' : 'assistant', m.content); });
           trialActive = !!j.trial; trialLimit = j.companionLimit;
-          renderTrialNote(trialActive, j.companionLeft, trialLimit);
+          paidActive = !!j.paid; topupOffered = !!j.topup; extraLeft = j.extra || 0;
+          renderTrialNote(j.companionLeft);
         })
         .catch(function () { /* geen geschiedenis is geen ramp */ });
     };
@@ -266,7 +304,9 @@
         .then(function (j) {
           typeInto(ph, j.content || j.error || T.errMsg);
           // Teller bijwerken na een gelukte beurt (server telt af).
-          if (trialActive && typeof j.companionLeft === 'number') renderTrialNote(true, j.companionLeft, trialLimit);
+          if (typeof j.companionLeft === 'number') renderTrialNote(j.companionLeft);
+          // Maandlimiet op (429 met topup): naast de foutbubbel ook de koopknop tonen.
+          if (j.topup) { paidActive = topupOffered = true; trialActive = false; renderTrialNote(0); }
         })
         .catch(function () { typeInto(ph, T.errMsg); });
     };

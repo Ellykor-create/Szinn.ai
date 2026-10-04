@@ -236,6 +236,7 @@
               '<p>' + veilig(w.tekst || "") + '</p>' +
               '<ul>' + (w.items || []).map(function (t) {
                 return '<li><i>&#10003;</i>' + veilig(t) + '</li>'; }).join("") + '</ul>' +
+              (w.reminder ? reminderHTML(w.reminder) : "") +
               (w.knop ? '<a class="knop" href="' + veilig(adres(w.href)) + '"' +
                 (w.nieuw ? ' target="_blank" rel="noopener"' : "") + '>' +
                 veilig(w.knop) + ' &rarr;</a>' : "") +
@@ -987,6 +988,7 @@
     el(naam).innerHTML = h;
     herstelReflectie(naam);
     herstelVinken(el(naam));
+    vulReminder(el(naam));
   }
 
   /* wat iemand opschreef blijft staan, ook als hij later terugkomt */
@@ -1091,6 +1093,71 @@
                                : (knop.dataset.uit || T("afvinken"));
   }
   /* na het opbouwen van een fase de eerder gezette vinkjes terugzetten */
+  /* stap 02 van de wegen: dagelijkse reminders aanzetten, rechtstreeks via
+     /api/settings/notifications (zelfde sessie als het dashboard). Geen ids:
+     een blok kan vaker op de pagina staan, dus alles via data-rem. */
+  var remNr = 0;
+  function reminderHTML(r) {
+    var naam = "wrem" + (remNr++);
+    return '<div class="wrem" data-rem>' +
+      '<label class="wremrij"><input type="checkbox" data-rem-aan><span>' + veilig(r.vink) + '</span></label>' +
+      '<div class="wremkeus" hidden>' +
+        '<label class="wremrij"><input type="radio" name="' + naam + '" value="whatsapp" checked><span>' +
+          veilig(r.whatsapp) + '</span></label>' +
+        '<input class="wremnr" type="tel" autocomplete="tel" placeholder="' + veilig(r.nummer) + '">' +
+        '<label class="wremrij"><input type="radio" name="' + naam + '" value="email"><span>' +
+          veilig(r.email) + '</span></label>' +
+      '</div>' +
+      '<button type="button" class="knop licht" data-rem-op>' + veilig(r.knop) + '</button>' +
+      '<span class="wremstatus" aria-live="polite" data-ok="' + veilig(r.ok) + '" data-fout="' +
+        veilig(r.fout) + '"></span></div>';
+  }
+  function remSync(w) {
+    w.querySelector(".wremkeus").hidden = !w.querySelector("[data-rem-aan]").checked;
+    w.querySelector(".wremnr").hidden = !w.querySelector('input[value="whatsapp"]').checked;
+  }
+  function vulReminder(waar) {
+    var ws = waar.querySelectorAll("[data-rem]");
+    if (!ws.length) return;
+    fetch("/api/settings/notifications", { credentials: "same-origin" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (d) {
+        ws.forEach(function (w) {
+          if (d && (d.channel === "whatsapp" || d.channel === "email")) {
+            w.querySelector("[data-rem-aan]").checked = true;
+            w.querySelector('input[value="' + d.channel + '"]').checked = true;
+          }
+          if (d && d.phone) w.querySelector(".wremnr").value = "+" + d.phone;
+          remSync(w);
+        });
+      }).catch(function () {});
+  }
+  document.addEventListener("change", function (e) {
+    var w = e.target.closest && e.target.closest("[data-rem]");
+    if (w) remSync(w);
+  });
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest && e.target.closest("[data-rem-op]");
+    if (!b) return;
+    var w = b.closest("[data-rem]"), st = w.querySelector(".wremstatus");
+    var ch = w.querySelector("[data-rem-aan]").checked
+      ? w.querySelector("input[type=radio]:checked").value : "off";
+    var fout = st.getAttribute("data-fout");
+    b.disabled = true; st.textContent = "";
+    fetch("/api/settings/notifications", {
+      method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ channel: ch, phone: w.querySelector(".wremnr").value.replace(/[^\d+]/g, "") })
+    })
+      .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+      /* de serverfout is Nederlands; in het Engels tonen we onze eigen tekst */
+      .then(function (x) {
+        st.textContent = x.ok ? st.getAttribute("data-ok")
+          : ((data && data.taal === "en") ? fout : (x.d.error || fout));
+      })
+      .catch(function () { st.textContent = fout; })
+      .finally(function () { b.disabled = false; });
+  });
+
   function herstelVinken(waar) {
     var alle = vinken();
     (waar || document).querySelectorAll("[data-vink]").forEach(function (knop) {
