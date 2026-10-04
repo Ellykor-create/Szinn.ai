@@ -9,7 +9,7 @@ const bcrypt     = require('bcryptjs');
 const jwt        = require('jsonwebtoken');
 const cookieLib  = require('cookie');
 const crypto     = require('crypto');
-const { blueprintStore, loadDB, saveDB } = require('../../lib/db');
+const { blueprintStore, loadDB, saveDB, updateDB } = require('../../lib/db');
 const { upgradeNav } = require('../../lib/blueprint-nav');
 const { sendAccountEmail, sendDraftEmail, sendNewOrderEmail, sendGiftEmail, sendGiftConfirmationEmail, sendPasswordResetEmail, sendFeedbackAlert } = require('../../lib/email');
 const { addBuyerToEnormail } = require('../../lib/enormail');
@@ -1611,34 +1611,39 @@ app.post('/api/internal/blueprint-result', async (req, res) => {
   const kit = require('../../lib/kit-worker');
   const { orderId, ok, error, hold, texts, mail, rondes, secret } = req.body || {};
   if (!kit.validCallbackSecret(secret)) return res.status(403).json({ error: 'forbidden' });
-  const db = await loadDB();
-  const order = db.orders.find(o => o.id === orderId);
-  if (!order) return res.status(404).json({ error: 'order niet gevonden' });
   const { sendReadyEmail, sendAdminAlert } = require('../../lib/email');
+  if (ok) {
+    await blueprintStore().setJSON(`${orderId}.texts.json`, {
+      orderId, generatedAt: new Date().toISOString(), model: 'kit-v4', nl: texts,
+    });
+  }
+  // Meerdere workers kunnen tegelijk terugmelden: via updateDB gaat geen statuswijziging verloren.
+  const found = await updateDB(db => {
+    const order = db.orders.find(o => o.id === orderId);
+    if (!order) return null;
+    if (!ok) {
+      order.status = 'failed';
+      order.generation_error = String(error || 'onbekende fout').slice(0, 2000);
+    } else {
+      order.status = 'completed';
+      order.completed_at = new Date().toISOString();
+      order.blueprint_url = `/szinn-portal/blueprints/${orderId}.html`;
+      order.blueprint_languages = ['nl'];
+      order.pdf_available = true;
+      order.generation_error = null;
+      order.pipeline = 'kit-v4';
+    }
+    return { order: { ...order }, user: db.users.find(u => u.id === order.user_id) };
+  });
+  if (!found) return res.status(404).json({ error: 'order niet gevonden' });
+  const { order, user } = found;
 
   if (!ok) {
-    order.status = 'failed';
-    order.generation_error = String(error || 'onbekende fout').slice(0, 2000);
-    await saveDB(db);
     await sendAdminAlert({ orderId, error: order.generation_error, attempts: hold ? 'tegengehouden vóór generatie' : 'kit v4, 4 rondes' })
       .catch(e => console.error('admin-alert mislukt:', e.message));
     return res.json({ ok: true });
   }
-
-  await blueprintStore().setJSON(`${orderId}.texts.json`, {
-    orderId, generatedAt: new Date().toISOString(), model: 'kit-v4', nl: texts,
-  });
-  order.status = 'completed';
-  order.completed_at = new Date().toISOString();
-  order.blueprint_url = `/szinn-portal/blueprints/${orderId}.html`;
-  order.blueprint_languages = ['nl'];
-  order.pdf_available = true;
-  order.generation_error = null;
-  order.pipeline = 'kit-v4';
-  await saveDB(db);
   console.log(`${orderId}: kit-v4 opgeleverd (${rondes} ronde(s), 3× audit OK)`);
-
-  const user = db.users.find(u => u.id === order.user_id);
   if (user) {
     await sendReadyEmail({ to: user.email, name: order.client_name || user.name, orderId, lang: 'nl', personal: mail })
       .catch(e => console.error('klaar-mail mislukt:', e.message));
