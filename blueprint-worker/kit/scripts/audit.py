@@ -12,7 +12,7 @@ from szinn_vast import *
 import szinn_vast
 HERE=os.path.dirname(os.path.abspath(__file__)); swe.set_ephe_path(os.path.join(HERE,'..','assets','ephe'))
 ap=argparse.ArgumentParser(); ap.add_argument('chart'); ap.add_argument('html'); ap.add_argument('naam'); ap.add_argument('d',type=int); ap.add_argument('m',type=int); ap.add_argument('j',type=int)
-ap.add_argument('--andere'); ap.add_argument('--intake'); a=ap.parse_args()
+ap.add_argument('--andere'); ap.add_argument('--intake'); ap.add_argument('--voornaam', default=''); a=ap.parse_args()
 ch=json.load(open(a.chart)); H=open(a.html).read(); H=re.sub(r'data:[^)"]+','',H); H=re.sub(r'<style.*?</style>','',H,flags=re.S)  # CSS (paginavoet, fontpaden) is geen documenttekst
 def plain(x): return re.sub(r'\s+',' ',html.unescape(re.sub(r'<[^>]+>',' ',x)))
 T=plain(H); fout=[]
@@ -145,7 +145,7 @@ print(f'   voornaam klant: {eerste} · komt {T.count(eerste)} keer voor')
 sectie('RONDE 3 · NIETS VERZONNEN')
 cit=[c for c in re.findall(r'["“]([^"”]{6,200})["”]',T)]
 vastcit=set(re.findall(r'["“]([^"”]{6,200})["”]',' '.join(plain(getattr(szinn_vast,k)) for k in dir(szinn_vast) if isinstance(getattr(szinn_vast,k),str))))
-eigen_cit=[c for c in cit if c not in vastcit and not c.startswith(eerste) and 'Remember who you are' not in c]
+eigen_cit=[c for c in cit if c not in vastcit and not c.startswith(eerste) and not (a.voornaam and c.startswith(a.voornaam)) and 'Remember who you are' not in c]
 if a.intake:
     it=re.sub(r'\s+',' ',open(a.intake).read())
     for c in eigen_cit:

@@ -7,7 +7,7 @@ import anthropic
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 MASTERPROMPT = open(os.path.join(HERE, 'kit', 'MASTERPROMPT_SZINN_Alignment_Blueprint_v4.md'), encoding='utf-8').read()
-MODEL = os.environ.get('BLUEPRINT_MODEL', 'claude-opus-5')
+MODEL = os.environ.get('BLUEPRINT_MODEL', 'claude-sonnet-5')
 
 INTAKE_VRAGEN = {
     'p1_bezig': 'Wat houdt je op dit moment het meest bezig in je leven?',
@@ -280,6 +280,23 @@ def leesbaarheid(c):
             if n > MAX_ZIN:
                 p.append(f'{pad}: zin van {n} woorden ("{zin[:60]}…"); knip op in korte zinnen')
     return p[:8]
+
+
+def _ontdaan(d):
+    if isinstance(d, str):
+        return re.sub(r'["“”]', '', d)
+    if isinstance(d, dict):
+        return {k: _ontdaan(v) for k, v in d.items()}
+    if isinstance(d, list):
+        return [_ontdaan(v) for v in d]
+    return d
+
+
+def zonder_aanhalingstekens(groepen):
+    """Citaten horen alleen in groep D: in A-C halen we de tekens zelf weg i.p.v. een dure herschrijfronde."""
+    for g in ('A', 'B', 'C'):
+        if g in groepen:
+            groepen[g] = _ontdaan(groepen[g])
 
 
 def vormcontrole(groepen, f, leesbaar=True):

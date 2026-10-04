@@ -82,7 +82,7 @@ def audit(job_dir, base, f, order_id, heeft_intake):
     """audit.py drie keer op dezelfde versie. Geeft (ok, fouten, uitvoer van de laatste ronde)."""
     andere = corpus_zonder(order_id)
     cmd = [datalaag.py(), os.path.join(SCRIPTS, 'audit.py'), os.path.join(job_dir, 'klant_chart.json'), base + '_print.html',
-           f['geboortenaam'], str(f['dag']), str(f['maand']), str(f['jaar']), '--andere', andere]
+           f['geboortenaam'], str(f['dag']), str(f['maand']), str(f['jaar']), '--andere', andere, '--voornaam', f['voornaam']]
     if heeft_intake:
         cmd += ['--intake', os.path.join(job_dir, 'intake.txt')]
     try:
@@ -194,6 +194,7 @@ def genereer(job):
     groepen = writer.schrijf(f, intake, log=lambda m: log(oid, m))
     laatste = []
     for ronde in range(1, MAX_RONDES + 1):
+        writer.zonder_aanhalingstekens(groepen)
         vorm = writer.vormcontrole(groepen, f, leesbaar=ronde <= 2)
         if vorm:
             laatste = sum(vorm.values(), [])
