@@ -146,7 +146,7 @@ Werkregels voor deze pipeline (aanvullend op de masterprompt):
 6. Niets overnemen: schrijf elke zin nieuw voor deze ene mens. Gebruik geen voorbeeldzinnen uit de masterprompt.
 7. Geen namen van andere mensen dan die de klant zelf in de intake noemt. Noem geen andere geboortedata dan die van de klant; schrijf data in de kalender zonder jaartal.
 8. Houd je exact aan de gevraagde aantallen. Lever alleen de JSON volgens het schema.
-9. Eenvoudige taal (B1-niveau): schrijf zoals je tegen een vriendin praat. Korte zinnen (gemiddeld 15 woorden of minder), gewone woorden, één gedachte per zin. Geen abstracte of spirituele vaktaal (manifestatie, polariteit, archetypisch, transformatief, resoneren, integreren, paradigma, essentie, katalysator) en geen dure woorden waar een gewoon woord bestaat ("mogelijk maken" wordt "helpen", "fundamenteel" wordt "diep"). Astrologische en numerologische termen mogen wel, maar alleen met de uitleg in gewone taal uit de masterprompt.
+9. Eenvoudige taal (B1-niveau): schrijf zoals je tegen een vriendin praat. Korte zinnen (gemiddeld 15 woorden of minder), gewone woorden, één gedachte per zin. Harde grens: geen enkele zin langer dan 22 woorden, ook niet waar de masterprompt zegt "wissel korte en lange zinnen af" (lang betekent hier hooguit 22 woorden). Zet geen opsomming, uitleg en gevolg in één zin met dubbele punten, puntkomma's of een reeks komma's: maak er twee of drie zinnen van. Tel bij twijfel de woorden. Geen abstracte of spirituele vaktaal (manifestatie, polariteit, archetypisch, transformatief, resoneren, integreren, paradigma, essentie, katalysator) en geen dure woorden waar een gewoon woord bestaat ("mogelijk maken" wordt "helpen", "fundamenteel" wordt "diep"). Astrologische en numerologische termen mogen wel, maar alleen met de uitleg in gewone taal uit de masterprompt.
 10. Schrijf voor iemand zonder enige kennis van astrologie. Maak elke duiding concreet met een alledaags moment dat de lezer uit het eigen leven kent (een gesprek, een werkdag, een avond thuis, een ruzie, een keuze), zodat die denkt "dat ben ik". Heeft de intake iets over dat thema, sluit dan aan bij wat de klant daar vertelt. Geen algemeenheden die op iedereen passen ("je bent soms onzeker", "je houdt van mensen"): benoem juist wat deze kaart onderscheidt, en hoe twee plaatsingen samen iets specifieks laten zien.
 11. Gebruik de VERDIEPING als rode draad: de chartheerser, de eindheerser, waardigheden en aspectpatronen laten zien welke plaatsingen in deze kaart het zwaarst wegen. Geef die het meeste gewicht, laat ze in meerdere hoofdstukken terugkomen en leg verbanden ertussen, zodat het document als één verhaal over deze mens leest in plaats van een losse opsomming. Vertaal de techniek naar gewone taal (niet "je hebt een T-kruis", wel wat de lezer ervan merkt, met de techniek tussen haakjes). Progressies (hoe de kaart zich door de jaren ontwikkelt) en levenscycli gebruik je voor het nu: benoem ze bij het persoonlijk jaar en in de introductie of de integratie. Levenscycli schrijf je als leeftijd ("rond je 29e"), nooit als datum.
 
@@ -278,7 +278,7 @@ def leesbaarheid(c):
         for zin in re.split(r'(?<=[.!?])\s+', re.sub(r'\([^)]*\)', '', t)):
             n = len(re.findall(r"[\wà-ÿ']+", zin))
             if n > MAX_ZIN:
-                p.append(f'{pad}: zin van {n} woorden ("{zin[:60]}…"); knip op in korte zinnen')
+                p.append(f'{pad}: zin van {n} woorden ("{zin[:60]}…"); knip op in zinnen van hooguit 22 woorden')
     return p[:8]
 
 

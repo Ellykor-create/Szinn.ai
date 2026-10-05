@@ -18,7 +18,7 @@ SCRIPTS = datalaag.SCRIPTS
 DATA = os.environ.get('DATA_DIR', os.path.join(HERE, 'data'))
 CORPUS = os.path.join(DATA, 'opgeleverd')
 SECRET = os.environ.get('WORKER_SECRET', '')
-MAX_RONDES = 4
+MAX_RONDES = 6   # ronde 1-2 mogen naar de B1-leesbaarheid gaan; de audit houdt er dan altijd 4 over
 os.makedirs(CORPUS, exist_ok=True)
 
 
