@@ -84,6 +84,8 @@ ol.q li{counter-increment:q;display:flex;gap:12pt;margin-bottom:9pt}
 ol.q li:before{content:counter(q);font-family:'Cormorant Garamond';font-size:16pt;color:var(--gold);min-width:18pt}
 .prompt{border:.6pt solid #E8DCC4;background:var(--cream);padding:10pt 12pt;margin:0 0 10pt;font-size:9.4pt;page-break-inside:avoid}
 .prompt .lab{display:block;margin-bottom:4pt}
+.card,.note,.prompt{background:var(--goldl)}
+.card .lab,.note .lab,.prompt .lab{color:var(--ink)}
 .cal{display:flex;gap:8pt;margin:8pt 0}
 .cal>div{width:calc(33.333% - 6pt);border:.6pt solid #E8DCC4;border-top:3pt solid var(--gold);padding:10pt 11pt;font-size:8.9pt;page-break-inside:avoid}
 .cal .num{font-size:26pt}
