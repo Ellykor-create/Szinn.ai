@@ -12,6 +12,7 @@ import swisseph as swe
 from szinn_numerologie import *
 from szinn_vast import *
 import szinn_vast
+from szinn_taal import LANG, t as label, nm as vertaal, MAANDEN as _MND
 HERE=os.path.dirname(os.path.abspath(__file__)); swe.set_ephe_path(os.path.join(HERE,'..','assets','ephe'))
 ap=argparse.ArgumentParser(); ap.add_argument('chart'); ap.add_argument('html'); ap.add_argument('naam'); ap.add_argument('d',type=int); ap.add_argument('m',type=int); ap.add_argument('j',type=int)
 ap.add_argument('--andere'); ap.add_argument('--intake'); ap.add_argument('--voornaam', default=''); ap.add_argument('--schrijftekst'); a=ap.parse_args()
@@ -49,7 +50,7 @@ if 'jd_ut' in ch:
                 if house(ch['pos'][n]['lon'],cs)!=ch['pos'][n]['house']: wankel.add(n)
     print('   huisplaatsing gevoelig voor ±2 minuten geboortetijd:', sorted(wankel) or 'geen')
     for n in wankel:
-        if 'eboortetijdnoot' not in T and 'eboortetijd' not in T: fail(f'{n} wisselt van huis bij ±2 min, maar er staat geen geboortetijdnoot')
+        if not any(k in T for k in (('eboortetijdnoot','eboortetijd') if LANG=='nl' else ('irth time note','irth time'))): fail(f'{n} wisselt van huis bij ±2 min, maar er staat geen geboortetijdnoot')
 else:
     print('   (oude chart.json zonder jd_ut: draai chart.py opnieuw voor ronde 1a–1c)')
 # 1d · elke graad, elk huis, elk aspect in de tekst tegen de datalaag
@@ -57,17 +58,18 @@ def f(l): d=l%30; return f"{int(d)}°{int((d-int(d))*60):02d}'"
 ok={f(v['lon']) for v in ch['pos'].values()}|{f(ch['asc']),f(ch['mc']),f(ch['sn'])}|{f(x) for x in ch['cusps']}
 g=re.findall(r"\d{1,2}°\d{2}'",T); bad=sorted(set(x for x in g if x not in ok))
 print(f'1d graden in de tekst: {len(g)} vermeldingen'); bad and fail(f'graden die niet in de datalaag staan: {bad}')
-nm=list(ch['pos']); hb=[]
+namen={vertaal(n):n for n in ch['pos']}; nm=list(namen); hb=[]; HUIS='house' if LANG=='en' else 'huis'
 for n in nm:
-    for mm in re.finditer(n+r"[^.;()]{0,40}?,? huis (\d{1,2})",T):
-        if any(o in mm.group(0) for o in nm if o!=n): continue
-        if int(mm.group(1))!=ch['pos'][n]['house']: hb.append(mm.group(0))
+    for mm in re.finditer(re.escape(n)+r"[^.;()]{0,40}?,? "+HUIS+r" (\d{1,2})",T):
+        if any(o in mm.group(0) for o in nm if o!=n and o not in n): continue
+        if int(mm.group(1))!=ch['pos'][namen[n]]['house']: hb.append(mm.group(0))
 print('   huisvermeldingen die afwijken (alleen toegestaan in de geboortetijdnoot):',hb or 'geen')
 pts={n:v['lon'] for n,v in ch['pos'].items()}; pts.update(Ascendant=ch['asc'],Midhemel=ch['mc'],Zuidknoop=ch['sn'])
-A={'conjunct':0,'sextiel':60,'vierkant':90,'driehoek':120,'oppositie':180}; na=0
-for mm in re.finditer(r"<tr><td>(\w+) (conjunct|sextiel|vierkant|driehoek|oppositie) (\w+)</td><td>([\d,]+)°</td>",H):
-    x,t,y,o=mm.groups(); na+=1; real=abs(abs((pts[x]-pts[y]+180)%360-180)-A[t])
-    if abs(real-float(o.replace(',','.')))>0.06: fail(f'aspect {x} {t} {y}: tekst {o}°, werkelijk {real:.2f}°')
+pts.update({vertaal(k):v for k,v in list(pts.items())})
+A={'conjunct':0,'sextiel':60,'vierkant':90,'driehoek':120,'oppositie':180,'sextile':60,'square':90,'trine':120,'opposition':180}; na=0
+for mm in re.finditer(r"<tr><td>([\w ]+?) (conjunct|sextiel|vierkant|driehoek|oppositie|sextile|square|trine|opposition) ([\w ]+?)</td><td>([\d.,]+)°</td>",H):
+    x,tp,y,o=mm.groups(); na+=1; real=abs(abs((pts[x]-pts[y]+180)%360-180)-A[tp])
+    if abs(real-float(o.replace(',','.')))>0.06: fail(f'aspect {x} {tp} {y}: tekst {o}°, werkelijk {real:.2f}°')
 print(f'   aspecten in de tabel gecontroleerd: {na}')
 # 1e · numerologie met twee onafhankelijke rekenwijzen
 def red2(n):
@@ -94,7 +96,7 @@ vast=set()
 for k in dir(szinn_vast):
     v=getattr(szinn_vast,k)
     if isinstance(v,str): vast.update(zinnen(plain(v)))
-std=[l.strip() for l in open(os.path.join(HERE,'standaardzinnen.txt')) if l.strip() and not l.startswith('#')]
+std=[l.strip() for l in open(os.path.join(HERE,'standaardzinnen_en.txt' if LANG=='en' else 'standaardzinnen.txt')) if l.strip() and not l.startswith('#')]
 def is_std(z): return z in vast or any(x in z for x in std) or z.count(' · ')>=3 or re.match(r'^\W*(0\d|1[0-3]) ',z)
 eigen=[z for z in zinnen(T2) if not is_std(z)]
 T_eigen=' '.join(eigen)
@@ -164,19 +166,23 @@ else:
 # geboortegegevens overal gelijk
 inv=ch.get('invoer',{})
 if inv:
-    y,mo,dd=inv['datum'].split('-'); maanden=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december']
+    y,mo,dd=inv['datum'].split('-'); maanden=[m.lower() for m in _MND[LANG]]
     datum_nl=f"{int(dd)} {maanden[int(mo)-1]} {y}"
     print(f'   geboortedatum "{datum_nl}" komt {T.lower().count(datum_nl)} keer voor; tijd {inv["tijd"]} {T.count(inv["tijd"])} keer')
     T.lower().count(datum_nl)==0 and fail('geboortedatum staat niet in het document')
-    for mm in re.finditer(r'\b(\d{1,2}) (januari|februari|maart|april|mei|juni|juli|augustus|september|oktober|november|december) (19\d\d|20[01]\d)\b',T.lower()):
+    for mm in re.finditer(r'\b(\d{1,2}) ('+'|'.join(maanden)+r') (19\d\d|20[01]\d)\b',T.lower()):
         if mm.group(0)!=datum_nl: fail(f'andere geboortedatum in het document: {mm.group(0)}')
 # verboden claims en vormen
 tx=[('em-dash in proza',r'[a-z,] — [a-z]'),('u/uw',r'\b(uw|U)\b '),('Hz',r'\bHz\b'),('oude handelsnaam',r'(?i)\b1\s?1\s?0\s+L\w*\s*(&|and|en)\s*B'),('oude signatuur','nooit verloren'),
     ('permission slips','ermission slip'),('Waarneming als gave','Gave 0\d Waarneming'),('Szinn',r'\bSzinn\b'),('zeldzaam/uniek',r'\b(zeldzaam|zeldzame|uniek)\b'),
     ('causaal',r'verklaart waarom|bewijst|is de reden dat|zorgt ervoor dat'),('medisch',r'\b(diagnose|ziekte|stoornis)\b'),('percentages/frequentie',r'\b\d+ ?(procent|%) van (alle|de) (mensen|kaarten)')]
+if LANG=='en':   # dezelfde controles, Engelse woorden
+    tx=[('em-dash in proza',r'[a-z,] — [a-z]'),('Hz',r'\bHz\b'),('oude signatuur','never lost'),('permission slips','ermission slip'),('Szinn',r'\bSzinn\b'),
+        ('zeldzaam/uniek',r'\b(rare|unique)\b'),('causaal',r'explains why|proves that|is the reason that|ensures that'),('medisch',r'\b(diagnosis|disease|disorder|illness)\b'),
+        ('percentages/frequentie',r'\b\d+ ?(percent|%) of (all|the) (people|charts)')]
 for lab,rx in tx:
     n=len(re.findall(rx,T_eigen if lab in ('medisch','zeldzaam/uniek','causaal','percentages/frequentie') else T)); print(f'   {lab}: {n}'); n and fail(f'{lab}: {n}×')
-cnt={'praktijken':H.count('Praktijk 0'),'prompts':H.count('class="prompt"'),'kalendermaanden':H.count('border-top-color:'),'Inner Permissions':H.count('class="perm"')}
+cnt={'praktijken':H.count(label('Praktijk 0')),'prompts':H.count('class="prompt"'),'kalendermaanden':H.count('border-top-color:'),'Inner Permissions':H.count('class="perm"')}
 print('   aantallen:',cnt,'(verwacht 7 · 6 · 6 · 8)')
 for k,v in zip(cnt,(7,6,6,8)):
     cnt[k]!=v and fail(f'{k}: {cnt[k]} in plaats van {v}')

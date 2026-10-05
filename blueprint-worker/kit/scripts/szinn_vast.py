@@ -157,3 +157,8 @@ BRONNEN = """<h2>Bronnen, verdieping &amp; volgende stappen</h2>
 <div class="note"><p>Vibratie is jouw aantrekkingskracht. Bewustzijn is hoe je die vibratie leert kennen. En creatie is wat er ontstaat als je stopt met overleven en begint met leven.</p><p>Remember who you are.</p></div>
 """
 SLOT_QUOTE = quotepage(IMG['slot'], 'Tot slot', 'Lees hem niet in één keer. Lees een sectie. Zit ermee. Kom terug.<br><b>Remember who you are.</b>')
+
+# Engelse editie: dezelfde namen, vertaald (szinn_vast_en.py); gekozen via BLUEPRINT_LANG (zie szinn_taal.py).
+from szinn_taal import LANG as _LANG
+if _LANG == 'en':
+    from szinn_vast_en import *  # noqa: F401,F403

@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 """SZINN · schrijflaag. Laat Claude alle persoonlijke tekst schrijven als JSON (content.json) vanuit de datalaag en
 de intake, met masterprompt v4 als bindende standaard. Berekent niets: alle getallen staan al in de feiten."""
-import json, os, re
+import json, os, re, sys
 from concurrent.futures import ThreadPoolExecutor
 import anthropic
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, 'kit', 'scripts'))
+from szinn_taal import LANG, nm, GLOSSARIUM  # noqa: E402
 MASTERPROMPT = open(os.path.join(HERE, 'kit', 'MASTERPROMPT_SZINN_Alignment_Blueprint_v4.md'), encoding='utf-8').read()
 MODEL = os.environ.get('BLUEPRINT_MODEL', 'claude-sonnet-5')
 
@@ -37,9 +39,38 @@ INTAKE_VRAGEN = {
 }
 
 
+INTAKE_VRAGEN_EN = {
+    'p1_bezig': 'What is occupying your mind most right now in your life?',
+    'p2_verlangen': 'What do you long for most? And what is getting in your way?',
+    'p3_energie': 'What gives you energy? What makes you come alive?',
+    'p4_veranderen': 'What would you most like to change in your life?',
+    'p5_tevredenheid': 'How satisfied are you with your life right now, and in which area do you most want to grow?',
+    'w1_werk_gevoel': 'How does your work feel to you right now?',
+    'w2_werk_anders': 'What would you like to do more of in your work, or what would you change?',
+    'w3_werk_stap': 'What small step could you take to make your work more fulfilling or meaningful?',
+    'w4_werk_1jaar': 'What would your life look like if everything felt truly aligned in 1 year?',
+    'e1_opladen': 'What helps you recharge and restore your energy?',
+    'e2_uitgeput': 'When do you often feel drained or overwhelmed?',
+    'e3_balans_1jaar': 'How would you like your life to look in 1 year when it comes to energy and balance?',
+    'r1_verbinding': 'How do you experience your connection with the people around you right now?',
+    'r2_relaties_verdiepen': 'What would you like to change or deepen in your relationships?',
+    't1_een_ding': 'If you could change one thing in your life, what would it be?',
+    't2_komende_maand': 'What would you like to achieve or experience in the coming month?',
+    't3_belemmering': 'What is currently stopping you from reaching that?',
+    'z1_moeilijkst': 'What do you find most difficult about making changes?',
+    'z2_helpen': 'What could help you take steps more easily?',
+    'z3_1jaar': 'How would you like your life to look in 1 year?',
+    'b1_ondergaan_creeren': 'Do you feel you mostly experience life as it happens, or do you consciously create it? Or somewhere in between?',
+    'b2_irritatie_bewondering': 'What do you find irritating or admirable in others? What does that say about you?',
+    'b3_controle_vertrouwen': 'Do you live more from control (doing/directing) or from trust (allowing/receiving)? How do you see that reflected in your daily life?',
+    'b4_angst_loslaten': 'If fear played no role, what would you do or let go of? What is stopping you now?',
+}
+
+
 def intake_tekst(raw):
     """De intake-antwoorden letterlijk, met de vraag erbij. Dit is ook de bron voor de citatencontrole van audit.py."""
-    regels = [f'{vraag}\n{str(raw.get(k)).strip()}\n' for k, vraag in INTAKE_VRAGEN.items() if str(raw.get(k) or '').strip()]
+    vragen = INTAKE_VRAGEN_EN if LANG == 'en' else INTAKE_VRAGEN
+    regels = [f'{vraag}\n{str(raw.get(k)).strip()}\n' for k, vraag in vragen.items() if str(raw.get(k) or '').strip()]
     # velden die later aan het formulier zijn toegevoegd niet laten vallen
     regels += [f'{k}\n{str(v).strip()}\n' for k, v in raw.items()
                if re.match(r'^[a-z]\d_', k) and k not in INTAKE_VRAGEN and str(v or '').strip()]
@@ -153,6 +184,42 @@ Werkregels voor deze pipeline (aanvullend op de masterprompt):
 === MASTERPROMPT v4 ===
 """ + MASTERPROMPT
 
+# Engelse Blueprint: dezelfde standaard en dezelfde opdrachten; alleen de taal van de tekst en de vaste frases wisselen.
+# Sleutels (JSON-velden, planeetnamen als sleutel, aspectsleutels, element-ids) blijven Nederlands: daar rekent de pipeline op.
+TAALREGEL_EN = ('1. Write in English (British spelling), second person singular (you/your). Plain text, no HTML, no markdown, no bullet points. '
+    'The masterprompt, the FEITEN and the JSON keys are in Dutch: keep every JSON key, every aspect key (e.g. "Zon conjunct Maan") and the element '
+    'identifiers (vuur, lucht, water, aarde) exactly as given, but write every value in natural English. Translate the terms: '
+    + ', '.join(f'{k} = {v}' for k, v in GLOSSARIUM.items() if k[0].isupper() or k in ('vuur', 'lucht', 'aarde', 'sextiel', 'vierkant', 'driehoek', 'oppositie', 'hoofd', 'vast', 'veranderlijk', 'huis'))
+    + ', Levenspad = Life Path, Persoonlijk Jaar = Personal Year, Geboortedag = Birth Day, Uitdrukking = Expression, Zielenurge = Soul Urge, Persoonlijkheid = Personality, '
+    'Tikkun = Tikkun, Sin/Sinn/Zin = Sin/Sinn/Zin (keep). Forbidden in English: em-dashes, the words rare and unique, causal claims (explains why, proves that, '
+    'is the reason that, ensures that), medical words (diagnosis, disease, disorder, illness), percentages, Hz, "permission slips", other company names. '
+    'Quotation marks only for literal quotes from the intake (which is in English). Write SZINN in capitals.')
+if LANG == 'en':
+    _r1 = '1. Schrijf in het Nederlands, tweede persoon enkelvoud (jij/jouw). Gewone tekst, geen HTML, geen markdown, geen opsommingstekens.'
+    assert _r1 in SYSTEEM
+    SYSTEEM = SYSTEEM.replace(_r1, TAALREGEL_EN)
+
+# Vaste frases in de opdrachten die letterlijk in het document komen (bouwscript en vormcontrole rekenen erop).
+FRASES_EN = {
+    '"Dit ben jij."': '"This is you."', '"Het recept: "': '"The recipe: "', '"Ik geef mezelf toestemming om"': '"I give myself permission to"',
+    '"Ik ben {voornaam}"': '"I am {voornaam}"',
+    '"De praktijken hieronder richten zich op waar de meeste beweging mogelijk is."': '"The practices below focus on where the most movement is possible."',
+    '"Voor jou is dat nu vooral: ..."': '"For you, right now, that is mainly: ..."', 'Begin niet met "Geboortetijdnoot:"': 'Do not begin with "Birth time note:"',
+    '"Persoonlijk Jaar N (JJJJ) en " (bv. "het jaar dat eraan komt")': '"Personal Year N (YYYY) and " (e.g. "the year that is coming")',
+    'tag = kort label ("Je kern", "In je werk en je dag")': 'tag = short label ("Your core", "In your work and your day")',
+    '("Huis N (Planeet · Planeet)")': '("House N (Planet · Planet)")', '("Planeet in Teken, huis N · Planeet aspect Planeet")': '("Planet in Sign, house N · Planet aspect Planet")',
+    'zoals "Begin met bewegen"': 'such as "Start by moving"', '("Je kernidentiteit belichten")': '("Illuminating your core identity")',
+    'één per element (vuur, lucht, water, aarde)': 'one per element (element = the Dutch identifier vuur, lucht, water or aarde)',
+    'Ochtend, Werk & focus, Lichaam & ritme, Hart & verbinding, Avond & herstel, Seizoen': 'Morning, Work & focus, Body & rhythm, Heart & connection, Evening & recovery, Season',
+    'Kernthema, Herhalingspatroon, Groei, Zielstaak': 'Core theme, Repeating pattern, Growth, Soul task',
+    'Elementen, Kernidentiteit, Emotioneel kompas, Zielrichting, Levensthema, Naamgetallen, Tikkun, Schaduwthema': 'Elements, Core identity, Emotional compass, Soul direction, Life theme, Name numbers, Tikkun, Shadow theme',
+    'Intuïtie, Verbeeldingskracht, Geheugen, Redeneren, Perceptie, Wilskracht': 'Intuition, Imagination, Memory, Reasoning, Perception, Willpower',
+    'uitleg = "Voor [plaatsing]. [één korte zin]"': 'uitleg = "For [placement]. [one short sentence]"',
+}
+if LANG == 'en':
+    for _k in FRASES_EN:
+        assert any(_k in o for o in OPDRACHT.values()) or 'Geboortetijdnoot' in _k, _k
+
 
 def feiten_tekst(f, intake):
     regels = [f"KLANT: {f['naam']} (voornaam {f['voornaam']}) · geboortenaam {f['geboortenaam']}",
@@ -187,6 +254,8 @@ def feiten_tekst(f, intake):
         regels += [f'    transit: {t}' for t in m['transits']] + [f'    maanfase: {t}' for t in m['maanfasen']]
         if not m['transits'] and not m['maanfasen']:
             regels.append('    (geen transits of lunaties in de uitvoer)')
+    if LANG == 'en':   # termen vertalen; de aspectsleutels (identifiers) blijven letterlijk staan
+        regels = [r if r.startswith('  ') and ' · orb ' in r else nm(r) for r in regels]
     regels += ['', '=== INTAKE (letterlijk, de enige bron voor levensfeiten en citaten) ===',
                intake or '(geen intake ingevuld: schrijf alles vanuit kaart en getallen, zonder citaten of levensfeiten)']
     return '\n'.join(regels)
@@ -199,7 +268,11 @@ def opdracht(groep, f):
     ot = f['ondertoon']
     ondertoon = (f'een zinsdeel (geen hele zin, geen hoofdletter) dat aanvult wat meestergetal {ot["getal"]} ({ot["naam"]}) als ondertoon betekent'
                  if ot else 'lege string "" (geen ondertoon).')
-    return OPDRACHT[groep].format(voornaam=f['voornaam'], tijdnoot=tijdnoot, ondertoon=ondertoon)
+    tekst = OPDRACHT[groep].format(voornaam=f['voornaam'], tijdnoot=tijdnoot, ondertoon=ondertoon)
+    if LANG == 'en':
+        for k, v in FRASES_EN.items():
+            tekst = tekst.replace(k.replace('{voornaam}', f['voornaam']), v.replace('{voornaam}', f['voornaam']))
+    return tekst
 
 
 def _call(client, groep, f, feiten, vorige=None, correcties=None):
@@ -255,6 +328,11 @@ def _pad(d, pad):
 
 
 VAKTAAL = re.compile(r'\b(manifestatie\w*|polariteit\w*|archetypisch\w*|transformatie[fv]\w*|resoner\w*|integreer\w*|integreren|paradigma\w*|essentie|katalysator\w*)\b', re.I)
+if LANG == 'en':
+    VAKTAAL = re.compile(r'\b(manifestation\w*|polarit\w*|archetyp\w*|transformative\w*|resonat\w*|integrat(e|es|ed|ing)|paradigm\w*|essence|catalyst\w*)\b', re.I)
+PERMISSIE = 'I give myself permission' if LANG == 'en' else 'Ik geef mezelf toestemming'
+RITME_LABELS = ({'morning', 'work & focus', 'body & rhythm', 'heart & connection', 'evening & recovery', 'season'} if LANG == 'en'
+                else {'ochtend', 'werk & focus', 'lichaam & ritme', 'hart & verbinding', 'avond & herstel', 'seizoen'})
 MAX_ZIN = 30   # woorden, bron tussen haakjes niet meegeteld; regel 9 vraagt gemiddeld 15
 
 
@@ -320,8 +398,7 @@ def vormcontrole(groepen, f, leesbaar=True):
         if g == 'D' and c['tot_slot'] and not c['tot_slot'][0].startswith(f['voornaam'] + ','):
             p.append(f'tot_slot[0] moet beginnen met "{f["voornaam"]}, "')
         if g == 'D':
-            labels = {'ochtend', 'werk & focus', 'lichaam & ritme', 'hart & verbinding', 'avond & herstel', 'seizoen'}
-            if any(x['titel'].strip().lower() in labels for x in c['ritme']['kaarten']):
+            if any(x['titel'].strip().lower() in RITME_LABELS for x in c['ritme']['kaarten']):
                 p.append('ritme.kaarten: titel is een eigen korte kop (bv. "Begin met bewegen"), niet het label zelf (Ochtend, Seizoen, ...)')
         if g == 'B':
             if [a['aspect'] for a in c['aspecten']] != [a['sleutel'] for a in f['aspecten_tabel']]:
@@ -331,8 +408,8 @@ def vormcontrole(groepen, f, leesbaar=True):
             if f['tijdnoot_nodig'] and not c['geboortetijdnoot'].strip():
                 p.append('geboortetijdnoot is verplicht voor deze kaart')
         if g == 'D':
-            p += [f'permissions[{i}] moet beginnen met "Ik geef mezelf toestemming"'
-                  for i, x in enumerate(c['permissions']) if not x['tekst'].startswith('Ik geef mezelf toestemming')]
+            p += [f'permissions[{i}] moet beginnen met "{PERMISSIE}"'
+                  for i, x in enumerate(c['permissions']) if not x['tekst'].startswith(PERMISSIE)]
         if p:
             fouten[g] = p
     return fouten

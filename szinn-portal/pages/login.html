@@ -11,7 +11,7 @@
     body {
       background:
         radial-gradient(120% 90% at 18% 8%, #FCF7EE 0%, #F6EFE1 42%, #EFE6D3 100%);
-      overflow: hidden;
+      overflow-x: hidden;
     }
     .bg-layer {
       position: fixed;
@@ -488,9 +488,12 @@
       });
     });
 
+    // Na inloggen terug naar ?next (bv. de journey uit de klaar-mail); alleen eigen paden.
+    const NEXT = (n => n && /^\/(?![\/\\])/.test(n) ? n : '/portaal')(new URLSearchParams(location.search).get('next'));
+
     // Redirect if already logged in (server session check)
     SzinnAuth.checkSession().then(loggedIn => {
-      if (loggedIn) window.location.href = '/portaal';
+      if (loggedIn) window.location.href = NEXT;
     });
 
     // ── Teksten voor "wachtwoord vergeten" (NL/EN) ─────────────────────────
@@ -580,7 +583,7 @@
 
       try {
         await SzinnAuth.login(email, password);
-        window.location.href = '/portaal';
+        window.location.href = NEXT;
       } catch (err) {
         errorEl.textContent = err.message;
         errorEl.classList.add('visible');

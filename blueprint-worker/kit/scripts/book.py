@@ -7,6 +7,8 @@ Gebruik: python3 book.py [build-script] [rug_mm]"""
 import sys, os, re, runpy
 import weasyprint
 HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, HERE)
+from szinn_taal import t, LANG
 script = sys.argv[1] if len(sys.argv) > 1 else 'build_blueprint.py'
 SPINE = float(sys.argv[2]) if len(sys.argv) > 2 else None
 g = runpy.run_path(script if os.path.exists(script) else os.path.join(HERE, script), run_name='szinn_book')
@@ -19,16 +21,17 @@ body = parts[1:]
 meta = re.search(r'<div class="meta">(.*?)</div>', cover_html, re.S).group(1)
 h1 = re.search(r'<h1>(.*?)</h1>', cover_html, re.S).group(1)
 title = (f'<section class="titlep"><img src="{LOGO}" alt="SZINN"><div class="brand">SZINN · Alignment Blueprint</div>'
-         f'<div class="k">Jouw persoonlijke Alignment Blueprint</div><h1>{h1}</h1><div class="tmeta">{meta}<br><br>Gefaciliteerd door Elly Elizabeth Korving · SZINN · szinn.ai · {g.get("MAAND_JAAR", "september 2026")}</div></section>')
+         f'<div class="k">{t("Jouw persoonlijke Alignment Blueprint")}</div><h1>{h1}</h1><div class="tmeta">{meta}<br><br>{t("Gefaciliteerd door")} Elly Elizabeth Korving · SZINN · szinn.ai · {g.get("MAAND_JAAR", "september 2026")}</div></section>')
 
 # ---- 2. ankers op secties ----
-anchors = [('s01','>01 — Visie'),('d1','Deel I · Wie ben ik?'),('el','>Herkenning · De elementen<'),('ka','>Herkenning · Karakter<'),
- ('va','>Herkenning · Valkuilen<'),('ta','>Herkenning · Talenten<'),('s02','>02 — Introductie<'),('d2','Deel II · Wat wil ik?'),
- ('s04','>04 — Astrologie<'),('s05','>05 — Noord-'),('s06','>06 — Numerologie<'),('s07','>07 — Kabbalah'),('s08','>08 — Sacred Geometry<'),
- ('s09','>09 — Overzicht'),('d3','Deel III · Waar ga ik heen?'),('s03','>03 — Leven vanuit flow<'),('s10','>10 — Reflectievragen<'),
- ('s11','>11 — Werken met de energie<'),('s12','>12 — Integratie<'),('ip','>Integratie · Inner Permissions<'),('s13','>13 — Verdieping<')]
-subs = [('sch','<h2>Jouw schaduwkanten zijn niet je vijanden</h2>'),('gav','<h2>Jouw zes gaven</h2>'),('dp','<h2>Dagelijkse praktijken</h2>'),
- ('ai','<h2>Zes AI-prompts voor jouw kaart</h2>'),('kal','<h2>Persoonlijke kalender')]
+anchors = [('s01','>'+t('01 — Visie &amp; Missie')),('d1',t('Deel I · Wie ben ik?')),('el','>'+t('Herkenning · De elementen')+'<'),('ka','>'+t('Herkenning · Karakter')+'<'),
+ ('va','>'+t('Herkenning · Valkuilen')+'<'),('ta','>'+t('Herkenning · Talenten')+'<'),('s02','>'+t('02 — Introductie')+'<'),('d2',t('Deel II · Wat wil ik? Waar komt het vandaan?')),
+ ('s04','>'+t('04 — Astrologie')+'<'),('s05','>'+t('05 — Noord- &amp; Zuidknoop')),('s06','>'+t('06 — Numerologie')+'<'),('s07','>'+t('07 — Kabbalah &amp; Tikkun')),('s08','>'+t('08 — Sacred Geometry')+'<'),
+ ('s09','>'+t('09 — Overzicht &amp; Samenvatting')),('d3',t('Deel III · Waar ga ik heen? Hoe leef ik dit?')),('s03','>'+t('03 — Leven vanuit flow')+'<'),('s10','>'+t('10 — Reflectievragen')+'<'),
+ ('s11','>'+t('11 — Werken met de energie')+'<'),('s12','>'+t('12 — Integratie')+'<'),('ip','>'+t('Integratie · Inner Permissions')+'<'),('s13','>'+t('13 — Verdieping')+'<')]
+# de h2-koppen van de vaste tekst (szinn_vast) staan al in de taal van de Blueprint
+subs = [('sch','<h2>'+t('Jouw schaduwkanten zijn niet je vijanden')+'</h2>'),('gav','<h2>'+('Your six gifts' if LANG == 'en' else 'Jouw zes gaven')+'</h2>'),('dp','<h2>'+t('Dagelijkse praktijken')+'</h2>'),
+ ('ai','<h2>'+('Six AI prompts for your chart' if LANG == 'en' else 'Zes AI-prompts voor jouw kaart')+'</h2>'),('kal','<h2>'+t('Persoonlijke kalender'))]
 out = []
 for p in body:
     if 'class="toc"' in p: continue            # eigen inhoudsopgave met paginanummers
@@ -38,7 +41,7 @@ for p in body:
     for aid, key in subs:
         if key in p: p = p.replace(key, key.replace('<h2>', f'<h2 id="{aid}">', 1), 1)
     # deelschermen (Deel I/II/III) altijd op een rechterpagina
-    if 'Deel I · Wie' in p or 'Deel II · Wat' in p or 'Deel III' in p:
+    if any(t(k) in p for k in ('Deel I · Wie ben ik?', 'Deel II · Wat wil ik? Waar komt het vandaan?', 'Deel III · Waar ga ik heen? Hoe leef ik dit?')):
         p = p.replace('class="full ', 'class="full recto ', 1)
     if 'class="back"' in p: p = p.replace('class="back"', 'class="back verso"', 1)
     out.append(p)
@@ -48,15 +51,16 @@ toc_rows = [('part','Voordat je begint',None),('01','Visie &amp; Missie','s01'),
  ('part','Deel II · Helderheid · Wat wil ik? Waar komt het vandaan?','d2'),('04','Astrologie','s04'),('05','Noord- &amp; Zuidknoop','s05'),('06','Numerologie','s06'),('07','Kabbalah / Tikkun','s07'),('08','Sacred Geometry · De Mandala','s08'),('09','Overzicht &amp; Samenvatting','s09'),
  ('part','Deel III · Integratie · Waar ga ik heen? Hoe leef ik dit?','d3'),('03','Leven vanuit flow','s03'),('10','Reflectievragen','s10'),('11','Werken met de energie','s11'),('12','Integratie','s12'),
  ('sub','Schaduwkanten + ankers','sch'),('sub','De zes gaven','gav'),('sub','Daily Practices (7)','dp'),('sub','AI-prompts (6)','ai'),('sub','Persoonlijke kalender · 6 maanden','kal'),('·','Inner Permissions','ip'),('13','Verdieping','s13')]
-t = '<section class="sec tocs recto"><div class="kicker">Inhoud</div><h1>Wat je in dit document vindt</h1><table class="toc">'
+toc = f'<section class="sec tocs recto"><div class="kicker">{t("Inhoud")}</div><h1>{t("Wat je in dit document vindt")}</h1><table class="toc">'
 for n, lab, a in toc_rows:
+    lab = t(lab)
     pg = f'<td class="pg"><a href="#{a}"></a></td>' if a else '<td class="pg"></td>'
-    if n == 'part': t += f'<tr><td class="part" colspan="2">{lab}</td>{pg}</tr>'
-    elif n == 'sub': t += f'<tr><td class="n"></td><td class="subi">{lab}</td>{pg}</tr>'
-    else: t += f'<tr><td class="n">{n}</td><td>{lab}</td>{pg}</tr>'
-t += '</table></section>'
+    if n == 'part': toc += f'<tr><td class="part" colspan="2">{lab}</td>{pg}</tr>'
+    elif n == 'sub': toc += f'<tr><td class="n"></td><td class="subi">{lab}</td>{pg}</tr>'
+    else: toc += f'<tr><td class="n">{n}</td><td>{lab}</td>{pg}</tr>'
+toc += '</table></section>'
 # volgorde: 1 titel (rechts) · 2 "Voor ..." beeld (links) · 3 inhoud (rechts) · rest
-inner = [title, out[0], t] + out[1:]
+inner = [title, out[0], toc] + out[1:]
 
 BOOK_CSS = """
 @page{size:A4;margin:22mm 16mm 20mm 16mm}
@@ -79,7 +83,7 @@ BOOK_CSS = """
 .toc td.pg a{color:var(--gold);text-decoration:none}
 .toc td.pg a::after{content:target-counter(attr(href), page)}
 """
-html = (f'<!DOCTYPE html><html lang="nl"><head><meta charset="utf-8"><title>SZINN Alignment Blueprint · {NAAM} · binnenwerk</title>'
+html = (f'<!DOCTYPE html><html lang="{LANG}"><head><meta charset="utf-8"><title>SZINN Alignment Blueprint · {NAAM} · {t("binnenwerk")}</title>'
         f'<style>{CSS.replace("__FOOT__", FOOT)}{BOOK_CSS}</style></head><body>' + '\n'.join(inner) + '</body></html>')
 open(base + '_binnenwerk.html', 'w').write(html)
 doc = weasyprint.HTML(filename=base + '_binnenwerk.html').render()
@@ -99,9 +103,9 @@ voor = cover_html.replace('<section class="cover"', '<section class="cv front"',
 FRONTCSS = '\n'.join(l.replace('.cover','.front',1).replace('page:cover;','').replace('page-break-after:always','') for l in CSS.split('\n') if l.startswith('.cover'))
 spine_txt = f'<div class="spt">SZINN · Alignment Blueprint · {NAAM}</div>' if SPINE >= 6 else ''
 achter = (f'<section class="cv backc"><div class="bi"><img src="{LOGO}" alt="SZINN">'
-          '<p class="bq">"Als genoeg mensen herinneren wie ze zijn, verandert de wereld om ons heen vanzelf."</p>'
-          '<p class="bt">Een persoonlijke Alignment Blueprint: jouw geboortekaart, jouw getallen en jouw zielstaak, samengebracht in één spiegel. Geen voorspelling en geen oordeel, maar een uitnodiging om te herinneren wie je bent.</p>'
-          '<div class="bs">Remember who you are.</div><div class="bf">SZINN · szinn.ai · Gefaciliteerd door Elly Elizabeth Korving</div></div></section>')
+          f'<p class="bq">{t(chr(34) + "Als genoeg mensen herinneren wie ze zijn, verandert de wereld om ons heen vanzelf." + chr(34))}</p>'
+          f'<p class="bt">{t("Een persoonlijke Alignment Blueprint: jouw geboortekaart, jouw getallen en jouw zielstaak, samengebracht in één spiegel. Geen voorspelling en geen oordeel, maar een uitnodiging om te herinneren wie je bent.")}</p>'
+          f'<div class="bs">Remember who you are.</div><div class="bf">SZINN · szinn.ai · {t("Gefaciliteerd door")} Elly Elizabeth Korving</div></div></section>')
 COVER_CSS = f"""
 @page{{size:{W}mm 297mm;margin:0;@bottom-center{{content:none}}}}
 *{{box-sizing:border-box}}
@@ -122,7 +126,7 @@ h1{{font-family:'Cormorant Garamond',serif;font-weight:400}}
 .backc .bs{{font-family:'Cormorant Garamond';font-style:italic;font-size:15pt;color:#9A7B2E}}
 .backc .bf{{position:absolute;left:24mm;right:26mm;bottom:22mm;font-size:8pt;letter-spacing:.2em;text-transform:uppercase;color:#9A7B2E}}
 """
-chtml = (f'<!DOCTYPE html><html lang="nl"><head><meta charset="utf-8"><title>SZINN Alignment Blueprint · {NAAM} · omslag</title>'
+chtml = (f'<!DOCTYPE html><html lang="{LANG}"><head><meta charset="utf-8"><title>SZINN Alignment Blueprint · {NAAM} · {t("omslag")}</title>'
          f'<style>{CSS.split(":root")[0]}:root{{--gold:#9A7B2E;--goldl:#C9A96E;--ink:#0D0A07;--muted:#6B6259}}{COVER_CSS}</style></head><body>'
          f'<div class="spread">{achter}<div class="spine">{spine_txt}</div>{voor}</div></body></html>')
 open(base + '_omslag.html', 'w').write(chtml)

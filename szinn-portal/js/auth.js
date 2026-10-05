@@ -56,7 +56,7 @@ const SzinnAuth = {
       }
       return true;
     } catch {
-      window.location.href = '/portaal/inloggen';
+      window.location.href = '/portaal/inloggen?next=' + encodeURIComponent(location.pathname + location.search);
       return false;
     }
   },

@@ -1458,7 +1458,7 @@ app.post('/api/intake/submit', async (req, res) => {
       data.email.trim(), hashed, clientName || data.email
     );
     user = db.prepare('SELECT * FROM users WHERE LOWER(email) = LOWER(?)').get(data.email.trim());
-    console.log(`\n✓ Nieuw account: ${data.email} / ${tempPassword}`);
+    console.log(`\n✓ Nieuw account: ${data.email}`);
   }
 
   // Create order
@@ -1512,11 +1512,7 @@ app.post('/api/intake/submit', async (req, res) => {
   res.json({
     success: true,
     orderId,
-    loginEmail: data.email,
-    tempPassword,
-    message: tempPassword
-      ? `Account aangemaakt. Inloggen met: ${data.email} / ${tempPassword}`
-      : 'Blueprint wordt gegenereerd in je bestaande account'
+    message: 'Blueprint wordt gegenereerd — inloggegevens volgen in de klaar-mail'
   });
 });
 
@@ -1585,12 +1581,19 @@ async function generateBlueprint(orderId) {
   // Mail — blueprint klaar (zelfde mail als de Netlify-pipeline stuurt).
   const mailUser = db.prepare('SELECT * FROM users WHERE id = ?').get(order.user_id);
   if (mailUser) {
+    // Vers wachtwoord in de klaar-mail (zelfde als "wachtwoord vergeten"); admin via ADMIN_PASSWORD.
+    let password = '';
+    if (!mailUser.is_admin) {
+      password = crypto.randomBytes(5).toString('hex');
+      db.prepare('UPDATE users SET password = ? WHERE id = ?').run(bcrypt.hashSync(password, 10), mailUser.id);
+    }
     const { sendReadyEmail } = require('./lib/email');
     await sendReadyEmail({
       to: mailUser.email,
       name: order.client_name || mailUser.name,
       orderId,
       lang: order.blueprint_language === 'en' ? 'en' : 'nl',
+      password,
     }).catch(e => console.error('klaar-mail mislukt:', e.message));
   }
 }

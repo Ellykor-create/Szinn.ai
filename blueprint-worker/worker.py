@@ -11,7 +11,12 @@ BLUEPRINT_MODEL, GITHUB_REPOSITORY + GH_TOKEN (voor gh)."""
 import glob, html, json, os, re, shutil, subprocess, sys, tempfile, time, traceback, urllib.request
 from datetime import datetime
 
-import datalaag, writer
+# Taal van de Blueprint vóór de imports: szinn_taal leest BLUEPRINT_LANG bij het laden (ook in de subprocessen).
+_oj = os.environ.get('ORDER_JSON')
+if _oj:
+    os.environ['BLUEPRINT_LANG'] = 'en' if json.loads(_oj).get('blueprint_language') == 'en' else 'nl'
+
+import datalaag, writer  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS = datalaag.SCRIPTS
@@ -105,6 +110,9 @@ def audit(job_dir, base, f, order_id, heeft_intake):
 
 CLAIMS = {'zeldzaam/uniek': r'\b(zeldzaam|zeldzame|uniek)\b', 'causaal': r'verklaart waarom|bewijst|is de reden dat|zorgt ervoor dat',
           'medisch': r'\b(diagnose|ziekte|stoornis)\b', 'em-dash': r'[a-z,] — [a-z]', 'u/uw': r'\b(uw|U)\b ', 'Szinn': r'\bSzinn\b'}
+if writer.LANG == 'en':
+    CLAIMS = {'zeldzaam/uniek': r'\b(rare|unique)\b', 'causaal': r'explains why|proves that|is the reason that|ensures that',
+              'medisch': r'\b(diagnosis|disease|disorder|illness)\b', 'em-dash': r'[a-z,] — [a-z]', 'Szinn': r'\bSzinn\b'}
 
 
 def groepen_voor(fout, groepen):
@@ -228,8 +236,8 @@ def genereer(job):
     open(os.path.join(CORPUS, f"SZINN_Alignment_Blueprint_{re.sub(r'[^A-Za-zÀ-ÿ]', '', f['voornaam'])}_{oid}_3delen.txt"), 'w').write(plain)
     open(os.path.join(job_dir, 'audit.md'), 'w').write(rapport(f, bool(intake.strip()), uitvoer, ronde))
     # relatief t.o.v. DATA: de rugbreedte-run pakt job.tar.gz uit op een andere runner
-    json.dump({'dir': os.path.relpath(job_dir, DATA), 'base': os.path.relpath(base, DATA)}, open(os.path.join(DATA, 'orders', oid, 'current.json'), 'w'))
-    return dict(ok=True, texts=dashboard_teksten(content), mail=content['mail'], files=['digitaal', 'binnenwerk', 'omslag', 'audit'], rondes=ronde)
+    json.dump({'dir': os.path.relpath(job_dir, DATA), 'base': os.path.relpath(base, DATA), 'lang': writer.LANG}, open(os.path.join(DATA, 'orders', oid, 'current.json'), 'w'))
+    return dict(ok=True, lang=writer.LANG, texts=dashboard_teksten(content), mail=content['mail'], files=['digitaal', 'binnenwerk', 'omslag', 'audit'], rondes=ronde)
 
 
 def huidig(oid):
@@ -239,6 +247,7 @@ def huidig(oid):
 
 def rug(oid, mm):
     job_dir, _ = huidig(oid)
+    os.environ['BLUEPRINT_LANG'] = json.load(open(os.path.join(DATA, 'orders', oid, 'current.json'))).get('lang', 'nl')  # voor bouwen/audit
     f = json.load(open(os.path.join(job_dir, 'facts.json')))
     base = bouwen(job_dir, mm)
     ok, fouten, uitvoer = audit(job_dir, base, f, oid, bool(open(os.path.join(job_dir, 'intake.txt')).read().strip()))

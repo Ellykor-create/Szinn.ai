@@ -789,6 +789,19 @@
          data-en="No problem. Your date of birth carries the core of your blueprint: your planets in the signs, your North and South Node, your full numerology and the Kabbalah layer. Only the Ascendant and the houses require an exact time; we leave that layer out and never fill anything in for you. If you find your time of birth later, we will send you that refinement layer as an addition.">No problem. Your date of birth carries the core of your blueprint: your planets in the signs, your North and South Node, your full numerology and the Kabbalah layer. Only the Ascendant and the houses require an exact time; we leave that layer out and never fill anything in for you. If you find your time of birth later, we will send you that refinement layer as an addition.</p>
     </div>
 
+    <!-- ── Time of birth estimated or unknown: disclaimer ── -->
+    <div class="tijd-panel" id="tijd-disclaimer" hidden>
+      <p class="field-hint" style="margin:0 0 10px"
+         data-nl="<strong>Je geboortetijd is geschat of onbekend</strong>"
+         data-en="<strong>Your time of birth is estimated or unknown</strong>"><strong>Your time of birth is estimated or unknown</strong></p>
+      <p class="field-hint" style="margin:0 0 10px"
+         data-nl="Deze blueprint is gebaseerd op de tijd die je zelf hebt ingevuld. Als die afwijkt van je werkelijke geboortetijd, kunnen je ascendant, huizen en bijbehorende interpretaties anders zijn. Ook je maanpositie kan afwijken. Je numerologie wordt hierdoor niet beïnvloed."
+         data-en="This blueprint is based on the time you entered yourself. If it differs from your actual time of birth, your ascendant, houses and related interpretations may be different. Your Moon position may also differ. Your numerology is not affected by this.">This blueprint is based on the time you entered yourself. If it differs from your actual time of birth, your ascendant, houses and related interpretations may be different. Your Moon position may also differ. Your numerology is not affected by this.</p>
+      <p class="field-hint" style="margin:0"
+         data-nl="Een juiste geboortetijd maakt je astrologische kaart nauwkeuriger. Ben je in Nederland geboren? Vraag dan bij je geboortegemeente een volledig Nederlands afschrift van je geboorteakte aan, met je geboortetijd."
+         data-en="A correct time of birth makes your astrological chart more accurate. Were you born in the Netherlands? Then request a full Dutch copy of your birth certificate, including your time of birth, from the municipality where you were born.">A correct time of birth makes your astrological chart more accurate. Were you born in the Netherlands? Then request a full Dutch copy of your birth certificate, including your time of birth, from the municipality where you were born.</p>
+    </div>
+
     <!-- ── Expandable: what works and what needs an exact time ── -->
     <details class="tijd-help" id="tijd-uitleg" hidden>
       <summary data-nl="Wat betekent dit voor jouw Blueprint?" data-en="What does this mean for your Blueprint?">What does this mean for your Blueprint?</summary>
@@ -1288,7 +1301,6 @@
 <!-- THANK YOU -->
 <div id="thank-you">
   <div class="ty-ornament">✦</div>
-  <div id="ty-credentials" style="display:none;max-width:480px;margin:0 auto 22px;background:rgba(201,169,110,0.08);border:1px solid rgba(201,169,110,0.3);border-radius:4px;padding:18px 22px;text-align:left;font-size:14px;line-height:1.8"></div>
   <h2>
     <span class="nl-text">Dank je wel</span>
     <span class="en-text" style="display:none;" style="display:none">Thank you</span>
@@ -1458,6 +1470,7 @@ function updateTijdUI() {
   onbekend.hidden = status !== 'onbekend';
   help.hidden = status === 'exact';
   uitleg.hidden = status === 'exact';
+  document.getElementById('tijd-disclaimer').hidden = status === 'exact';
 
   if (status !== 'exact') tijdInput.value = '';
   if (status !== 'benadering') {
@@ -1878,22 +1891,7 @@ function submitForm() {
     credentials: 'same-origin',
     body: JSON.stringify(data)
   })
-  .then(r => r.json())
-  .then(resp => {
-    if (resp.tempPassword) {
-      // New account — show credentials before thank-you
-      const msgEl = document.getElementById('ty-credentials');
-      if (msgEl) {
-        msgEl.innerHTML = `<strong>Your account has been created.</strong><br>
-          Log in at <a href="/szinn-portal/pages/login.html" style="color:var(--gold)">szinn.ai/portal</a> with:<br>
-          Email: <code style="background:rgba(201,169,110,0.15);padding:2px 6px;border-radius:3px">${data.email}</code><br>
-          Password: <code style="background:rgba(201,169,110,0.15);padding:2px 6px;border-radius:3px">${resp.tempPassword}</code><br>
-          <small style="color:var(--muted)">Save this password — you can change it later in your profile.</small>`;
-        msgEl.style.display = 'block';
-      }
-    }
-    showThankYou();
-  })
+  .then(() => showThankYou())
   .catch(() => showThankYou());
 }
 

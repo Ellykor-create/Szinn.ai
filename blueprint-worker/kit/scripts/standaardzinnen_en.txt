@@ -1,0 +1,59 @@
+# Fixed structural sentences from the build template (openers, introduction 02, calendar, prompts, colophon), English edition.
+# These may appear verbatim in every Blueprint. Only template sentences here, never personal interpretation.
+The moment you see a pattern, not as something that happens to you but as something you are running.
+This part begins with the four elements and with who you are when you are simply yourself: in balance, out of balance, and what you bring.
+Everything here is a mirror, not a judgment.
+A pitfall is a talent that has been switched on for too long.
+Most people get to know themselves through how others see them.
+Through their role in a family, a job, a friendship.
+SZINN assumes there is a deeper self, not shaped by circumstances but simply present.
+And that this deeper self has a signature, visible in the moments and patterns of your life, if you know where to look.
+Read it as an invitation to look at yourself with a little more curiosity than usual.
+Not the clarity of knowing all the answers, but the clarity of knowing who you are.
+Here is the technique: your birth chart with the calculations, your nodes, your numbers, your soul task and your mandala.
+Everything you recognised in part I comes from here.
+Here is how you live this: your flow, your reflection questions, your rhythm, your practices, your prompts, your calendar and the permission you may give yourself.
+The practices below focus on where the most movement is possible.
+Ask me questions so that I can discover for myself how this combination shows up in my daily life, without telling me what I should do.
+Each month carries its own colour of energy, and beneath each month are the transits that fall exactly on your chart in that month.
+The more consciously you follow this rhythm, the more you move with the flow of your year.
+The SZINN methodology and the structure of this document are protected; nothing from this document may be reproduced without the express written permission of Alterego BV.
+This SZINN Alignment Blueprint is not a truth.
+Do not read this section as a judgment.
+Here it gets direct, but never harsh.
+This is where every good reading ends, because your soul did not choose this for nothing.
+This reading works with three layers: who you are when you are in balance, what happens when you lose your balance, and what you bring that the world needs.
+Your complete birth chart, generated from your exact birth data, with the planets at their precise ecliptic degrees.
+At the heart sits the Merkaba on the nodal axis: the golden point reaches towards your North Node in
+Ascendant on the left, signs anticlockwise · Flower of Life and Metatron's Cube in the inner circle · Merkaba on the true node
+Your personal month numbers are calculated from Personal Year
+and from January from Personal Year
+Inner Permissions are notes that say what you may allow yourself, because nobody else is going to give that permission.
+What happens when you lose your balance
+What you bring that the world needs
+Who you are when you are in balance
+The permission you may give yourself
+A frequency to recognise
+Then follows the personal introduction.
+What resonates, take with you. What does not fit, let go.
+This SZINN Alignment Blueprint is not a truth. It is a mirror, a reflection. What resonates, take it with you. What does not fit, let it go. Consider nothing here as absolute truth. Go and explore for yourself. You are always the only expert on yourself.
+Most people get to know themselves through how others see them. Through their role in a family, a job, a friendship. Through what is expected of them.
+Do not read this section as a judgment. Read it as an invitation to look at yourself with a little more curiosity than usual. What resonates, take it with you. What does not fit, let it go.
+Do not read it in one go. One section at a time is enough.
+The final piece and at the same time the hardest. Knowledge is not enough.
+Concrete, daily, at your own pace.
+For you, right now, that is mainly
+Read them out loud. Sign the one that chafes the most.
+This document is personal and confidential.
+# Fixed sentences from build_blueprint.py (automatic pipeline). Structure only, no personal interpretation.
+This is you. This Blueprint is your mirror along the way.
+Counted across the ten planets, this is your ratio:
+Aspects in your chart (orb up to 5°, the tightest first)
+Your daily and seasonal rhythm based on your chart.
+Facilitated by Elly Elizabeth Korving · SZINN · szinn.ai
+Elly Elizabeth Korving · Alterego BV · All rights reserved
+Placidus house system · Swiss Ephemeris · True Node · Calculated from
+Pythagorean system · Calculated from
+Adding up all the digits of your birth date in one go
+as an undertone beneath your Life Path.
+I give myself permission to

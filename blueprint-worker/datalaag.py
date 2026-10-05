@@ -11,8 +11,9 @@ SCRIPTS = os.path.join(HERE, 'kit', 'scripts')
 sys.path.insert(0, SCRIPTS)
 from szinn_numerologie import lp, reduceer, naamgetal, naamdelen, normaliseer, splits, groeigetallen, MEESTERS  # noqa: E402
 from verdieping import verdieping  # noqa: E402
+from szinn_taal import LANG, nm, nm_deep, MAANDEN as _MND  # noqa: E402
 
-MAANDEN = ['januari', 'februari', 'maart', 'april', 'mei', 'juni', 'juli', 'augustus', 'september', 'oktober', 'november', 'december']
+MAANDEN = _MND[LANG]
 TEKENS = ['Ram', 'Stier', 'Tweelingen', 'Kreeft', 'Leeuw', 'Maagd', 'Weegschaal', 'Schorpioen', 'Boogschutter', 'Steenbok', 'Waterman', 'Vissen']
 TIEN = ['Zon', 'Maan', 'Mercurius', 'Venus', 'Mars', 'Jupiter', 'Saturnus', 'Uranus', 'Neptunus', 'Pluto']
 EL = {'vuur': ['Ram', 'Leeuw', 'Boogschutter'], 'lucht': ['Tweelingen', 'Weegschaal', 'Waterman'],
@@ -154,7 +155,7 @@ def bouw(order, vandaag=None):
         x, t, z = a['a'], a['type'], a['b']
         if 'Noordknoop' in (x, z) and t == 'oppositie':
             x, t, z = (z if x == 'Noordknoop' else x), 'conjunct', 'Zuidknoop'
-        aspecten_tabel.append(dict(sleutel=f'{x} {t} {z}', orb=f"{a['orb']:.1f}".replace('.', ',') + '°'))
+        aspecten_tabel.append(dict(sleutel=f'{x} {t} {z}', orb=(f"{a['orb']:.1f}".replace('.', ',') if LANG == 'nl' else f"{a['orb']:.1f}") + '°'))
 
     # geboortetijdgevoeligheid (masterprompt 3.1 en audit 1c)
     gevoelig = []
@@ -173,7 +174,7 @@ def bouw(order, vandaag=None):
     vlak = keten(sum(int(c) for c in f'{d}{mo}{y}'))
     ondertoon = None
     if vlak[-1] in MEESTERS and vlak[-1] != LP:
-        ondertoon = dict(getal=vlak[-1], naam=MEESTER_NAAM[vlak[-1]], som=' + '.join(f'{d}{mo}{y}') + f' = {pijl(vlak)}')
+        ondertoon = dict(getal=vlak[-1], naam=nm(MEESTER_NAAM[vlak[-1]]), som=' + '.join(f'{d}{mo}{y}') + f' = {pijl(vlak)}')
     PJ = lp(d, mo, vandaag.year)[0]; PJ2 = lp(d, mo, vandaag.year + 1)[0]
     naamgetallen = {}
     for w in ('uitdrukking', 'zielenurge', 'persoonlijkheid'):
@@ -203,7 +204,8 @@ def bouw(order, vandaag=None):
         ondertoon=ondertoon, naamgetallen=naamgetallen, groei=groeigetallen(naam, d, mo, y), maanden=maanden,
         retrograde=[n for n in TIEN + ['Chiron'] if pos[n]['rx']], verdieping=verdieping(chart, vandaag),
     )
-    return facts, chart, chart_out + '\n' + trans_out
+    # Engels: termen in de berekende tekst vertalen; sleutels (planeten, aspecten, elementen) blijven Nederlands
+    return (nm_deep(facts) if LANG == 'en' else facts), chart, chart_out + '\n' + trans_out
 
 
 def _wankel(chart):

@@ -1321,7 +1321,7 @@ app.post('/api/intake/submit', async (req, res) => {
       created_at: new Date().toISOString()
     };
     db.users.push(user);
-    console.log(`Nieuw account: ${user.email} / ${tempPassword}`);
+    console.log(`Nieuw account: ${user.email}`);
   }
 
   const submitPhone = normalizePhone(data.telefoon || data.phone);
@@ -1366,12 +1366,9 @@ app.post('/api/intake/submit', async (req, res) => {
   addBuyerToEnormail({ name: user.name, email: user.email, birthday: order.birth_date })
     .catch(err => console.error('enormail-koper mislukt:', err.message));
 
-  // Mail 1: account + wachtwoord (of "nieuwe blueprint in je bestaande account")
+  // Mail 1: bevestiging; inloggegevens volgen pas in de klaar-mail
   const mailLang = (order.blueprint_language === 'en') ? 'en' : 'nl';
-  await sendAccountEmail({
-    to: user.email, name: clientName || user.name,
-    tempPassword, isNewAccount: !!tempPassword, lang: mailLang,
-  }).catch(err => console.error('account-mail mislukt:', err.message));
+  await sendAccountEmail({ to: user.email, name: clientName || user.name, lang: mailLang }).catch(err => console.error('account-mail mislukt:', err.message));
 
   // Admin-notificatie: nieuwe aanvraag binnengekomen
   await sendNewOrderEmail({
@@ -1388,10 +1385,7 @@ app.post('/api/intake/submit', async (req, res) => {
 
   res.json({
     success: true, orderId,
-    loginEmail: data.email, tempPassword,
-    message: tempPassword
-      ? `Account aangemaakt. Inloggen met: ${data.email} / ${tempPassword}`
-      : 'Blueprint wordt samengesteld in je bestaande account'
+    message: 'Blueprint wordt samengesteld — inloggegevens volgen in de klaar-mail'
   });
 });
 
@@ -1611,10 +1605,11 @@ app.post('/api/internal/blueprint-result', async (req, res) => {
   const kit = require('../../lib/kit-worker');
   const { orderId, ok, error, hold, texts, mail, rondes, secret } = req.body || {};
   if (!kit.validCallbackSecret(secret)) return res.status(403).json({ error: 'forbidden' });
+  const lang = req.body?.lang === 'en' ? 'en' : 'nl';
   const { sendReadyEmail, sendAdminAlert } = require('../../lib/email');
   if (ok) {
     await blueprintStore().setJSON(`${orderId}.texts.json`, {
-      orderId, generatedAt: new Date().toISOString(), model: 'kit-v4', nl: texts,
+      orderId, generatedAt: new Date().toISOString(), model: 'kit-v4', [lang]: texts,
     });
   }
   // Meerdere workers kunnen tegelijk terugmelden: via updateDB gaat geen statuswijziging verloren.
@@ -1628,15 +1623,22 @@ app.post('/api/internal/blueprint-result', async (req, res) => {
       order.status = 'completed';
       order.completed_at = new Date().toISOString();
       order.blueprint_url = `/szinn-portal/blueprints/${orderId}.html`;
-      order.blueprint_languages = ['nl'];
+      order.blueprint_languages = [lang];
       order.pdf_available = true;
       order.generation_error = null;
       order.pipeline = 'kit-v4';
     }
-    return { order: { ...order }, user: db.users.find(u => u.id === order.user_id) };
+    const u = db.users.find(u => u.id === order.user_id);
+    // Vers wachtwoord in de klaar-mail (zelfde als "wachtwoord vergeten"); admin via ADMIN_PASSWORD.
+    let password = '';
+    if (ok && u && !u.is_admin) {
+      password = crypto.randomBytes(5).toString('hex');
+      u.password = bcrypt.hashSync(password, 10);
+    }
+    return { order: { ...order }, user: u, password };
   });
   if (!found) return res.status(404).json({ error: 'order niet gevonden' });
-  const { order, user } = found;
+  const { order, user, password } = found;
 
   if (!ok) {
     await sendAdminAlert({ orderId, error: order.generation_error, attempts: hold ? 'tegengehouden vóór generatie' : 'kit v4, 4 rondes' })
@@ -1645,7 +1647,7 @@ app.post('/api/internal/blueprint-result', async (req, res) => {
   }
   console.log(`${orderId}: kit-v4 opgeleverd (${rondes} ronde(s), 3× audit OK)`);
   if (user) {
-    await sendReadyEmail({ to: user.email, name: order.client_name || user.name, orderId, lang: 'nl', personal: mail })
+    await sendReadyEmail({ to: user.email, name: order.client_name || user.name, orderId, lang, personal: mail, password })
       .catch(e => console.error('klaar-mail mislukt:', e.message));
   }
   res.json({ ok: true });
