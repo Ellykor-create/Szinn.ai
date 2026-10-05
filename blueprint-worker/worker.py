@@ -69,20 +69,26 @@ def bouwen(job_dir, rug=None):
     return glob.glob(os.path.join(job_dir, '*_3delen_print.html'))[0][:-len('_print.html')]
 
 
-def corpus_zonder(order_id):
-    """Map met alle eerder opgeleverde Blueprints, behalve die van deze order zelf (her-generatie)."""
+def corpus_zonder(order_id, geboortenaam):
+    """Map met alle eerder opgeleverde Blueprints, behalve die van deze order zelf (her-generatie) en eerdere
+    Blueprints van dezelfde persoon (nieuwe bestelling): daarin staan dezelfde posities en getallen, dat is geen overname."""
     tmp = tempfile.mkdtemp(prefix='andere_')
+    naam = ' '.join(geboortenaam.lower().split())
     for fp in glob.glob(os.path.join(CORPUS, '*')):
-        if order_id not in os.path.basename(fp):
-            os.symlink(fp, os.path.join(tmp, os.path.basename(fp)))
+        if order_id in os.path.basename(fp):
+            continue
+        if fp.endswith('.txt') and naam and naam in ' '.join(open(fp, errors='ignore').read().lower().split()):
+            continue
+        os.symlink(fp, os.path.join(tmp, os.path.basename(fp)))
     return tmp
 
 
 def audit(job_dir, base, f, order_id, heeft_intake):
     """audit.py drie keer op dezelfde versie. Geeft (ok, fouten, uitvoer van de laatste ronde)."""
-    andere = corpus_zonder(order_id)
+    andere = corpus_zonder(order_id, f['geboortenaam'])
     cmd = [datalaag.py(), os.path.join(SCRIPTS, 'audit.py'), os.path.join(job_dir, 'klant_chart.json'), base + '_print.html',
-           f['geboortenaam'], str(f['dag']), str(f['maand']), str(f['jaar']), '--andere', andere, '--voornaam', f['voornaam']]
+           f['geboortenaam'], str(f['dag']), str(f['maand']), str(f['jaar']), '--andere', andere, '--voornaam', f['voornaam'],
+           '--schrijftekst', os.path.join(job_dir, 'content.json')]
     if heeft_intake:
         cmd += ['--intake', os.path.join(job_dir, 'intake.txt')]
     try:

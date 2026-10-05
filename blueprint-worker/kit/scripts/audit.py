@@ -4,6 +4,8 @@ Gebruik:
   python3 audit.py klant_chart.json klant_print.html "Volledige Geboortenaam" DD MM JJJJ [--andere MAP] [--intake intake.txt]
   --andere  map met eerder opgeleverde Blueprints (.pdf/.html/.txt) om overgenomen persoonlijke tekst en andermans namen te vinden
   --intake  de intake-antwoorden van deze klant als tekst; elk citaat in het document moet daar letterlijk in staan
+  --schrijftekst  content.json van de schrijflaag; de overname-controle kijkt dan alleen naar die geschreven tekst
+                  (vaste en berekende tekst met de feiten van de klant is geen overname en kan niet herschreven worden)
 Eindigt op 'OK, klaar voor oplevering' of op het aantal problemen. Bij problemen: niet opleveren, bron aanpassen, opnieuw bouwen."""
 import sys, os, json, re, html, argparse, glob, unicodedata
 import swisseph as swe
@@ -12,7 +14,7 @@ from szinn_vast import *
 import szinn_vast
 HERE=os.path.dirname(os.path.abspath(__file__)); swe.set_ephe_path(os.path.join(HERE,'..','assets','ephe'))
 ap=argparse.ArgumentParser(); ap.add_argument('chart'); ap.add_argument('html'); ap.add_argument('naam'); ap.add_argument('d',type=int); ap.add_argument('m',type=int); ap.add_argument('j',type=int)
-ap.add_argument('--andere'); ap.add_argument('--intake'); ap.add_argument('--voornaam', default=''); a=ap.parse_args()
+ap.add_argument('--andere'); ap.add_argument('--intake'); ap.add_argument('--voornaam', default=''); ap.add_argument('--schrijftekst'); a=ap.parse_args()
 ch=json.load(open(a.chart)); H=open(a.html).read(); H=re.sub(r'data:[^)"]+','',H); H=re.sub(r'<style.*?</style>','',H,flags=re.S)  # CSS (paginavoet, fontpaden) is geen documenttekst
 def plain(x): return re.sub(r'\s+',' ',html.unescape(re.sub(r'<[^>]+>',' ',x)))
 T=plain(H); fout=[]
@@ -113,6 +115,8 @@ def runs(own, other_ng, excl, n):
 if a.andere and os.path.isdir(a.andere):
     import pymupdf
     namen=set(); bestanden=glob.glob(os.path.join(a.andere,'*'))
+    def teksten(x): return [plain(x)] if isinstance(x,str) else [t for v in (x.values() if isinstance(x,dict) else x if isinstance(x,list) else []) for t in teksten(v)]
+    schrijf=[woorden(t) for t in teksten(json.load(open(a.schrijftekst)))] if a.schrijftekst else None
     base_txt=' '.join(plain(getattr(szinn_vast,k)) for k in dir(szinn_vast) if isinstance(getattr(szinn_vast,k),str))+' '+' '.join(std)
     for fp in bestanden:
         base=os.path.basename(fp)
@@ -124,6 +128,7 @@ if a.andere and os.path.isdir(a.andere):
         tx=re.sub(r'-\s+','',tx); ow=woorden(tx); bw=woorden(base_txt); base6={tuple(bw[i:i+6]) for i in range(len(bw)-5)}
         for n,soort in ((FAIL_N,'fout'),(WARN_N,'waarschuwing')):
             other={tuple(ow[i:i+n]) for i in range(len(ow)-n+1)}; excl={tuple(bw[i:i+n]) for i in range(len(bw)-n+1)}
+            if schrijf is not None: other&={tuple(w[i:i+n]) for w in schrijf for i in range(len(w)-n+1)}   # alleen wat de schrijflaag schreef
             for r in [r for blok in blokken for r in runs(woorden(blok),other,excl,n)]:
                 rw=r.split(); cov=[False]*len(rw)
                 for i in range(len(rw)-5):
