@@ -275,7 +275,7 @@ def opdracht(groep, f):
     return tekst
 
 
-def _call(client, groep, f, feiten, vorige=None, correcties=None):
+def _call(client, groep, f, feiten, vorige=None, correcties=None, effort='high'):
     msgs = [{'role': 'user', 'content': [{'type': 'text', 'text': feiten, 'cache_control': {'type': 'ephemeral'}},
                                          {'type': 'text', 'text': opdracht(groep, f)}]}]
     if vorige is not None:
@@ -286,13 +286,18 @@ def _call(client, groep, f, feiten, vorige=None, correcties=None):
         model=MODEL, max_tokens=64000,
         system=[{'type': 'text', 'text': SYSTEEM, 'cache_control': {'type': 'ephemeral'}}],
         messages=msgs,
-        output_config={'effort': 'high', 'format': {'type': 'json_schema', 'schema': schema(groep, f)}},
+        output_config={'effort': effort, 'format': {'type': 'json_schema', 'schema': schema(groep, f)}},
         betas=['server-side-fallback-2026-07-01'], extra_body={'fallbacks': 'default'},
     ) as stream:
         msg = stream.get_final_message()
     if msg.stop_reason == 'refusal':
         raise RuntimeError(f'schrijflaag groep {groep}: geweigerd ({getattr(msg, "stop_details", None)})')
     if msg.stop_reason == 'max_tokens':
+        # Het denkwerk telt mee in de 64k; een lange groep (D, lange intake) kan daar overheen.
+        # Eén keer opnieuw met minder denkruimte in plaats van de hele order laten falen.
+        if effort == 'high':
+            print(f'schrijflaag groep {groep}: afgekapt (max_tokens), opnieuw met effort medium', flush=True)
+            return _call(client, groep, f, feiten, vorige, correcties, effort='medium')
         raise RuntimeError(f'schrijflaag groep {groep}: afgekapt (max_tokens)')
     return json.loads(''.join(b.text for b in msg.content if b.type == 'text')), msg.usage
 
