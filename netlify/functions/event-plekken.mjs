@@ -1,10 +1,12 @@
 /**
- * SZINN · teller voor de introductieavond (14 oktober 2026)
+ * SZINN · teller voor de introductieavonden (14 en 28 oktober, 11 november 2026)
  *
  * Houdt bij hoeveel mensen zich hebben aangemeld, zodat de eventpagina
  * "nog X plekken" kan tonen. Opslag in Netlify Blobs (geen database nodig).
  *
- * GET  /.netlify/functions/event-plekken                 -> { max, aangemeld, over }
+ * Kies de avond met ?event=2026-10-28 (zonder event = 14 oktober).
+ *
+ * GET  /.netlify/functions/event-plekken?event=...       -> { max, aangemeld, over }
  * POST { actie: "aanmelding", email }                     -> telt 1 op (zelfde e-mail telt maar één keer)
  * POST { actie: "zet", wachtwoord, aangemeld?, max? }     -> beheer: aantallen aanpassen of terugzetten
  * POST { actie: "reset", wachtwoord }                     -> beheer: alles terug naar 0
@@ -15,8 +17,8 @@
 import { getStore } from "@netlify/blobs";
 import { createHash } from "node:crypto";
 
-const SLEUTEL = "introductieavond-2026-10-14";
-const STANDAARD_MAX = 25;
+const EVENTS = ["2026-10-14", "2026-10-28", "2026-11-11"];
+const STANDAARD_MAX = 20;
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), {
@@ -28,8 +30,16 @@ const leeg = () => ({ max: STANDAARD_MAX, aangemeld: 0, emails: [] });
 const publiek = (s) => ({ max: s.max, aangemeld: s.aangemeld, over: Math.max(0, s.max - s.aangemeld) });
 
 export default async (req) => {
+  const ev = new URL(req.url).searchParams.get("event") || EVENTS[0];
+  if (!EVENTS.includes(ev)) return json({ ok: false, error: "onbekende avond" }, 404);
+  const SLEUTEL = "introductieavond-" + ev;
   const store = getStore({ name: "szinn-events", consistency: "strong" });
-  const lees = async () => (await store.get(SLEUTEL, { type: "json" })) || leeg();
+  const lees = async () => {
+    const s = (await store.get(SLEUTEL, { type: "json" })) || leeg();
+    // Oktober 2026: maximum verlaagd van 25 naar 20. Oude opgeslagen standaard (25) wordt 20.
+    if (s.max === 25) { s.max = STANDAARD_MAX; await store.setJSON(SLEUTEL, s); }
+    return s;
+  };
   const schrijf = (s) => store.setJSON(SLEUTEL, s);
 
   if (req.method === "GET") return json(publiek(await lees()));

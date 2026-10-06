@@ -40,4 +40,10 @@
   <url><loc>https://szinn.ai/nl/ai</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
   <url><loc>https://szinn.ai/events</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://szinn.ai/nl/events</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://szinn.ai/events/introduction-evening-14-october</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://szinn.ai/nl/events/introductieavond-28-oktober</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://szinn.ai/events/introduction-evening-28-october</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://szinn.ai/nl/events/introductieavond-11-november</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://szinn.ai/events/introduction-evening-11-november</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://szinn.ai/nl/events/introductieavond-14-oktober</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
 </urlset>
