@@ -142,6 +142,7 @@ if a.andere and os.path.isdir(a.andere):
                 elif len(r.split())<FAIL_N: print(f'   ! sjabloonzin ook in {base} (herschrijf bij voorkeur): "{r}"')
     print(f'   vergeleken met {len(bestanden)} eerdere Blueprints')
     for n in sorted(namen):
+        if re.search(r'\b'+re.escape(n)+r'\b',base_txt): continue   # naam uit de vaste tekst (de facilitator), geen andere klant
         if re.search(r'\b'+re.escape(n)+r'\b',T): fail(f'naam van een andere klant in het document: {n}')
 else:
     print('   geen --andere map opgegeven: overname-controle NIET uitgevoerd (verplicht vóór oplevering)'); fail('overname-controle niet uitgevoerd')
