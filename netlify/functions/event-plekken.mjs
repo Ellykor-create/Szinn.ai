@@ -18,7 +18,7 @@ import { getStore } from "@netlify/blobs";
 import { createHash } from "node:crypto";
 
 const EVENTS = ["2026-10-14", "2026-10-28", "2026-11-11"];
-const STANDAARD_MAX = 25;
+const STANDAARD_MAX = 20;
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), {
@@ -34,7 +34,12 @@ export default async (req) => {
   if (!EVENTS.includes(ev)) return json({ ok: false, error: "onbekende avond" }, 404);
   const SLEUTEL = "introductieavond-" + ev;
   const store = getStore({ name: "szinn-events", consistency: "strong" });
-  const lees = async () => (await store.get(SLEUTEL, { type: "json" })) || leeg();
+  const lees = async () => {
+    const s = (await store.get(SLEUTEL, { type: "json" })) || leeg();
+    // Oktober 2026: maximum verlaagd van 25 naar 20. Oude opgeslagen standaard (25) wordt 20.
+    if (s.max === 25) { s.max = STANDAARD_MAX; await store.setJSON(SLEUTEL, s); }
+    return s;
+  };
   const schrijf = (s) => store.setJSON(SLEUTEL, s);
 
   if (req.method === "GET") return json(publiek(await lees()));
