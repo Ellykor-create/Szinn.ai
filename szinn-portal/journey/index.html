@@ -127,6 +127,9 @@ SzinnAuth.requireAuth().then(function(ok){
 
         <video id="d-video" class="dvideo" playsinline controls preload="metadata"
                poster="assets/intro-poster.jpg" hidden>
+          <!-- staande telefoon: de portretversie, die vult het scherm zonder bijsnijden -->
+          <source src="assets/intro-mobiel.mp4" type="video/mp4"
+                  media="(orientation: portrait) and (max-width: 820px)">
           <source src="assets/intro.mp4" type="video/mp4">
         </video>
 
