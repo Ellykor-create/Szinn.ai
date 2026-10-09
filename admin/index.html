@@ -383,6 +383,7 @@ function renderOrders(orders) {
           ${canGenerate ? `<button class="btn btn-ghost btn-sm" onclick="openPromptModal('${o.id}', '${o.client_name.replace(/'/g,"\\'")}')">Prompt (handmatig)</button>` : '<span style="font-size:11px;color:var(--muted)">Geen intake-data</span>'}
           ${hasBlueprint ? `<a href="${o.blueprint_url}" target="_blank" class="btn btn-ghost btn-sm">Bekijk Blueprint</a>` : ''}
           ${o.pipeline === 'kit-v4' && o.status === 'completed' ? `
+            <button class="btn btn-ghost btn-sm" onclick="resendReady('${o.id}', '${(o.email || '').replace(/'/g,"\\'")}')">✉ Klaar-mail opnieuw</button>
             <a href="/api/admin/order/${o.id}/file/binnenwerk" class="btn btn-ghost btn-sm">Binnenwerk</a>
             <a href="/api/admin/order/${o.id}/file/omslag" class="btn btn-ghost btn-sm">Omslag</a>
             <a href="/api/admin/order/${o.id}/file/audit" class="btn btn-ghost btn-sm">Auditrapport</a>
@@ -587,6 +588,13 @@ async function regenerateOrder(orderId, status) {
     showToast('Fout: ' + (data.error || r.status), true);
   }
   setTimeout(loadOrders, 1500);
+}
+
+async function resendReady(orderId, email) {
+  if (!confirm(`Klaar-mail opnieuw sturen naar ${email}? De klant krijgt een nieuw wachtwoord.`)) return;
+  const r = await fetch(`/api/admin/order/${orderId}/resend-ready`, { method: 'POST' });
+  const data = await r.json().catch(() => ({}));
+  showToast(r.ok ? `✓ Klaar-mail verstuurd naar ${data.to}` : 'Fout: ' + (data.error || r.status), !r.ok);
 }
 
 // ── Prompt modal ──────────────────────────────────────────────────────────────

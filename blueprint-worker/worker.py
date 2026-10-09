@@ -109,7 +109,7 @@ def audit(job_dir, base, f, order_id, heeft_intake):
 
 
 CLAIMS = {'zeldzaam/uniek': r'\b(zeldzaam|zeldzame|uniek)\b', 'causaal': r'verklaart waarom|bewijst|is de reden dat|zorgt ervoor dat',
-          'medisch': r'\b(diagnose|ziekte|stoornis)\b', 'em-dash': r'[a-z,] — [a-z]', 'u/uw': r'\b(uw|U)\b ', 'Szinn': r'\bSzinn\b'}
+          'medisch': r'\b(diagnose|ziekte|stoornis)\b', 'em-dash': r'[a-z,] — [a-z]', 'u/uw': r'\b(uw|U)\b [a-zà-ÿ]', 'Szinn': r'\bSzinn\b'}
 if writer.LANG == 'en':
     CLAIMS = {'zeldzaam/uniek': r'\b(rare|unique)\b', 'causaal': r'explains why|proves that|is the reason that|ensures that',
               'medisch': r'\b(diagnosis|disease|disorder|illness)\b', 'em-dash': r'[a-z,] — [a-z]', 'Szinn': r'\bSzinn\b'}

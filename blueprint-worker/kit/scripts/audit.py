@@ -174,7 +174,7 @@ if inv:
     for mm in re.finditer(r'\b(\d{1,2}) ('+'|'.join(maanden)+r') (19\d\d|20[01]\d)\b',T.lower()):
         if mm.group(0)!=datum_nl: fail(f'andere geboortedatum in het document: {mm.group(0)}')
 # verboden claims en vormen
-tx=[('em-dash in proza',r'[a-z,] — [a-z]'),('u/uw',r'\b(uw|U)\b '),('Hz',r'\bHz\b'),('oude handelsnaam',r'(?i)\b1\s?1\s?0\s+L\w*\s*(&|and|en)\s*B'),('oude signatuur','nooit verloren'),
+tx=[('em-dash in proza',r'[a-z,] — [a-z]'),('u/uw',r'\b(uw|U)\b [a-zà-ÿ]'),('Hz',r'\bHz\b'),('oude handelsnaam',r'(?i)\b1\s?1\s?0\s+L\w*\s*(&|and|en)\s*B'),('oude signatuur','nooit verloren'),
     ('permission slips','ermission slip'),('Waarneming als gave','Gave 0\d Waarneming'),('Szinn',r'\bSzinn\b'),('zeldzaam/uniek',r'\b(zeldzaam|zeldzame|uniek)\b'),
     ('causaal',r'verklaart waarom|bewijst|is de reden dat|zorgt ervoor dat'),('medisch',r'\b(diagnose|ziekte|stoornis)\b'),('percentages/frequentie',r'\b\d+ ?(procent|%) van (alle|de) (mensen|kaarten)')]
 if LANG=='en':   # dezelfde controles, Engelse woorden

@@ -1003,7 +1003,7 @@ app.post('/api/feedback', async (req, res) => {
   db.nextFeedbackId = db.nextFeedbackId || 1;
   db.feedback.push({ id: db.nextFeedbackId++, created_at: new Date().toISOString(), ...fb });
   await saveDB(db);
-  sendFeedbackAlert(fb).catch(err => console.error('feedback-melding mislukt:', err.message));
+  await sendFeedbackAlert(fb).catch(err => console.error('feedback-melding mislukt:', err.message));
   res.json({ ok: true });
 });
 
@@ -1627,6 +1627,7 @@ app.post('/api/internal/blueprint-result', async (req, res) => {
       order.pdf_available = true;
       order.generation_error = null;
       order.pipeline = 'kit-v4';
+      order.ready_mail_personal = mail || '';
     }
     const u = db.users.find(u => u.id === order.user_id);
     // Vers wachtwoord in de klaar-mail (zelfde als "wachtwoord vergeten"); admin via ADMIN_PASSWORD.
@@ -1651,6 +1652,36 @@ app.post('/api/internal/blueprint-result', async (req, res) => {
       .catch(e => console.error('klaar-mail mislukt:', e.message));
   }
   res.json({ ok: true });
+});
+
+// Klaar-mail opnieuw sturen (bv. nadat Resend faalde). Zet een vers wachtwoord,
+// want het vorige stond alleen in de mail die niet aankwam. Fout gaat terug naar admin.
+app.post('/api/admin/order/:id/resend-ready', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  const { sendReadyEmail } = require('../../lib/email');
+  const found = await updateDB(db => {
+    const order = db.orders.find(o => o.id === req.params.id);
+    const u = order && db.users.find(u => u.id === order.user_id);
+    if (!order || order.status !== 'completed' || !u) return null;
+    let password = '';
+    if (!u.is_admin) {
+      password = crypto.randomBytes(5).toString('hex');
+      u.password = bcrypt.hashSync(password, 10);
+    }
+    return { order: { ...order }, user: u, password };
+  });
+  if (!found) return res.status(404).json({ error: 'Geen voltooide order met account' });
+  const { order, user, password } = found;
+  try {
+    const r = await sendReadyEmail({
+      to: user.email, name: order.client_name || user.name, orderId: order.id,
+      lang: order.blueprint_language === 'en' ? 'en' : 'nl', personal: order.ready_mail_personal || '', password,
+    });
+    if (r?.skipped) return res.status(500).json({ error: 'Geen RESEND_API_KEY ingesteld' });
+    res.json({ ok: true, to: user.email, id: r?.id });
+  } catch (e) {
+    res.status(502).json({ error: e.message });
+  }
 });
 
 // Drukbestanden en auditrapport (Print&Bind) — alleen admin.
