@@ -12,3 +12,6 @@ blueprints/
 # Blueprint-kit en voorbeeldbestanden bevatten klantgegevens — nooit committen
 new_modules/
 .venv-bp/
+
+# Ruwe bronvideo (258 MB, boven GitHubs limiet); de site gebruikt journey/assets/intro-mobiel.mp4
+/Mobil Szinn intro.mp4
