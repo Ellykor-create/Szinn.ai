@@ -13,6 +13,7 @@ const { blueprintStore, loadDB, saveDB, updateDB } = require('../../lib/db');
 const { upgradeNav } = require('../../lib/blueprint-nav');
 const { sendAccountEmail, sendDraftEmail, sendNewOrderEmail, sendGiftEmail, sendGiftConfirmationEmail, sendPasswordResetEmail, sendFeedbackAlert } = require('../../lib/email');
 const { addBuyerToEnormail } = require('../../lib/enormail');
+const giftLib = require('../../lib/gift');
 
 const app = express();
 app.use(express.json());
@@ -452,14 +453,20 @@ async function verifyGiftPayment(db, sid, userId) {
   if ((db.usedCheckoutSessions || []).includes(sid)) return false;
   try {
     const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(sid)}`);
-    return s.payment_status === 'paid' && String(s.client_reference_id) === String(userId);
+    // 100%-kortingscode → Stripe zet no_payment_required i.p.v. paid; ook geldig (zoals intakeAccess).
+    const paid = s.status === 'complete' && (s.payment_status === 'paid' || s.payment_status === 'no_payment_required');
+    return paid && String(s.client_reference_id) === String(userId);
   } catch (e) { console.error('cadeaubetaling verifiëren mislukt:', e.message); return false; }
 }
 
+// Nieuwe flow (zonder recipientEmail): betaling → datum + bericht → de koper vult
+// stap 1 van de intake in voor de ontvanger (/intake?code=…). De blueprint wordt
+// direct gemaakt; de klaar-mail met inloggegevens gaat pas op de datum (lib/gift.js).
+// Met recipientEmail: oude code-flow (ontvanger vult zelf de intake in).
 app.post('/api/gift/create', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
   const { recipientEmail, recipientName, message, sendDate, lang, paidToken } = req.body || {};
-  if (!recipientEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail))
+  if (recipientEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail))
     return res.status(400).json({ error: 'Vul een geldig e-mailadres van de ontvanger in.' });
   if (sendDate && !/^\d{4}-\d{2}-\d{2}$/.test(sendDate))
     return res.status(400).json({ error: 'Ongeldige verzenddatum.' });
@@ -477,9 +484,9 @@ app.post('/api/gift/create', async (req, res) => {
   const code = `SZINN-${part.slice(0, 4)}-${part.slice(4)}`;
   const due = giftIsDue(sendDate);
   const entry = {
-    code, owner_user_id: req.auth.userId, recipient_email: recipientEmail.trim(),
+    code, owner_user_id: req.auth.userId, recipient_email: (recipientEmail || '').trim() || null,
     recipient_name: (recipientName || '').trim() || null, message: (message || '').trim() || null,
-    send_date: sendDate || null, lang: language, status: due ? 'sending' : 'pending',
+    send_date: sendDate || null, lang: language, status: !recipientEmail ? 'awaiting_intake' : due ? 'sending' : 'pending',
     paid: true, created_at: new Date().toISOString(), sent_at: null,
   };
   db.giftCodes.push(entry);
@@ -487,6 +494,12 @@ app.post('/api/gift/create', async (req, res) => {
   if (stripeConfigured() && paidToken) {
     db.usedCheckoutSessions = db.usedCheckoutSessions || [];
     if (!db.usedCheckoutSessions.includes(paidToken)) db.usedCheckoutSessions.push(paidToken);
+  }
+
+  if (!recipientEmail) {
+    await saveDB(db);
+    // Koper vult stap 1 in; de code in de URL geeft toegang en koppelt de order (intakeAccess).
+    return res.json({ ok: true, code, next: `${language === 'en' ? '/intake-en' : '/intake'}?code=${encodeURIComponent(code)}` });
   }
 
   if (due) {
@@ -504,18 +517,10 @@ app.post('/api/gift/create', async (req, res) => {
   res.json({ ok: true, code, scheduled: !due, sendDate: due ? null : sendDate });
 });
 
-// Verwerkt ingeplande cadeaus waarvan de datum bereikt is (voor scheduled function).
+// Verwerkt ingeplande cadeaus waarvan de datum bereikt is (zelfde als process-gifts).
 app.post('/api/gift/process', async (req, res) => {
   const db = await loadDB();
-  const due = (db.giftCodes || []).filter(g => g.status === 'pending' && giftIsDue(g.send_date));
-  let sent = 0;
-  for (const g of due) {
-    try {
-      const sender = db.users.find(u => u.id === g.owner_user_id);
-      await sendGiftEmail({ to: g.recipient_email, recipientName: g.recipient_name, senderName: sender?.name, giftCode: g.code, personalMessage: g.message, lang: g.lang });
-      g.status = 'sent'; g.sent_at = new Date().toISOString(); sent++;
-    } catch (err) { console.error(`cadeau ${g.code} mislukt:`, err.message); }
-  }
+  const sent = await require('../../lib/gift').processDueGifts(db);
   if (sent) await saveDB(db);
   res.json({ ok: true, sent });
 });
@@ -915,6 +920,12 @@ function setIntakeCookie(res, payload) {
 // Wie mag de intake in? { ok, sid?, code? } — sid/code gaan mee zodat de
 // submit ze als 'gebruikt' kan markeren (één intake per betaling/cadeau).
 async function intakeAccess(req, db, { sessionId, code } = {}) {
+  // Cadeaucode eerst: ook een ingelogde koper (met eigen concept/admin) moet de
+  // order aan het cadeau gekoppeld krijgen. gift = nieuwe flow (koper vult stap 1 in).
+  if (code) {
+    const g = (db.giftCodes || []).find(c => c.code === String(code).trim().toUpperCase());
+    if (g && !g.redeemed_at) return { ok: true, code: g.code, fresh: true, gift: g.status === 'awaiting_intake' ? { sendDate: g.send_date, lang: g.lang } : null };
+  }
   if (req.auth?.isAdmin) return { ok: true };
   if (req.auth) {
     const u = db.users.find(u => u.id === req.auth.userId);
@@ -942,10 +953,6 @@ async function intakeAccess(req, db, { sessionId, code } = {}) {
         return { ok: true, sid: sessionId, fresh: true };
     } catch (e) { console.error('checkout-sessie verifiëren mislukt:', e.message); }
   }
-  if (code) {
-    const g = (db.giftCodes || []).find(c => c.code === String(code).trim().toUpperCase());
-    if (g && !g.redeemed_at) return { ok: true, code: g.code, fresh: true };
-  }
   // Zonder Stripe-sleutel (lokaal ontwikkelen) niet blokkeren.
   if (!stripeConfigured()) return { ok: true };
   return { ok: false };
@@ -961,7 +968,8 @@ app.post('/api/intake/access', async (req, res) => {
   });
   if (!access.ok) return res.status(402).json({ ok: false, payLink: INTAKE_PAY_LINK, payLinkEn: INTAKE_PAY_LINK_EN });
   if (access.fresh) setIntakeCookie(res, { sid: access.sid || null, code: access.code || null });
-  res.json({ ok: true });
+  // gift: de pagina toont dan alleen stap 1 (koper vult in voor de ontvanger).
+  res.json({ ok: true, gift: access.gift ? { ...access.gift, code: access.code } : null });
 });
 
 // ── Dagboek: dagstart & dagafsluiting (kalender + popup in het dashboard) ─────
@@ -1356,19 +1364,38 @@ app.post('/api/intake/submit', async (req, res) => {
     db.usedCheckoutSessions = db.usedCheckoutSessions || [];
     db.usedCheckoutSessions.push(access.sid);
   }
+  // Cadeau (nieuwe flow): order aan het cadeau koppelen; de ontvanger hoort pas
+  // op de verzenddatum iets (lib/gift.js), dus hier geen mail/login/Enormail voor hem.
+  let gift = null;
   if (access.code) {
     const g = (db.giftCodes || []).find(c => c.code === access.code);
-    if (g) { g.redeemed_at = new Date().toISOString(); g.redeemed_order = orderId; }
+    if (g) {
+      g.redeemed_at = new Date().toISOString(); g.redeemed_order = orderId;
+      if (g.status === 'awaiting_intake') {
+        gift = g;
+        g.order_id = orderId; g.recipient_email = user.email; g.recipient_name = data.voornaam || clientName || null;
+        g.status = 'pending';
+        order.gift_code = g.code;
+      }
+    }
   }
   await saveDB(db);
 
-  // Koper automatisch in Enormail zetten (fire-and-forget; faalt stil).
-  addBuyerToEnormail({ name: user.name, email: user.email, birthday: order.birth_date })
-    .catch(err => console.error('enormail-koper mislukt:', err.message));
-
-  // Mail 1: bevestiging; inloggegevens volgen pas in de klaar-mail
   const mailLang = (order.blueprint_language === 'en') ? 'en' : 'nl';
-  await sendAccountEmail({ to: user.email, name: clientName || user.name, lang: mailLang }).catch(err => console.error('account-mail mislukt:', err.message));
+  if (gift) {
+    const sender = db.users.find(u => u.id === gift.owner_user_id);
+    if (sender?.email) {
+      await sendGiftConfirmationEmail({ to: sender.email, senderName: sender.name, recipientEmail: user.email, sendDate: giftIsDue(gift.send_date) ? 'now' : gift.send_date, lang: gift.lang || mailLang })
+        .catch(e => console.error('cadeau-bevestiging mislukt:', e.message));
+    }
+  } else {
+    // Koper automatisch in Enormail zetten (fire-and-forget; faalt stil).
+    addBuyerToEnormail({ name: user.name, email: user.email, birthday: order.birth_date })
+      .catch(err => console.error('enormail-koper mislukt:', err.message));
+
+    // Mail 1: bevestiging; inloggegevens volgen pas in de klaar-mail
+    await sendAccountEmail({ to: user.email, name: clientName || user.name, lang: mailLang }).catch(err => console.error('account-mail mislukt:', err.message));
+  }
 
   // Admin-notificatie: nieuwe aanvraag binnengekomen
   await sendNewOrderEmail({
@@ -1380,11 +1407,11 @@ app.post('/api/intake/submit', async (req, res) => {
   // Automatisch de generatie starten (background function, kan uren-melding tonen)
   await triggerGeneration(orderId, order).catch(err => console.error('generatie-trigger mislukt:', err.message));
 
-  // Auto-login
-  setAuthCookie(res, { userId: user.id, email: user.email, name: user.name });
+  // Auto-login (niet bij een cadeau: de koper blijft zichzelf, niet de ontvanger)
+  if (!gift) setAuthCookie(res, { userId: user.id, email: user.email, name: user.name });
 
   res.json({
-    success: true, orderId,
+    success: true, orderId, gift: !!gift,
     message: 'Blueprint wordt samengesteld — inloggegevens volgen in de klaar-mail'
   });
 });
@@ -1630,16 +1657,16 @@ app.post('/api/internal/blueprint-result', async (req, res) => {
       order.ready_mail_personal = mail || '';
     }
     const u = db.users.find(u => u.id === order.user_id);
+    // Cadeau: klaar-mail (met inloggegevens) pas op de verzenddatum (process-gifts).
+    const g = giftLib.giftFor(db, order);
+    const giftWait = !!(g && !giftLib.isDue(g.send_date));
     // Vers wachtwoord in de klaar-mail (zelfde als "wachtwoord vergeten"); admin via ADMIN_PASSWORD.
-    let password = '';
-    if (ok && u && !u.is_admin) {
-      password = crypto.randomBytes(5).toString('hex');
-      u.password = bcrypt.hashSync(password, 10);
-    }
-    return { order: { ...order }, user: u, password };
+    const password = (ok && !giftWait) ? giftLib.freshPassword(u) : '';
+    if (ok && g && !giftWait) { g.status = 'sent'; g.sent_at = new Date().toISOString(); }
+    return { order: { ...order }, user: u, password, giftWait, giftDate: g?.send_date, gift: giftLib.giftInfo(db, g) };
   });
   if (!found) return res.status(404).json({ error: 'order niet gevonden' });
-  const { order, user, password } = found;
+  const { order, user, password, giftWait, giftDate, gift } = found;
 
   if (!ok) {
     await sendAdminAlert({ orderId, error: order.generation_error, attempts: hold ? 'tegengehouden vóór generatie' : 'kit v4, 4 rondes' })
@@ -1647,8 +1674,9 @@ app.post('/api/internal/blueprint-result', async (req, res) => {
     return res.json({ ok: true });
   }
   console.log(`${orderId}: kit-v4 opgeleverd (${rondes} ronde(s), 3× audit OK)`);
-  if (user) {
-    await sendReadyEmail({ to: user.email, name: order.client_name || user.name, orderId, lang, personal: mail, password })
+  if (giftWait) console.log(`${orderId}: cadeau, klaar-mail wacht tot ${giftDate}`);
+  else if (user) {
+    await sendReadyEmail({ to: user.email, name: order.client_name || user.name, orderId, lang, personal: mail, password, gift })
       .catch(e => console.error('klaar-mail mislukt:', e.message));
   }
   res.json({ ok: true });

@@ -1,39 +1,18 @@
 'use strict';
-// Ingeplande functie: verstuurt cadeau-e-mails waarvan de verzenddatum bereikt
-// is. Draait dagelijks (schema in netlify.toml). Idempotent: alleen 'pending'
-// cadeaus met send_date <= vandaag worden verstuurd en daarna op 'sent' gezet.
+// Ingeplande functie: levert cadeaus af waarvan de verzenddatum bereikt is.
+// Draait dagelijks (schema in netlify.toml). Idempotent: alleen 'pending'
+// cadeaus met send_date <= vandaag; logica in lib/gift.js (gedeeld met api.js).
 
 const { loadDB, saveDB } = require('../../lib/db');
 const { connectLambda } = require('@netlify/blobs');
-const { sendGiftEmail } = require('../../lib/email');
-
-function isDue(sendDate) {
-  if (!sendDate) return true;
-  return sendDate <= new Date().toISOString().slice(0, 10);
-}
+const { processDueGifts } = require('../../lib/gift');
 
 exports.handler = async (event) => {
   // Zonder connectLambda geen Netlify Blobs in een klassieke Lambda-handler.
   try { connectLambda(event); } catch (e) { console.error('connectLambda:', e.message); }
   const db = await loadDB();
-  const due = (db.giftCodes || []).filter(g => g.status === 'pending' && isDue(g.send_date));
-  let sent = 0;
-  for (const g of due) {
-    try {
-      const sender = db.users.find(u => u.id === g.owner_user_id);
-      await sendGiftEmail({
-        to: g.recipient_email, recipientName: g.recipient_name,
-        senderName: sender && sender.name, giftCode: g.code,
-        personalMessage: g.message, lang: g.lang,
-      });
-      g.status = 'sent';
-      g.sent_at = new Date().toISOString();
-      sent++;
-    } catch (err) {
-      console.error(`cadeau ${g.code} versturen mislukt:`, err.message);
-    }
-  }
+  const sent = await processDueGifts(db);
   if (sent) await saveDB(db);
-  console.log(`process-gifts: ${sent} cadeau(s) verstuurd van ${due.length} klaarstaande.`);
+  console.log(`process-gifts: ${sent} cadeau(s) afgeleverd.`);
   return { statusCode: 200, body: JSON.stringify({ sent }) };
 };
