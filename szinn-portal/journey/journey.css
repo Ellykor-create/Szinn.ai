@@ -1093,7 +1093,7 @@ img, svg{ max-width:100%; }
 .wegen{ display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(14px,2vw,22px); }
 @media (max-width:1000px){ .wegen{ grid-template-columns:1fr; } }
 .weg{ background:#FFFDFA; border:1px solid rgba(154,123,46,.3); display:flex; flex-direction:column; }
-.weg img{ width:100%; height:170px; object-fit:cover; display:block; }
+.weg img{ width:100%; height:auto; aspect-ratio:686/453; object-fit:cover; display:block; }
 .weglijf{ padding:20px 22px 24px; display:flex; flex-direction:column; flex:1; }
 .wegnr{ font-family:'Cormorant Garamond',serif; font-size:15px; color:var(--goudprint); }
 .weglijf b{ display:block; margin-top:6px; font-family:'Inter',system-ui,sans-serif; font-weight:400;
@@ -1107,18 +1107,19 @@ img, svg{ max-width:100%; }
   font-family:'Cormorant Garamond',serif; font-size:16px; color:#241C16; }
 .weglijf li i{ flex:0 0 20px; height:20px; border-radius:50%; border:1px solid rgba(154,123,46,.5);
   display:grid; place-items:center; font-style:normal; font-size:10px; color:var(--goudprint); }
-.weglijf .knop{ margin-top:auto; width:100%; background:#866B28; color:#FFF8EC;
+.weglijf .knop{ flex:0 0 auto; margin-top:auto; width:100%; background:#866B28; color:#FFF8EC;
   border-color:#9A7B2E; border-radius:0; }
 .weg .uitk{ border:0; border-top:1px solid rgba(154,123,46,.3); margin-top:16px; background:none; }
-.wrem{ margin:0 0 18px; padding-top:14px; border-top:1px solid rgba(154,123,46,.3);
+.wrem{ margin:0 0 14px; padding-top:14px; border-top:1px solid rgba(154,123,46,.3);
   display:flex; flex-direction:column; gap:10px; font-family:'Cormorant Garamond',serif; font-size:16px; color:#241C16; }
-.wremrij{ display:flex; align-items:center; gap:10px; cursor:pointer; }
-.wremrij input{ accent-color:#866B28; width:16px; height:16px; margin:0; }
+.wremrij{ display:flex; align-items:flex-start; gap:10px; cursor:pointer;
+  font-family:'Inter',system-ui,sans-serif; font-size:13px; line-height:1.45; }
+.wremrij input{ flex:0 0 auto; accent-color:#866B28; width:16px; height:16px; margin:3px 0 0; }
 .wremkeus{ display:flex; flex-direction:column; gap:8px; padding-left:26px; }
 .wremkeus[hidden], .wremnr[hidden]{ display:none; }
 .wremnr{ font:inherit; font-size:15px; padding:9px 12px; border:1px solid rgba(154,123,46,.45);
   background:#FFFDFA; color:#241C16; border-radius:0; }
-.wrem .knop{ flex:none; min-width:0; padding:10px 16px; align-self:flex-start; margin-top:0; width:auto; }
+.wrem .knop{ flex:none; min-width:0; padding:10px 16px; align-self:stretch; margin-top:0; width:100%; }
 .wremstatus{ font-size:15px; color:var(--goudprint); min-height:1em; }
 .weg .uitkop span{ padding:12px 34px 12px 0; }
 .weg .uitkop b{ font-family:'Cormorant Garamond',serif; font-size:16px; letter-spacing:0;
@@ -3771,9 +3772,17 @@ body[data-fase="helderheid"] .zprofiel:hover .znaam b{ color:var(--goudlicht); }
   border-color:var(--goudlicht); color:#1A1410; }
 /* met een vinkje ertussen mag maar één ding de rest naar beneden duwen,
    anders verdeelt de kaart de ruimte over twee plekken en valt hij uit elkaar */
-.vormen.afvinkbaar .vormvink{ margin-top:auto; padding-top:16px; }
+.vormen.afvinkbaar .vormvink{ margin-top:auto; padding-top:16px; width:100%; align-self:stretch;
+  border-top:1px solid rgba(154,123,46,.25); }
 .vormen.afvinkbaar .vorm .knop,
 .vormen.afvinkbaar .vormhier{ margin-top:14px; }
+/* afvinkbare kaarten: geen los cijfer en geen dubbel 'je bent hier'; de voet
+   (scheidingslijn, vinkje, knop) staat in alle drie de kaarten gelijk */
+.vormen.afvinkbaar .vormteken, .vormen.afvinkbaar .vormvoor{ display:none; }
+.vormen.afvinkbaar .vormlbl{ margin-top:0; }
+.vormen.afvinkbaar .vormhier{ justify-content:center; padding:13px 16px; border:1px dashed rgba(154,123,46,.5);
+  font-family:'Inter',system-ui,sans-serif; font-size:11.5px; letter-spacing:.18em;
+  line-height:normal; text-align:center; cursor:default; }
 
 /* ── de slotbalk aan het eind van een fase ────────────────────────────
    Er stond alleen een rond pijltje met een klein bijschrift. Dat is mooi,
@@ -4110,12 +4119,11 @@ a.knop{ display:inline-flex; align-items:center; justify-content:center; }
 /* ── het merkje bij een stap die in de proefperiode zit ───────────────
    Het stond alleen als zin in de lopende tekst; wie de knop scant leest die
    niet. Nu draagt de stap het zelf, boven de tekst. */
-.wegproef{ display:inline-flex; align-items:center; gap:7px; margin:8px 0 2px;
-  padding:5px 11px; border-radius:2px; background:rgba(184,92,50,.12);
-  border:1px solid rgba(184,92,50,.45);
-  font-family:'Inter',system-ui,sans-serif; font-weight:500; font-size:9px;
-  letter-spacing:.2em; text-transform:uppercase; color:#A5522C; }
-.wegproef::before{ content:"\2726"; font-size:10px; letter-spacing:0; }
+.wegproef{ display:inline-block; align-self:flex-start; margin-top:10px;
+  padding:3px 8px; border:1px solid rgba(154,123,46,.4);
+  font-family:'Inter',system-ui,sans-serif; font-size:8.5px;
+  letter-spacing:.2em; text-transform:uppercase; color:var(--goudprint); }
+.wegproef::before{ content:"\2726"; margin-right:6px; letter-spacing:0; }
 
 /* ── Pagina 1 in drie stappen ─────────────────────────────────────────────
    Stap 1: het gewone welkomstscherm (achtergrond, tekst, knop 'start nu').
