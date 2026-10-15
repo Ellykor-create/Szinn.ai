@@ -37,12 +37,12 @@ class Tegenhouden(Exception):
 
 # ---------- invoer ----------
 def geocode(plaats, land=None):
-    """Zelfde bron als het intakeformulier (Open-Meteo). Coördinaten ontbreken alleen als de klant
-    een plaats intypte zonder een suggestie te kiezen; dan zoeken we hem hier alsnog op."""
-    for q in (f'{plaats} {land}'.strip() if land else None, plaats):
+    """Zelfde bron als het intakeformulier (Open-Meteo): (lat, lon, IANA-tijdzone). Coördinaten of tijdzone ontbreken
+    alleen als de klant een plaats intypte zonder een suggestie te kiezen; dan zoeken we hem hier alsnog op."""
+    for q in (f'{plaats} {land}'.strip() if land and land != 'Other' else None, plaats):
         if not q:
             continue
-        url = 'https://geocoding-api.open-meteo.com/v1/search?count=1&language=nl&format=json&name=' + urllib.parse.quote(q)
+        url = 'https://geocoding-api.open-meteo.com/v1/search?count=1&language=en&format=json&name=' + urllib.parse.quote(q)
         try:
             with urllib.request.urlopen(url, timeout=15) as r:
                 hit = (json.load(r).get('results') or [None])[0]
@@ -51,6 +51,27 @@ def geocode(plaats, land=None):
         if hit:
             return hit['latitude'], hit['longitude']
     raise Tegenhouden(f'geboorteplaats "{plaats}" niet gevonden (masterprompt 3.1: altijd de werkelijke stad)')
+
+
+def tijdzone(lat, lon):
+    """IANA-tijdzone bij coördinaten (Open-Meteo, timezone=auto)."""
+    with urllib.request.urlopen(f'https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lon}&timezone=auto', timeout=15) as r:
+        return json.load(r)['timezone']
+
+
+def plaatsnaam(lat, lon):
+    """Alleen coördinaten (klant koos een kaartpunt): stad erbij zoeken via Nominatim."""
+    req = urllib.request.Request(f'https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json&zoom=10&accept-language=en',
+                                 headers={'User-Agent': 'szinn-blueprint-worker'})
+    try:
+        with urllib.request.urlopen(req, timeout=15) as r:
+            a = json.load(r).get('address') or {}
+    except Exception:  # noqa: BLE001
+        a = {}
+    stad = a.get('city') or a.get('town') or a.get('village') or a.get('municipality') or a.get('county')
+    if not stad:
+        raise Tegenhouden(f'geboorteplaats ontbreekt en is niet af te leiden uit {lat}, {lon} (masterprompt 3.1: altijd de werkelijke stad)')
+    return stad, a.get('country')
 
 
 def invoer(order):
@@ -76,15 +97,21 @@ def invoer(order):
             tijd, tijd_status = f'{mid // 60:02d}:{mid % 60:02d}', 'benadering'
         else:
             tijd, tijd_status = '12:00', 'onbekend'
+    land = raw.get('geboorteland')
+    tz = order.get('birth_tz') or raw.get('geboorte_tz')
+    if not plaats and lat not in (None, '') and lon not in (None, ''):
+        plaats, land = plaatsnaam(lat, lon)
     if not plaats:
         raise Tegenhouden('geboorteplaats ontbreekt (masterprompt 3.1: altijd de werkelijke stad)')
     if lat in (None, '') or lon in (None, ''):
-        lat, lon = geocode(plaats, raw.get('geboorteland'))
+        lat, lon = geocode(plaats, land)
+    if not tz:
+        tz = tijdzone(lat, lon)
     datetime.strptime(order['birth_date'], '%Y-%m-%d')
     voornaam = str(raw.get('voornaam') or order.get('client_name') or geboortenaam).split()[0]
     naam = str(order.get('client_name') or f"{raw.get('voornaam', '')} {raw.get('achternaam', '')}").strip() or geboortenaam
     return dict(naam=naam, voornaam=voornaam, geboortenaam=geboortenaam, datum=order['birth_date'], tijd=tijd.zfill(5),
-                plaats=plaats, lat=float(lat), lon=float(lon), tz=order.get('birth_tz') or raw.get('geboorte_tz'),
+                plaats=plaats, lat=float(lat), lon=float(lon), tz=tz,
                 tijd_status=tijd_status), raw
 
 
