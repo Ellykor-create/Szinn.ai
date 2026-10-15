@@ -264,6 +264,7 @@ def feiten_tekst(f, intake):
 def opdracht(groep, f):
     tijdnoot = ('VERPLICHT. 2 à 4 zinnen die de gevoelige plaatsing(en) uit GEBOORTETIJD benoemen en beide lezingen noemen'
                 + (' en vermelden dat de geboortetijd bij benadering is opgegeven' if f['tijd_status'] == 'benadering' else '')
+                + (' en vermelden dat de geboortetijd onbekend is en de kaart op 12:00 uur is berekend, zodat huizen en Ascendant onder voorbehoud zijn' if f['tijd_status'] == 'onbekend' else '')
                 + '. Begin niet met "Geboortetijdnoot:".') if f['tijdnoot_nodig'] else 'lege string "" (niet nodig voor deze kaart).'
     ot = f['ondertoon']
     ondertoon = (f'een zinsdeel (geen hele zin, geen hoofdletter) dat aanvult wat meestergetal {ot["getal"]} ({ot["naam"]}) als ondertoon betekent'

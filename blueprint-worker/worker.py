@@ -8,7 +8,7 @@ Opslag is de repo zelf: release "order-<id>" (PDF's, auditrapport, job.tar.gz vo
 "corpus" (eerder opgeleverde Blueprints voor de overname-controle). netlify/edge-functions/kit-files.js serveert ze.
 Omgeving: ORDER_ID, ORDER_JSON (job) of RUG (mm), CALLBACK_URL, WORKER_SECRET, ANTHROPIC_API_KEY, DATA_DIR,
 BLUEPRINT_MODEL, GITHUB_REPOSITORY + GH_TOKEN (voor gh)."""
-import glob, html, json, os, re, shutil, subprocess, sys, tempfile, time, traceback, urllib.request
+import glob, html, json, os, re, shutil, subprocess, sys, tempfile, time, traceback, urllib.parse, urllib.request
 from datetime import datetime
 
 # Taal van de Blueprint vóór de imports: szinn_taal leest BLUEPRINT_LANG bij het laden (ook in de subprocessen).
@@ -36,6 +36,23 @@ class Tegenhouden(Exception):
 
 
 # ---------- invoer ----------
+def geocode(plaats, land=None):
+    """Zelfde bron als het intakeformulier (Open-Meteo). Coördinaten ontbreken alleen als de klant
+    een plaats intypte zonder een suggestie te kiezen; dan zoeken we hem hier alsnog op."""
+    for q in (f'{plaats} {land}'.strip() if land else None, plaats):
+        if not q:
+            continue
+        url = 'https://geocoding-api.open-meteo.com/v1/search?count=1&language=nl&format=json&name=' + urllib.parse.quote(q)
+        try:
+            with urllib.request.urlopen(url, timeout=15) as r:
+                hit = (json.load(r).get('results') or [None])[0]
+        except Exception:  # noqa: BLE001
+            hit = None
+        if hit:
+            return hit['latitude'], hit['longitude']
+    raise Tegenhouden(f'geboorteplaats "{plaats}" niet gevonden (masterprompt 3.1: altijd de werkelijke stad)')
+
+
 def invoer(order):
     raw = order.get('intake_data') or {}
     raw = json.loads(raw) if isinstance(raw, str) else raw
@@ -49,10 +66,20 @@ def invoer(order):
     plaats = (order.get('birth_location') or raw.get('geboorteplaats_volledig') or raw.get('geboorteplaats') or '').split(',')[0].strip()
     if not geboortenaam:
         raise Tegenhouden('volledige geboortenaam ontbreekt (masterprompt 3.2/11: geen onbevestigde naam)')
-    if tijd_status == 'onbekend' or not re.match(r'^\d{1,2}:\d{2}$', tijd):
-        raise Tegenhouden('geboortetijd onbekend: huizen en Ascendant zijn niet te berekenen (masterprompt 11)')
-    if lat in (None, '') or lon in (None, '') or not plaats:
-        raise Tegenhouden('geboorteplaats zonder coördinaten (masterprompt 3.1: altijd de werkelijke stad)')
+    # Geen exacte tijd: liever opleveren met een geboortetijdnoot dan tegenhouden.
+    # Benadering = midden van het gekozen dagdeelvenster ("06:00–12:00"), onbekend = 12:00.
+    if not re.match(r'^\d{1,2}:\d{2}$', tijd):
+        venster = re.findall(r'\d{1,2}:\d{2}', str(raw.get('birth_time_window') or ''))
+        if len(venster) == 2:
+            a, b = (int(h) * 60 + int(m) for h, m in (v.split(':') for v in venster))
+            mid = (a + (b if b > a else b + 1440)) // 2 % 1440
+            tijd, tijd_status = f'{mid // 60:02d}:{mid % 60:02d}', 'benadering'
+        else:
+            tijd, tijd_status = '12:00', 'onbekend'
+    if not plaats:
+        raise Tegenhouden('geboorteplaats ontbreekt (masterprompt 3.1: altijd de werkelijke stad)')
+    if lat in (None, '') or lon in (None, ''):
+        lat, lon = geocode(plaats, raw.get('geboorteland'))
     datetime.strptime(order['birth_date'], '%Y-%m-%d')
     voornaam = str(raw.get('voornaam') or order.get('client_name') or geboortenaam).split()[0]
     naam = str(order.get('client_name') or f"{raw.get('voornaam', '')} {raw.get('achternaam', '')}").strip() or geboortenaam

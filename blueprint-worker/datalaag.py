@@ -166,7 +166,7 @@ def bouw(order, vandaag=None):
             gevoelig.append(f"{n} staat {v['na_eigen_cusp']:.2f}° na het begin van huis {v['house']} (anders huis {(v['house'] - 2) % 12 + 1})")
     asc_grens = chart['asc'] % 30 < 2 or chart['asc'] % 30 > 28
     wankel = _wankel(chart)
-    tijdnoot_nodig = bool(gevoelig or asc_grens or wankel) or order.get('tijd_status') == 'benadering'
+    tijdnoot_nodig = bool(gevoelig or asc_grens or wankel) or order.get('tijd_status') in ('benadering', 'onbekend')
 
     # numerologie
     lp_stappen, LP = datum_stappen(d, mo, y)
