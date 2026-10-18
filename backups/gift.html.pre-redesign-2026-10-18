@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SZINN — Geef een Blueprint cadeau</title>
+  <link rel="stylesheet" href="/szinn-portal/css/variables.css">
+  <link rel="stylesheet" href="/szinn-portal/css/global.css">
+  <link rel="stylesheet" href="/szinn-portal/css/nav.css">
+  <style>
+    .gift-page { max-width: 620px; margin: 0 auto; padding: 4vh 5vw 8vh; }
+    .gift-head { text-align: center; margin-bottom: 3vh; }
+    .gift-head h1 { font-family: "Cormorant Garamond", serif; font-weight: 500; margin: 6px 0 8px; }
+    .gift-head p { color: var(--muted); font-size: 14px; line-height: 1.7; max-width: 480px; margin: 0 auto; }
+    .gift-steps { display: flex; gap: 8px; justify-content: center; margin-bottom: 3vh; }
+    .gstep { width: 34px; height: 3px; border-radius: 2px; background: var(--border); }
+    .gstep.on { background: var(--gold); }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 30px; }
+    .panel { display: none; }
+    .panel.on { display: block; animation: fadeUp .35s ease both; }
+    .price { font-family: "Cormorant Garamond", serif; font-size: 40px; color: var(--ink); }
+    .price small { font-size: 14px; color: var(--muted); font-family: "Jost", sans-serif; }
+    .feat { list-style: none; padding: 0; margin: 18px 0 24px; }
+    .feat li { padding: 7px 0 7px 24px; position: relative; font-size: 14px; color: var(--ink); }
+    .feat li::before { content: "✦"; position: absolute; left: 0; color: var(--gold); }
+    .field { margin-bottom: 16px; }
+    .field label { display: block; font-size: 12px; letter-spacing: .04em; color: var(--muted); margin-bottom: 6px; }
+    .field input, .field textarea { width: 100%; box-sizing: border-box; background: #fff; border: 1px solid var(--border);
+      border-radius: 8px; padding: 11px 13px; font-family: "Jost", sans-serif; font-size: 14px; color: var(--ink); }
+    .field input:focus, .field textarea:focus { outline: none; border-color: var(--gold); }
+    .field .hint { font-size: 11px; color: var(--muted); margin-top: 5px; }
+    .err-txt { color: #b84040; font-size: 12px; margin: 4px 0 10px; display: none; }
+    .err-txt.show { display: block; }
+    .actions { display: flex; gap: 12px; align-items: center; margin-top: 22px; flex-wrap: wrap; }
+    .mock-note { font-size: 11px; color: var(--muted); background: rgba(166,124,58,.07); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px; margin-top: 16px; line-height: 1.6; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  </style>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/favicon.png">
+</head>
+<body>
+  <div id="szinn-nav"></div>
+
+  <main class="container">
+    <div class="gift-page fade-up">
+      <div class="gift-head">
+        <span class="eyebrow" id="gEyebrow">Cadeau</span>
+        <h1 id="gH1">Geef een SZINN Alignment Blueprint</h1>
+        <p id="gLead">Schenk iemand een diep persoonlijke spiegel — geweven uit astrologie, numerologie en Kabbalah, speciaal voor hen gemaakt.</p>
+      </div>
+
+      <!-- Stappen: betalen → datum → gegevens van de ontvanger (stap 1 van de intake) -->
+      <div class="gift-steps">
+        <div class="gstep on" id="gs0"></div>
+        <div class="gstep" id="gs1"></div>
+        <div class="gstep" id="gs2"></div>
+      </div>
+
+      <div class="card">
+        <!-- Stap 1: intro + betaling starten -->
+        <div class="panel on" id="p0">
+          <div class="price">&euro;<span id="priceVal">39,90</span> <small id="gOnce">eenmalig</small></div>
+          <ul class="feat">
+            <li id="gF1">Een volledige, persoonlijke Alignment Blueprint</li>
+            <li id="gF2">Jij vult alleen naam, e-mailadres en geboortegegevens van de ontvanger in</li>
+            <li id="gF3">Kies zelf op welke dag het cadeau bezorgd wordt</li>
+            <li id="gF4">De ontvanger krijgt die dag een e-mail met inloggegevens en de Blueprint</li>
+          </ul>
+          <div class="actions">
+            <button class="btn btn-primary" id="btnPay">Ga naar betaling →</button>
+            <a class="btn" href="/portaal" id="gBack">Terug</a>
+          </div>
+          <div class="mock-note" id="mockNote" style="display:none">
+            Testmodus: er is nog geen Stripe-sleutel ingesteld, dus de betaling wordt gesimuleerd. Zodra <code>STRIPE_SECRET_KEY</code> is ingevuld, gaat deze knop naar de echte Stripe-betaalpagina.
+          </div>
+          <p class="err-msg" id="payErr" style="display:none;color:#b4462e;font-size:13px;margin-top:10px"></p>
+        </div>
+
+        <!-- Stap 2: verzenddatum + bericht; daarna door naar de intake (stap 1) -->
+        <div class="panel" id="p1">
+          <h2 style="font-family:'Cormorant Garamond',serif;font-weight:500;margin:0 0 4px" id="gH2">Wanneer mag het cadeau aankomen?</h2>
+          <p style="color:var(--muted);font-size:13px;margin:0 0 20px" id="gP1">Betaling geslaagd. Kies de dag waarop de ontvanger de e-mail krijgt. Daarna vul je de gegevens van de ontvanger in.</p>
+
+          <div class="field" id="f-date">
+            <label for="sendDate" id="gLDate">Bezorgdatum</label>
+            <input type="date" id="sendDate">
+            <div class="hint" id="gHint">Kies vandaag om direct te versturen (zodra de Blueprint klaar is), of een datum in de toekomst.</div>
+          </div>
+          <div class="field">
+            <label for="message" id="gLMsg">Persoonlijk bericht</label>
+            <textarea id="message" rows="3" placeholder="Een paar woorden die met het cadeau meegaan (optioneel)"></textarea>
+          </div>
+          <div class="err-txt" id="e-form"></div>
+          <div class="actions">
+            <button class="btn btn-primary" id="btnSend">Verder: gegevens van de ontvanger →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div id="szinn-footer"></div>
+
+  <script src="/szinn-portal/js/auth.js"></script>
+  <script src="/szinn-portal/js/api.js"></script>
+  <script src="/szinn-portal/js/nav.js"></script>
+  <script>
+    // Zelfde taalsleutel als dashboard.html/login.html.
+    const LANG = (localStorage.getItem('szinn_lang') === 'en') ? 'en' : 'nl';
+    document.documentElement.lang = LANG;
+
+    const T = LANG === 'en' ? {
+      title: 'SZINN — Gift a Blueprint',
+      eyebrow: 'Gift',
+      h1: 'Gift a SZINN Alignment Blueprint',
+      lead: 'Give someone a deeply personal mirror — woven from astrology, numerology and Kabbalah, made just for them.',
+      once: 'one-off',
+      f1: 'A complete, personal Alignment Blueprint',
+      f2: "You only fill in the recipient's name, email address and birth details",
+      f3: 'You choose the day the gift is delivered',
+      f4: 'That day the recipient receives an email with their login details and the Blueprint',
+      pay: 'Continue to payment →',
+      back: 'Back',
+      mock: 'Test mode: no Stripe key is set yet, so the payment is simulated. Once STRIPE_SECRET_KEY is filled in, this button goes to the real Stripe payment page.',
+      h2: 'When should the gift arrive?',
+      p1: "Payment successful. Choose the day the recipient gets the email. Then you fill in the recipient's details.",
+      lMsg: 'Personal message',
+      lDate: 'Delivery date',
+      phMsg: 'A few words to go with the gift (optional)',
+      hint: 'Choose today to send right away (as soon as the Blueprint is ready), or a date in the future.',
+      send: "Next: the recipient's details →",
+      sending: 'One moment…',
+      wait: 'One moment…',
+      payErr: 'Payment could not be started.',
+      generic: 'Something went wrong. Please try again.',
+      genericShort: 'Something went wrong.',
+    } : {
+      title: 'SZINN — Geef een Blueprint cadeau',
+      eyebrow: 'Cadeau',
+      h1: 'Geef een SZINN Alignment Blueprint',
+      lead: 'Schenk iemand een diep persoonlijke spiegel — geweven uit astrologie, numerologie en Kabbalah, speciaal voor hen gemaakt.',
+      once: 'eenmalig',
+      f1: 'Een volledige, persoonlijke Alignment Blueprint',
+      f2: 'Jij vult alleen naam, e-mailadres en geboortegegevens van de ontvanger in',
+      f3: 'Kies zelf op welke dag het cadeau bezorgd wordt',
+      f4: 'De ontvanger krijgt die dag een e-mail met inloggegevens en de Blueprint',
+      pay: 'Ga naar betaling →',
+      back: 'Terug',
+      mock: 'Testmodus: er is nog geen Stripe-sleutel ingesteld, dus de betaling wordt gesimuleerd. Zodra STRIPE_SECRET_KEY is ingevuld, gaat deze knop naar de echte Stripe-betaalpagina.',
+      h2: 'Wanneer mag het cadeau aankomen?',
+      p1: 'Betaling geslaagd. Kies de dag waarop de ontvanger de e-mail krijgt. Daarna vul je de gegevens van de ontvanger in.',
+      lMsg: 'Persoonlijk bericht',
+      lDate: 'Bezorgdatum',
+      phMsg: 'Een paar woorden die met het cadeau meegaan (optioneel)',
+      hint: 'Kies vandaag om direct te versturen (zodra de Blueprint klaar is), of een datum in de toekomst.',
+      send: 'Verder: gegevens van de ontvanger →',
+      sending: 'Even geduld…',
+      wait: 'Even geduld…',
+      payErr: 'Betaling kon niet worden gestart.',
+      generic: 'Er ging iets mis. Probeer het opnieuw.',
+      genericShort: 'Er ging iets mis.',
+    };
+
+    const $ = id => document.getElementById(id);
+
+    if (LANG === 'en') {
+      document.title = T.title;
+      const txt = { gEyebrow: T.eyebrow, gH1: T.h1, gLead: T.lead, gOnce: T.once, gF1: T.f1, gF2: T.f2,
+        gF3: T.f3, gF4: T.f4, btnPay: T.pay, gBack: T.back, gH2: T.h2, gP1: T.p1,
+        gLMsg: T.lMsg, gLDate: T.lDate, gHint: T.hint, btnSend: T.send, mockNote: T.mock };
+      for (const id in txt) { const el = $(id); if (el) el.textContent = txt[id]; }
+      $('message').placeholder = T.phMsg;
+      $('priceVal').textContent = '39.90';
+    }
+
+    SzinnAuth.requireAuth().then(ok => { if (ok) SzinnNav.updateUserInfo(); });
+
+    let paidToken = null;
+    const showPayErr = (msg) => { const e = $('payErr'); e.textContent = msg; e.style.display = 'block'; };
+
+    function step(n) {
+      [0,1].forEach(i => $('p'+i).classList.toggle('on', i === n));
+      [0,1,2].forEach(i => $('gs'+i).classList.toggle('on', i <= n));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Standaard verzenddatum = vandaag; niet in het verleden te kiezen.
+    (function () {
+      const today = new Date().toISOString().slice(0, 10);
+      const d = $('sendDate');
+      d.value = today; d.min = today;
+    })();
+
+    // Terug van Stripe (?gift_session=…): betaling gelukt → door naar de datum-stap.
+    (function () {
+      const sid = new URLSearchParams(location.search).get('gift_session');
+      if (!sid) return;
+      paidToken = sid;
+      history.replaceState(null, '', location.pathname);
+      step(1);
+    })();
+
+    // Stap 1 → betaling
+    $('btnPay').addEventListener('click', async () => {
+      $('btnPay').disabled = true;
+      $('btnPay').textContent = T.wait;
+      try {
+        const r = await fetch('/api/gift/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: '{}' });
+        const data = await r.json();
+        if (r.ok && data.url) { window.location.href = data.url; return; }      // echte Stripe
+        if (r.ok && data.mock) {                                                // testmodus
+          paidToken = data.paidToken;
+          if (data.price) $('priceVal').textContent = data.price;
+          $('mockNote').style.display = 'block';
+          setTimeout(() => step(1), 500);
+          return;
+        }
+        showPayErr(data.error || T.payErr);
+      } catch (e) { showPayErr(T.generic); }
+      $('btnPay').disabled = false;
+      $('btnPay').textContent = T.pay;
+    });
+
+    // Stap 2 → cadeau aanmaken, dan door naar stap 1 van de intake (gegevens van de ontvanger)
+    $('btnSend').addEventListener('click', async () => {
+      $('e-form').classList.remove('show');
+      $('btnSend').disabled = true;
+      $('btnSend').textContent = T.sending;
+      try {
+        const r = await fetch('/api/gift/create', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+          body: JSON.stringify({ message: $('message').value.trim(), sendDate: $('sendDate').value, lang: LANG, paidToken }),
+        });
+        const data = await r.json();
+        if (r.ok && data.ok && data.next) { window.location.href = data.next; return; }
+        $('e-form').textContent = data.error || T.genericShort;
+        $('e-form').classList.add('show');
+      } catch (e) {
+        $('e-form').textContent = T.generic;
+        $('e-form').classList.add('show');
+      }
+      $('btnSend').disabled = false;
+      $('btnSend').textContent = T.send;
+    });
+  </script>
+</body>
+</html>

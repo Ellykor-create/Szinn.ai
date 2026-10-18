@@ -398,8 +398,10 @@ const PAGE_ALIASES = {
   '/portaal/vragenlijst': 'szinn-portal/pages/questionnaire.html',
   '/portaal/blueprint': 'szinn-portal/pages/blueprint-viewer.html',
   '/portaal/mandala': 'szinn-portal/pages/mandala.html',
-  '/cadeau': 'szinn-portal/pages/gift.html',
+  '/nl/cadeau': 'szinn-portal/pages/gift.html',
+  '/gift': 'szinn-portal/pages/gift.html',
 };
+app.get('/cadeau', (req, res) => res.redirect(301, '/nl/cadeau' + req.originalUrl.slice(req.path.length)));
 app.get(Object.keys(PAGE_ALIASES), (req, res) => {
   // Express matcht '/portaal/' (met slash) ook op '/portaal'; zonder deze
   // normalisatie is de lookup undefined en crasht path.join met een 500.
@@ -478,7 +480,7 @@ app.use((req, res, next) => {
       '/szinn-portal/pages/questionnaire': '/portaal/vragenlijst',
       '/szinn-portal/pages/blueprint-viewer': '/portaal/blueprint',
       '/szinn-portal/pages/mandala': '/portaal/mandala',
-      '/szinn-portal/pages/gift': '/cadeau',
+      '/szinn-portal/pages/gift': '/nl/cadeau',
     };
     if (map[clean]) clean = map[clean];
     const qs = req.originalUrl.slice(req.path.length); // behoud ?query
@@ -696,7 +698,8 @@ app.post('/api/gift/checkout', async (req, res) => {
     const user = db.prepare('SELECT email FROM users WHERE id = ?').get(req.session.userId);
     const baseUrl = process.env.SITE_URL || `${req.protocol}://${req.get('host')}`;
     try {
-      const session = await createGiftCheckout({ email: user?.email, userId: req.session.userId, baseUrl, priceCents: GIFT_PRICE_CENTS });
+      const book = String(req.body?.route) === '3';
+      const session = await createGiftCheckout({ email: user?.email, userId: req.session.userId, baseUrl, priceCents: book ? parseInt(process.env.GIFT_BOOK_PRICE_CENTS || '5990', 10) : GIFT_PRICE_CENTS, book, lang: req.body?.lang === 'en' ? 'en' : 'nl' });
       return res.json({ url: session.url });
     } catch (e) {
       console.error('cadeau-checkout mislukt:', e.message);
@@ -1249,17 +1252,7 @@ app.post('/api/subscription/cancel', async (req, res) => {
 // ── AI Companion (pariteit met de live Netlify-functie) ───────────────────────
 // Zelfde vaste basisprompt als api.js: geverifieerde kaart- en getalgegevens,
 // zodat de companion nooit zelf rekent of verzint.
-function cCompanionSystem(c) {
-  const P = c.ctx.chart.planets;
-  const n = c.ctx.numerology;
-  const line = (p) => `${p.sign} ${p.deg}°${String(p.min).padStart(2, '0')}'${p.house ? ` (Huis ${p.house})` : ''}`;
-  return `Je bent de SZINN Companion, de ingebouwde begeleider in het dagelijkse dashboard van ${c.ctx.intake.clientName}.
-Toon: warm, gegrond, helder, nooit zweverig, geen new-age clichés. Spreek aan met jij/jouw, nooit u. Geen voorspellingen, geen medische, psychologische of financiële claims. Je bent een spiegel, geen orakel. ${c.ctx.intake.clientName} is altijd de enige expert over zichzelf.
-Je REKENT NOOIT zelf astrologie of numerologie. Gebruik uitsluitend deze vaste, geverifieerde gegevens en verzin niets nieuws:
-Zon ${line(P.sun)}; Maan ${line(P.moon)}; Ascendant ${line(P.ascendant)}; Noordknoop ${line(P.northNode)}; Zuidknoop ${line(P.southNode)}; Chiron ${line(P.chiron)}.
-Levenspad ${n.lifePath}; Persoonlijk Jaar ${n.personalYear} (${n.personalYearInfo.theme}); Persoonlijke Maand ${c.pm.number}; Persoonlijke Dag ${c.pd}.
-Vandaag: maan in ${c.sky.moon.sign}, ${c.sky.waxing ? 'wassend' : 'afnemend'}. Datum: ${c.now.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}.${c.texts && c.texts.summary && c.texts.summary.oneLiner ? `\nKern van de blueprint: ${c.texts.summary.oneLiner}` : ''}${c.lang === 'en' ? '\nIMPORTANT: The user uses the English dashboard. Reply entirely in English (use English zodiac sign names), while keeping the same warm, grounded tone.' : ''}`;
-}
+function cCompanionSystem(c) { return require('./lib/daily-reading').companionSystem(c); }
 
 // Geschiedenis + samengevat geheugen per account, zodat een nieuwe sessie
 // naadloos verdergaat. State als JSON in companion_state (SQLite).

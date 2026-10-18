@@ -1918,7 +1918,70 @@ function enterGiftMode(gift) {
   }
 }
 
+// ── Boekmodus: stap 1 (gegevens) en stap 2 (bezorgadres + akkoord). Na de
+// generatie bestelt de server het boek automatisch bij Print&Bind.
+var BOOK_FIELDS = ['bezorg_naam', 'bezorg_straat', 'bezorg_huisnummer', 'bezorg_toevoeging', 'bezorg_postcode', 'bezorg_plaats', 'bezorg_land'];
+function enterBookMode() {
+  window.BOOK = true;
+  var en = lang === 'en';
+  var f = function (id, nl, enl, ac, opt) {
+    return '<div class="field" id="field-' + id + '"><label class="field-label">' + (en ? enl : nl) + (opt ? (en ? ' (optional)' : ' (optioneel)') : '') + '</label>' +
+      '<input type="text" id="' + id + '" autocomplete="' + ac + '"><span class="err-msg">' + (en ? 'Please fill this in' : 'Vul in') + '</span></div>';
+  };
+  var sec1 = document.getElementById('section-1');
+  sec1.innerHTML =
+    '<p class="section-eyebrow">' + (en ? 'Step 2 — Delivery & approval' : 'Stap 2 — Bezorging & akkoord') + '</p>' +
+    '<h2 class="section-title">' + (en ? 'Where may your <em>book</em> go?' : 'Waar mag jouw <em>boek</em> heen?') + '</h2>' +
+    '<p class="section-intro">' + (en ? 'Your Blueprint is printed as a book and sent to this address.' : 'Je Blueprint wordt als boek gedrukt en naar dit adres verstuurd.') + '</p>' +
+    f('bezorg_naam', 'Naam ontvanger', 'Recipient name', 'name') +
+    '<div class="grid-2">' + f('bezorg_straat', 'Straat', 'Street', 'address-line1') + f('bezorg_huisnummer', 'Huisnummer', 'House number', 'off') + '</div>' +
+    '<div class="grid-2">' + f('bezorg_toevoeging', 'Toevoeging', 'Addition', 'off', true) + f('bezorg_postcode', 'Postcode', 'Postal code', 'postal-code') + '</div>' +
+    '<div class="grid-2">' + f('bezorg_plaats', 'Plaats', 'City', 'address-level2') +
+    '<div class="field" id="field-bezorg_land"><label class="field-label">' + (en ? 'Country' : 'Land') + '</label><select id="bezorg_land" autocomplete="country">' +
+    [['NL', 'Nederland', 'Netherlands'], ['BE', 'België', 'Belgium'], ['DE', 'Duitsland', 'Germany'], ['LU', 'Luxemburg', 'Luxembourg'], ['FR', 'Frankrijk', 'France'], ['AT', 'Oostenrijk', 'Austria'], ['GB', 'Verenigd Koninkrijk', 'United Kingdom']]
+      .map(function (c) { return '<option value="' + c[0] + '">' + (en ? c[2] : c[1]) + '</option>'; }).join('') +
+    '</select></div></div><div class="nav"></div>';
+  var nav1 = sec1.querySelector('.nav');
+  sec1.insertBefore(document.querySelector('.consent-block'), nav1);
+  var back = document.createElement('button');
+  back.className = 'btn btn-back'; back.textContent = en ? '← Back' : '← Terug';
+  back.onclick = function () { prevSection(1); };
+  var btn = document.getElementById('submit-btn');
+  nav1.appendChild(back); nav1.appendChild(btn);
+  var bn = btn.querySelector('.nl-text'), be = btn.querySelector('.en-text');
+  if (bn) bn.innerHTML = 'Boek bestellen &rarr;';
+  if (be) be.innerHTML = 'Order my book &rarr;';
+  delete SECTION_TEXTAREAS[1];
+  document.querySelectorAll('.btn-save-draft').forEach(function (b) { b.remove(); });
+  var pw = document.getElementById('progress-wrap');
+  if (pw) pw.style.display = 'none';
+  // Voornaam + achternaam als voorstel voor de ontvanger.
+  document.querySelector('#section-0 .btn-next').addEventListener('click', function () {
+    var n = document.getElementById('bezorg_naam');
+    if (!n.value) n.value = (document.getElementById('voornaam').value + ' ' + document.getElementById('achternaam').value).trim();
+  });
+}
+function validateBook() {
+  var bad = null;
+  BOOK_FIELDS.forEach(function (id) {
+    if (id === 'bezorg_toevoeging') return;
+    var el = document.getElementById(id), fd = document.getElementById('field-' + id);
+    var ok = !!el.value.trim();
+    fd.classList.toggle('has-error', !ok);
+    if (!ok && !bad) bad = fd;
+  });
+  if (bad) bad.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  return !bad;
+}
+
 function showThankYou() {
+  if (window.BOOK) {
+    var ps0 = document.querySelectorAll('#thank-you p');
+    if (ps0[0]) ps0[0].textContent = lang === 'en' ? 'Your book is on its way to you.' : 'Het boek komt jouw kant op.';
+    if (ps0[1]) ps0[1].textContent = lang === 'en'
+      ? 'Your Blueprint is now being composed and then printed as a book. You will receive an email with your login details as soon as it is ready.'
+      : 'Je Blueprint wordt nu samengesteld en daarna als boek gedrukt en verstuurd. Zodra hij klaar is krijg je een mail met je inloggegevens.';
+  }
   if (window.GIFT) {
     var en = lang === 'en';
     var mail = document.getElementById('email').value.trim().replace(/[<>&]/g, '');
@@ -1936,7 +1999,8 @@ function showThankYou() {
 
 function submitForm() {
   // De open vragen van de laatste stap zijn ook verplicht.
-  if (!validate(window.GIFT ? 0 : 7)) return;
+  if (!validate(window.GIFT ? 0 : window.BOOK ? 1 : 7)) return;
+  if (window.BOOK && !validateBook()) return;
 
   const c1 = document.getElementById('consent-verwerking').checked;
   const c2 = document.getElementById('consent-disclaimer').checked;
@@ -1960,6 +2024,7 @@ function submitForm() {
   data.consent_leeftijd = true;
   data.consent_voorwaarden = true;
   data.consent_timestamp = new Date().toISOString();
+  if (window.BOOK) BOOK_FIELDS.forEach(function (id) { data[id] = document.getElementById(id).value.trim(); });
 
   fetch(APPS_SCRIPT_URL, {
     method: 'POST',
@@ -2036,7 +2101,7 @@ document.addEventListener('DOMContentLoaded', function() {
   setupBirthplace();
   setupDraft();
   // Cadeau (koper vult stap 1 in voor de ontvanger): alleen stap 1 tonen.
-  (window.SZINN_ACCESS || Promise.resolve(null)).then(function (j) { if (j && j.gift) enterGiftMode(j.gift); });
+  (window.SZINN_ACCESS || Promise.resolve(null)).then(function (j) { if (j && j.gift) enterGiftMode(j.gift); else if (j && j.book) enterBookMode(); });
   // restoreDraft() bewust uitgeschakeld: het formulier opent altijd volledig leeg
   // en laadt geen opgeslagen concept meer automatisch in.
   show(0);

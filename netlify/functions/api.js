@@ -204,6 +204,22 @@ async function triggerGeneration(orderId, order) {
   return res.status >= 200 && res.status < 300;
 }
 
+// Boekproduct: Print&Bind-order plaatsen als background function (zie print-book-background.js).
+async function triggerBookPrint(order, email) {
+  const base = process.env.URL || process.env.DEPLOY_URL;
+  if (!base || !require('../../lib/printenbind').configured()) {
+    console.log(`Boek-trigger overgeslagen (geen site-URL of PRINTENBIND_TOKEN): ${order.id}`);
+    return false;
+  }
+  const res = await fetch(`${base}/.netlify/functions/print-book-background`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ orderId: order.id, book: order.book, email, name: order.client_name, secret: TRIGGER_SECRET }),
+  });
+  console.log(`Boek naar Print&Bind getriggerd voor ${order.id}: HTTP ${res.status}`);
+  return res.status >= 200 && res.status < 300;
+}
+
 // ── JWT auth middleware ────────────────────────────────────────────────────────
 app.use((req, res, next) => {
   const cookies = cookieLib.parse(req.headers.cookie || '');
@@ -424,14 +440,29 @@ app.post('/api/gift/generate', async (req, res) => {
 // ── Cadeau-flow: betaling (mock) → ontvanger + datum → (ingeplande) mail ──────
 const GIFT_PRICE_EUR = process.env.GIFT_PRICE_EUR || '39,90';
 const GIFT_PRICE_CENTS = parseInt(process.env.GIFT_PRICE_CENTS || '3990', 10);
+// Route 3: met gedrukt boek. Is GIFT_BOOK_PAY_LINK gezet (Stripe-betaallink uit het
+// dashboard, met "Na de betaling" → /nl/cadeau?gift_session={CHECKOUT_SESSION_ID}&route=3
+// en verzendadres aan), dan gaat de koper daarheen; anders een checkout-sessie via de API.
+const GIFT_BOOK_PRICE_CENTS = parseInt(process.env.GIFT_BOOK_PRICE_CENTS || '5990', 10);
+const GIFT_BOOK_PAY_LINK = process.env.GIFT_BOOK_PAY_LINK || '';
 
 app.post('/api/gift/checkout', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
+  const book = String(req.body?.route) === '3';
+  const lang = req.body?.lang === 'en' ? 'en' : 'nl';
   if (stripeConfigured()) {
     const db = await loadDB();
     const user = db.users.find(u => u.id === req.auth.userId);
+    if (book && GIFT_BOOK_PAY_LINK) {
+      // client_reference_id = gever; verifyGiftPayment controleert dat bij terugkomst.
+      const u = new URL(GIFT_BOOK_PAY_LINK);
+      u.searchParams.set('client_reference_id', String(req.auth.userId));
+      if (user?.email) u.searchParams.set('prefilled_email', user.email);
+      if (lang === 'en') u.searchParams.set('locale', 'en');
+      return res.json({ url: u.toString() });
+    }
     try {
-      const session = await createGiftCheckout({ email: user?.email, userId: req.auth.userId, baseUrl: SITE_URL, priceCents: GIFT_PRICE_CENTS });
+      const session = await createGiftCheckout({ email: user?.email, userId: req.auth.userId, baseUrl: SITE_URL, priceCents: book ? GIFT_BOOK_PRICE_CENTS : GIFT_PRICE_CENTS, book, lang });
       return res.json({ url: session.url });
     } catch (e) {
       console.error('cadeau-checkout mislukt:', e.message);
@@ -443,6 +474,15 @@ app.post('/api/gift/checkout', async (req, res) => {
   if (process.env.NETLIFY) return res.status(503).json({ error: 'Betalen is tijdelijk niet beschikbaar. Stel STRIPE_SECRET_KEY in en probeer opnieuw.' });
   res.json({ mock: true, price: GIFT_PRICE_EUR, paidToken: 'mock-' + crypto.randomBytes(6).toString('hex') });
 });
+
+// Stripe shipping_details.address → Print&Bind-adres (straat en huisnummer splitsen).
+function giftShippingToBookAddress(s) {
+  const m = String(s.line1 || '').trim().match(/^(.*?)\s+(\d+[a-zA-Z]?)(?:[\s-]*(\S.*))?$/);
+  return require('../../lib/printenbind').parseAddress({
+    bezorg_naam: s.name, bezorg_straat: m ? m[1] : s.line1, bezorg_huisnummer: m ? m[2] : '',
+    bezorg_toevoeging: [m?.[3], s.line2].filter(Boolean).join(' '), bezorg_postcode: s.postal_code, bezorg_plaats: s.city, bezorg_land: s.country,
+  });
+}
 
 function giftIsDue(sendDate) {
   if (!sendDate) return true;
@@ -457,7 +497,8 @@ async function verifyGiftPayment(db, sid, userId) {
     const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(sid)}`);
     // 100%-kortingscode → Stripe zet no_payment_required i.p.v. paid; ook geldig (zoals intakeAccess).
     const paid = s.status === 'complete' && (s.payment_status === 'paid' || s.payment_status === 'no_payment_required');
-    return paid && String(s.client_reference_id) === String(userId);
+    // Geeft de sessie terug (truthy) zodat het verzendadres van het boek bewaard kan worden.
+    return (paid && String(s.client_reference_id) === String(userId)) ? s : false;
   } catch (e) { console.error('cadeaubetaling verifiëren mislukt:', e.message); return false; }
 }
 
@@ -467,7 +508,7 @@ async function verifyGiftPayment(db, sid, userId) {
 // Met recipientEmail: oude code-flow (ontvanger vult zelf de intake in).
 app.post('/api/gift/create', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
-  const { recipientEmail, recipientName, message, sendDate, lang, paidToken } = req.body || {};
+  const { recipientEmail, recipientName, message, sendDate, lang, paidToken, route } = req.body || {};
   if (recipientEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail))
     return res.status(400).json({ error: 'Vul een geldig e-mailadres van de ontvanger in.' });
   if (sendDate && !/^\d{4}-\d{2}-\d{2}$/.test(sendDate))
@@ -475,9 +516,14 @@ app.post('/api/gift/create', async (req, res) => {
 
   const language = lang === 'en' ? 'en' : 'nl';
   const db = await loadDB();
+  // Formaat: 'book' = met gedrukt boek (route 3). Verzendadres komt uit de Stripe-sessie.
+  let format = String(route) === '3' ? 'book' : 'digital';
+  let shipping = null;
   if (stripeConfigured()) {
-    if (!(await verifyGiftPayment(db, paidToken, req.auth.userId)))
-      return res.status(402).json({ error: 'Betaling niet bevestigd.' });
+    const s = await verifyGiftPayment(db, paidToken, req.auth.userId);
+    if (!s) return res.status(402).json({ error: 'Betaling niet bevestigd.' });
+    const sd = s.shipping_details || s.collected_information?.shipping_details || null;
+    if (sd?.address) { format = 'book'; shipping = { name: sd.name || null, ...sd.address }; }
   } else if (!String(paidToken || '').startsWith('mock-')) {
     return res.status(402).json({ error: 'Betaling niet bevestigd.' });
   }
@@ -489,6 +535,7 @@ app.post('/api/gift/create', async (req, res) => {
     code, owner_user_id: req.auth.userId, recipient_email: (recipientEmail || '').trim() || null,
     recipient_name: (recipientName || '').trim() || null, message: (message || '').trim() || null,
     send_date: sendDate || null, lang: language, status: !recipientEmail ? 'awaiting_intake' : due ? 'sending' : 'pending',
+    format, shipping,
     paid: true, created_at: new Date().toISOString(), sent_at: null,
   };
   db.giftCodes.push(entry);
@@ -529,6 +576,7 @@ app.post('/api/gift/process', async (req, res) => {
 
 // ── AI Companion & dashboard-data ────────────────────────────────────────────
 const { companionChat, companionConfigured, companionTurn, emptyCompanionState } = require('../../lib/companion-llm');
+const { tone } = require('../../lib/tone-of-voice');
 const { signT, PY_INFO_EN, LP_INFO_EN, dayContext, companionSystem, todaysReading } = require('../../lib/daily-reading');
 
 // Verzamelt alles wat het dashboard en de companion nodig hebben voor deze
@@ -910,6 +958,9 @@ const INTAKE_PAY_LINK = process.env.INTAKE_PAY_LINK || 'https://buy.stripe.com/f
 // Engelse betaallink (eigen redirect naar /intake-en); zolang die er nog niet
 // is valt de Engelse intake terug op de Nederlandse link.
 const INTAKE_PAY_LINK_EN = process.env.INTAKE_PAY_LINK_EN || INTAKE_PAY_LINK;
+// Boekproduct: eigen betaallink (redirect naar /intake?session_id=…); een sessie van
+// deze link (plink_…) zet de intake in boekmodus (stap 1 + bezorgadres, lib/printenbind.js).
+const BOOK_PAYMENT_LINK_IDS = (process.env.BOOK_PAYMENT_LINK_IDS || '').split(',').map(s => s.trim()).filter(Boolean);
 
 function setIntakeCookie(res, payload) {
   const token = jwt.sign({ intake: true, ...payload }, JWT_SECRET, { expiresIn: '24h' });
@@ -919,7 +970,19 @@ function setIntakeCookie(res, payload) {
   res.setHeader('Set-Cookie', prev ? [].concat(prev, cookie) : cookie);
 }
 
-// Wie mag de intake in? { ok, sid?, code? } — sid/code gaan mee zodat de
+// Stripe-sessie betaald (100%-kortingscode → no_payment_required, ook geldig)?
+// Geeft { ok, sid, fresh, book } of null.
+async function paidSession(db, sessionId) {
+  if (!sessionId || !stripeConfigured() || (db.usedCheckoutSessions || []).includes(sessionId)) return null;
+  try {
+    const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(sessionId)}`);
+    if (s.status === 'complete' && (s.payment_status === 'paid' || s.payment_status === 'no_payment_required'))
+      return { ok: true, sid: sessionId, fresh: true, book: BOOK_PAYMENT_LINK_IDS.includes(s.payment_link) };
+  } catch (e) { console.error('checkout-sessie verifiëren mislukt:', e.message); }
+  return null;
+}
+
+// Wie mag de intake in? { ok, sid?, code?, book? } — sid/code gaan mee zodat de
 // submit ze als 'gebruikt' kan markeren (één intake per betaling/cadeau).
 async function intakeAccess(req, db, { sessionId, code } = {}) {
   // Cadeaucode eerst: ook een ingelogde koper (met eigen concept/admin) moet de
@@ -928,6 +991,9 @@ async function intakeAccess(req, db, { sessionId, code } = {}) {
     const g = (db.giftCodes || []).find(c => c.code === String(code).trim().toUpperCase());
     if (g && !g.redeemed_at) return { ok: true, code: g.code, fresh: true, gift: g.status === 'awaiting_intake' ? { sendDate: g.send_date, lang: g.lang } : null };
   }
+  // Boekbetaling ook vóór admin/concept: anders verliest een ingelogde koper de boekmodus.
+  const paid = await paidSession(db, sessionId);
+  if (paid?.book) return paid;
   if (req.auth?.isAdmin) return { ok: true };
   if (req.auth) {
     const u = db.users.find(u => u.id === req.auth.userId);
@@ -943,18 +1009,11 @@ async function intakeAccess(req, db, { sessionId, code } = {}) {
       const sidUsed = t.sid && (db.usedCheckoutSessions || []).includes(t.sid);
       const codeUsed = t.code && (db.giftCodes || []).find(c => c.code === t.code)?.redeemed_at;
       if (t.intake && !sidUsed && !codeUsed)
-        return { ok: true, sid: t.sid || null, code: t.code || null };
+        return { ok: true, sid: t.sid || null, code: t.code || null, book: !!t.book };
     } catch {}
   }
-  if (sessionId && stripeConfigured()) {
-    if ((db.usedCheckoutSessions || []).includes(sessionId)) return { ok: false };
-    try {
-      const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(sessionId)}`);
-      // 100%-kortingscode → Stripe zet no_payment_required i.p.v. paid; ook geldig.
-      if (s.status === 'complete' && (s.payment_status === 'paid' || s.payment_status === 'no_payment_required'))
-        return { ok: true, sid: sessionId, fresh: true };
-    } catch (e) { console.error('checkout-sessie verifiëren mislukt:', e.message); }
-  }
+  if (paid) return paid;
+  if (sessionId && stripeConfigured()) return { ok: false };
   // Zonder Stripe-sleutel (lokaal ontwikkelen) niet blokkeren.
   if (!stripeConfigured()) return { ok: true };
   return { ok: false };
@@ -969,9 +1028,10 @@ app.post('/api/intake/access', async (req, res) => {
     code: req.body?.code || null,
   });
   if (!access.ok) return res.status(402).json({ ok: false, payLink: INTAKE_PAY_LINK, payLinkEn: INTAKE_PAY_LINK_EN });
-  if (access.fresh) setIntakeCookie(res, { sid: access.sid || null, code: access.code || null });
+  if (access.fresh) setIntakeCookie(res, { sid: access.sid || null, code: access.code || null, book: !!access.book });
   // gift: de pagina toont dan alleen stap 1 (koper vult in voor de ontvanger).
-  res.json({ ok: true, gift: access.gift ? { ...access.gift, code: access.code } : null });
+  // book: stap 1 + bezorgadres/akkoord (enterBookMode).
+  res.json({ ok: true, gift: access.gift ? { ...access.gift, code: access.code } : null, book: !!access.book });
 });
 
 // ── Dagboek: dagstart & dagafsluiting (kalender + popup in het dashboard) ─────
@@ -1051,8 +1111,8 @@ app.get('/api/companion/journal-summary', async (req, res) => {
   }
   try {
     const system = lang === 'en'
-      ? 'You are the SZINN AI Companion. Warm, clear, practical. Given a journal, write ONE short paragraph (max 3 sentences) reflecting the pattern and tone across the days. Speak to the user with you/your. No bullet points.'
-      : 'Je bent de SZINN AI Companion. Warm, helder, praktisch. Schrijf op basis van het dagboek ÉÉN korte alinea (max 3 zinnen) die het patroon en de toon over de dagen weerspiegelt. Spreek de gebruiker aan met jij/jouw. Geen bullet points.';
+      ? 'You are the SZINN AI Companion. Given a journal, write ONE short paragraph (max 3 sentences) reflecting the pattern and tone across the days. No bullet points.\n\n' + tone('en')
+      : 'Je bent de SZINN AI Companion. Schrijf op basis van het dagboek ÉÉN korte alinea (max 3 zinnen) die het patroon en de toon over de dagen weerspiegelt. Geen bullet points.\n\n' + tone('nl');
     const out = await companionChat({
       system,
       messages: [{ role: 'user', content: (lang === 'en' ? 'My recent journal:\n' : 'Mijn recente dagboek:\n') + lines }],
@@ -1319,6 +1379,8 @@ app.post('/api/intake/submit', async (req, res) => {
   // Betaalpoort: alleen met geverifieerde betaling of cadeaucode (zie intakeAccess).
   const access = await intakeAccess(req, db, { sessionId: data.stripe_session_id || null, code: data.gift_code || null });
   if (!access.ok) return res.status(402).json({ error: 'Deze aanvraag vereist eerst een betaling.', payLink: INTAKE_PAY_LINK });
+  const bookAddress = access.book ? require('../../lib/printenbind').parseAddress(data) : null;
+  if (access.book && !bookAddress) return res.status(400).json({ error: 'Vul het volledige bezorgadres in.' });
   const clientName = `${data.voornaam || ''} ${data.achternaam || ''}`.trim();
   let user         = db.users.find(u => u.email.toLowerCase() === data.email.trim().toLowerCase());
   let tempPassword = null;
@@ -1353,6 +1415,8 @@ app.post('/api/intake/submit', async (req, res) => {
     alignment_score: null, astro_score: null, numerology_score: null,
     soul_direction_score: null, personal_year_score: null
   };
+  // Boek: na de generatie gaat de order automatisch naar Print&Bind (worker-callback).
+  if (bookAddress) order.book = { address: bookAddress, status: 'waiting' };
   db.orders.push(order);
   // Concept opruimen: het formulier is nu definitief ingestuurd
   if (user.intake_draft) user.intake_draft = null;
@@ -1378,6 +1442,12 @@ app.post('/api/intake/submit', async (req, res) => {
         g.order_id = orderId; g.recipient_email = user.email; g.recipient_name = data.voornaam || clientName || null;
         g.status = 'pending';
         order.gift_code = g.code;
+        // Cadeau met boek: Stripe-verzendadres → Print&Bind-adres; boek gaat na generatie automatisch in bestelling.
+        if (g.format === 'book' && g.shipping) {
+          const addr = giftShippingToBookAddress(g.shipping);
+          if (addr) order.book = { address: addr, status: 'waiting' };
+          else console.error(`cadeau ${g.code}: verzendadres niet bruikbaar voor Print&Bind`, g.shipping);
+        }
       }
     }
   }
@@ -1413,7 +1483,7 @@ app.post('/api/intake/submit', async (req, res) => {
   if (!gift) setAuthCookie(res, { userId: user.id, email: user.email, name: user.name });
 
   res.json({
-    success: true, orderId, gift: !!gift,
+    success: true, orderId, gift: !!gift, book: !!bookAddress,
     message: 'Blueprint wordt samengesteld — inloggegevens volgen in de klaar-mail'
   });
 });
@@ -1577,7 +1647,8 @@ app.get('/api/admin/orders', async (req, res) => {
   const db = await loadDB();
   const orders = db.orders.map(o => {
     const user = db.users.find(u => u.id === o.user_id);
-    return { ...o, email: user?.email, user_name: user?.name };
+    const g = giftLib.giftFor(db, o);
+    return { ...o, email: user?.email, user_name: user?.name, gift_format: g?.format || null, gift_shipping: g?.shipping || null, gift_send_date: g?.send_date || null };
   }).sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
   res.json(orders);
 });
@@ -1632,7 +1703,7 @@ app.post('/api/admin/regenerate/:orderId', async (req, res) => {
 // PDF's op de worker; hier worden alleen de dashboard-teksten en de status bewaard.
 app.post('/api/internal/blueprint-result', async (req, res) => {
   const kit = require('../../lib/kit-worker');
-  const { orderId, ok, error, hold, texts, mail, rondes, secret } = req.body || {};
+  const { orderId, ok, error, hold, texts, mail, rondes, pages, secret } = req.body || {};
   if (!kit.validCallbackSecret(secret)) return res.status(403).json({ error: 'forbidden' });
   const lang = req.body?.lang === 'en' ? 'en' : 'nl';
   const { sendReadyEmail, sendAdminAlert } = require('../../lib/email');
@@ -1657,6 +1728,7 @@ app.post('/api/internal/blueprint-result', async (req, res) => {
       order.generation_error = null;
       order.pipeline = 'kit-v4';
       order.ready_mail_personal = mail || '';
+      if (order.book && pages) order.book.pages = pages;
     }
     const u = db.users.find(u => u.id === order.user_id);
     // Cadeau: klaar-mail (met inloggegevens) pas op de verzenddatum (process-gifts).
@@ -1676,6 +1748,10 @@ app.post('/api/internal/blueprint-result', async (req, res) => {
     return res.json({ ok: true });
   }
   console.log(`${orderId}: kit-v4 opgeleverd (${rondes} ronde(s), 3× audit OK)`);
+  // Boek: eenmalig naar Print&Bind; een her-generatie drukt niet opnieuw (pb_order_id).
+  if (order.book && !order.book.pb_order_id) {
+    await triggerBookPrint(order, user?.email).catch(e => console.error('boek-trigger mislukt:', e.message));
+  }
   if (giftWait) console.log(`${orderId}: cadeau, klaar-mail wacht tot ${giftDate}`);
   else if (user) {
     await sendReadyEmail({ to: user.email, name: order.client_name || user.name, orderId, lang, personal: mail, password, gift })
@@ -1686,6 +1762,17 @@ app.post('/api/internal/blueprint-result', async (req, res) => {
 
 // Klaar-mail opnieuw sturen (bv. nadat Resend faalde). Zet een vers wachtwoord,
 // want het vorige stond alleen in de mail die niet aankwam. Fout gaat terug naar admin.
+// Boek opnieuw naar Print&Bind (na een fout, bv. adres afgekeurd: eerst in de db corrigeren).
+app.post('/api/admin/order/:id/print', async (req, res) => {
+  if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
+  const db = await loadDB();
+  const order = db.orders.find(o => o.id === req.params.id);
+  if (!order?.book || order.status !== 'completed') return res.status(400).json({ error: 'Geen klaar boek' });
+  if (order.book.pb_order_id) return res.status(409).json({ error: `Al geplaatst (Print&Bind #${order.book.pb_order_id})` });
+  const u = db.users.find(u => u.id === order.user_id);
+  res.json({ ok: await triggerBookPrint(order, u?.email) });
+});
+
 app.post('/api/admin/order/:id/resend-ready', async (req, res) => {
   if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
   const { sendReadyEmail } = require('../../lib/email');

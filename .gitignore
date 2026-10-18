@@ -1,6 +1,7 @@
 node_modules/
 szinn.db
 .env
+.env.local
 blueprints/
 *.log
 .DS_Store

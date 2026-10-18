@@ -39,6 +39,21 @@ nav.top button:hover { border-color: var(--goldl); color: var(--goldl); }
 
 .main { padding: 28px; max-width: 1100px; margin: 0 auto; }
 h2 { font-size: 18px; margin-bottom: 18px; color: var(--ink); font-weight: 500; }
+
+/* Hoofdtabs + zoekbalk */
+.nav-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 18px; overflow-x: auto; }
+.nav-tab { background: none; border: none; border-bottom: 2px solid transparent; padding: 10px 18px; font-size: 13px; color: var(--muted); cursor: pointer; letter-spacing: .04em; white-space: nowrap; }
+.nav-tab:hover { color: var(--ink); }
+.nav-tab.active { color: var(--gold); border-bottom-color: var(--gold); }
+.nav-tab .count { font-size: 10px; background: rgba(166,124,58,.12); color: var(--gold); border-radius: 10px; padding: 1px 7px; margin-left: 6px; }
+.toolbar { display: flex; gap: 10px; align-items: center; margin-bottom: 18px; flex-wrap: wrap; }
+.search { flex: 1; min-width: 220px; padding: 9px 14px; border: 1px solid var(--border); border-radius: 4px; background: #fff; font-size: 13px; outline: none; }
+.search:focus { border-color: var(--gold); }
+#search-info { font-size: 12px; color: var(--muted); }
+.panel { display: none; }
+.panel.active { display: block; }
+details.help { margin-bottom: 16px; }
+details.help summary { font-size: 12px; color: var(--gold); cursor: pointer; margin-bottom: 8px; }
 h3 { font-size: 15px; margin-bottom: 10px; color: var(--ink); }
 
 /* Orders table */
@@ -129,35 +144,34 @@ textarea:focus { border-color: var(--gold); }
   </nav>
 
   <div class="main">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
-      <h2 style="margin:0">Aanvragen</h2>
-      <button class="btn btn-ghost btn-sm" onclick="loadOrders()">↻ Vernieuwen</button>
+    <div class="nav-tabs">
+      <button class="nav-tab" data-panel="orders" onclick="showPanel('orders')">Aanvragen<span class="count" id="count-orders"></span></button>
+      <button class="nav-tab" data-panel="users" onclick="showPanel('users')">Gebruikers &amp; toegang<span class="count" id="count-users"></span></button>
+      <button class="nav-tab" data-panel="feedback" onclick="showPanel('feedback')">Feedback<span class="count" id="count-feedback"></span></button>
+      <button class="nav-tab" data-panel="settings" onclick="showPanel('settings')">Prompt-instellingen</button>
     </div>
 
-    <div class="info-box">
-      <strong>Werkwijze zonder API-kosten:</strong><br>
-      1. Klik <strong>Genereer Prompt</strong> bij een aanvraag · 2. Kopieer de prompt en plak in <strong>claude.ai</strong> ·
-      3. Kopieer de HTML die Claude teruggeeft · 4. Plak de HTML in het venster en klik <strong>Opslaan Blueprint</strong>
+    <div class="toolbar" id="toolbar">
+      <input type="search" id="search" class="search" placeholder="Zoeken op naam, e-mail, ID of bericht…  ( / )" oninput="applyFilter()">
+      <select id="status-filter" class="status-select" style="padding:8px 10px;font-size:12px" onchange="applyFilter()">
+        <option value="">Alle statussen</option>
+        <option value="questionnaire">Vragenlijst</option>
+        <option value="processing">In behandeling</option>
+        <option value="completed">Klaar</option>
+        <option value="failed">Mislukt</option>
+      </select>
+      <span id="search-info"></span>
+      <button class="btn btn-ghost btn-sm" onclick="LOADERS[currentPanel]()">↻ Vernieuwen</button>
     </div>
 
-    <!-- Prompt aanscherpen -->
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:22px;margin-bottom:28px">
-      <h3 style="margin-bottom:6px">Prompt aanscherpen</h3>
-      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">
-        Aanvullende schrijfinstructies die bij <strong>elke volgende blueprint-generatie</strong> (en hergeneratie) worden meegestuurd,
-        bovenop de vaste basisprompt. Bij tegenstrijdigheid gaan jouw instructies vóór. Leeg laten = alleen de basisprompt.
-      </p>
-      <textarea id="prompt-addendum" style="height:150px;font-family:'Segoe UI',sans-serif;font-size:13px"
-        placeholder="Bijv.:&#10;- Schrijf de introductie compacter, maximaal 2 alinea's.&#10;- Vermijd het woord 'kosmisch'.&#10;- Sluit elke sectie af met één concrete, kleine actie voor vandaag."></textarea>
-      <div style="display:flex;gap:12px;align-items:center;margin-top:10px">
-        <button class="btn btn-sm" onclick="savePromptSettings()">Opslaan</button>
-        <span id="prompt-status" style="font-size:12px;color:var(--muted)"></span>
+    <section class="panel" id="panel-orders">
+    <details class="help">
+      <summary>Handmatige werkwijze (zonder API-kosten)</summary>
+      <div class="info-box">
+        1. Klik <strong>Prompt (handmatig)</strong> bij een aanvraag · 2. Kopieer de prompt en plak in <strong>claude.ai</strong> ·
+        3. Kopieer de HTML die Claude teruggeeft · 4. Plak de HTML in het venster en klik <strong>Opslaan Blueprint</strong>
       </div>
-      <details style="margin-top:14px">
-        <summary style="font-size:12px;color:var(--gold);cursor:pointer">Bekijk de vaste basisprompt (ter referentie, niet bewerkbaar)</summary>
-        <textarea id="prompt-base" readonly style="height:220px;margin-top:10px"></textarea>
-      </details>
-    </div>
+    </details>
 
     <div class="orders-wrap">
       <table id="orders-table">
@@ -177,13 +191,33 @@ textarea:focus { border-color: var(--gold); }
         </tbody>
       </table>
     </div>
+    </section>
+
+    <!-- Prompt aanscherpen -->
+    <section class="panel" id="panel-settings">
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:8px;padding:22px;margin-bottom:28px">
+      <h3 style="margin-bottom:6px">Prompt aanscherpen</h3>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:12px">
+        Aanvullende schrijfinstructies die bij <strong>elke volgende blueprint-generatie</strong> (en hergeneratie) worden meegestuurd,
+        bovenop de vaste basisprompt. Bij tegenstrijdigheid gaan jouw instructies vóór. Leeg laten = alleen de basisprompt.
+      </p>
+      <textarea id="prompt-addendum" style="height:150px;font-family:'Segoe UI',sans-serif;font-size:13px"
+        placeholder="Bijv.:&#10;- Schrijf de introductie compacter, maximaal 2 alinea's.&#10;- Vermijd het woord 'kosmisch'.&#10;- Sluit elke sectie af met één concrete, kleine actie voor vandaag."></textarea>
+      <div style="display:flex;gap:12px;align-items:center;margin-top:10px">
+        <button class="btn btn-sm" onclick="savePromptSettings()">Opslaan</button>
+        <span id="prompt-status" style="font-size:12px;color:var(--muted)"></span>
+      </div>
+      <details style="margin-top:14px">
+        <summary style="font-size:12px;color:var(--gold);cursor:pointer">Bekijk de vaste basisprompt (ter referentie, niet bewerkbaar)</summary>
+        <textarea id="prompt-base" readonly style="height:220px;margin-top:10px"></textarea>
+      </details>
+    </div>
+    </section>
 
     <!-- Gebruikers & toegang -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
-      <h2 style="margin:0">Gebruikers &amp; toegang</h2>
-      <button class="btn btn-ghost btn-sm" onclick="loadUsers()">↻ Vernieuwen</button>
-    </div>
-
+    <section class="panel" id="panel-users">
+    <details class="help">
+      <summary>Uitleg dashboard-toegang &amp; heractiveren</summary>
     <div class="info-box">
       <strong>Dashboard-toegang:</strong> "Automatisch" volgt de proefperiode/het abonnement. Met <strong>Ja</strong> houdt dit account altijd
       toegang (incl. Companion), met <strong>Nee</strong> gaat het dashboard op slot, ook mét lopend abonnement.<br>
@@ -191,6 +225,7 @@ textarea:focus { border-color: var(--gold); }
       vragenlijst op <strong>/intake</strong> opnieuw in (zonder betaalmuur) en ontvangt een nieuwe blueprint. De toekenning vervalt automatisch
       zodra de nieuwe intake is ingestuurd.
     </div>
+    </details>
 
     <div class="orders-wrap">
       <table id="users-table">
@@ -211,12 +246,10 @@ textarea:focus { border-color: var(--gold); }
         </tbody>
       </table>
     </div>
+    </section>
 
     <!-- Feedback -->
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
-      <h2 style="margin:0">Feedback</h2>
-      <button class="btn btn-ghost btn-sm" onclick="loadFeedback()">↻ Vernieuwen</button>
-    </div>
+    <section class="panel" id="panel-feedback">
     <div class="orders-wrap">
       <table>
         <thead>
@@ -234,6 +267,7 @@ textarea:focus { border-color: var(--gold); }
         </tbody>
       </table>
     </div>
+    </section>
   </div>
 </div>
 
@@ -312,7 +346,43 @@ function showApp() {
   loadUsers();
   loadFeedback();
   loadPromptSettings();
+  showPanel(LOADERS[location.hash.slice(1)] ? location.hash.slice(1) : 'orders');
 }
+
+// ── Tabs + zoeken ─────────────────────────────────────────────────────────────
+const LOADERS = { orders: loadOrders, users: loadUsers, feedback: loadFeedback, settings: loadPromptSettings };
+let currentPanel = 'orders';
+
+function showPanel(name) {
+  currentPanel = name;
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.toggle('active', t.dataset.panel === name));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + name));
+  document.getElementById('toolbar').style.display = name === 'settings' ? 'none' : '';
+  document.getElementById('status-filter').style.display = name === 'orders' ? '' : 'none';
+  history.replaceState(null, '', '#' + name);
+  applyFilter();
+}
+
+// Elke rij draagt zijn zoektekst in data-q; aanvragen ook data-status. Na elke render opnieuw toepassen.
+function applyFilter() {
+  const q = document.getElementById('search').value.trim().toLowerCase();
+  const st = document.getElementById('status-filter').value;
+  document.querySelectorAll('tr[data-q]').forEach(tr => {
+    tr.hidden = !(tr.dataset.q.includes(q) && (!st || !tr.dataset.status || tr.dataset.status === st));
+  });
+  const rows = document.querySelectorAll(`#panel-${currentPanel} tr[data-q]`);
+  const shown = [...rows].filter(tr => !tr.hidden).length;
+  document.getElementById('search-info').textContent =
+    (q || (st && currentPanel === 'orders')) && rows.length ? `${shown} van ${rows.length}` : '';
+}
+
+function setCount(name, n) { document.getElementById('count-' + name).textContent = n; }
+
+document.addEventListener('keydown', e => {
+  if (e.key === '/' && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) {
+    e.preventDefault(); document.getElementById('search').focus();
+  }
+});
 // Na een refresh: de sessiecookie (7 dagen) is er nog, dus direct het portaal tonen.
 fetch('/api/admin/orders').then(r => { if (r.ok) showApp(); }).catch(() => {});
 document.getElementById('admin-email').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('admin-pw').focus(); });
@@ -364,6 +434,7 @@ async function updateStatus(orderId, status) {
 
 function renderOrders(orders) {
   const tbody = document.getElementById('orders-body');
+  setCount('orders', orders.length);
   if (!orders.length) {
     tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted)">Geen aanvragen gevonden</td></tr>';
     return;
@@ -375,9 +446,10 @@ function renderOrders(orders) {
     const err = o.generation_error
       ? `<div style="font-size:10px;color:var(--red);max-width:220px;margin-top:4px;line-height:1.4" title="${String(o.generation_error).replace(/"/g,'&quot;')}">${String(o.generation_error).slice(0,120)}</div>`
       : '';
-    return `<tr>
+    const q = [o.id, o.client_name, o.email, o.birth_date, statusLabel(o.status)].join(' ').toLowerCase();
+    return `<tr data-q="${esc(q)}" data-status="${esc(o.status)}">
       <td style="font-family:monospace;font-size:11px">${o.id}</td>
-      <td><strong>${o.client_name}</strong></td>
+      <td><strong>${o.client_name}</strong>${o.gift_format === 'book' ? `<div style="font-size:10px;color:var(--gold);margin-top:3px">📖 Cadeau met boek${o.gift_send_date ? ' · ' + o.gift_send_date : ''}</div>${o.gift_shipping ? `<div style="font-size:10px;color:var(--muted);line-height:1.4">${[o.gift_shipping.name, o.gift_shipping.line1, o.gift_shipping.line2, [o.gift_shipping.postal_code, o.gift_shipping.city].filter(Boolean).join(' '), o.gift_shipping.country].filter(Boolean).join('<br>')}</div>` : ''}` : (o.gift_code ? `<div style="font-size:10px;color:var(--gold);margin-top:3px">🎁 Cadeau${o.gift_send_date ? ' · ' + o.gift_send_date : ''}</div>` : '')}</td>
       <td style="font-size:12px;color:var(--muted)">${o.email || '—'}</td>
       <td style="font-size:12px">${o.birth_date || '—'} ${o.birth_time ? '· ' + o.birth_time : ''}</td>
       <td style="font-size:11px;color:var(--muted)">${date}</td>
@@ -393,10 +465,13 @@ function renderOrders(orders) {
             <a href="/api/admin/order/${o.id}/file/omslag" class="btn btn-ghost btn-sm">Omslag</a>
             <a href="/api/admin/order/${o.id}/file/audit" class="btn btn-ghost btn-sm">Auditrapport</a>
             <span style="display:inline-flex;gap:4px;align-items:center"><input id="rug-${o.id}" inputmode="decimal" placeholder="rug mm" style="width:64px;font-size:11px;padding:4px 6px" title="Rugbreedte die Print&amp;Bind bij het uploaden toont"><button class="btn btn-ghost btn-sm" onclick="setSpine('${o.id}')">Omslag bijwerken</button></span>` : ''}
+          ${o.book ? `<span style="font-size:11px;color:var(--muted)" title="${esc(o.book.error || '')}">📖 Boek: ${o.book.pb_order_id ? `Print&amp;Bind #${o.book.pb_order_id}` : esc(o.book.status)}</span>
+            ${o.status === 'completed' && !o.book.pb_order_id ? `<button class="btn btn-ghost btn-sm" onclick="printBook('${o.id}')">Opnieuw naar drukker</button>` : ''}` : ''}
         </div>
       </td>
     </tr>`;
   }).join('');
+  applyFilter();
 }
 
 // ── Feedback ──────────────────────────────────────────────────────────────────
@@ -408,13 +483,15 @@ async function loadFeedback() {
   const r = await fetch('/api/admin/feedback');
   if (!r.ok) { tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--muted)">Kon feedback niet laden</td></tr>'; return; }
   const items = await r.json();
+  setCount('feedback', items.length);
   if (!items.length) {
     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:28px;color:var(--muted)">Nog geen feedback ontvangen</td></tr>';
     return;
   }
   tbody.innerHTML = items.map(f => {
     const date = f.created_at ? new Date(f.created_at + (String(f.created_at).includes('T') ? '' : 'Z')).toLocaleString('nl-NL', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
-    return `<tr>
+    const q = [f.name, f.email, f.message].join(' ').toLowerCase();
+    return `<tr data-q="${esc(q)}">
       <td style="font-size:11px;color:var(--muted);white-space:nowrap">${date}</td>
       <td>${esc(f.name) || '—'}</td>
       <td style="font-size:12px;color:var(--muted)">${f.email ? `<a href="mailto:${esc(f.email)}">${esc(f.email)}</a>` : '—'}</td>
@@ -423,6 +500,7 @@ async function loadFeedback() {
       <td style="font-size:13px;max-width:420px;white-space:pre-wrap">${esc(f.message)}</td>
     </tr>`;
   }).join('');
+  applyFilter();
 }
 
 // ── Gebruikers & toegang ──────────────────────────────────────────────────────
@@ -443,6 +521,7 @@ function accessSelect(u) {
 
 function renderUsers(users) {
   const tbody = document.getElementById('users-body');
+  setCount('users', users.length);
   if (!users.length) {
     tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted)">Geen gebruikers gevonden</td></tr>';
     return;
@@ -457,7 +536,7 @@ function renderUsers(users) {
       ? `<span class="badge badge-completed">Intake open</span>
          <button class="btn btn-ghost btn-sm" onclick="setIntakeGrant(${u.id}, false)">Intrekken</button>`
       : `<button class="btn btn-green btn-sm" onclick="setIntakeGrant(${u.id}, true)">⟳ Heractiveer</button>`;
-    return `<tr>
+    return `<tr data-q="${esc([u.email, u.name].join(' ').toLowerCase())}">
       <td style="font-size:12px"><strong>${esc(u.email)}</strong></td>
       <td style="font-size:12px">${esc(u.name) || '—'}</td>
       <td style="font-size:11px;color:var(--muted)">${date}</td>
@@ -473,6 +552,7 @@ function renderUsers(users) {
       </div></td>
     </tr>`;
   }).join('');
+  applyFilter();
 }
 
 async function setDashboardAccess(userId, dashboard) {
@@ -593,6 +673,13 @@ async function regenerateOrder(orderId, status) {
     showToast('Fout: ' + (data.error || r.status), true);
   }
   setTimeout(loadOrders, 1500);
+}
+
+async function printBook(orderId) {
+  if (!confirm('Boek (opnieuw) bij Print&Bind bestellen? Dit plaatst een echte, betaalde order.')) return;
+  const r = await fetch(`/api/admin/order/${orderId}/print`, { method: 'POST' });
+  const data = await r.json().catch(() => ({}));
+  showToast(r.ok ? '✓ Boek gaat naar Print&Bind — ververs over een minuut' : 'Fout: ' + (data.error || r.status), !r.ok);
 }
 
 async function resendReady(orderId, email) {

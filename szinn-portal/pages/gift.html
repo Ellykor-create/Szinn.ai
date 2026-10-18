@@ -3,246 +3,675 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SZINN — Geef een Blueprint cadeau</title>
-  <link rel="stylesheet" href="/szinn-portal/css/variables.css">
-  <link rel="stylesheet" href="/szinn-portal/css/global.css">
-  <link rel="stylesheet" href="/szinn-portal/css/nav.css">
-  <style>
-    .gift-page { max-width: 620px; margin: 0 auto; padding: 4vh 5vw 8vh; }
-    .gift-head { text-align: center; margin-bottom: 3vh; }
-    .gift-head h1 { font-family: "Cormorant Garamond", serif; font-weight: 500; margin: 6px 0 8px; }
-    .gift-head p { color: var(--muted); font-size: 14px; line-height: 1.7; max-width: 480px; margin: 0 auto; }
-    .gift-steps { display: flex; gap: 8px; justify-content: center; margin-bottom: 3vh; }
-    .gstep { width: 34px; height: 3px; border-radius: 2px; background: var(--border); }
-    .gstep.on { background: var(--gold); }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 30px; }
-    .panel { display: none; }
-    .panel.on { display: block; animation: fadeUp .35s ease both; }
-    .price { font-family: "Cormorant Garamond", serif; font-size: 40px; color: var(--ink); }
-    .price small { font-size: 14px; color: var(--muted); font-family: "Jost", sans-serif; }
-    .feat { list-style: none; padding: 0; margin: 18px 0 24px; }
-    .feat li { padding: 7px 0 7px 24px; position: relative; font-size: 14px; color: var(--ink); }
-    .feat li::before { content: "✦"; position: absolute; left: 0; color: var(--gold); }
-    .field { margin-bottom: 16px; }
-    .field label { display: block; font-size: 12px; letter-spacing: .04em; color: var(--muted); margin-bottom: 6px; }
-    .field input, .field textarea { width: 100%; box-sizing: border-box; background: #fff; border: 1px solid var(--border);
-      border-radius: 8px; padding: 11px 13px; font-family: "Jost", sans-serif; font-size: 14px; color: var(--ink); }
-    .field input:focus, .field textarea:focus { outline: none; border-color: var(--gold); }
-    .field .hint { font-size: 11px; color: var(--muted); margin-top: 5px; }
-    .err-txt { color: #b84040; font-size: 12px; margin: 4px 0 10px; display: none; }
-    .err-txt.show { display: block; }
-    .actions { display: flex; gap: 12px; align-items: center; margin-top: 22px; flex-wrap: wrap; }
-    .mock-note { font-size: 11px; color: var(--muted); background: rgba(166,124,58,.07); border: 1px solid var(--border);
-      border-radius: 8px; padding: 10px 14px; margin-top: 16px; line-height: 1.6; }
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-  </style>
+  <title>SZINN — Geef een reis naar jezelf cadeau</title>
+  <meta name="description" content="Geef iemand een persoonlijke Alignment Blueprint cadeau, met 11 dagen Dagelijkse Integratie en de SZINN Companion. Digitaal of met gedrukt boek.">
+  <link rel="alternate" hreflang="nl" href="https://szinn.ai/nl/cadeau">
+  <link rel="alternate" hreflang="en" href="https://szinn.ai/gift">
+  <link rel="alternate" hreflang="x-default" href="https://szinn.ai/gift">
   <link rel="icon" type="image/png" href="/favicon.png">
   <link rel="apple-touch-icon" href="/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400;1,500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    .gp{font-size:15.5px;--g-ink:#0D0A07;--g-cream:#F9F5F0;--g-cream2:#F3ECE2;--g-line:#E6DDCD;--g-gold:#C9A96E;--g-gold3:#B8862B;--g-muted:#6F6659;font-family:'Inter',sans-serif;color:#1C1410;line-height:1.6;background:var(--g-cream)}
+    .gp *{box-sizing:border-box}
+    .gp h1,.gp h2,.gp h3,.gp blockquote{font-family:'Cormorant Garamond',serif;font-weight:500;line-height:1.12;margin:0;color:#1C1410}
+    .gp .wrap{max-width:1140px;margin:0 auto;padding:0 32px}
+    .gp section{scroll-margin-top:24px}
+    .gp .gbtn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font-family:'Inter',sans-serif;font-weight:600;font-size:14.5px;padding:13px 24px;border-radius:5px;border:1px solid transparent;cursor:pointer;background:var(--g-gold);color:var(--g-ink);text-decoration:none;transition:background .2s}
+    .gp .gbtn:hover{background:#D6B87E}.gp .gbtn:disabled{opacity:.6;cursor:default}
+    .gp .gbtn.ghost{background:transparent;color:#1C1410;border-color:var(--g-line)}
+    .gp .eyebrow{display:block;font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--g-gold3);font-weight:600;margin-bottom:14px}
+    .gp .ico{width:56px;height:56px;border-radius:50%;border:1.3px solid var(--g-gold);display:flex;align-items:center;justify-content:center;flex:none}
+    .gp .ico svg{width:28px;height:28px;stroke:var(--g-gold3);fill:none;stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round}
+    .gp .gnote{display:flex;align-items:center;gap:18px;justify-content:center;font-family:'Cormorant Garamond',serif;font-weight:500;font-style:italic;font-size:19px;color:var(--g-gold3);text-align:center;margin:36px auto 0;max-width:820px}
+    .gp .gnote::before,.gp .gnote::after{content:'';flex:1;height:1px;background:var(--g-gold);opacity:.6;min-width:30px}
+    /* site nav (zoals szinn.ai) */
+    body{margin:0;background:#F9F5F0}
+    .snav{position:sticky;top:0;z-index:50;background:rgba(249,245,240,.95);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border-bottom:1px solid #E6DDCD;font-family:'Inter',sans-serif;color:#1C1410}
+    .snav *{box-sizing:border-box}
+    .snav a{color:inherit;text-decoration:none}
+    .snav .swrap{display:flex;align-items:center;justify-content:space-between;height:70px;gap:24px;max-width:1180px;margin:0 auto;padding:0 32px;position:relative}
+    .snav .brand{display:flex;align-items:center;gap:10px}
+    .snav .brand img{display:block}.snav .brand img.mark{width:38px}.snav .brand img.word{width:104px}
+    .snav .brand small{display:block;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:#A8884A;font-weight:600;margin-top:2px}
+    .snav ul{display:flex;gap:26px;list-style:none;font-size:13.5px;font-weight:500;align-items:center;margin:0;padding:0}
+    .snav ul>li{position:relative}
+    .snav ul a:hover{color:#A8884A}
+    .snav li.has>a::after{content:"⌄";margin-left:5px;color:#A8884A}
+    .snav .dd{display:none;position:absolute;top:100%;left:-14px;background:#fff;border:1px solid #E6DDCD;border-radius:8px;padding:10px 0;min-width:230px;box-shadow:0 14px 40px rgba(13,10,7,.12);flex-direction:column}
+    .snav .dd a{display:block;padding:9px 18px;font-size:13.5px}
+    .snav li.has:hover .dd,.snav li.has:focus-within .dd{display:flex}
+    .snav li.has::after{content:"";position:absolute;left:0;right:0;top:100%;height:14px}
+    .snav ul a[aria-current]{color:#A8884A}
+    .snav ul a[aria-current]::after{content:"";display:block;height:2px;background:#C9A96E;margin-top:4px}
+    .snav .right{display:flex;align-items:center;gap:18px}
+    .snav .lang{display:flex;gap:2px;font-size:11.5px;font-weight:600;letter-spacing:.08em}
+    .snav .lang a{padding:5px 8px;border-radius:4px;color:#6F6659}.snav .lang a.on{background:#0D0A07;color:#fff}
+    .snav .portal{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;white-space:nowrap}
+    .snav .portal svg{width:15px;height:15px;flex:0 0 15px;fill:none;stroke:#A8884A;stroke-width:1.7;stroke-linecap:round}
+    .snav .sbtn{display:inline-flex;align-items:center;font-weight:600;font-size:14.5px;padding:13px 24px;border-radius:5px;background:#C9A96E;color:#0D0A07;white-space:nowrap;transition:background .15s,transform .15s}
+    .snav .sbtn:hover{background:#D6B87E;transform:translateY(-1px)}
+    .snav .burger{display:none;background:none;border:none;font-size:24px;cursor:pointer;color:#0D0A07}
+    @media(max-width:1000px){
+      .snav .portal span{display:none}.snav ul{display:none}.snav .burger{display:block}.snav .right .sbtn{display:none}
+      .snav ul.open{display:flex;position:absolute;left:0;right:0;top:70px;background:#F9F5F0;flex-direction:column;align-items:flex-start;padding:16px 32px 24px;gap:6px;border-bottom:1px solid #E6DDCD}
+      .snav ul.open .dd{display:flex;position:static;border:0;box-shadow:none;background:transparent;padding:0 0 6px 14px;min-width:0}
+      .snav ul.open .dd a{padding:6px 0;color:#6F6659}
+      .snav li.has>a::after{content:""}
+    }
+    @media(max-width:760px){.snav .swrap{padding:0 20px}}
+    /* hero */
+    .ghero{position:relative;background:var(--g-cream);min-height:clamp(500px,calc((100vw - var(--gL) - 420px) / 1.45),700px);display:flex;align-items:center;padding:56px 0;overflow:hidden}
+    .ghero{--gL:max(32px,calc((100vw - 1140px)/2 + 32px))}
+    .ghero::after{content:'';position:absolute;top:0;bottom:0;right:0;left:calc(var(--gL) + 400px);background:url('/assets/img/gift/hero-devices.jpg') 64% center/cover no-repeat;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14%);mask-image:linear-gradient(90deg,transparent 0,#000 14%)}
+    .ghero .wrap{position:relative;z-index:1;width:100%}.ghero .copy{max-width:420px}
+    .ghero h1{font-size:58px;line-height:1.08}
+    .ghero p.lead{font-size:16px;line-height:1.6;margin:20px 0 26px;color:#2b211a}
+    .ghero .pline{font-size:13px;color:var(--g-muted);margin-top:16px}
+    .gp .icn{width:64px;height:64px;fill:none;stroke:var(--g-gold3);stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;margin-bottom:18px}
+    .gp .icn .dot{fill:var(--g-gold3);stroke:none}
+    .gp img.icn.logo{width:64px;height:64px;object-fit:contain}
+    .gjour li .icn{width:44px;height:44px;margin:0}
+    .gjour li img.icn.logo{width:46px;height:46px}
+    /* pillars */
+    .gpill{padding:64px 0 56px;text-align:center}
+    .gpill h2{font-size:40px;margin-bottom:36px}
+    .gpill .row{display:grid;grid-template-columns:repeat(3,1fr)}
+    .gpill .col{padding:0 28px;border-left:1px solid var(--g-line);display:flex;flex-direction:column;align-items:center}
+    .gpill .col:first-child{border-left:none}
+    .gpill h3{font-size:23px;margin-bottom:8px}
+    .gpill p{font-size:14px;color:var(--g-muted);margin:0;max-width:270px}
+    /* more band */
+    .gmore{position:relative;background:linear-gradient(90deg,var(--g-cream2) 0%,var(--g-cream2) 45%,rgba(243,236,226,0) 70%),url('/assets/img/gift/pyramids.jpg') right center/cover no-repeat;padding:64px 0}
+    .gmore .copy{max-width:520px}
+    .gmore h2{font-size:42px;margin-bottom:16px}
+    .gmore p{font-size:16px;line-height:1.65;margin:0;color:#2b211a}
+    /* journey */
+    .gjour{display:grid;grid-template-columns:1.15fr 1fr;align-items:center;background:var(--g-cream)}
+    .gjour .img{min-height:420px;height:100%;background:url('/assets/img/gift/journey-devices.jpg') center/cover no-repeat}
+    .gjour .txt{padding:56px 48px 56px 40px}
+    .gjour h2{font-size:42px;margin-bottom:28px}
+    .gjour ol{list-style:none;margin:0;padding:0;position:relative}
+    .gjour li{display:grid;grid-template-columns:34px 56px 1fr;gap:16px;align-items:center;margin-bottom:22px;position:relative}
+    .gjour li .n{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;color:var(--g-gold3)}
+    .gjour li h3{font-size:21px;margin-bottom:2px}.gjour li p{font-size:13.5px;color:var(--g-muted);margin:0}
+    /* integration */
+    .ginteg{display:grid;grid-template-columns:1fr 1.1fr;align-items:stretch;background:var(--g-cream)}
+    .ginteg .txt{padding:64px 40px 64px max(32px, calc((100vw - 1180px)/2 + 32px))}
+    .ginteg .img{min-height:460px;background:url('/assets/img/gift/integratie-laptop.jpg') center/cover no-repeat;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 18%);mask-image:linear-gradient(90deg,transparent 0,#000 18%)}
+    .ginteg h2{font-size:42px;margin-bottom:14px}
+    .ginteg p.intro{font-size:15px;color:#2b211a;margin:0 0 26px;max-width:480px}
+    .ginteg .quote{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:26px;line-height:1.25;color:var(--g-gold3);margin:0 0 12px}
+    .ginteg .tag{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;margin:4px 0 16px;color:#1C1410}
+    .ginteg .wa-chip{display:inline-flex;align-items:center;gap:6px}.ginteg .wa-chip .wa-logo{width:15px;height:15px}
+    .ginteg .facts{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px}
+    .ginteg .facts > span{font-size:12px;font-weight:600;letter-spacing:.04em;color:var(--g-gold3);border:1px solid var(--g-gold);border-radius:20px;padding:5px 12px}
+    .ginteg .wa{max-width:400px;background:#EDE6DA;border-radius:14px;padding:14px 14px 16px;box-shadow:0 14px 34px rgba(13,10,7,.10)}
+    .ginteg .wa-head{display:flex;align-items:center;gap:10px;padding:0 4px 12px;border-bottom:1px solid rgba(0,0,0,.07);margin-bottom:12px}
+    .ginteg .wa-head img{width:32px;height:32px;border-radius:50%;background:#fff;padding:4px}
+    .ginteg .wa-head b{display:block;font-size:14px}.ginteg .wa-head small{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--g-muted)}
+    .ginteg .wa-head .wa-logo{width:16px;height:16px;border-radius:0;background:none;padding:0}
+    .ginteg .msg{background:#fff;border-radius:4px 12px 12px 12px;padding:10px 12px 6px;margin-bottom:10px;max-width:92%;box-shadow:0 1px 1px rgba(0,0,0,.06)}
+    .ginteg .msg:last-child{margin-bottom:0}
+    .ginteg .msg p{margin:0;font-size:13.5px;line-height:1.5}
+    .ginteg .msg time{display:block;text-align:right;font-size:10.5px;color:var(--g-muted);margin-top:2px}
+    /* companion */
+    .gcomp{background:linear-gradient(135deg,#1b2340,#141a30);color:#fff;padding:64px 0}
+    .gcomp .wrap{display:grid;grid-template-columns:1fr 1.05fr;gap:48px;align-items:center}
+    .gcomp .eyebrow{color:var(--g-gold)}
+    .gcomp h2{color:#fff;font-size:42px;margin-bottom:14px}
+    .gcomp p{font-size:15px;line-height:1.65;color:rgba(255,255,255,.88);margin:0 0 16px}
+    .gcomp em{display:block;font-family:'Cormorant Garamond',serif;font-size:21px;color:var(--g-gold);margin-top:6px}
+    .gcomp .chips{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .gcomp .chip{background:#26305a;border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:14px 16px;font-size:14px;font-weight:500;color:#fff}
+    .gcomp .chipnote{grid-column:1/-1;font-size:12px;color:rgba(255,255,255,.6);margin-top:4px}
+    /* reviews */
+    .grev{background:var(--g-cream);padding:64px 0 56px}
+    .grev h2{font-size:40px;text-align:center;margin-bottom:32px}
+    .grev .revs{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+    .grev figure{margin:0;background:#fff;border:1px solid var(--g-line);border-radius:10px;padding:26px 24px;display:flex;flex-direction:column}
+    .grev .stars{color:var(--g-gold3);letter-spacing:.2em;font-size:14px;margin-bottom:12px}
+    .grev blockquote{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:20px;line-height:1.4;flex:1;margin-bottom:16px}
+    .grev figcaption{display:flex;align-items:center;gap:12px;font-size:13px;font-weight:600;color:var(--g-muted)}
+    .grev figcaption img{width:46px;height:46px;border-radius:50%;object-fit:cover;border:1px solid var(--g-line)}
+    .grev .revall{text-align:center;margin:24px 0 0}.grev .revall a{font-size:14px;font-weight:600;color:var(--g-gold3);text-decoration:none;border-bottom:1px solid var(--g-gold)}
+    /* options */
+    .gopts{background:#fff;padding:64px 0 56px}
+    .gopts h2,.ghow h2,.gfaq h2{font-size:40px;text-align:center;margin-bottom:32px}
+    .gopts .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;max-width:820px;margin:0 auto}
+    .gocard{border:1px solid var(--g-line);border-radius:10px;padding:28px 24px 24px;text-align:center;display:flex;flex-direction:column;align-items:center;background:#fff;transition:border-color .2s,box-shadow .2s}
+    .gocard.on{border-color:var(--g-gold);box-shadow:0 10px 30px rgba(184,134,43,.12)}
+    .gocard.feat{background:var(--g-cream)}
+    .gocard .ico{margin-bottom:14px}
+    .gocard h3{font-size:24px;margin-bottom:4px}
+    .gocard .pr{font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:500;margin-bottom:16px}
+    .gocard .pr s{font-size:20px;font-weight:400;color:var(--g-muted);margin-right:8px}
+    .gocard .pr small{display:block;font-family:'Inter',sans-serif;font-size:11.5px;font-weight:400;color:var(--g-muted)}
+    .gocard ul{list-style:none;padding:0;margin:0 auto 16px;text-align:left;align-self:stretch;max-width:240px}
+    .gocard li{font-size:13.5px;padding-left:26px;position:relative;margin-bottom:6px}
+    .gocard li::before{content:'';position:absolute;left:4px;top:5px;width:10px;height:6px;border-left:1.6px solid var(--g-gold3);border-bottom:1.6px solid var(--g-gold3);transform:rotate(-45deg)}
+    .gocard .nt{font-size:12.5px;color:var(--g-muted);margin:0 0 18px;flex:1}
+    .gocard .gbtn{width:100%}
+    /* order */
+    .gorder{background:var(--g-cream);padding:56px 0}
+    .gorder .wrap{max-width:700px}
+    .gorder .gpanel{box-shadow:0 14px 40px rgba(13,10,7,.06)}
+    /* how */
+    .ghow{background:var(--g-cream);padding:56px 0 48px}
+    .ghow .row{display:grid;grid-template-columns:repeat(3,1fr)}
+    .ghow .st{display:flex;gap:16px;padding:0 24px;border-left:1px solid var(--g-line)}.ghow .st:first-child{padding-left:0;border-left:none}
+    .ghow .n{width:52px;height:52px;border-radius:50%;border:1.3px solid var(--g-gold);color:var(--g-gold3);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;flex:none}
+    .ghow h3{font-size:22px;margin-bottom:4px}.ghow p{font-size:13.5px;color:var(--g-muted);margin:0}
+    /* faq */
+    .gfaq{background:var(--g-cream);padding:24px 0 64px}
+    .gfaq .wrap{max-width:820px}
+    .gfaq details{background:#fff;border:1px solid var(--g-line);border-bottom:none}
+    .gfaq details:first-of-type{border-radius:8px 8px 0 0}.gfaq details:last-of-type{border-bottom:1px solid var(--g-line);border-radius:0 0 8px 8px}
+    .gfaq summary{list-style:none;cursor:pointer;padding:14px 18px;font-size:14px;font-weight:500;display:flex;justify-content:space-between;align-items:center;gap:16px}
+    .gfaq summary::-webkit-details-marker{display:none}
+    .gfaq summary::after{content:'';width:8px;height:8px;border-right:1.5px solid #1C1410;border-bottom:1.5px solid #1C1410;transform:rotate(45deg);transition:transform .2s;flex:none;margin-top:-4px}
+    .gfaq details[open] summary::after{transform:rotate(-135deg);margin-top:4px}
+    .gfaq details p{margin:0;padding:0 18px 16px;font-size:13.5px;color:var(--g-muted)}
+    /* close */
+    .gclose{position:relative;color:#fff;background:#0D0A07 url('/assets/img/gift/band.jpg') center/cover;padding:56px 0}
+    .gclose::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(13,10,7,.7),rgba(13,10,7,.35))}
+    .gclose .wrap{position:relative;display:flex;justify-content:space-between;align-items:center;gap:30px}
+    .gclose h2{color:#fff;font-size:44px;max-width:460px}
+    .gclose h2::after{content:'';display:block;width:56px;height:1px;background:var(--g-gold);margin-top:18px}
+    .gfoot{text-align:center;font-size:12.5px;color:var(--g-muted);padding:22px 16px;background:var(--g-cream)}
+    /* panel */
+    .gpanel{background:#fff;border:1px solid var(--g-line);border-radius:10px;padding:28px}
+    .gpanel h2{font-size:30px;margin-bottom:8px}
+    .gpanel p.small{font-size:13.5px;color:var(--g-muted);margin:0 0 18px}
+    .gp .field{margin-bottom:14px}.gp .field label{display:block;font-size:12.5px;font-weight:500;color:#1C1410;margin-bottom:6px}
+    .gp .field input,.gp .field textarea{width:100%;background:var(--g-cream);border:1px solid var(--g-line);border-radius:6px;padding:11px 12px;font-family:'Inter',sans-serif;font-size:14px;color:#1C1410}
+    .gp .field input:focus,.gp .field textarea:focus{outline:none;border-color:var(--g-gold)}
+    .gp .hint{font-size:11.5px;line-height:1.5;color:var(--g-muted);margin-top:5px}
+    .gp .err-txt{color:#b4462e;font-size:12px;margin:4px 0 10px;display:none}.gp .err-txt.show{display:block}
+    .gp .panel{display:none}.gp .panel.on{display:block;animation:gfade .35s ease both}
+    @keyframes gfade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+    .gsteps{display:flex;gap:8px;margin:0 0 20px}.gsteps .gstep{width:34px;height:3px;border-radius:2px;background:var(--g-line)}.gsteps .gstep.on{background:var(--g-gold)}
+    .glock{font-size:13px;color:var(--g-muted);background:var(--g-cream);border:1px solid var(--g-line);border-radius:6px;padding:12px 14px;margin:14px 0}
+    .gp .gprice{font-family:'Cormorant Garamond',serif;font-size:40px;color:#1C1410}.gp .gprice small{font-family:'Inter',sans-serif;font-size:13px;color:var(--g-muted);margin-left:6px}
+    .mock-note{font-size:11px;color:var(--g-muted);background:rgba(166,124,58,.07);border:1px solid var(--g-line);border-radius:8px;padding:10px 14px;margin-top:16px;line-height:1.6}
+    .gp .actions{display:flex;gap:12px;align-items:center;margin-top:18px;flex-wrap:wrap}
+    .gp .badge{display:inline-block;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--g-gold3);background:rgba(201,169,110,.12);border-radius:20px;padding:3px 10px;margin-bottom:10px}
+    /* routes */
+    .groutes{display:flex;flex-direction:column;gap:10px;margin:4px 0 16px}
+    .groute{display:flex;gap:12px;align-items:flex-start;border:1px solid var(--g-line);border-radius:8px;padding:12px 14px;cursor:pointer;background:#fff;transition:border-color .2s,background .2s}
+    .groute:hover{border-color:var(--g-gold)}
+    .groute.on{border-color:var(--g-gold);background:rgba(201,169,110,.08)}
+    .groute input{margin-top:4px;accent-color:var(--g-gold3);flex:none}
+    .groute .rt{flex:1}.groute .rt b{display:block;font-size:14px;font-weight:600}.groute .rt span{display:block;font-size:12.5px;color:var(--g-muted);line-height:1.45;margin-top:2px}
+    .groute .rp{font-family:'Cormorant Garamond',serif;font-size:22px;white-space:nowrap;line-height:1.1;text-align:right}.groute .rp small{display:block;font-family:'Inter',sans-serif;font-size:10.5px;color:var(--g-muted)}
+    .ghero .heroimg,.gmore .moreimg{display:none}
+    @media(max-width:960px){
+      .ghero{background:var(--g-cream);padding:48px 0 0;display:block;min-height:0}.ghero::after{display:none}
+      .ghero .heroimg{display:block;margin:32px 0 0;aspect-ratio:1672/941;background:url('/assets/img/gift/hero-devices.jpg') center/cover}
+      .gpill .row,.gopts .cards,.ghow .row{grid-template-columns:1fr;gap:28px}
+      .gpill .col,.ghow .st{border-left:none;padding:0}
+      .gmore{background:var(--g-cream2)}
+      .gmore .moreimg{display:block;margin-top:28px;aspect-ratio:16/8;border-radius:8px;background:url('/assets/img/gift/pyramids.jpg') center/cover}
+      .gjour{grid-template-columns:1fr}.gjour .img{min-height:0;aspect-ratio:520/330}.gjour .txt{padding:40px 32px}
+      .gclose .wrap{flex-direction:column;align-items:flex-start}
+      .ginteg{grid-template-columns:1fr}.ginteg .txt{padding:48px 20px}.ginteg .img{min-height:0;aspect-ratio:1228/1126;-webkit-mask-image:none;mask-image:none}
+      .grev .revs{grid-template-columns:1fr}
+      .gcomp .wrap{grid-template-columns:1fr;gap:28px}.gcomp .chips{grid-template-columns:1fr}
+    }
+    @media(max-width:760px){.gp .wrap{padding:0 20px}.ghero h1{font-size:42px}.gpill h2,.gopts h2,.ghow h2,.gfaq h2{font-size:32px}.gmore h2,.gjour h2,.gclose h2,.ginteg h2,.gcomp h2{font-size:34px}.gjour .txt{padding:36px 20px}.gp .gnote{font-size:16px}}
+  </style>
 </head>
 <body>
-  <div id="szinn-nav"></div>
+<nav class="snav" aria-label="Main">
+  <div class="swrap">
+    <a class="brand" href="/nl/" data-en="/"><img class="mark" src="/assets/img/mark.png" alt="SZINN logo"><span><img class="word" src="/assets/img/wordmark-black.png" alt="SZINN.AI"><small>Alignment Blueprint</small></span></a>
+    <ul id="menu">
+      <li><a href="/nl/inzichten" data-en="/insights" data-t="nIns">Inzichten</a></li>
+      <li><a href="/nl/over" data-en="/about" data-t="nAbout">Wie we zijn</a></li>
+      <li class="has"><a href="/nl/producten" data-en="/products" aria-haspopup="true" data-t="nProd">Producten</a>
+        <div class="dd"><a href="/nl/producten/alignment-blueprint" data-en="/products/alignment-blueprint">Alignment Blueprint</a><a href="/nl/producten/dagelijkse-integratie" data-en="/products/daily-integration" data-t="nDaily">Dagelijkse Integratie</a><a href="/nl/ai#companion" data-en="/ai#companion">SZINN Companion</a><a href="/nl/producten/community" data-en="/products/community">Community</a><a href="#kies" data-t="nGiftDd">Cadeau geven</a></div></li>
+      <li><a href="#top" aria-current="page" data-t="nGift">Cadeau</a></li>
+      <li><a href="/nl/events" data-en="/events">Events</a></li>
+      <li><a href="#faq" data-t="nFaq">Vragen</a></li>
+      <li class="has"><a href="/nl/ai" data-en="/ai" aria-haspopup="true">AI</a>
+        <div class="dd"><a href="/nl/ai#companion" data-en="/ai#companion" data-t="nAi1">Wat is de SZINN Companion?</a><a href="/nl/ai#how" data-en="/ai#how" data-t="nAi2">Hoe SZINN AI gebruikt</a><a href="/nl/ai#privacy" data-en="/ai#privacy" data-t="nAi3">Privacy &amp; jouw gegevens</a></div></li>
+    </ul>
+    <div class="right">
+      <div class="lang"><a href="/gift" data-lang="en" lang="en">EN</a><a href="/nl/cadeau" data-lang="nl" lang="nl">NL</a></div>
+      <a class="portal" id="nav-portal-link" href="/portaal/inloggen" data-dash="Dashboard"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.4"/><path d="M5 20c0-3.6 3.1-5.6 7-5.6s7 2 7 5.6"/></svg><span data-t="nPortal">Mijn portaal</span></a>
+      <a class="sbtn" href="#kies" data-t="nCta">Geef een cadeau</a>
+      <button class="burger" id="burger" type="button" aria-label="Menu" aria-controls="menu" aria-expanded="false">☰</button>
+    </div>
+  </div>
+</nav>
 
-  <main class="container">
-    <div class="gift-page fade-up">
-      <div class="gift-head">
-        <span class="eyebrow" id="gEyebrow">Cadeau</span>
-        <h1 id="gH1">Geef een SZINN Alignment Blueprint</h1>
-        <p id="gLead">Schenk iemand een diep persoonlijke spiegel — geweven uit astrologie, numerologie en Kabbalah, speciaal voor hen gemaakt.</p>
+<main class="gp">
+  <header class="ghero" id="top">
+    <div class="wrap">
+      <div class="copy">
+        <span class="eyebrow" data-t="eyebrow">SZINN Alignment Experience</span>
+        <h1 data-t="h1">Geef een reis naar jezelf cadeau.</h1>
+        <p class="lead" data-t="lead">Een persoonlijke reis naar wie je bent. Met een eigen Alignment Blueprint, 11 dagen Dagelijkse Integratie en de SZINN Companion, een AI-gids die de Blueprint heeft gelezen.</p>
+        <a class="gbtn" href="#kies" data-t="cta">Geef de SZINN ervaring →</a>
+        <p class="pline" data-t="pline">Digitaal €39,90 (normaal €69,90) · Met gedrukt boek €59,90 + verzending · Eenmalig, geen abonnement</p>
       </div>
+      <div class="heroimg" role="img" aria-label="Blueprint-boek, tablet en telefoon met SZINN"></div>
+    </div>
+  </header>
 
-      <!-- Stappen: betalen → datum → gegevens van de ontvanger (stap 1 van de intake) -->
-      <div class="gift-steps">
-        <div class="gstep on" id="gs0"></div>
-        <div class="gstep" id="gs1"></div>
-        <div class="gstep" id="gs2"></div>
+  <section class="gpill" id="ervaring">
+    <div class="wrap">
+      <h2 data-t="pillH">Herkennen. Verdiepen. Leven.</h2>
+      <div class="row">
+        <div class="col">
+          <img class="icn logo" src="/assets/img/mark.png" alt="">
+          <h3 data-t="p1h">Jouw Alignment Blueprint</h3>
+          <p data-t="p1p">Hoe je werkt, wat je voelt en wat blijft terugkomen, vanuit astrologie, numerologie en Tikkun. In 13 persoonlijke secties.</p>
+        </div>
+        <div class="col">
+          <svg class="icn" viewBox="4 6 40 36" aria-hidden="true"><path d="M24 36c-4.5-3.5-6.5-8-6.5-12.5 0-4 2.5-8 6.5-11 4 3 6.5 7 6.5 11 0 4.5-2 9-6.5 12.5z"/><path d="M24 36c-6-.5-11-3-13.5-7.5-.8-1.5-1.2-3-1.3-4.5 3.2-.2 6.2.8 8.6 2.6"/><path d="M24 36c6-.5 11-3 13.5-7.5.8-1.5 1.2-3 1.3-4.5-3.2-.2-6.2.8-8.6 2.6"/><path d="M24 36c-7.5 1-14-1-18-5.5 2.5-1.5 5.5-2 8.5-1.5"/><path d="M24 36c7.5 1 14-1 18-5.5-2.5-1.5-5.5-2-8.5-1.5"/></svg>
+          <h3 data-t="p2h">11 dagen Dagelijkse Integratie</h3>
+          <p data-t="p2p">Elke ochtend en avond een kort bericht op WhatsApp, vanuit je eigen kaart.</p>
+        </div>
+        <div class="col">
+          <svg class="icn" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 9c-9.4 0-17 6.3-17 14 0 4 2 7.6 5.3 10.2L10.5 40l7.6-3.4c1.9.5 3.8.8 5.9.8 9.4 0 17-6.3 17-14S33.4 9 24 9z"/><circle cx="17" cy="23.5" r="1.4" class="dot"/><circle cx="24" cy="23.5" r="1.4" class="dot"/><circle cx="31" cy="23.5" r="1.4" class="dot"/></svg>
+          <h3 data-t="p3h">SZINN Companion AI</h3>
+          <p data-t="p3p">Een AI-gids die jouw Blueprint heeft gelezen en antwoordt vanuit jouw eigen kaart.</p>
+        </div>
       </div>
+      <p class="gnote" data-t="note">Integratie en Companion zijn 11 dagen inbegrepen bij elke cadeauoptie.</p>
+    </div>
+  </section>
 
-      <div class="card">
-        <!-- Stap 1: intro + betaling starten -->
+  <section class="gmore">
+    <div class="wrap">
+      <div class="copy">
+        <h2 data-t="moreH">Je geeft zoveel meer dan een boek.</h2>
+        <p data-t="moreP">Je geeft ruimte om stil te staan. Om jezelf te herkennen, nieuwe vragen te stellen en te ontdekken wat bij je past. Geen voorspelling, maar een spiegel.</p>
+      </div>
+      <div class="moreimg" role="img" aria-label="Piramides aan de rivier bij zonsondergang"></div>
+    </div>
+  </section>
+
+  <section class="gjour">
+    <div class="img" role="img" aria-label="Het Blueprint-boek naast een tablet met de SZINN-reis"></div>
+    <div class="txt">
+      <h2 data-t="jourH">Van inzicht naar ervaring.</h2>
+      <ol>
+        <li><span class="n">01</span><img class="icn logo" src="/assets/img/mark.png" alt=""><div><h3 data-t="j1h">Ontdek jouw Blueprint</h3><p data-t="j1p">Een persoonlijk inzicht in wie je bent.</p></div></li>
+        <li><span class="n">02</span><svg class="icn" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 9c-9.4 0-17 6.3-17 14 0 4 2 7.6 5.3 10.2L10.5 40l7.6-3.4c1.9.5 3.8.8 5.9.8 9.4 0 17-6.3 17-14S33.4 9 24 9z"/><circle cx="17" cy="23.5" r="1.4" class="dot"/><circle cx="24" cy="23.5" r="1.4" class="dot"/><circle cx="31" cy="23.5" r="1.4" class="dot"/></svg><div><h3 data-t="j2h">Verken met je Companion</h3><p data-t="j2p">Stel vragen en verdiep je inzichten.</p></div></li>
+        <li><span class="n">03</span><svg class="icn" viewBox="4 6 40 36" aria-hidden="true"><path d="M24 36c-4.5-3.5-6.5-8-6.5-12.5 0-4 2.5-8 6.5-11 4 3 6.5 7 6.5 11 0 4.5-2 9-6.5 12.5z"/><path d="M24 36c-6-.5-11-3-13.5-7.5-.8-1.5-1.2-3-1.3-4.5 3.2-.2 6.2.8 8.6 2.6"/><path d="M24 36c6-.5 11-3 13.5-7.5.8-1.5 1.2-3 1.3-4.5-3.2-.2-6.2.8-8.6 2.6"/><path d="M24 36c-7.5 1-14-1-18-5.5 2.5-1.5 5.5-2 8.5-1.5"/><path d="M24 36c7.5 1 14-1 18-5.5-2.5-1.5-5.5-2-8.5-1.5"/></svg><div><h3 data-t="j3h">Breng het in je leven</h3><p data-t="j3p">Neem je inzichten mee in je dagelijks leven.</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="ginteg">
+    <div class="txt">
+      <span class="eyebrow" data-t="intEy">11 dagen inbegrepen</span>
+      <h2 data-t="intH">Van inzicht naar dagelijks leven.</h2>
+      <p class="quote" data-t="intQ">Ontdekken wie je bent is het begin. Ernaar leven is de reis.</p>
+      <p class="intro" data-t="intP" style="margin-bottom:10px">Met de Dagelijkse Integratie neem je de inzichten uit jouw Blueprint mee in je dag. Elke ochtend en avond ontvang je via WhatsApp een korte uitnodiging om stil te staan, te voelen en bewust te kiezen.</p>
+      <p class="intro" data-t="intP2">Zo ontdek je stap voor stap wat bij jou past, midden in het leven.</p>
+      <p class="tag" data-t="intTag">Twee momenten voor jezelf. Elke dag opnieuw.</p>
+      <div class="facts"><span class="wa-chip"><img class="wa-logo" src="/assets/img/gift/whatsapp-logo.png" alt="WhatsApp"><span data-t="fWa">via WhatsApp</span></span><span data-t="f1">2× per dag</span><span data-t="f2">± 1 minuut</span><span data-t="f3">11 dagen inbegrepen</span></div>
+      <div class="wa" aria-label="Voorbeeld van twee WhatsApp-berichten">
+        <div class="wa-head"><img src="/assets/img/mark.png" alt=""><div><b>SZINN</b><small><img class="wa-logo" src="/assets/img/gift/whatsapp-logo.png" alt="WhatsApp"><span data-t="waSub">via WhatsApp</span></small></div></div>
+        <div class="msg"><p data-t="w1">Goedemorgen ✦ Je Maan in Schorpioen vraagt vandaag om diepgang. Wat is je intentie voor vandaag?</p><time>08:00</time></div>
+        <div class="msg"><p data-t="w2">Hoe was je dag? Heb je je intentie gevoeld, en wat wil je morgen creëren?</p><time>21:00</time></div>
+      </div>
+    </div>
+    <div class="img" role="img" aria-label="Laptop met het SZINN-dashboard"></div>
+  </section>
+
+  <section class="gcomp">
+    <div class="wrap">
+      <div>
+        <span class="eyebrow" data-t="compEy">11 dagen inbegrepen</span>
+        <h2 data-t="compH">Maak kennis met de SZINN Companion.</h2>
+        <p data-t="compP">De Blueprint is het startpunt. De Companion is een AI-gids die de Blueprint heeft gelezen en helpt verder de diepte in: waarom een patroon steeds terugkomt, wat een plaatsing betekent, of wat je er deze week mee kunt. Steeds vanuit de eigen kaart.</p>
+        <em data-t="compEm">Meer dan antwoorden. Een dieper gesprek.</em>
+      </div>
+      <div class="chips">
+        <div class="chip" data-t="ch1">Waarom komt dit patroon steeds terug?</div>
+        <div class="chip" data-t="ch2">Hoe kan ik hier nu mee werken?</div>
+        <div class="chip" data-t="ch3">Wat betekent dit voor mijn relatie?</div>
+        <div class="chip" data-t="ch4">Wat vraagt deze situatie mij te herkennen?</div>
+        <div class="chipnote" data-t="chNote">Voorbeelden van vragen die de ontvanger kan stellen.</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grev">
+    <div class="wrap">
+      <h2 data-t="revH">Wat anderen ervaren.</h2>
+      <div class="revs">
+        <figure><div class="stars" aria-label="5 van 5 sterren">★★★★★</div><blockquote data-t="r1">"Vooral de bevestiging was waardevol: dingen die ik altijd al voelde, maar nooit goed kon plaatsen, kregen nu betekenis."</blockquote><figcaption><img src="/assets/img/rev-arenda.png" alt="" loading="lazy"><span>Arenda van Velthoven</span></figcaption></figure>
+        <figure><div class="stars" aria-label="5 van 5 sterren">★★★★★</div><blockquote data-t="r2">"Het helpt me om patronen te herkennen, bewustere keuzes te maken en te begrijpen waar mijn energie naartoe wil."</blockquote><figcaption><img src="/assets/img/rev-haitske.png" alt="" loading="lazy"><span>Haitske van de Sande</span></figcaption></figure>
+        <figure><div class="stars" aria-label="5 van 5 sterren">★★★★★</div><blockquote data-t="r3">"Door mijn emoties toe te laten en keuzes te maken vanuit mijn hart ontstonden er grote verschuivingen in mijn leven."</blockquote><figcaption><img src="/assets/img/rev-jolanda.png" alt="" loading="lazy"><span>Jolanda Eickhoff</span></figcaption></figure>
+      </div>
+      <p class="revall"><a href="/nl/ervaringen" data-en="/reviews/" data-t="revAll">Lees alle ervaringen →</a></p>
+    </div>
+  </section>
+
+  <section class="gopts" id="kies">
+    <div class="wrap">
+      <h2 data-t="optH">Kies hoe je de reis cadeau geeft.</h2>
+      <div class="cards">
+        <div class="gocard" data-route="2">
+          <div class="ico"><svg viewBox="0 0 32 32"><path d="M21 5l6 6-15 15H6v-6z"/><path d="M18 8l6 6"/></svg></div>
+          <h3 data-t="c2h">Jij maakt het persoonlijk</h3>
+          <div class="pr"><s data-t="c2was">€69,90</s><span data-t="c2pr">€39,90</span></div>
+          <ul><li data-t="incBp2">Alignment Blueprint, 13 secties</li><li data-t="incInt2">11 dagen Dagelijkse Integratie</li><li data-t="incAi2">11 dagen SZINN Companion</li><li data-t="inc482">Op het moment dat jij kiest</li></ul>
+          <p class="nt" data-t="c2nt">Jij vult de geboortegegevens in en kiest het verzendmoment.</p>
+          <button class="gbtn" type="button" data-pick="2" data-t="pick2">Kies dit cadeau</button>
+        </div>
+        <div class="gocard feat" data-route="3">
+          <div class="ico"><svg viewBox="0 0 32 32"><path d="M16 9c-3-2-7-3-11-3v19c4 0 8 1 11 3 3-2 7-3 11-3V6c-4 0-8 1-11 3z"/><path d="M16 9v19"/></svg></div>
+          <h3 data-t="c3h">De complete reis met boek</h3>
+          <div class="pr"><s data-t="c3was">€89,90</s><span data-t="c3pr">€59,90</span><small data-t="c3ship">+ verzendkosten</small></div>
+          <ul><li data-t="incBp3">Alignment Blueprint, 13 secties</li><li data-t="incInt3">11 dagen Dagelijkse Integratie</li><li data-t="incAi3">11 dagen SZINN Companion</li><li data-t="incBook">Inclusief persoonlijk gedrukt boek</li></ul>
+          <p class="nt" data-t="c3nt">Een premium, persoonlijk boek van circa 60 pagina's, met naam op de cover.</p>
+          <button class="gbtn" type="button" data-pick="3" data-t="pick3">Kies dit cadeau</button>
+        </div>
+      </div>
+      <p class="gnote" data-t="note2">Integratie en Companion zijn 11 dagen inbegrepen bij elke cadeauoptie.</p>
+    </div>
+  </section>
+
+  <section class="gorder" id="bestellen">
+    <div class="wrap">
+      <div class="gpanel" id="giftPanel">
+        <div class="gsteps"><div class="gstep on" id="gs0"></div><div class="gstep" id="gs1"></div><div class="gstep" id="gs2"></div></div>
+
+        <!-- Stap 1: optie kiezen + betaling starten -->
         <div class="panel on" id="p0">
-          <div class="price">&euro;<span id="priceVal">39,90</span> <small id="gOnce">eenmalig</small></div>
-          <ul class="feat">
-            <li id="gF1">Een volledige, persoonlijke Alignment Blueprint</li>
-            <li id="gF2">Jij vult alleen naam, e-mailadres en geboortegegevens van de ontvanger in</li>
-            <li id="gF3">Kies zelf op welke dag het cadeau bezorgd wordt</li>
-            <li id="gF4">De ontvanger krijgt die dag een e-mail met inloggegevens en de Blueprint</li>
-          </ul>
+          <h2 data-t="gH2a">Kies je cadeau</h2>
+          <p class="small" data-t="gFormIntro">Er zijn twee manieren om een Blueprint te geven. Kies wat bij jou en de ontvanger past.</p>
+          <div class="groutes" role="radiogroup">
+            <label class="groute on" data-route="2">
+              <input type="radio" name="route" value="2" checked>
+              <div class="rt"><b data-t="gR2t">Jij maakt het persoonlijk</b><span data-t="gR2p">Je weet de geboortedatum, -tijd en -plaats. De Blueprint komt op het moment dat jij kiest in de mailbox van de ontvanger.</span></div>
+              <div class="rp">&euro;<span data-t="pr2">39,90</span><small data-t="gR2s">digitaal</small></div>
+            </label>
+            <label class="groute" data-route="3">
+              <input type="radio" name="route" value="3">
+              <div class="rt"><b data-t="gR3t">De complete reis met boek</b><span data-t="gR3p">Alles van de vorige optie, plus de Blueprint als gedrukt boek, verstuurd naar het adres van de ontvanger. Het verzendadres vul je in bij het afrekenen.</span></div>
+              <div class="rp">&euro;<span data-t="pr3">59,90</span><small data-t="gR3s">+ verzendkosten</small></div>
+            </label>
+          </div>
+          <div class="gprice">&euro;<span id="priceVal">39,90</span><small id="gOnce">eenmalig</small></div>
+          <div class="glock" data-t="gLock">Stap 1 van 3: rond eerst de betaling af. Daarna kies je het moment en vul je de gegevens van de ontvanger in.</div>
           <div class="actions">
-            <button class="btn btn-primary" id="btnPay">Ga naar betaling →</button>
-            <a class="btn" href="/portaal" id="gBack">Terug</a>
+            <button class="gbtn" id="btnPay" type="button">Ga naar betaling →</button>
+            <a class="gbtn ghost" href="/nl/" data-en="/" data-t="gBack">Terug</a>
           </div>
-          <div class="mock-note" id="mockNote" style="display:none">
-            Testmodus: er is nog geen Stripe-sleutel ingesteld, dus de betaling wordt gesimuleerd. Zodra <code>STRIPE_SECRET_KEY</code> is ingevuld, gaat deze knop naar de echte Stripe-betaalpagina.
-          </div>
-          <p class="err-msg" id="payErr" style="display:none;color:#b4462e;font-size:13px;margin-top:10px"></p>
+          <div class="mock-note" id="mockNote" style="display:none"></div>
+          <p class="err-txt" id="payErr"></p>
         </div>
 
-        <!-- Stap 2: verzenddatum + bericht; daarna door naar de intake (stap 1) -->
+        <!-- Stap 2: verzenddatum + bericht; daarna door naar de intake (stap 1: gegevens van de ontvanger) -->
         <div class="panel" id="p1">
-          <h2 style="font-family:'Cormorant Garamond',serif;font-weight:500;margin:0 0 4px" id="gH2">Wanneer mag het cadeau aankomen?</h2>
-          <p style="color:var(--muted);font-size:13px;margin:0 0 20px" id="gP1">Betaling geslaagd. Kies de dag waarop de ontvanger de e-mail krijgt. Daarna vul je de gegevens van de ontvanger in.</p>
-
+          <h2 data-t="gH2">Wanneer mag het cadeau aankomen?</h2>
+          <span class="badge" id="routeBadge"></span>
+          <p class="small" data-t="gP1">Betaling geslaagd. Kies de dag waarop de ontvanger de e-mail krijgt. Daarna vul je de gegevens van de ontvanger in.</p>
           <div class="field" id="f-date">
-            <label for="sendDate" id="gLDate">Bezorgdatum</label>
+            <label for="sendDate" data-t="gLDate">Bezorgdatum</label>
             <input type="date" id="sendDate">
-            <div class="hint" id="gHint">Kies vandaag om direct te versturen (zodra de Blueprint klaar is), of een datum in de toekomst.</div>
+            <div class="hint" data-t="gHint">De Blueprint wordt binnen 48 uur gemaakt, dus kies een moment minstens 2 dagen vooruit. Bijvoorbeeld kerstavond.</div>
           </div>
           <div class="field">
-            <label for="message" id="gLMsg">Persoonlijk bericht</label>
+            <label for="message" data-t="gLMsg">Persoonlijk bericht</label>
             <textarea id="message" rows="3" placeholder="Een paar woorden die met het cadeau meegaan (optioneel)"></textarea>
           </div>
           <div class="err-txt" id="e-form"></div>
           <div class="actions">
-            <button class="btn btn-primary" id="btnSend">Verder: gegevens van de ontvanger →</button>
+            <button class="gbtn" id="btnSend" type="button">Verder: gegevens van de ontvanger →</button>
           </div>
         </div>
       </div>
     </div>
-  </main>
+  </section>
 
-  <div id="szinn-footer"></div>
+  <section class="ghow" id="hoe">
+    <div class="wrap">
+      <h2 data-t="howH">Zo werkt het geven van de SZINN ervaring.</h2>
+      <div class="row">
+        <div class="st"><div class="n">01</div><div><h3 data-t="h1h">Kies je cadeau</h3><p data-t="h1p">Kies de cadeauoptie die bij jou en de ontvanger past en reken af.</p></div></div>
+        <div class="st"><div class="n">02</div><div><h3 data-t="h2h">Kies het moment</h3><p data-t="h2p">Kies wanneer de cadeau-e-mail wordt verstuurd en voeg een persoonlijk bericht toe.</p></div></div>
+        <div class="st"><div class="n">03</div><div><h3 data-t="h3h">Vul de gegevens in</h3><p data-t="h3p">Jij vult de geboortegegevens van de ontvanger in. Wij maken de Blueprint; het boek heeft een eigen bezorgtijd.</p></div></div>
+      </div>
+    </div>
+  </section>
 
-  <script src="/szinn-portal/js/auth.js"></script>
-  <script src="/szinn-portal/js/api.js"></script>
-  <script src="/szinn-portal/js/nav.js"></script>
-  <script>
-    // Zelfde taalsleutel als dashboard.html/login.html.
-    const LANG = (localStorage.getItem('szinn_lang') === 'en') ? 'en' : 'nl';
-    document.documentElement.lang = LANG;
+  <section class="gfaq" id="faq">
+    <div class="wrap">
+      <h2 data-t="faqH">Goed om te weten.</h2>
+      <details><summary data-t="q1">Wat krijgt de ontvanger precies?</summary><p data-t="a1">Een persoonlijke digitale Alignment Blueprint in 13 secties: de astrologische analyse, het numerologisch profiel, de Tikkun-thema's en de patronen die de drie verbinden, met praktisch inzicht voor het dagelijks leven. Daarbij 11 dagen Dagelijkse Integratie en 11 dagen de SZINN Companion. Bij de complete reis komt het gedrukte boek met de eigen naam op de cover erbij.</p></details>
+      <details><summary data-t="q2">Wat kan ik met de SZINN Companion AI?</summary><p data-t="a2">De Companion is een AI-gids die de Blueprint van de ontvanger heeft gelezen. Vraag waarom een patroon steeds terugkomt, wat een plaatsing betekent of wat je er deze week mee kunt; de Companion antwoordt vanuit de eigen kaart. De eerste 11 dagen zijn inbegrepen. Daarna kiest de ontvanger zelf of zij of hij doorgaat, bijvoorbeeld met de SZINN Community (€23,69 per maand), waar de Companion en de Dagelijkse Integratie bij horen.</p></details>
+      <details><summary data-t="q3">Wat houden de 11 dagen integratie in?</summary><p data-t="a3">Elf dagen lang 's ochtends en 's avonds een kort bericht op WhatsApp, met één vraag vanuit de eigen kaart: met welke energie werk ik vandaag, wat is mijn intentie, heb ik bewust geleefd, wat wil ik morgen creëren. Zo blijven de inzichten niet op papier maar landen ze in het dagelijks leven. Daarna kan de Dagelijkse Integratie los doorlopen voor €3,69 per maand.</p></details>
+      <details><summary data-t="q4">Welke geboortegegevens zijn nodig?</summary><p data-t="a4">De volledige naam zoals op de geboorteakte, de geboortedatum, de geboortetijd en de geboorteplaats. Is de tijd onbekend, dan rekent SZINN met 12:00 uur en staat in de Blueprint wat dat betekent.</p></details>
+      <details><summary data-t="q6">Wanneer komt het cadeau aan?</summary><p data-t="a6">De Blueprint wordt binnen 48 uur gemaakt. Kies daarom een moment dat minstens 2 dagen vooruit ligt, zodat alles op tijd klaarstaat. Het gedrukte boek heeft een eigen bezorgtijd.</p></details>
+      <details><summary data-t="q5">Kan ik de reis met een fysiek boek geven?</summary><p data-t="a5">Ja. Met "De complete reis met boek" (€59,90 + verzendkosten) wordt de Blueprint na je bestelling gedrukt als gelijmd boek en apart naar het adres van de ontvanger gestuurd. Het verzendadres vul je in bij het afrekenen. De digitale versie komt op het moment dat jij kiest per e-mail.</p></details>
+    </div>
+  </section>
 
-    const T = LANG === 'en' ? {
-      title: 'SZINN — Gift a Blueprint',
-      eyebrow: 'Gift',
-      h1: 'Gift a SZINN Alignment Blueprint',
-      lead: 'Give someone a deeply personal mirror — woven from astrology, numerology and Kabbalah, made just for them.',
-      once: 'one-off',
-      f1: 'A complete, personal Alignment Blueprint',
-      f2: "You only fill in the recipient's name, email address and birth details",
-      f3: 'You choose the day the gift is delivered',
-      f4: 'That day the recipient receives an email with their login details and the Blueprint',
-      pay: 'Continue to payment →',
-      back: 'Back',
-      mock: 'Test mode: no Stripe key is set yet, so the payment is simulated. Once STRIPE_SECRET_KEY is filled in, this button goes to the real Stripe payment page.',
-      h2: 'When should the gift arrive?',
-      p1: "Payment successful. Choose the day the recipient gets the email. Then you fill in the recipient's details.",
-      lMsg: 'Personal message',
-      lDate: 'Delivery date',
-      phMsg: 'A few words to go with the gift (optional)',
-      hint: 'Choose today to send right away (as soon as the Blueprint is ready), or a date in the future.',
-      send: "Next: the recipient's details →",
-      sending: 'One moment…',
-      wait: 'One moment…',
-      payErr: 'Payment could not be started.',
-      generic: 'Something went wrong. Please try again.',
-      genericShort: 'Something went wrong.',
-    } : {
-      title: 'SZINN — Geef een Blueprint cadeau',
-      eyebrow: 'Cadeau',
-      h1: 'Geef een SZINN Alignment Blueprint',
-      lead: 'Schenk iemand een diep persoonlijke spiegel — geweven uit astrologie, numerologie en Kabbalah, speciaal voor hen gemaakt.',
-      once: 'eenmalig',
-      f1: 'Een volledige, persoonlijke Alignment Blueprint',
-      f2: 'Jij vult alleen naam, e-mailadres en geboortegegevens van de ontvanger in',
-      f3: 'Kies zelf op welke dag het cadeau bezorgd wordt',
-      f4: 'De ontvanger krijgt die dag een e-mail met inloggegevens en de Blueprint',
-      pay: 'Ga naar betaling →',
-      back: 'Terug',
-      mock: 'Testmodus: er is nog geen Stripe-sleutel ingesteld, dus de betaling wordt gesimuleerd. Zodra STRIPE_SECRET_KEY is ingevuld, gaat deze knop naar de echte Stripe-betaalpagina.',
-      h2: 'Wanneer mag het cadeau aankomen?',
-      p1: 'Betaling geslaagd. Kies de dag waarop de ontvanger de e-mail krijgt. Daarna vul je de gegevens van de ontvanger in.',
-      lMsg: 'Persoonlijk bericht',
-      lDate: 'Bezorgdatum',
-      phMsg: 'Een paar woorden die met het cadeau meegaan (optioneel)',
-      hint: 'Kies vandaag om direct te versturen (zodra de Blueprint klaar is), of een datum in de toekomst.',
-      send: 'Verder: gegevens van de ontvanger →',
-      sending: 'Even geduld…',
-      wait: 'Even geduld…',
-      payErr: 'Betaling kon niet worden gestart.',
-      generic: 'Er ging iets mis. Probeer het opnieuw.',
-      genericShort: 'Er ging iets mis.',
-    };
+  <section class="gclose">
+    <div class="wrap">
+      <h2 data-t="closeH">Een cadeau om jezelf te herinneren.</h2>
+      <a class="gbtn" href="#kies" data-t="cta2">Geef de SZINN ervaring →</a>
+    </div>
+  </section>
+  <div class="gfoot" data-t="foot">SZINN.AI · Herinner wie je bent.</div>
+</main>
 
-    const $ = id => document.getElementById(id);
+<script src="/szinn-portal/js/auth.js"></script>
+<script>
+// Taal uit het pad: /nl/cadeau = NL, /gift = EN (zelfde structuur als de rest van de site).
+const LANG = /^\/nl(\/|$)/.test(location.pathname) ? 'nl' : 'en';
+document.documentElement.lang = LANG;
+const $ = id => document.getElementById(id);
 
-    if (LANG === 'en') {
-      document.title = T.title;
-      const txt = { gEyebrow: T.eyebrow, gH1: T.h1, gLead: T.lead, gOnce: T.once, gF1: T.f1, gF2: T.f2,
-        gF3: T.f3, gF4: T.f4, btnPay: T.pay, gBack: T.back, gH2: T.h2, gP1: T.p1,
-        gLMsg: T.lMsg, gLDate: T.lDate, gHint: T.hint, btnSend: T.send, mockNote: T.mock };
-      for (const id in txt) { const el = $(id); if (el) el.textContent = txt[id]; }
-      $('message').placeholder = T.phMsg;
-      $('priceVal').textContent = '39.90';
+// Twee cadeauopties. Prijzen alleen ter weergave; de server bepaalt het echte bedrag.
+const ROUTES = {
+  2: { price: { nl: '39,90', en: '39.90' }, book: false },
+  3: { price: { nl: '59,90', en: '59.90' }, book: true  },
+};
+
+const TX = {
+  nl: {
+    title: 'SZINN — Geef een reis naar jezelf cadeau',
+    once: 'eenmalig', onceShip: 'eenmalig + verzendkosten',
+    pay: 'Ga naar betaling →', wait: 'Even geduld…',
+    send: 'Verder: gegevens van de ontvanger →', sending: 'Even geduld…',
+    badge: { 2: 'Jij maakt het persoonlijk', 3: 'De complete reis met boek' },
+    phMsg: 'Een paar woorden die met het cadeau meegaan (optioneel)',
+    payErr: 'Betaling kon niet worden gestart.', generic: 'Er ging iets mis. Probeer het opnieuw.', genericShort: 'Er ging iets mis.',
+    mock: 'Testmodus: er is nog geen Stripe-sleutel ingesteld, dus de betaling wordt gesimuleerd. Zodra STRIPE_SECRET_KEY is ingevuld, gaat deze knop naar de echte Stripe-betaalpagina.',
+  },
+  en: {
+    title: 'SZINN — Give a journey to yourself as a gift',
+    once: 'one-off', onceShip: 'one-off + shipping',
+    pay: 'Continue to payment →', wait: 'One moment…',
+    send: "Next: the recipient's details →", sending: 'One moment…',
+    badge: { 2: 'You make it personal', 3: 'The complete journey with book' },
+    phMsg: 'A few words to go with the gift (optional)',
+    payErr: 'Payment could not be started.', generic: 'Something went wrong. Please try again.', genericShort: 'Something went wrong.',
+    mock: 'Test mode: no Stripe key is set yet, so the payment is simulated. Once STRIPE_SECRET_KEY is filled in, this button goes to the real Stripe payment page.',
+  },
+};
+const T = TX[LANG];
+
+// Engelse teksten per data-t (NL staat in de HTML).
+const EN = {
+  nIns: 'Insights', nAbout: 'Who we are', nProd: 'Products', nDaily: 'Daily Integration', nGiftDd: 'Give as a gift', nGift: 'Gift', nFaq: 'FAQ',
+  nAi1: 'What is the SZINN Companion?', nAi2: 'How SZINN uses AI', nAi3: 'Privacy & your data', nPortal: 'My portal', nCta: 'Give a gift',
+  eyebrow: 'SZINN Alignment Experience', h1: 'Give a journey to yourself as a gift.',
+  lead: 'A personal journey to who you are. With their own Alignment Blueprint, 11 days of Daily Integration and the SZINN Companion, an AI guide that has read the Blueprint.',
+  cta: 'Give the SZINN experience →', cta2: 'Give the SZINN experience →',
+  pline: 'Digital €39.90 (normally €69.90) · With printed book €59.90 + shipping · One-off, no subscription',
+  pillH: 'Recognise. Deepen. Live.',
+  p1h: 'Your Alignment Blueprint', p1p: 'How you work, what you feel and what keeps coming back, through astrology, numerology and Tikkun. In 13 personal sections.',
+  p2h: '11 days of Daily Integration', p2p: 'A short WhatsApp message every morning and evening, from your own chart.',
+  p3h: 'SZINN Companion AI', p3p: 'An AI guide that has read your Blueprint and answers from your own chart.',
+  note: 'Integration and Companion are included for 11 days with every gift option.', note2: 'Integration and Companion are included for 11 days with every gift option.',
+  moreH: 'You give so much more than a book.',
+  moreP: 'You give space to pause. To recognise yourself, ask new questions and discover what fits you. Not a prediction, but a mirror.',
+  jourH: 'From insight to experience.',
+  j1h: 'Discover your Blueprint', j1p: 'A personal insight into who you are.',
+  j2h: 'Explore with your Companion', j2p: 'Ask questions and deepen your insights.',
+  j3h: 'Bring it into your life', j3p: 'Take your insights into your daily life.',
+  intEy: '11 days included', intH: 'From insight to daily life.', intQ: 'Discovering who you are is the beginning. Living it is the journey.',
+  intP: 'With Daily Integration you take the insights from your Blueprint into your day. Every morning and evening you receive a short WhatsApp invitation to pause, to feel and to choose consciously.',
+  intP2: 'Step by step, you discover what fits you, right in the middle of life.', intTag: 'Two moments for yourself. Every day again.',
+  fWa: 'via WhatsApp', f1: '2× a day', f2: '± 1 minute', f3: '11 days included', waSub: 'via WhatsApp',
+  w1: 'Good morning ✦ Your Moon in Scorpio asks for depth today. What is your intention for today?', w2: 'How was your day? Did you feel your intention, and what do you want to create tomorrow?',
+  compEy: '11 days included', compH: 'Meet the SZINN Companion.',
+  compP: 'The Blueprint is the starting point. The Companion is an AI guide that has read the Blueprint and helps go deeper: why a pattern keeps coming back, what a placement means, or what to do with it this week. Always from your own chart.',
+  compEm: 'More than answers. A deeper conversation.',
+  ch1: 'Why does this pattern keep coming back?', ch2: 'How can I work with this now?', ch3: 'What does this mean for my relationship?', ch4: 'What is this situation asking me to recognise?', chNote: 'Examples of questions the recipient can ask.',
+  revH: 'What others experience.', revAll: 'Read all reviews →',
+  r1: '"The confirmation was especially valuable: things I had always felt but could never quite place now had meaning."',
+  r2: '"It helps me recognise patterns, make more conscious choices and understand where my energy wants to go."',
+  r3: '"By allowing my emotions and making choices from my heart, big shifts happened in my life."',
+  optH: 'Choose how you give the journey.',
+  c2h: 'You make it personal', c2was: '€69.90', c2pr: '€39.90', c2nt: 'You fill in the birth details and choose when it is sent.',
+  c3h: 'The complete journey with book', c3was: '€89.90', c3pr: '€59.90', c3ship: '+ shipping', c3nt: 'A premium, personal book of around 60 pages, with their name on the cover.',
+  incBp2: 'Alignment Blueprint, 13 sections', incInt2: '11 days of Daily Integration', incAi2: '11 days of SZINN Companion', inc482: 'At the moment you choose',
+  incBp3: 'Alignment Blueprint, 13 sections', incInt3: '11 days of Daily Integration', incAi3: '11 days of SZINN Companion', incBook: 'Including a personal printed book',
+  pick2: 'Choose this gift', pick3: 'Choose this gift',
+  gH2a: 'Choose your gift', gFormIntro: 'There are two ways to give a Blueprint. Choose what suits you and the recipient.',
+  gR2t: 'You make it personal', gR2p: 'You know the date, time and place of birth. The Blueprint lands in their inbox at the moment you choose.', gR2s: 'digital', pr2: '39.90',
+  gR3t: 'The complete journey with book', gR3p: 'Everything from the previous option, plus the Blueprint as a printed book, sent to their address. You enter the shipping address at checkout.', gR3s: '+ shipping', pr3: '59.90',
+  gLock: "Step 1 of 3: complete the payment. Then you choose the moment and fill in the recipient's details.", gBack: 'Back',
+  gH2: 'When should the gift arrive?', gP1: "Payment successful. Choose the day the recipient gets the email. Then you fill in the recipient's details.",
+  gLDate: 'Delivery date', gHint: 'The Blueprint is made within 48 hours, so choose a moment at least 2 days ahead. For example Christmas Eve.', gLMsg: 'Personal message',
+  howH: 'How giving the SZINN experience works.',
+  h1h: 'Choose your gift', h1p: 'Choose the gift option that suits you and the recipient, and pay.',
+  h2h: 'Choose the moment', h2p: 'Choose when the gift e-mail is sent and add a personal message.',
+  h3h: 'Fill in the details', h3p: "You fill in the recipient's birth details. We make the Blueprint; the book has its own delivery time.",
+  faqH: 'Good to know.',
+  q1: 'What exactly does the recipient get?', a1: 'A personal digital Alignment Blueprint in 13 sections: the astrological analysis, the numerology profile, the Tikkun themes and the patterns that connect all three, with practical insight for daily life. Plus 11 days of Daily Integration and 11 days of the SZINN Companion. With the complete journey, the printed book with their own name on the cover is added.',
+  q2: 'What can I do with the SZINN Companion AI?', a2: "The Companion is an AI guide that has read the recipient's Blueprint. Ask why a pattern keeps coming back, what a placement means or what to do with it this week; the Companion answers from their own chart. The first 11 days are included. After that the recipient chooses whether to continue, for example with the SZINN Community (€23.69 per month), which includes the Companion and Daily Integration.",
+  q3: 'What do the 11 days of integration include?', a3: 'Eleven days of a short WhatsApp message every morning and evening, with one question from their own chart: which energy am I working with today, what is my intention, did I live consciously, what do I want to create tomorrow. That way the insights do not stay on paper but land in daily life. After that, Daily Integration can continue on its own for €3.69 per month.',
+  q4: 'Which birth details are needed?', a4: 'The full name as on the birth certificate, the date, time and place of birth. If the time is unknown, SZINN calculates with 12:00 noon and the Blueprint explains what that means.',
+  q6: 'When does the gift arrive?', a6: 'The Blueprint is made within 48 hours. So choose a moment at least 2 days ahead, so everything is ready in time. The printed book has its own delivery time.',
+  q5: 'Can I give the journey with a printed book?', a5: 'Yes. With "The complete journey with book" (€59.90 + shipping) the Blueprint is printed as a glued book after your order and sent separately to the recipient\'s address. You enter the shipping address at checkout. The digital version arrives by e-mail at the moment you choose.',
+  closeH: 'A gift to remember yourself.', foot: 'SZINN.AI · Remember who you are.',
+};
+if (LANG === 'en') {
+  document.title = T.title;
+  document.querySelector('meta[name=description]').content = 'Give someone a personal Alignment Blueprint, with 11 days of Daily Integration and the SZINN Companion. Digital or with a printed book.';
+  document.querySelectorAll('[data-t]').forEach(el => { const v = EN[el.dataset.t]; if (v) el.textContent = v; });
+  document.querySelectorAll('[data-en]').forEach(a => a.setAttribute('href', a.dataset.en));
+  $('message').placeholder = T.phMsg;
+}
+$('btnPay').textContent = T.pay;
+$('btnSend').textContent = T.send;
+$('mockNote').textContent = T.mock;
+document.querySelectorAll('.snav [data-lang]').forEach(a => a.classList.toggle('on', a.dataset.lang === LANG));
+$('burger').addEventListener('click', function () { const m = $('menu'); m.classList.toggle('open'); this.setAttribute('aria-expanded', m.classList.contains('open')); });
+$('menu').querySelectorAll('a[href^="#"]').forEach(a => a.addEventListener('click', () => $('menu').classList.remove('open')));
+// Portaal-link toont Dashboard als de bezoeker al is ingelogd (zoals op de homepage).
+fetch('/api/auth/me', { credentials: 'same-origin' }).then(r => { if (r.ok) { const e = $('nav-portal-link'); e.querySelector('span').textContent = e.dataset.dash; e.href = '/portaal'; } }).catch(() => {});
+
+let route = 2;
+let paidToken = null;
+const showPayErr = (msg) => { const e = $('payErr'); e.textContent = msg; e.classList.add('show'); };
+
+function setRoute(n) {
+  route = ROUTES[n] ? +n : 2;
+  document.querySelectorAll('.groute').forEach(el => {
+    const on = +el.dataset.route === route;
+    el.classList.toggle('on', on);
+    el.querySelector('input').checked = on;
+  });
+  document.querySelectorAll('.gocard').forEach(c => c.classList.toggle('on', +c.dataset.route === route));
+  $('priceVal').textContent = ROUTES[route].price[LANG];
+  $('gOnce').textContent = ROUTES[route].book ? T.onceShip : T.once;
+  $('routeBadge').textContent = T.badge[route];
+  try { sessionStorage.setItem('szinn_gift_route', String(route)); } catch (e) {}
+}
+document.querySelectorAll('.groute input').forEach(i => i.addEventListener('change', () => setRoute(i.value)));
+document.querySelectorAll('[data-pick]').forEach(btn => btn.addEventListener('click', () => {
+  if ($('p0').classList.contains('on')) setRoute(btn.dataset.pick);
+  $('giftPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}));
+
+function step(n) {
+  [0,1].forEach(i => $('p'+i).classList.toggle('on', i === n));
+  [0,1,2].forEach(i => $('gs'+i).classList.toggle('on', i <= n));
+  $('giftPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Standaard verzenddatum = over 2 dagen (blueprint binnen 48 uur); niet eerder te kiezen.
+(function () {
+  const d = new Date(); d.setDate(d.getDate() + 2);
+  const min = d.toISOString().slice(0, 10);
+  $('sendDate').value = min; $('sendDate').min = min;
+})();
+
+// Terug van Stripe (?gift_session=…&route=…) of van de login (?route=…).
+(function () {
+  const qs = new URLSearchParams(location.search);
+  let saved = qs.get('route');
+  try { saved = saved || sessionStorage.getItem('szinn_gift_route'); } catch (e) {}
+  setRoute(saved || 2);
+  const sid = qs.get('gift_session');
+  if (!sid) { if (qs.get('route')) setTimeout(() => $('giftPanel').scrollIntoView({ block: 'start' }), 50); return; }
+  // Een Stripe-betaallink heeft één vaste terugkeer-URL; landt de koper in de verkeerde taal, dan door naar de juiste.
+  let want = null; try { want = sessionStorage.getItem('szinn_gift_lang'); } catch (e) {}
+  if (want && want !== LANG) { location.replace((want === 'nl' ? '/nl/cadeau' : '/gift') + location.search); return; }
+  paidToken = sid;
+  history.replaceState(null, '', location.pathname);
+  step(1);
+})();
+
+// Stap 1 → betaling (inloggen vereist: het cadeau hangt aan het account van de gever).
+$('btnPay').addEventListener('click', async () => {
+  $('btnPay').disabled = true;
+  $('btnPay').textContent = T.wait;
+  history.replaceState(null, '', location.pathname + '?route=' + route);
+  try { sessionStorage.setItem('szinn_gift_lang', LANG); } catch (e) {}
+  if (!(await SzinnAuth.requireAuth())) return; // stuurt door naar de login met ?next=
+  try {
+    const r = await fetch('/api/gift/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ route, lang: LANG }) });
+    const data = await r.json();
+    if (r.ok && data.url) { window.location.href = data.url; return; }      // echte Stripe
+    if (r.ok && data.mock) {                                                // testmodus (alleen lokaal)
+      paidToken = data.paidToken;
+      $('mockNote').style.display = 'block';
+      setTimeout(() => step(1), 500);
+      return;
     }
+    showPayErr(data.error || T.payErr);
+  } catch (e) { showPayErr(T.generic); }
+  $('btnPay').disabled = false;
+  $('btnPay').textContent = T.pay;
+});
 
-    SzinnAuth.requireAuth().then(ok => { if (ok) SzinnNav.updateUserInfo(); });
-
-    let paidToken = null;
-    const showPayErr = (msg) => { const e = $('payErr'); e.textContent = msg; e.style.display = 'block'; };
-
-    function step(n) {
-      [0,1].forEach(i => $('p'+i).classList.toggle('on', i === n));
-      [0,1,2].forEach(i => $('gs'+i).classList.toggle('on', i <= n));
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // Standaard verzenddatum = vandaag; niet in het verleden te kiezen.
-    (function () {
-      const today = new Date().toISOString().slice(0, 10);
-      const d = $('sendDate');
-      d.value = today; d.min = today;
-    })();
-
-    // Terug van Stripe (?gift_session=…): betaling gelukt → door naar de datum-stap.
-    (function () {
-      const sid = new URLSearchParams(location.search).get('gift_session');
-      if (!sid) return;
-      paidToken = sid;
-      history.replaceState(null, '', location.pathname);
-      step(1);
-    })();
-
-    // Stap 1 → betaling
-    $('btnPay').addEventListener('click', async () => {
-      $('btnPay').disabled = true;
-      $('btnPay').textContent = T.wait;
-      try {
-        const r = await fetch('/api/gift/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: '{}' });
-        const data = await r.json();
-        if (r.ok && data.url) { window.location.href = data.url; return; }      // echte Stripe
-        if (r.ok && data.mock) {                                                // testmodus
-          paidToken = data.paidToken;
-          if (data.price) $('priceVal').textContent = data.price;
-          $('mockNote').style.display = 'block';
-          setTimeout(() => step(1), 500);
-          return;
-        }
-        showPayErr(data.error || T.payErr);
-      } catch (e) { showPayErr(T.generic); }
-      $('btnPay').disabled = false;
-      $('btnPay').textContent = T.pay;
+// Stap 2 → cadeau aanmaken, dan door naar stap 1 van de intake (gegevens van de ontvanger)
+$('btnSend').addEventListener('click', async () => {
+  $('e-form').classList.remove('show');
+  $('btnSend').disabled = true;
+  $('btnSend').textContent = T.sending;
+  try {
+    const r = await fetch('/api/gift/create', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+      body: JSON.stringify({ route, message: $('message').value.trim(), sendDate: $('sendDate').value, lang: LANG, paidToken }),
     });
-
-    // Stap 2 → cadeau aanmaken, dan door naar stap 1 van de intake (gegevens van de ontvanger)
-    $('btnSend').addEventListener('click', async () => {
-      $('e-form').classList.remove('show');
-      $('btnSend').disabled = true;
-      $('btnSend').textContent = T.sending;
-      try {
-        const r = await fetch('/api/gift/create', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
-          body: JSON.stringify({ message: $('message').value.trim(), sendDate: $('sendDate').value, lang: LANG, paidToken }),
-        });
-        const data = await r.json();
-        if (r.ok && data.ok && data.next) { window.location.href = data.next; return; }
-        $('e-form').textContent = data.error || T.genericShort;
-        $('e-form').classList.add('show');
-      } catch (e) {
-        $('e-form').textContent = T.generic;
-        $('e-form').classList.add('show');
-      }
-      $('btnSend').disabled = false;
-      $('btnSend').textContent = T.send;
-    });
-  </script>
+    const data = await r.json();
+    if (r.ok && data.ok && data.next) { window.location.href = data.next; return; }
+    $('e-form').textContent = data.error || T.genericShort;
+    $('e-form').classList.add('show');
+  } catch (e) {
+    $('e-form').textContent = T.generic;
+    $('e-form').classList.add('show');
+  }
+  $('btnSend').disabled = false;
+  $('btnSend').textContent = T.send;
+});
+</script>
 </body>
 </html>

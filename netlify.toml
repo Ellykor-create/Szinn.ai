@@ -90,10 +90,19 @@
   from = "/portaal/journey/*"
   to = "/szinn-portal/journey/:splat"
   status = 200
+# Cadeaupagina: NL op /nl/cadeau, EN op /gift (één bestand, taal uit het pad).
 [[redirects]]
-  from = "/cadeau"
+  from = "/nl/cadeau"
   to = "/szinn-portal/pages/gift.html"
   status = 200
+[[redirects]]
+  from = "/gift"
+  to = "/szinn-portal/pages/gift.html"
+  status = 200
+[[redirects]]
+  from = "/cadeau"
+  to = "/nl/cadeau"
+  status = 301
 [[redirects]]
   from = "/cadeau/verzilveren"
   to = "/intake/index.html"
@@ -118,7 +127,7 @@
   status = 301
 [[redirects]]
   from = "/szinn-portal/pages/gift.html"
-  to = "/cadeau"
+  to = "/nl/cadeau"
   status = 301
 
 [[redirects]]
@@ -187,11 +196,6 @@
 [[redirects]]
   from   = "/companion-ai"
   to     = "/ai"
-  status = 301
-
-[[redirects]]
-  from   = "/gift"
-  to     = "/cadeau"
   status = 301
 
 
