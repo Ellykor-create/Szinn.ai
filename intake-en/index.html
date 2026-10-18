@@ -1892,6 +1892,25 @@ function giftDateText(en) {
   }
   return en ? 'today, as soon as it is ready' : 'vandaag, zodra hij klaar is';
 }
+// Cadeau met boek: twee pagina's. Stap 1 = gegevens, stap 2 = akkoord (disclaimer +
+// vinkjes); de open vragen vallen weg en het bezorgadres komt uit Stripe.
+function giftBookStep2(consent, btn, en) {
+  var sec1 = document.getElementById('section-1');
+  sec1.innerHTML =
+    '<p class="section-eyebrow">' + (en ? 'Step 2 — Approval' : 'Stap 2 — Akkoord') + '</p>' +
+    '<h2 class="section-title">' + (en ? 'Almost <em>done</em>' : 'Bijna <em>klaar</em>') + '</h2>' +
+    '<p class="section-intro">' + (en ? 'Check the boxes below. The Blueprint is then made and printed as a book.' : 'Vink hieronder alles aan. Daarna wordt de Blueprint gemaakt en als boek gedrukt.') + '</p>' +
+    '<div class="nav"></div>';
+  var nav1 = sec1.querySelector('.nav');
+  var disc = document.querySelector('.disclaimer-box');
+  if (disc) sec1.insertBefore(disc, nav1);
+  if (consent) sec1.insertBefore(consent, nav1);
+  var back = document.createElement('button');
+  back.className = 'btn btn-back'; back.textContent = en ? '← Back' : '← Terug';
+  back.onclick = function () { prevSection(1); };
+  nav1.appendChild(back); nav1.appendChild(btn);
+  delete SECTION_TEXTAREAS[1];
+}
 function enterGiftMode(gift) {
   window.GIFT = gift;
   var en = lang === 'en';
@@ -1900,9 +1919,8 @@ function enterGiftMode(gift) {
   var nav0 = sec0.querySelector('.nav');
   var consent = document.querySelector('.consent-block');
   var btn = document.getElementById('submit-btn');
-  nav0.innerHTML = '';
-  if (consent) sec0.insertBefore(consent, nav0);
-  nav0.appendChild(btn);
+  if (gift.format === 'book') giftBookStep2(consent, btn, en);
+  else { nav0.innerHTML = ''; if (consent) sec0.insertBefore(consent, nav0); nav0.appendChild(btn); }
   var bn = btn.querySelector('.nl-text'), be = btn.querySelector('.en-text');
   if (bn) bn.innerHTML = 'Cadeau afronden &rarr;';
   if (be) be.innerHTML = 'Finish gift &rarr;';
@@ -1949,7 +1967,7 @@ function showThankYou() {
 
 function submitForm() {
   // The open questions of the final step are required too.
-  if (!validate(window.GIFT ? 0 : 7)) return;
+  if (!validate(window.GIFT ? (window.GIFT.format === 'book' ? 1 : 0) : 7)) return;
 
   const c1 = document.getElementById('consent-verwerking').checked;
   const c2 = document.getElementById('consent-disclaimer').checked;

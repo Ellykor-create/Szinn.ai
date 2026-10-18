@@ -993,7 +993,7 @@ async function intakeAccess(req, db, { sessionId, code } = {}) {
     // Direct na /api/gift/create opent de koper de intake; Blobs is eventually consistent,
     // dus het verse cadeau kan nog ontbreken. Even opnieuw lezen i.p.v. naar de betaallink sturen.
     for (let i = 0; !g && i < 4; i++) { await new Promise(r => setTimeout(r, 750)); g = find(await loadDB()); }
-    if (g && !g.redeemed_at) return { ok: true, code: g.code, fresh: true, gift: g.status === 'awaiting_intake' ? { sendDate: g.send_date, lang: g.lang } : null };
+    if (g && !g.redeemed_at) return { ok: true, code: g.code, fresh: true, gift: g.status === 'awaiting_intake' ? { sendDate: g.send_date, lang: g.lang, format: g.format || 'digital' } : null };
   }
   // Boekbetaling ook vóór admin/concept: anders verliest een ingelogde koper de boekmodus.
   const paid = await paidSession(db, sessionId);
