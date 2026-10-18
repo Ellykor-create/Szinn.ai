@@ -20,7 +20,8 @@ exports.handler = async (event) => {
   let payload = {};
   try { payload = JSON.parse(event.body || '{}'); } catch {}
   const { orderId, book, email, name, secret } = payload;
-  if (secret !== SECRET()) return { statusCode: 403, body: 'forbidden' };
+  if (secret !== SECRET()) { console.error(`print-book: ongeldige trigger voor ${orderId}`); return { statusCode: 403, body: 'forbidden' }; }
+  console.log(`${orderId}: boek naar Print&Bind (${book?.pages} pagina's, ${book?.address?.country})`);
   // book/email komen mee in de payload: Blobs is eventually consistent, de db hier kan
   // de zojuist opgeslagen paginatelling nog missen. Dubbel plaatsen weigert Print&Bind
   // zelf (reference = orderId is uniek), dus de pb_order_id-check is alleen een kortsluiting.
