@@ -299,17 +299,22 @@ async function adminLogin() {
   const r  = await fetch('/api/admin/login', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ email, password: pw }) });
   if (r.ok) {
     document.getElementById('login-err').textContent = '';
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'block';
-    loadOrders();
-    loadUsers();
-    loadFeedback();
-    loadPromptSettings();
+    showApp();
   } else {
     const data = await r.json().catch(() => ({}));
     document.getElementById('login-err').textContent = data.error || 'Onjuist e-mailadres of wachtwoord';
   }
 }
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadOrders();
+  loadUsers();
+  loadFeedback();
+  loadPromptSettings();
+}
+// Na een refresh: de sessiecookie (7 dagen) is er nog, dus direct het portaal tonen.
+fetch('/api/admin/orders').then(r => { if (r.ok) showApp(); }).catch(() => {});
 document.getElementById('admin-email').addEventListener('keydown', e => { if (e.key === 'Enter') document.getElementById('admin-pw').focus(); });
 document.getElementById('admin-pw').addEventListener('keydown', e => { if (e.key === 'Enter') adminLogin(); });
 
