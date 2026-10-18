@@ -45,6 +45,7 @@ nav{position:sticky;top:0;z-index:80;background:rgba(250,246,240,.97);backdrop-f
 .brand-t b{font-family:var(--serif);font-size:22px;letter-spacing:.14em;color:var(--ink);font-weight:500}
 .brand-t i{font-style:normal;font-size:8px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold-d);margin-top:6px;font-weight:600}
 .menu{display:flex;gap:26px;margin-left:auto;align-items:center}
+@media(max-width:1240px){.menu{gap:16px}}
 .menu a{font-size:14.5px;color:#2A2622;text-decoration:none;transition:color .2s;padding:10px 0;white-space:nowrap}
 .menu a:hover,.menu a.here{color:var(--gold-d)}
 .menu a .cv{font-size:9px;opacity:.5;margin-left:5px;vertical-align:1px}
@@ -247,7 +248,7 @@ footer{background:#140F0A;color:rgba(247,242,234,.66);font-size:14px;line-height
 .f-bar .cp{color:rgba(247,242,234,.5)}
 
 /* ── MOBIEL ──────────────────────────────── */
-@media(max-width:1000px){
+@media(max-width:1080px){
   .menu{display:none}
   .menu.open{display:flex;position:absolute;top:100%;left:0;right:0;background:rgba(250,246,240,.99);flex-direction:column;
     align-items:stretch;gap:0;padding:8px 0 20px;border-bottom:1px solid rgba(20,18,16,.10);box-shadow:0 18px 30px rgba(20,18,16,.10)}
@@ -359,6 +360,7 @@ footer{background:#140F0A;color:rgba(247,242,234,.66);font-size:14px;line-height
       <a href="/insights">Insights</a>
       <a href="/about">Who we are</a>
       <a href="/products">Products<span class="cv" aria-hidden="true">&#9662;</span></a>
+      <a href="/gift">Gift</a>
       <a href="/events">Events</a>
       <a href="/#faq">FAQ</a>
       <a href="/ai">AI<span class="cv" aria-hidden="true">&#9662;</span></a>
@@ -887,5 +889,6 @@ burger.addEventListener('click', function(){
   burger.setAttribute('aria-expanded', open ? 'true' : 'false');
 });
 </script>
+<script>try{localStorage.setItem("szinn_lang",document.documentElement.lang.slice(0,2))}catch(e){}</script><!-- taal onthouden voor terugkeer van Stripe (zie intake/index.html) -->
 </body>
 </html>

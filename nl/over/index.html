@@ -65,6 +65,7 @@
       <li><a href="/nl/over" aria-current="page">Wie we zijn</a></li>
       <li class="has"><a href="/nl/producten" aria-haspopup="true">Producten</a>
         <div class="dd"><a href="/nl/producten/alignment-blueprint">Alignment Blueprint</a><a href="/nl/producten/dagelijkse-integratie">Dagelijkse Integratie</a><a href="/nl/ai#companion">SZINN Companion</a><a href="/nl/producten/community">Community</a></div></li>
+      <li><a href="/nl/cadeau">Cadeau</a></li>
       <li><a href="/nl/events">Events</a></li>
       <li><a href="#faq">Vragen</a></li>
       <li class="has"><a href="/nl/ai" aria-haspopup="true">AI</a>
@@ -104,5 +105,6 @@ fetch('/api/auth/me',{credentials:'same-origin'}).then(function(r){
     if(e){e.querySelector('span').textContent=e.dataset.dash;e.href='/szinn-portal/pages/dashboard.html';}}
 }).catch(function(){});
 </script>
+<script>try{localStorage.setItem("szinn_lang",document.documentElement.lang.slice(0,2))}catch(e){}</script><!-- taal onthouden voor terugkeer van Stripe (zie intake/index.html) -->
 </body>
 </html>

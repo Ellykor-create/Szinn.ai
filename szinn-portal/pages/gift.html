@@ -37,6 +37,7 @@
     .snav .brand img{display:block}.snav .brand img.mark{width:38px}.snav .brand img.word{width:104px}
     .snav .brand small{display:block;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:#A8884A;font-weight:600;margin-top:2px}
     .snav ul{display:flex;gap:26px;list-style:none;font-size:13.5px;font-weight:500;align-items:center;margin:0;padding:0}
+    .snav ul a{white-space:nowrap}@media(max-width:1240px){.snav ul{gap:16px}}
     .snav ul>li{position:relative}
     .snav ul a:hover{color:#A8884A}
     .snav li.has>a::after{content:"⌄";margin-left:5px;color:#A8884A}
@@ -470,6 +471,11 @@
 <script>
 // Taal uit het pad: /nl/cadeau = NL, /gift = EN (zelfde structuur als de rest van de site).
 const LANG = /^\/nl(\/|$)/.test(location.pathname) ? 'nl' : 'en';
+// De boek-betaallink keert altijd terug op /nl/cadeau: wie Engels koos, terug naar /gift.
+try {
+  if (LANG === 'nl' && localStorage.getItem('szinn_lang') === 'en' && new URLSearchParams(location.search).has('gift_session')) location.replace('/gift' + location.search);
+  else localStorage.setItem('szinn_lang', LANG);
+} catch (e) {}
 document.documentElement.lang = LANG;
 const $ = id => document.getElementById(id);
 

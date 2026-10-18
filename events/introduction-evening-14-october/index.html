@@ -94,6 +94,7 @@ h1,h2,h3{font-family:var(--serif);font-weight:500;line-height:1.08;letter-spacin
 .nav .brand img.word{width:104px}
 .nav .brand small{display:block;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:#A8884A;font-weight:600;margin-top:2px}
 .nav ul{display:flex;gap:26px;list-style:none;font-size:13.5px;font-weight:500;align-items:center;margin:0;padding:0}
+.nav ul a{white-space:nowrap}@media(max-width:1240px){.nav ul{gap:16px}}
 .nav ul>li{position:relative}
 .nav ul a:hover{color:#A8884A}
 .nav li.has>a::after{content:"⌄";margin-left:5px;color:#A8884A}
@@ -276,6 +277,7 @@ footer a{color:var(--gold);text-decoration:none}
       <li><a href="/about">Who we are</a></li>
       <li class="has"><a href="/products" aria-haspopup="true">Products</a>
         <div class="dd"><a href="/products/alignment-blueprint">Alignment Blueprint</a><a href="/products/daily-integration">Daily Integration</a><a href="/ai#companion">SZINN Companion</a><a href="/products/community">Community</a></div></li>
+      <li><a href="/gift">Gift</a></li>
       <li><a href="/events" aria-current="page">Events</a></li>
       <li><a href="/#faq">FAQ</a></li>
       <li class="has"><a href="/ai" aria-haspopup="true">AI</a>
@@ -435,5 +437,6 @@ fetch(PLEK_API,{cache:'no-store'}).then(function(r){return r.ok?r.json():null}).
   if(retry) retry.addEventListener('click', function(e){ e.preventDefault(); box.classList.remove('is-sent'); });
 })();
 </script>
+<script>try{localStorage.setItem("szinn_lang",document.documentElement.lang.slice(0,2))}catch(e){}</script><!-- taal onthouden voor terugkeer van Stripe (zie intake/index.html) -->
 </body>
 </html>

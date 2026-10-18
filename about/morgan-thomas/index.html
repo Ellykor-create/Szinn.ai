@@ -111,6 +111,7 @@
       <li><a href="/about" aria-current="page">Who we are</a></li>
       <li class="has"><a href="/products" aria-haspopup="true">Products</a>
         <div class="dd"><a href="/products/alignment-blueprint">Alignment Blueprint</a><a href="/products/daily-integration">Daily Integration</a><a href="/ai#companion">SZINN Companion</a><a href="/products/community">Community</a></div></li>
+      <li><a href="/gift">Gift</a></li>
       <li><a href="/events">Events</a></li>
       <li><a href="#faq">FAQ</a></li>
       <li class="has"><a href="/ai" aria-haspopup="true">AI</a>
@@ -160,5 +161,6 @@ fetch('/api/auth/me',{credentials:'same-origin'}).then(function(r){
     if(e){e.querySelector('span').textContent=e.dataset.dash;e.href='/szinn-portal/pages/dashboard.html';}}
 }).catch(function(){});
 </script>
+<script>try{localStorage.setItem("szinn_lang",document.documentElement.lang.slice(0,2))}catch(e){}</script><!-- taal onthouden voor terugkeer van Stripe (zie intake/index.html) -->
 </body>
 </html>

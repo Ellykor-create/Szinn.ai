@@ -144,6 +144,7 @@ h2{font-size:42px}
 .brand{display:flex;align-items:center;gap:10px}.brand img.mark{width:38px}.brand img.word{width:104px}
 .brand small{display:block;font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold2);font-weight:600;margin-top:2px}
 .nav ul{display:flex;gap:26px;list-style:none;font-size:13.5px;font-weight:500;align-items:center}
+.nav ul a{white-space:nowrap}@media(max-width:1240px){.nav ul{gap:16px}}
 .nav ul>li{position:relative}
 .nav ul a:hover{color:var(--gold2)}
 .nav li.has>a::after{content:'⌄';margin-left:5px;color:var(--gold2)}
@@ -445,6 +446,7 @@ footer .bottom a{margin-right:14px}
       <li><a href="/nl/over">Wie we zijn</a></li>
       <li class="has"><a href="#blueprint" aria-haspopup="true">Producten</a>
         <div class="dd"><a href="#blueprint">Alignment Blueprint</a><a href="#daily">Daily Integration</a><a href="#companion">SZINN Companion</a><a href="#community">Community</a></div></li>
+      <li><a href="/nl/cadeau">Cadeau</a></li>
       <li><a href="/nl/events">Events</a></li>
       <li><a href="#faq">Vragen</a></li>
       <li class="has"><a href="/nl/ai" aria-haspopup="true">AI</a>
@@ -545,5 +547,6 @@ fetch('/api/auth/me',{credentials:'same-origin'}).then(function(r){
     if(e){e.querySelector('span').textContent=e.dataset.dash;e.href='/szinn-portal/pages/dashboard.html';}}
 }).catch(function(){});
 </script>
+<script>try{localStorage.setItem("szinn_lang",document.documentElement.lang.slice(0,2))}catch(e){}</script><!-- taal onthouden voor terugkeer van Stripe (zie intake/index.html) -->
 </body>
 </html>
