@@ -203,15 +203,15 @@
       "audio": {
         "label": "Listen first",
         "soort": "audio",
-        "bron": "assets/welkom-3.m4a",
+        "bron": "assets/welkom-3-en.m4a",
         "duur": "5 min"
       }
     },
     "audio": {
       "label": "Listen first",
       "soort": "audio",
-      "bron": "assets/welkom-1.m4a",
-      "duur": "10 sec"
+      "bron": "assets/welkom-1-en.m4a",
+      "duur": "15 sec"
     },
     "verder": "Continue",
     "startnu": "Start now"

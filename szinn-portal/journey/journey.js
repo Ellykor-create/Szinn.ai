@@ -953,7 +953,8 @@
     /* de slotbalk met de knop naar de volgende stap komt helemaal onderaan,
        na de afsluiting, zodat je hem pas tegenkomt als je klaar bent */
     var blokken = (f.blokken || []).filter(function (b) {
-      return b.type !== "stappenbalk" && b.type !== "slotbalk";
+      /* ponytail: "vormen" (Dit heb je gedaan) tijdelijk verborgen; regel weghalen om terug te zetten */
+      return b.type !== "stappenbalk" && b.type !== "slotbalk" && b.type !== "vormen";
     });
     var slot = (f.blokken || []).filter(function (b) { return b.type === "slotbalk"; });
     h += blokken.map(function (b) {
