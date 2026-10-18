@@ -112,7 +112,7 @@ def invoer(order):
     naam = str(order.get('client_name') or f"{raw.get('voornaam', '')} {raw.get('achternaam', '')}").strip() or geboortenaam
     return dict(naam=naam, voornaam=voornaam, geboortenaam=geboortenaam, datum=order['birth_date'], tijd=tijd.zfill(5),
                 plaats=plaats, lat=float(lat), lon=float(lon), tz=tz,
-                tijd_status=tijd_status), raw
+                woonplaats_tz=raw.get('woonplaats_tijdzone'), tijd_status=tijd_status), raw
 
 
 # ---------- bouwen en controleren ----------

@@ -768,6 +768,32 @@
         </select>
         <span class="err-msg">Selecteer je geboorteland</span>
       </div>
+      <div class="field" id="field-woonplaats_tijdzone">
+        <label class="field-label" data-nl="In welk land woon je nu?" data-en="Which country do you live in now?">In welk land woon je nu?</label>
+        <select id="woonplaats_tijdzone">
+          <option value="" data-nl="— Selecteer —" data-en="— Select —">— Selecteer —</option>
+          <option value="Europe/Amsterdam" data-nl="Nederland" data-en="Netherlands">Nederland</option>
+          <option value="Europe/Brussels" data-nl="België" data-en="Belgium">België</option>
+          <option value="Europe/Berlin" data-nl="Duitsland" data-en="Germany">Duitsland</option>
+          <option value="Europe/Paris" data-nl="Frankrijk" data-en="France">Frankrijk</option>
+          <option value="Europe/London" data-nl="Verenigd Koninkrijk" data-en="United Kingdom">Verenigd Koninkrijk</option>
+          <option value="Europe/Dublin" data-nl="Ierland" data-en="Ireland">Ierland</option>
+          <option value="Europe/Madrid" data-nl="Spanje" data-en="Spain">Spanje</option>
+          <option value="Europe/Lisbon" data-nl="Portugal" data-en="Portugal">Portugal</option>
+          <option value="Europe/Rome" data-nl="Italië" data-en="Italy">Italië</option>
+          <option value="Europe/Zurich" data-nl="Zwitserland" data-en="Switzerland">Zwitserland</option>
+          <option value="Europe/Vienna" data-nl="Oostenrijk" data-en="Austria">Oostenrijk</option>
+          <option value="America/Paramaribo" data-nl="Suriname" data-en="Suriname">Suriname</option>
+          <option value="America/Curacao" data-nl="Curaçao / Aruba / Bonaire" data-en="Curaçao / Aruba / Bonaire">Curaçao / Aruba / Bonaire</option>
+          <option value="America/New_York" data-nl="Verenigde Staten (oostkust)" data-en="United States (East)">Verenigde Staten (oostkust)</option>
+          <option value="America/Chicago" data-nl="Verenigde Staten (midden)" data-en="United States (Central)">Verenigde Staten (midden)</option>
+          <option value="America/Los_Angeles" data-nl="Verenigde Staten (westkust)" data-en="United States (West)">Verenigde Staten (westkust)</option>
+          <option value="America/Toronto" data-nl="Canada (oost)" data-en="Canada (East)">Canada (oost)</option>
+          <option value="Australia/Sydney" data-nl="Australië (oost)" data-en="Australia (East)">Australië (oost)</option>
+          <option value="Africa/Johannesburg" data-nl="Zuid-Afrika" data-en="South Africa">Zuid-Afrika</option>
+        </select>
+        <span class="err-msg" data-nl="Selecteer waar je nu woont" data-en="Please select where you live now">Selecteer waar je nu woont</span>
+      </div>
     </div>
 
     <!-- ── Geboortetijd bij benadering: verdieping in stappen ── -->
@@ -1505,7 +1531,7 @@ function validate(i) {
   let firstBad = null;
 
   if (i === 0) {
-    ['voornaam','achternaam','geboortenaam','email','geboortedatum','geboorteland','geboorteplaats'].forEach(id => {
+    ['voornaam','achternaam','geboortenaam','email','geboortedatum','geboorteland','geboorteplaats','woonplaats_tijdzone'].forEach(id => {
       const el = document.getElementById(id);
       const fd = document.getElementById('field-' + id);
       if (!el || !el.value.trim()) { fd && fd.classList.add('has-error'); ok = false; firstBad = firstBad || fd || el; }
@@ -1576,6 +1602,7 @@ function collect() {
     birth_time_verfijning: v('tijd-verfijning'),
     birth_time_window: tijdWindow(),
     geboorteland: v('geboorteland'), geboorteplaats: v('geboorteplaats'),
+    woonplaats_tijdzone: v('woonplaats_tijdzone'),
     geboorteplaats_volledig: v('geboorteplaats_volledig'),
     geboorte_lat: v('geboorte_lat'), geboorte_lng: v('geboorte_lng'),
     geboorte_tz: v('geboorte_tz'),
@@ -1742,6 +1769,7 @@ const FIELD_KEYS = {
   'geboortetijd-status': 'birth_time_status',
   'tijd-dagdeel': 'birth_time_dagdeel', 'tijd-verfijning': 'birth_time_verfijning',
   geboorteland: 'geboorteland', geboorteplaats: 'geboorteplaats',
+  woonplaats_tijdzone: 'woonplaats_tijdzone',
   'blueprint-taal': 'blueprint_taal',
   p1: 'p1_bezig', p2: 'p2_verlangen', p3: 'p3_energie', p4: 'p4_veranderen', p5: 'p5_tevredenheid',
   w1: 'w1_werk_gevoel', w2: 'w2_werk_anders', w3: 'w3_werk_stap', w4: 'w4_werk_1jaar',

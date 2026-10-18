@@ -42,9 +42,9 @@ def run_chart(job_dir, datum, tijd, tz, lat, lon):
     return json.load(open(out)), r.stdout
 
 
-def run_transits(chart_path, jaar, maand, n=6, tz=1.0):
-    """transits.py ongewijzigd draaien en de uitvoer per kalendermaand groeperen."""
-    r = subprocess.run([py(), os.path.join(SCRIPTS, 'transits.py'), chart_path, f'{jaar}-{maand:02d}', str(n), str(tz)],
+def run_transits(chart_path, jaar, maand, n=6, tz='Europe/Amsterdam'):
+    """transits.py ongewijzigd draaien en de uitvoer per kalendermaand groeperen. tz = IANA-zone van de woonplaats."""
+    r = subprocess.run([py(), os.path.join(SCRIPTS, 'transits.py'), chart_path, f'{jaar}-{maand:02d}', str(n), tz],
                        capture_output=True, text=True, check=True)
     per = {}
     for line in r.stdout.splitlines():
@@ -113,8 +113,9 @@ def bouw(order, vandaag=None):
     job = order['job_dir']
     tz = tz_offset(order.get('tz'), order['datum'], order['tijd'])
     chart, chart_out = run_chart(job, order['datum'], order['tijd'], tz, order['lat'], order['lon'])
-    tz_nu = ZoneInfo('Europe/Amsterdam').utcoffset(datetime.now()).total_seconds() / 3600
-    trans, trans_out = run_transits(os.path.join(job, 'klant_chart.json'), vandaag.year, vandaag.month, 6, tz_nu)
+    # masterprompt v4.9 A: kalender in de tijdzone van de woonplaats, nooit die van de geboorteplaats
+    trans, trans_out = run_transits(os.path.join(job, 'klant_chart.json'), vandaag.year, vandaag.month, 6,
+                                    order.get('woonplaats_tz') or 'Europe/Amsterdam')
 
     y, mo, d = map(int, order['datum'].split('-'))
     naam = order['geboortenaam']
