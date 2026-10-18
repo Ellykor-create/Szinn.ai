@@ -31,7 +31,7 @@ function withinTrial(user) {
 const DEMO_EMAILS = [(process.env.DEMO_EMAIL || 'demo@szinn.ai').trim().toLowerCase(), 'demo-plus@szinn.ai'];
 // Permanente super-accounts (Morgan/Elly/Danillo): altijd reminders, net als demo.
 // dashboard_access==='on' dekt ze ook (zo geseed), maar env houdt het overrideable.
-const SUPER_EMAILS = (process.env.SUPER_EMAILS || 'morgan@szinn.ai,elly@szinn.ai,danillo@udefine.nl')
+const SUPER_EMAILS = (process.env.SUPER_EMAILS || 'morgan@szinn.ai,elly@szinn.ai,danillo@udefine.nl,morgan@rebalance.energy')
   .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
 
 // Eén reminder via het gekozen kanaal (of `channel` om te forceren, voor de

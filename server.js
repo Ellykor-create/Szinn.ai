@@ -259,7 +259,9 @@ const SUPER_ACCOUNTS = [
   { email: (process.env.ELLY_ACCOUNT_EMAIL || 'elly@szinn.ai').trim(), password: process.env.ELLY_ACCOUNT_PASSWORD || 'SzinnElly2026', name: 'Elly', orderId: 'ORD-SALES-ELLY' },
   { email: (process.env.DANILLO_ACCOUNT_EMAIL || 'danillo@udefine.nl').trim(), password: process.env.DANILLO_ACCOUNT_PASSWORD || 'SzinnDanillo2026', name: 'Danillo', orderId: 'ORD-SALES-DANILLO' },
 ];
-const SUPER_EMAILS = (process.env.SUPER_EMAILS || SUPER_ACCOUNTS.map(a => a.email).join(','))
+// Bestaande echte accounts (eigen blueprint) die alleen super-rechten krijgen, geen seeding.
+const EXTRA_SUPER_EMAILS = ['morgan@rebalance.energy'];
+const SUPER_EMAILS = (process.env.SUPER_EMAILS || SUPER_ACCOUNTS.map(a => a.email).concat(EXTRA_SUPER_EMAILS).join(','))
   .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
 
 (function ensureSuperAccounts() {

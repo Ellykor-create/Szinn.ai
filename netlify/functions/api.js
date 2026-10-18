@@ -53,7 +53,9 @@ const SUPER_ACCOUNTS = [
 ];
 // Wie onbeperkte Companion + permanente toegang krijgt. Default = de super-accounts;
 // override met SUPER_EMAILS (comma-separated) zonder de code aan te raken.
-const SUPER_EMAILS = (process.env.SUPER_EMAILS || SUPER_ACCOUNTS.map(a => a.email).join(','))
+// EXTRA_SUPER_EMAILS: bestaande echte accounts (eigen blueprint) die alleen super-rechten krijgen, geen seeding.
+const EXTRA_SUPER_EMAILS = ['morgan@rebalance.energy'];
+const SUPER_EMAILS = (process.env.SUPER_EMAILS || SUPER_ACCOUNTS.map(a => a.email).concat(EXTRA_SUPER_EMAILS).join(','))
   .split(',').map(e => e.trim().toLowerCase()).filter(Boolean);
 const isSuperEmail = (email) => !!email && SUPER_EMAILS.includes(email.trim().toLowerCase());
 const TRIGGER_SECRET  = process.env.INTERNAL_TRIGGER_SECRET || JWT_SECRET;
@@ -2025,6 +2027,7 @@ if (require.main === module) {
     // Super-account (in SUPER_EMAILS): onbeperkte Companion (Infinity) + dashboard open,
     // óók zonder proef/abonnement. Gewoon verlopen account blijft eindig → regressiebewaking.
     assert.strictEqual(isSuperEmail('elly@szinn.ai'), true);
+    assert.strictEqual(isSuperEmail('Morgan@rebalance.energy'), true);
     assert.strictEqual(isSuperEmail('x@y.z'), false);
     const superAcc = await accessState({ users: [expired({ email: 'elly@szinn.ai' })] }, req);
     assert.strictEqual(superAcc.unlimited, true);
