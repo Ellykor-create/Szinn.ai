@@ -129,6 +129,7 @@
   from = "/szinn-portal/pages/gift.html"
   to = "/nl/cadeau"
   status = 301
+  force = true
 
 [[redirects]]
   from   = "/api/*"
