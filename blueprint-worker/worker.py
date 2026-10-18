@@ -17,6 +17,7 @@ if _oj:
     os.environ['BLUEPRINT_LANG'] = 'en' if json.loads(_oj).get('blueprint_language') == 'en' else 'nl'
 
 import datalaag, writer  # noqa: E402
+from szinn_vast import LP_NAAM  # noqa: E402  (na datalaag: die zet kit/scripts op sys.path)
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS = datalaag.SCRIPTS
@@ -125,7 +126,7 @@ def bouwen(job_dir, rug=None):
             job_dir, {'BP_JOB': job_dir})
     if r.returncode:
         raise RuntimeError(f'bouwen mislukt: {r.stderr[-1500:]}')
-    return glob.glob(os.path.join(job_dir, '*_3delen_print.html'))[0][:-len('_print.html')]
+    return max(glob.glob(os.path.join(job_dir, '*_3delen*_print.html')), key=os.path.getmtime)[:-len('_print.html')]
 
 
 def corpus_zonder(order_id, geboortenaam):
@@ -147,7 +148,10 @@ def audit(job_dir, base, f, order_id, heeft_intake):
     andere = corpus_zonder(order_id, f['geboortenaam'])
     cmd = [datalaag.py(), os.path.join(SCRIPTS, 'audit.py'), os.path.join(job_dir, 'klant_chart.json'), base + '_print.html',
            f['geboortenaam'], str(f['dag']), str(f['maand']), str(f['jaar']), '--andere', andere, '--voornaam', f['voornaam'],
-           '--schrijftekst', os.path.join(job_dir, 'content.json')]
+           '--schrijftekst', os.path.join(job_dir, 'content.json'), '--facts', os.path.join(job_dir, 'facts.json'),
+           '--kalender', f"{f['maanden'][0]['jaar']}-{f['maanden'][0]['maand']:02d}"]
+    if f.get('woonplaats_tz'):   # v4.9 A: kalender in de tijdzone van de woonplaats (zelfde als datalaag.run_transits)
+        cmd += ['--tz', f['woonplaats_tz']]
     if heeft_intake:
         cmd += ['--intake', os.path.join(job_dir, 'intake.txt')]
     try:
@@ -183,7 +187,7 @@ def groepen_voor(fout, groepen):
         if hit:
             return hit
     for sleutel, g in (('geboortetijdnoot', 'B'), ('aspect ', 'B'), ('returning number', 'C'), ('praktijken', 'D'),
-                       ('prompts', 'D'), ('kalendermaanden', 'D'), ('Inner Permissions', 'D')):
+                       ('prompts', 'D'), ('kalendermaanden', 'D'), ('kalender', 'D'), ('calendar', 'D'), ('Inner Permissions', 'D')):
         if sleutel in fout:
             return [g]
     m = re.search(r'naam van een andere klant in het document: (\w+)', fout)
@@ -199,7 +203,7 @@ def samenvoegen(groepen):
     return c
 
 
-def dashboard_teksten(c):
+def dashboard_teksten(c, lp):
     """De velden die dashboard, companion en journey uit texts.json lezen, gevuld vanuit de nieuwe content."""
     P = c['planeten']
 
@@ -211,7 +215,7 @@ def dashboard_teksten(c):
         astrology=dict(qualities=dict(sun=P['Zon'], moon=P['Maan'], mercury=P['Mercurius'], venus=P['Venus'], mars=P['Mars'], jupiter=P['Jupiter'],
                                       saturn=P['Saturnus'], uranus=P['Uranus'], neptune=P['Neptunus'], pluto=P['Pluto'], northNode=P['Noordknoop'],
                                       southNode=c['zuidknoop_kaart'], chiron=P['Chiron'], ascendant=P['Ascendant'], mc=P['Midhemel'])),
-        numerology=dict(lifePathTitle=c['num']['lp_titel'], lifePathBody=pp(c['num']['lp']), pyBody=pp(c['num']['pj'])),
+        numerology=dict(lifePathTitle=LP_NAAM[lp], lifePathBody=pp(c['num']['lp']), pyBody=pp(c['num']['pj'])),
         tikkun=dict(cards=[dict(title=x['titel'], body=x['tekst']) for x in c['tikkun']]),
         integration=dict(layers=dict(astro=c['integratie']['lagen'], focus=c['dagfocus']), shadow=c['integratie']['schaduw']),
         nodes=dict(body=pp(c['knopen']), south=c['zuidknoop_kaart'], north=c['noordknoop_kaart'], chiron=c['chiron']),
@@ -291,7 +295,7 @@ def genereer(job):
     open(os.path.join(job_dir, 'audit.md'), 'w').write(rapport(f, bool(intake.strip()), uitvoer, ronde))
     # relatief t.o.v. DATA: de rugbreedte-run pakt job.tar.gz uit op een andere runner
     json.dump({'dir': os.path.relpath(job_dir, DATA), 'base': os.path.relpath(base, DATA), 'lang': writer.LANG}, open(os.path.join(DATA, 'orders', oid, 'current.json'), 'w'))
-    return dict(ok=True, lang=writer.LANG, texts=dashboard_teksten(content), mail=content['mail'], files=['digitaal', 'binnenwerk', 'omslag', 'audit'], rondes=ronde)
+    return dict(ok=True, lang=writer.LANG, texts=dashboard_teksten(content, f['levenspad']), mail=content['mail'], files=['digitaal', 'binnenwerk', 'omslag', 'audit'], rondes=ronde)
 
 
 def huidig(oid):

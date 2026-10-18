@@ -24,7 +24,7 @@ title = (f'<section class="titlep"><img src="{LOGO}" alt="SZINN"><div class="bra
          f'<div class="k">{t("Jouw persoonlijke Alignment Blueprint")}</div><h1>{h1}</h1><div class="tmeta">{meta}<br><br>{t("Gefaciliteerd door")} Elly Elizabeth Korving · SZINN · szinn.ai · {g.get("MAAND_JAAR", "september 2026")}</div></section>')
 
 # ---- 2. ankers op secties ----
-anchors = [('s01','>'+t('01 — Visie &amp; Missie')),('d1',t('Deel I · Wie ben ik?')),('el','>'+t('Herkenning · De elementen')+'<'),('ka','>'+t('Herkenning · Karakter')+'<'),
+anchors = [('lw','>'+t('Lees deze Blueprint als een spiegel')+'<'),('s01','>'+t('01 — Visie &amp; Missie')),('d1',t('Deel I · Wie ben ik?')),('el','>'+t('Herkenning · De elementen')+'<'),('ka','>'+t('Herkenning · Karakter')+'<'),
  ('va','>'+t('Herkenning · Valkuilen')+'<'),('ta','>'+t('Herkenning · Talenten')+'<'),('s02','>'+t('02 — Introductie')+'<'),('d2',t('Deel II · Wat wil ik? Waar komt het vandaan?')),
  ('s04','>'+t('04 — Astrologie')+'<'),('s05','>'+t('05 — Noord- &amp; Zuidknoop')),('s06','>'+t('06 — Numerologie')+'<'),('s07','>'+t('07 — Kabbalah &amp; Tikkun')),('s08','>'+t('08 — Sacred Geometry')+'<'),
  ('s09','>'+t('09 — Overzicht &amp; Samenvatting')),('d3',t('Deel III · Waar ga ik heen? Hoe leef ik dit?')),('s03','>'+t('03 — Leven vanuit flow')+'<'),('s10','>'+t('10 — Reflectievragen')+'<'),
@@ -46,7 +46,7 @@ for p in body:
     if 'class="back"' in p: p = p.replace('class="back"', 'class="back verso"', 1)
     out.append(p)
 
-toc_rows = [('part','Voordat je begint',None),('01','Visie &amp; Missie','s01'),
+toc_rows = [('part','Voordat je begint',None),('·','Leeswijzer','lw'),('01','Visie &amp; Missie','s01'),
  ('part','Deel I · Herkenning · Wie ben ik?','d1'),('·','De elementen: het recept','el'),('·','Karakter: wie je bent in balans','ka'),('·','Valkuilen: uit balans','va'),('·','Talenten: wat je meebrengt','ta'),('02','Introductie','s02'),
  ('part','Deel II · Helderheid · Wat wil ik? Waar komt het vandaan?','d2'),('04','Astrologie','s04'),('05','Noord- &amp; Zuidknoop','s05'),('06','Numerologie','s06'),('07','Kabbalah / Tikkun','s07'),('08','Sacred Geometry · De Mandala','s08'),('09','Overzicht &amp; Samenvatting','s09'),
  ('part','Deel III · Integratie · Waar ga ik heen? Hoe leef ik dit?','d3'),('03','Leven vanuit flow','s03'),('10','Reflectievragen','s10'),('11','Werken met de energie','s11'),('12','Integratie','s12'),

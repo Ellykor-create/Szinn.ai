@@ -84,24 +84,21 @@ def arr(item): return {'type': 'array', 'items': item}
 TTX = obj(titel=S, tekst=S)
 STUK = obj(titel=S, plaatsing=S, tekst=S)
 PLANETEN = ['Zon', 'Maan', 'Mercurius', 'Venus', 'Mars', 'Jupiter', 'Saturnus', 'Uranus', 'Neptunus', 'Pluto', 'Noordknoop', 'Chiron']
-KERN = ['Zon', 'Maan', 'Ascendant', 'Midhemel', 'Mercurius', 'Venus', 'Mars', 'Saturnus', 'Chiron', 'Knopen-as']
 
 
 def schema(groep, facts):
     if groep == 'A':
         return obj(voor=S, elementen=obj(titel=S, lead_slot=S, kaarten=arr(obj(element={'type': 'string', 'enum': ['vuur', 'lucht', 'water', 'aarde']}, tag=S, tekst=S)),
-                                         verdeling=arr(S), pull=S, kern=obj(**{k: S for k in KERN})),
+                                         verdeling=arr(S), pull=S),
                    karakter=arr(STUK), valkuilen=arr(STUK), valkuilen_pull=S, talenten=arr(STUK), herkenning_quote=S, introductie=arr(S))
     if groep == 'B':
-        keys = [a['sleutel'] for a in facts['aspecten_tabel']] or ['geen']
         return obj(planeten=obj(**{k: S for k in PLANETEN + ['Ascendant', 'Midhemel']}),
-                   aspecten=arr(obj(aspect={'type': 'string', 'enum': keys}, tekst=S)),
                    patronen=arr(S), geboortetijdnoot=S, patroonkaarten=arr(obj(label=S, titel=S, tekst=S)),
                    knopen=arr(S), zuidknoop_kaart=S, noordknoop_kaart=S, chiron=S, tikkun=arr(TTX), retrograde=S,
                    overzicht=obj(een_zin=S, rijen=arr(S)))
     if groep == 'C':
         return obj(num=obj(ondertoon=S, uitdrukking=S, zielenurge=S, persoonlijkheid=S, returning=S, keynote_woord=S, keynote=S,
-                           untrained=S, groei_samen=S, lp_titel=S, lp=arr(S), pj_kop=S, pj=arr(S), cyclus_titel=S, cyclus=S),
+                           untrained=S, groei_samen=S, lp=arr(S), pj_kop=S, pj=arr(S), cyclus_titel=S, cyclus=S),
                    flow=obj(alineas=arr(S), kaarten=arr(obj(plaatsing=S, tekst=S)), vragen=arr(S)), reflectie=arr(S))
     return obj(ritme=obj(alinea=S, kaarten=arr(TTX)),
                integratie=obj(lagen=S, schaduw=S, gaven=arr(S), adem=S, praktijken=arr(TTX), prompts=arr(obj(onderwerp=S, tekst=S)),
@@ -118,7 +115,6 @@ OPDRACHT = {
 - elementen.kaarten: PRECIES 4, één per element (vuur, lucht, water, aarde). tag = kort label ("Je kern", "In je werk en je dag"); tekst = 4 à 6 zinnen over wat dit element bij déze persoon doet, ook het zwakste element.
 - elementen.verdeling: PRECIES 3 alinea's "Wat de verdeling zegt", elk eindigend met de bron tussen haakjes met graden en huizen.
 - elementen.pull: één zin, de kern van de elementen.
-- elementen.kern: per sleutel één korte duiding (6 à 14 woorden) achter de positie in de tabel.
 - karakter: PRECIES 6 stukken (wie je bent in balans). titel = kop in gedragstaal; plaatsing = de bron ("Planeet in Teken, huis N · Planeet aspect Planeet"); tekst = 3 à 4 zinnen.
 - valkuilen: PRECIES 6 stukken (uit balans), zelfde vorm; elke valkuil sluit af als spiegel. valkuilen_pull: 2 zinnen.
 - talenten: PRECIES 6 stukken; het zesde gaat over de Noordknoop (titel en plaatsing worden vast gezet, schrijf wel de tekst).
@@ -126,7 +122,6 @@ OPDRACHT = {
 - introductie: PRECIES 3 alinea's. De eerste begint met "{voornaam}, " en gaat over Zon (+ Mercurius); de tweede over Ascendant en Maan; de derde over de knopen-as en Levenspad + Persoonlijk Jaar (lopend en volgend). De openingsalinea put waar mogelijk uit de intake.""",
 'B': """GROEP B · 04 Astrologie, 05 Knopen, 07 Tikkun, 09 Overzicht
 - planeten: per planeet één korte kwaliteit (8 à 16 woorden) voor de planeetentabel; het bouwscript zet "Teken in huis N ·" er al voor. Ascendant en Midhemel: een korte zin zonder teken ervoor.
-- aspecten: voor ELK aspect uit de aspecttabel precies één regel, in dezelfde volgorde (sleutel exact overnemen), 8 à 16 woorden: wat het in gesprek brengt.
 - patronen: PRECIES 3 alinea's "Opvallende patronen in jouw kaart", elk met de bron tussen haakjes.
 - geboortetijdnoot: {tijdnoot}
 - patroonkaarten: PRECIES 2 kaarten; label = huis of cluster met planeten ("Huis N (Planeet · Planeet)"), titel, tekst 3 zinnen.
@@ -144,7 +139,7 @@ OPDRACHT = {
 - num.keynote_woord: één woord; num.keynote: 2 à 3 zinnen, noem hoeveel letters de keynote dragen en welke.
 - num.untrained: 2 à 3 zinnen over de ontbrekende getallen (of dat alle negen voorkomen).
 - num.groei_samen: één alinea "in gewone woorden" die de groeigetallen koppelt aan de kaart en het lopende Persoonlijk Jaar, eindigend met de bron tussen haakjes.
-- num.lp_titel: archetype-naam van het Levenspad; num.lp: PRECIES 2 alinea's (licht en schaduw, koppeling met kaart, eventuele ondertoon, geboortedag).
+- num.lp: PRECIES 2 alinea's (licht en schaduw, koppeling met kaart, eventuele ondertoon, geboortedag).
 - num.pj_kop: vervolg op "Persoonlijk Jaar N (JJJJ) en " (bv. "het jaar dat eraan komt"); num.pj: PRECIES 2 alinea's over het lopende en het volgende Persoonlijk Jaar.
 - num.cyclus_titel + num.cyclus: "De cyclus van dit half jaar": loop de zes persoonlijke maanden langs met hun getal.
 - flow.alineas: PRECIES 4 alinea's: Sin (masculiene plaatsingen), Sinn (feminiene plaatsingen), Zin (waar ze samenwerken), wat de balans nu onderbreekt. Volg de vaste definitie uit masterprompt sectie 5.
@@ -179,6 +174,7 @@ Werkregels voor deze pipeline (aanvullend op de masterprompt):
 8. Houd je exact aan de gevraagde aantallen. Lever alleen de JSON volgens het schema.
 9. Eenvoudige taal (B1-niveau): schrijf zoals je tegen een vriendin praat. Korte zinnen (gemiddeld 15 woorden of minder), gewone woorden, één gedachte per zin. Harde grens: geen enkele zin langer dan 22 woorden, ook niet waar de masterprompt zegt "wissel korte en lange zinnen af" (lang betekent hier hooguit 22 woorden). Zet geen opsomming, uitleg en gevolg in één zin met dubbele punten, puntkomma's of een reeks komma's: maak er twee of drie zinnen van. Tel bij twijfel de woorden. Geen abstracte of spirituele vaktaal (manifestatie, polariteit, archetypisch, transformatief, resoneren, integreren, paradigma, essentie, katalysator) en geen dure woorden waar een gewoon woord bestaat ("mogelijk maken" wordt "helpen", "fundamenteel" wordt "diep"). Astrologische en numerologische termen mogen wel, maar alleen met de uitleg in gewone taal uit de masterprompt.
 10. Schrijf voor iemand zonder enige kennis van astrologie. Maak elke duiding concreet met een alledaags moment dat de lezer uit het eigen leven kent (een gesprek, een werkdag, een avond thuis, een ruzie, een keuze), zodat die denkt "dat ben ik". Heeft de intake iets over dat thema, sluit dan aan bij wat de klant daar vertelt. Geen algemeenheden die op iedereen passen ("je bent soms onzeker", "je houdt van mensen"): benoem juist wat deze kaart onderscheidt, en hoe twee plaatsingen samen iets specifieks laten zien.
+12. TONE OF VOICE (bindend, zelfde als het dashboard en de companion): je schrijft als een warme, wijze vriendin die toevallig veel weet van astrologie, numerologie en Kabbalah. Geen orakel, geen leraar op afstand, geen therapeut met een klembord; je zit naast de lezer, niet tegenover. Eerlijk tot op het bot, met liefde: je zegt wat je ziet, helder en zonder omwegen, en je oordeelt nooit. De lezer mag denken "au, dat klopt" en tegelijk glimlachen. Licht en menselijk: humor mag, een knipoog mag, af en toe een grap over hoe eigenwijs mensen zijn; diepgang en luchtigheid wisselen elkaar af, nooit zwaarder of zweveriger dan nodig. Je normaliseert: niemand is kapot of fout, schaduwkanten horen bij het ontwerp, en de eigenaardige lastige kantjes benoem je met compassie en een lach, want dat is precies wat deze mens menselijk maakt. Verliefd worden op wie je bent, ego en al, dat is de kunst. Je denkt in balans tussen de vier elementen: welk element sterk aanwezig is en welk er bijna niet is, en wat dat betekent op een gewone dinsdag (vuur wil beweging, enthousiasme en durven; aarde wil rust, ritme en iets tastbaars; lucht wil begrijpen, praten en ruimte; water wil voelen, verbinden en veiligheid). Het element dat iemand mist is geen tekort maar een uitnodiging om iets kleins van dat element te lenen. Je nodigt uit tot de waarnemerspositie: even een stap naast jezelf zetten en met mildheid naar je eigen verhaal kijken. Pijn en crisis zijn geen bewijs dat er iets mis is, maar meestal het moment waarop iemand zichzelf beter leert kennen; zeg dat nuchter. Nodig uit tot herkenning ("Herken je dit?", "Waar merk je dat in je dag?") en koppel inzicht aan iets concreets voor vandaag; waar het past een kleine lichamelijke oefening van hooguit een minuut. Nooit angst aanjagen, voorspellen of beloven; nooit medisch, financieel of juridisch advies; geen clichés als "het universum heeft een plan" of "alles gebeurt met een reden". De lezer is altijd de enige expert op zichzelf; jouw duiding is een uitnodiging om te reflecteren, geen waarheid.
 11. Gebruik de VERDIEPING als rode draad: de chartheerser, de eindheerser, waardigheden en aspectpatronen laten zien welke plaatsingen in deze kaart het zwaarst wegen. Geef die het meeste gewicht, laat ze in meerdere hoofdstukken terugkomen en leg verbanden ertussen, zodat het document als één verhaal over deze mens leest in plaats van een losse opsomming. Vertaal de techniek naar gewone taal (niet "je hebt een T-kruis", wel wat de lezer ervan merkt, met de techniek tussen haakjes). Progressies (hoe de kaart zich door de jaren ontwikkelt) en levenscycli gebruik je voor het nu: benoem ze bij het persoonlijk jaar en in de introductie of de integratie. Levenscycli schrijf je als leeftijd ("rond je 29e"), nooit als datum.
 
 === MASTERPROMPT v4 ===
@@ -234,11 +230,10 @@ def feiten_tekst(f, intake):
                'MODALITEITEN: ' + ', '.join(f'{k} {v}' for k, v in f['modaliteiten'].items()),
                'PLANETEN PER HUIS: ' + ', '.join(f'huis {k}: {v}' for k, v in sorted(f['huizen_telling'].items(), key=lambda kv: int(kv[0]))),
                'RETROGRADE: ' + (', '.join(f['retrograde']) or 'geen'), '',
-               'ASPECTTABEL (orb tot 5°, deze sleutels exact gebruiken):'] + [f"  {a['sleutel']} · orb {a['orb']}" for a in f['aspecten_tabel']]
+               'ASPECTEN (orb tot 5°, de nauwste eerst):'] + [f"  {a['sleutel']} · orb {a['orb']}" for a in f['aspecten_tabel']]
     regels += ['ALLE ASPECTEN tot 6° (voor duiding):', '  ' + '; '.join(f['aspecten_alle']), '',
                'VERDIEPING (berekend; de rode draden van deze kaart):'] + [f'  {v}' for v in f.get('verdieping', [])] + ['',
-               f"GEBOORTETIJD: Ascendant wisselt van teken over {f['asc_marge_min']} minuten. Gevoelige plaatsingen: {'; '.join(f['gevoelig']) or 'geen'}. "
-               f"Wisselt van huis bij ±2 minuten: {', '.join(f['wankel']) or 'geen'}. Ascendant binnen 2° van een tekengrens: {'ja' if f['asc_grens'] else 'nee'}.", '',
+               tijdnoot_tekst(f['tijdnoot']), '',
                'NUMEROLOGIE (Pythagoras, Decoz):',
                f"  Levenspad {f['levenspad']} ({f['lp_stappen']})",
                '  Ondertoon: ' + (f"meestergetal {ot['getal']} ({ot['naam']}) via {ot['som']}" if ot else 'geen'),
@@ -261,15 +256,62 @@ def feiten_tekst(f, intake):
     return '\n'.join(regels)
 
 
+def _wissel_zin(w):
+    """Eén berekende wissel (datalaag.geboortetijdnoot) als letterlijke zin; in het Engels de namen via nm()."""
+    if LANG == 'en':
+        z = f"Born {w['minuten']} minutes {'earlier' if w['richting'] == 'eerder' else 'later'}: "
+        z += (f"{nm(w['wat'])} in house {w['naar']} instead of house {w['van']}." if w['soort'] == 'huis' else
+              f"Ascendant in {nm(w['naar'])} instead of {nm(w['van'])}, chart ruler {nm(w['chartheerser_naar'])} instead of {nm(w['chartheerser_van'])}.")
+        return z
+    z = f"Ben je {w['minuten']} minuten {w['richting']} geboren, dan "
+    return z + (f"staat {w['wat']} in huis {w['naar']} in plaats van huis {w['van']}." if w['soort'] == 'huis' else
+                f"is je Ascendant {w['naar']} in plaats van {w['van']}, en je chartheerser {w['chartheerser_naar']} in plaats van {w['chartheerser_van']}.")
+
+
+def tijdnoot_tekst(tn):
+    """Regel GEBOORTETIJD voor de feiten (masterprompt v4.9 B), met de wissels letterlijk zoals berekend."""
+    if tn['zekerheid'] == 'onbekend':
+        return 'GEBOORTETIJD: onbekend, de kaart is op 12:00 uur berekend (geen betrouwbare Ascendant, Midhemel en huizen).'
+    marge = (f"±{tn['marge_min']} minuten voor huizen, ±{tn['marge_asc_min']} minuten voor het Ascendant-teken"
+             if tn['marge_min'] != tn['marge_asc_min'] else f"±{tn['marge_min']} minuten")
+    kop = f"GEBOORTETIJD: zekerheid {tn['zekerheid']}, gecontroleerd binnen {marge}. Berekende wissels (letterlijk gebruiken):"
+    return '\n'.join([kop] + ['  ' + _wissel_zin(w) for w in tn['wissels']] if tn['wissels'] else [kop + ' geen.'])
+
+
+def _heerser_wankel(f):
+    """(van, naar) als de chartheerser binnen de marge wisselt en de geboortetijd ongeveer is (v4.9 D3), anders None."""
+    tn = f['tijdnoot']
+    for w in tn['wissels']:
+        if tn['zekerheid'] == 'ongeveer' and w['soort'] == 'teken' and w['chartheerser_van'] != w['chartheerser_naar']:
+            return w['chartheerser_van'], w['chartheerser_naar']
+
+
 def opdracht(groep, f):
-    tijdnoot = ('VERPLICHT. 2 à 4 zinnen die de gevoelige plaatsing(en) uit GEBOORTETIJD benoemen en beide lezingen noemen'
-                + (' en vermelden dat de geboortetijd bij benadering is opgegeven' if f['tijd_status'] == 'benadering' else '')
-                + (' en vermelden dat de geboortetijd onbekend is en de kaart op 12:00 uur is berekend, zodat huizen en Ascendant onder voorbehoud zijn' if f['tijd_status'] == 'onbekend' else '')
-                + '. Begin niet met "Geboortetijdnoot:".') if f['tijdnoot_nodig'] else 'lege string "" (niet nodig voor deze kaart).'
+    tn = f['tijdnoot']
+    if not f['tijdnoot_nodig']:
+        tijdnoot = 'lege string "" (niet nodig voor deze kaart).'
+    elif tn['zekerheid'] == 'onbekend':
+        tijdnoot = ('VERPLICHT. 2 à 4 zinnen die vermelden dat de geboortetijd onbekend is en de kaart op 12:00 uur is berekend, '
+                    'zodat huizen en Ascendant onder voorbehoud zijn. Begin niet met "Geboortetijdnoot:".')
+    else:
+        voorbeeld = ('"Born two minutes later, Pluto would be in house 8 instead of house 9."' if LANG == 'en'
+                     else '"Ben je twee minuten later geboren, dan staat Pluto in huis 8 in plaats van huis 9."')
+        tijdnoot = ('VERPLICHT. Noem elke wissel uit GEBOORTETIJD precies zoals berekend: na hoeveel minuten eerder of later, '
+                    f'welk huis in plaats van welk huis, of welk Ascendant-teken in plaats van welk (bv. {voorbeeld}). '
+                    'Wisselt het Ascendant-teken, noem dan ook de chartheerser die het dan wordt in plaats van de huidige. '
+                    'Eén korte zin per wissel, plus hooguit één inleidende zin. Nooit vaag of uit het hoofd: geen "dichter bij het een, '
+                    'of juist bij het ander", geen andere huizen, tekens, heersers of minuten dan in GEBOORTETIJD staan'
+                    + (', en vermeld dat de geboortetijd bij benadering is opgegeven' if tn['zekerheid'] == 'ongeveer' else '')
+                    + '. Begin niet met "Geboortetijdnoot:".')
     ot = f['ondertoon']
     ondertoon = (f'een zinsdeel (geen hele zin, geen hoofdletter) dat aanvult wat meestergetal {ot["getal"]} ({ot["naam"]}) als ondertoon betekent'
                  if ot else 'lege string "" (geen ondertoon).')
     tekst = OPDRACHT[groep].format(voornaam=f['voornaam'], tijdnoot=tijdnoot, ondertoon=ondertoon)
+    hw = _heerser_wankel(f) if groep in ('A', 'B') else None
+    if hw:   # v4.9 D3: bij een geboortetijd "ongeveer" mag dit niet alleen op de chartheerser rusten
+        tekst += (f"\n- LET OP (geboortetijd bij benadering): de chartheerser is {hw[0]}, maar kan ook {hw[1]} zijn. "
+                  + ('Laat de karakterstukken' if groep == 'A' else 'Laat de Tikkun')
+                  + f" niet alleen op {hw[0]} als chartheerser rusten: onderbouw ze ook met plaatsingen die niet van de geboortetijd afhangen (planeten in tekens, aspecten tussen planeten).")
     if LANG == 'en':
         for k, v in FRASES_EN.items():
             tekst = tekst.replace(k.replace('{voornaam}', f['voornaam']), v.replace('{voornaam}', f['voornaam']))
@@ -407,8 +449,6 @@ def vormcontrole(groepen, f, leesbaar=True):
             if any(x['titel'].strip().lower() in RITME_LABELS for x in c['ritme']['kaarten']):
                 p.append('ritme.kaarten: titel is een eigen korte kop (bv. "Begin met bewegen"), niet het label zelf (Ochtend, Seizoen, ...)')
         if g == 'B':
-            if [a['aspect'] for a in c['aspecten']] != [a['sleutel'] for a in f['aspecten_tabel']]:
-                p.append('aspecten: precies één regel per aspect uit de aspecttabel, in dezelfde volgorde')
             if not c['overzicht']['een_zin'].startswith(f['voornaam']):
                 p.append(f'overzicht.een_zin moet beginnen met "{f["voornaam"]}"')
             if f['tijdnoot_nodig'] and not c['geboortetijdnoot'].strip():

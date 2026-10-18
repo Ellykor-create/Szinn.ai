@@ -36,10 +36,6 @@ def ps(alineas):
     return ''.join(f'<p>{e(a)}</p>' for a in alineas if str(a).strip())
 
 
-def plaats(n):
-    p = PL[n]; return nm(f"{p['graad']} {p['teken']}, huis {p['huis']}")
-
-
 parts = []
 
 # ---------- cover ----------
@@ -63,7 +59,7 @@ parts.append(f"""
 parts.append(quotepage(IMG['voor'], t('Voor {naam}', naam=VOORNAAM), f"{e(C['voor'])} <b>{t('Dit ben jij.')}</b> {t('Deze Blueprint is je spiegel daarbij.')}"))
 
 toc_rows = [
- ('part','Voordat je begint'),('01','Visie &amp; Missie'),
+ ('part','Voordat je begint'),('·','Leeswijzer'),('01','Visie &amp; Missie'),
  ('part','Deel I · Herkenning · Wie ben ik?'),('·','De elementen: het recept'),('·','Karakter: wie je bent in balans'),('·','Valkuilen: uit balans'),('·','Talenten: wat je meebrengt'),('02','Introductie'),
  ('part','Deel II · Helderheid · Wat wil ik? Waar komt het vandaan?'),('04','Astrologie'),('05','Noord- &amp; Zuidknoop'),('06','Numerologie'),('07','Kabbalah / Tikkun'),('08','Sacred Geometry · De Mandala'),('09','Overzicht &amp; Samenvatting'),
  ('part','Deel III · Integratie · Waar ga ik heen? Hoe leef ik dit?'),('03','Leven vanuit flow'),('10','Reflectievragen'),('11','Werken met de energie'),('12','Integratie'),
@@ -77,6 +73,8 @@ for n, lab in toc_rows:
     else: toc += f'<tr><td class="n">{n}</td><td>{lab}</td></tr>'
 parts.append(toc + '</table></section>')
 
+parts.append(sec(t('Voordat je begint'), t('Lees deze Blueprint als een spiegel'), None, LEESWIJZER))
+
 parts.append(sec(t('01 — Visie &amp; Missie'), t('Jij bent <em>de blauwdruk.</em>'), None, VISIE_01 + KAARTJES_01))
 
 parts.append(full(IMG['deel1'], t('Deel I · Wie ben ik?'), t('Herkenning'),
@@ -88,15 +86,11 @@ def elcard(name, tag, pct, who, text):
             f'<p class="small">{who}</p><p>{text}</p>')
 EC = C['elementen']
 ektekst = {k['element']: k for k in EC['kaarten']}
-kern_rows = [('Zon', plaats('Zon')), ('Maan', plaats('Maan')), ('Ascendant', f"{ASC['graad']} {ASC['teken']}"), ('Midhemel', f"{MC['graad']} {MC['teken']}"),
-             ('Mercurius', plaats('Mercurius')), ('Venus', plaats('Venus')), ('Mars', plaats('Mars')), ('Saturnus', plaats('Saturnus')), ('Chiron', plaats('Chiron')),
-             ('Knopen-as', t('Zuidknoop {zk} (huis {zh}) naar Noordknoop {nk} (huis {nh})', zk=f"{ZK['graad']} {ZK['teken']}", zh=ZK['huis'], nk=f"{NK['graad']} {NK['teken']}", nh=NK['huis']))]
 parts.append(sec(t('Herkenning · De elementen'), t('Het recept: ') + e(EC['titel']),
  F['el_lead'] + ' ' + e(EC['lead_slot']),
  cards([elcard(nm(k['element']).capitalize(), e(ektekst[k['element']]['tag']), k['pct'], k['wie'], e(ektekst[k['element']]['tekst'])) for k in F['el_kaarten']])
  + f'<h2>{t("Wat de verdeling zegt")}</h2>' + ps(EC['verdeling'])
- + pull(e(EC['pull']), t('De kern van je elementen'))
- + '<table>' + ''.join(f'<tr><td class="k">{nm(k)}</td><td>{v} · {e(EC["kern"][k])}</td></tr>' for k, v in kern_rows) + '</table>'))
+ + pull(e(EC['pull']), t('De kern van je elementen'))))
 
 def stukken(lijst):
     return [h3(e(x['titel']), e(x['plaatsing'])) + f"<p>{e(x['tekst'])}</p>" for x in lijst]
@@ -140,14 +134,11 @@ for n in ['Zon', 'Maan', 'Mercurius', 'Venus', 'Mars', 'Jupiter', 'Saturnus', 'U
 planet_rows += [(t('AC Ascendant'), f"{ASC['teken']} {ASC['graad']}", '—', e(C['planeten']['Ascendant'])),
                 (t('MC Midhemel'), f"{MC['teken']} {MC['graad']}", '—', e(C['planeten']['Midhemel']))]
 ptab = f'<table><tr><th>{t("Planeet")}</th><th>{t("Positie")}</th><th>{t("Huis")}</th><th>{t("Kwaliteit")}</th></tr>' + ''.join(f'<tr><td>{a}</td><td>{b}</td><td>{c}</td><td>{d}</td></tr>' for a, b, c, d in planet_rows) + '</table>'
-asptekst = {x['aspect']: x['tekst'] for x in C['aspecten']}
-atab = f'<table><tr><th>{t("Aspect")}</th><th>{t("Orb")}</th><th>{t("Wat het in gesprek brengt")}</th></tr>' + ''.join(
-    f"<tr><td>{nm(a['sleutel'])}</td><td>{a['orb']}</td><td>{e(asptekst.get(a['sleutel'], ''))}</td></tr>" for a in F['aspecten_tabel']) + '</table>'
 tz_txt = f"UTC{'+' if F['tz'] >= 0 else ''}{F['tz']:g}"
 noot = f'<p class="small">{t("Geboortetijdnoot: ")}{e(C["geboortetijdnoot"])}</p>' if str(C.get('geboortetijdnoot') or '').strip() else ''
 parts.append(sec(t('04 — Astrologie'), t('De <em>geboortekaart</em> van {naam}', naam=NAAM),
  t('Placidus huizensysteem · Swiss Ephemeris · Ware knoop · Berekend vanuit {datum}, {tijd}, {plaats} ({tz}) · Boogminuten afgekapt', datum=F['geboortedatum'], tijd=F['geboortetijd'], plaats=e(F['geboorteplaats']), tz=tz_txt),
- ASTRO_INTRO + f'<h2>{t("De twaalf huizen")}</h2>' + HUIZEN + ASPECT_INTRO + ptab + f'<h2>{t("Aspecten in jouw kaart (orb tot 5°, de nauwste eerst)")}</h2>' + atab
+ ASTRO_INTRO + f'<h2>{t("De twaalf huizen")}</h2>' + HUIZEN + ptab
  + f'<h2>{t("Opvallende patronen in jouw kaart")}</h2>' + ps(C['patronen']) + noot
  + cards([f"<div class=\"lab\">{e(x['label'])}</div>{h3(e(x['titel']))}<p>{e(x['tekst'])}</p>" for x in C['patroonkaarten']])))
 
@@ -185,7 +176,7 @@ GROEI = GROEI_INTRO + f'<h2>{t("Wat dit voor jou betekent")}</h2>' + cards([
 parts.append(sec(t('06 — Numerologie'), t('De <em>getallen</em> van {naam}', naam=NAAM),
  t('Pythagorisch systeem · Berekend vanuit {datum} en de geboortenaam {naam} · Meestergetallen niet gereduceerd', datum=F['geboortedatum'], naam=e(F['geboortenaam'])),
  NUM_INTRO + NUMCARDS + NUM_MEESTER + kern + ONDERTOON + f'<h2>{t("De drie naamgetallen")}</h2>' + naam + GROEI
- + f"<h2>{t('Levenspad {lp} · {titel}', lp=F['levenspad'], titel=e(N['lp_titel']))}</h2>" + ps(N['lp'])
+ + f"<h2>{t('Levenspad {lp} · {titel}', lp=F['levenspad'], titel=LP_NAAM[F['levenspad']])}</h2>" + ps(N['lp'])
  + f"<h2>{t('Persoonlijk Jaar {pj} ({jaar}) en {kop}', pj=F['pj'], jaar=F['pj_jaar'], kop=e(N['pj_kop']))}</h2>" + ps(N['pj'])
  + f"<div class=\"note t\"><div class=\"lab\">{t('De cyclus van dit half jaar')}</div><h3>{e(N['cyclus_titel'])}</h3><p>{e(N['cyclus'])}</p></div>"))
 
@@ -276,7 +267,7 @@ parts.append(sec(t('12 — Integratie'), t('Jouw persoonlijke <em>upgrade-plan</
  + INTEGRATIE_VAST_B + f'<h2>{t("Dagelijkse praktijken")}</h2>' + practs + PROMPT_INTRO + prom
  + f"<h2>{t('Persoonlijke kalender · {m0} tot {m5}', m0=mnd(m0), m5=mnd(m5))}</h2>"
  + f"<p>{pj_zin}{t(' Elke maand draagt een eigen kleur van energie, en onder elke maand staan de transits die in die maand precies op jouw kaart vallen. Hoe bewuster je dit ritme volgt, hoe meer je meebeweegt met de stroom van je jaar.')}</p>"
- + cal))
+ + KALENDER_HERINNERING + cal))
 
 # ---------- Inner Permissions ----------
 ELEM8 = [t(x) for x in ('Vuur', 'Vuur', 'Lucht', 'Lucht', 'Aarde', 'Aarde', 'Water', 'Water')]
@@ -290,7 +281,7 @@ parts.append(quotepage(IMG['integ'], t('Integratie'), e(C['integratie_quote'])))
 
 # ---------- 13 Verdieping ----------
 PJ_THEMA = {1: 'nieuw begin', 2: 'samenwerking', 3: 'expressie', 4: 'opbouw', 5: 'verandering', 6: 'zorg en thuis',
-            7: 'inkeer', 8: 'oogst', 9: 'afronding', 11: 'inzicht', 22: 'bouwen', 33: 'dienstbaarheid'}
+            7: 'inkeer', 8: 'oogst', 9: 'loslaten', 11: 'inzicht', 22: 'bouwen', 33: 'dienstbaarheid'}
 slot = [str(a).strip() for a in C['tot_slot'] if str(a).strip()]
 if not slot[-1].endswith('Remember who you are.'):
     slot[-1] += ' Remember who you are.'
@@ -305,7 +296,7 @@ SZINN Alignment Blueprint™ · {NAAM} · {F['geboortedatum']} · {e(F['geboorte
 
 html_print = f'<!DOCTYPE html><html lang="{LANG}"><head><meta charset="utf-8"><title>SZINN Alignment Blueprint · {NAAM}</title><style>{CSS.replace("__FOOT__", FOOT)}</style></head><body>' + '\n'.join(parts) + '</body></html>'
 import unicodedata
-base = 'SZINN_Alignment_Blueprint_' + re.sub(r'[^A-Za-z0-9]+', '_', unicodedata.normalize('NFKD', NAAM).encode('ascii', 'ignore').decode()).strip('_') + '_3delen'
+base = 'SZINN_Alignment_Blueprint_' + re.sub(r'[^A-Za-z0-9]+', '_', unicodedata.normalize('NFKD', NAAM).encode('ascii', 'ignore').decode()).strip('_') + '_3delen_v4.9'   # bestandsnaam volgens v4.9 punt 7
 open(base + '_print.html', 'w').write(html_print)
 maxerr = 0
 for n, (x, y, rr) in coords.items():

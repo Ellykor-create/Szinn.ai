@@ -3,7 +3,7 @@
 // function mag maar 6 MB teruggeven, deze streamt door. De getekende link uit
 // lib/kit-worker.js (signedFileUrl) is de autorisatie.
 
-const SOORT = { digitaal: '_3delen.pdf', binnenwerk: '_BOEK_binnenwerk.pdf', omslag: '_BOEK_omslag.pdf', audit: '_auditrapport.md' };
+const SOORT = { digitaal: /_3delen(_v[\d.]+)?\.pdf$/, binnenwerk: /_BOEK_binnenwerk\.pdf$/, omslag: /_BOEK_omslag\.pdf$/, audit: /_auditrapport\.md$/ };
 
 const fout = (status, error) => Response.json({ error }, { status });
 
@@ -36,7 +36,7 @@ export default async (req) => {
     return oud ? Response.redirect(`${oud}/files/${oid}/${soort}${u.search}`, 302) : fout(404, 'nog geen Blueprint');
   }
   if (!rel.ok) return fout(502, `GitHub HTTP ${rel.status}`);
-  const asset = (await rel.json()).assets.find(a => a.name.endsWith(SOORT[soort]));
+  const asset = (await rel.json()).assets.find(a => SOORT[soort].test(a.name));
   if (!asset) return fout(404, 'bestand ontbreekt');
 
   // GitHub antwoordt met een redirect naar kortlevende opslag; die zonder token volgen.

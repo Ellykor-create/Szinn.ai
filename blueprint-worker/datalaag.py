@@ -2,15 +2,15 @@
 """SZINN · datalaag per klant. Draait de kit-scripts (chart.py, transits.py, szinn_numerologie.py) ongewijzigd
 en zet alle getallen en rekenstappen klaar voor de schrijflaag en het bouwscript. Hier wordt niets geschreven,
 alleen berekend en geformatteerd."""
-import json, os, re, subprocess, sys
-from datetime import datetime, date
+import json, os, re, subprocess, sys, tempfile
+from datetime import datetime, date, timedelta
 from zoneinfo import ZoneInfo
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPTS = os.path.join(HERE, 'kit', 'scripts')
 sys.path.insert(0, SCRIPTS)
 from szinn_numerologie import lp, reduceer, naamgetal, naamdelen, normaliseer, splits, groeigetallen, MEESTERS  # noqa: E402
-from verdieping import verdieping  # noqa: E402
+from verdieping import verdieping, HEERSER  # noqa: E402
 from szinn_taal import LANG, nm, nm_deep, MAANDEN as _MND  # noqa: E402
 
 MAANDEN = _MND[LANG]
@@ -20,7 +20,7 @@ EL = {'vuur': ['Ram', 'Leeuw', 'Boogschutter'], 'lucht': ['Tweelingen', 'Weegsch
       'water': ['Kreeft', 'Schorpioen', 'Vissen'], 'aarde': ['Stier', 'Maagd', 'Steenbok']}
 MOD_NAAM = {'hoofd': 'hoofdtekens', 'vast': 'vaste tekens', 'veranderlijk': 'veranderlijke tekens'}
 TELWOORD = ['nul', 'één', 'twee', 'drie', 'vier', 'vijf', 'zes', 'zeven', 'acht', 'negen', 'tien']
-MEESTER_NAAM = {11: 'de ziener', 22: 'de meesterbouwer', 33: 'de meesterleraar'}
+MEESTER_NAAM = {11: 'de intuïtieve', 22: 'de meesterbouwer', 33: 'de meesterleraar'}
 
 
 def py():
@@ -35,8 +35,8 @@ def tz_offset(tzname, datum, tijd):
     return ZoneInfo(tzname or 'Europe/Amsterdam').utcoffset(datetime(y, m, d, hh, mm)).total_seconds() / 3600
 
 
-def run_chart(job_dir, datum, tijd, tz, lat, lon):
-    out = os.path.join(job_dir, 'klant_chart.json')
+def run_chart(job_dir, datum, tijd, tz, lat, lon, bestand='klant_chart.json'):
+    out = os.path.join(job_dir, bestand)
     r = subprocess.run([py(), os.path.join(SCRIPTS, 'chart.py'), '--datum', datum, '--tijd', tijd, '--tz', str(tz),
                         '--lat', str(lat), '--lon', str(lon), '--out', out], capture_output=True, text=True, check=True)
     return json.load(open(out)), r.stdout
@@ -114,8 +114,8 @@ def bouw(order, vandaag=None):
     tz = tz_offset(order.get('tz'), order['datum'], order['tijd'])
     chart, chart_out = run_chart(job, order['datum'], order['tijd'], tz, order['lat'], order['lon'])
     # masterprompt v4.9 A: kalender in de tijdzone van de woonplaats, nooit die van de geboorteplaats
-    trans, trans_out = run_transits(os.path.join(job, 'klant_chart.json'), vandaag.year, vandaag.month, 6,
-                                    order.get('woonplaats_tz') or 'Europe/Amsterdam')
+    woonplaats_tz = order.get('woonplaats_tz') or 'Europe/Amsterdam'
+    trans, trans_out = run_transits(os.path.join(job, 'klant_chart.json'), vandaag.year, vandaag.month, 6, woonplaats_tz)
 
     y, mo, d = map(int, order['datum'].split('-'))
     naam = order['geboortenaam']
@@ -167,7 +167,8 @@ def bouw(order, vandaag=None):
             gevoelig.append(f"{n} staat {v['na_eigen_cusp']:.2f}° na het begin van huis {v['house']} (anders huis {(v['house'] - 2) % 12 + 1})")
     asc_grens = chart['asc'] % 30 < 2 or chart['asc'] % 30 > 28
     wankel = _wankel(chart)
-    tijdnoot_nodig = bool(gevoelig or asc_grens or wankel) or order.get('tijd_status') in ('benadering', 'onbekend')
+    tijdnoot = geboortetijdnoot(order, tz, chart)
+    tijdnoot_nodig = tijdnoot['nodig']
 
     # numerologie
     lp_stappen, LP = datum_stappen(d, mo, y)
@@ -193,7 +194,7 @@ def bouw(order, vandaag=None):
         naam=order['naam'], voornaam=order['voornaam'], geboortenaam=naam,
         geboortedatum=f'{d} {MAANDEN[mo - 1]} {y}', dag=d, maand=mo, jaar=y,
         geboortetijd=order['tijd'], geboorteplaats=order['plaats'], tijd_status=order.get('tijd_status') or 'exact',
-        tz=tz, lat=order['lat'], lon=order['lon'], oplevering=f'{MAANDEN[vandaag.month - 1]} {vandaag.year}',
+        tz=tz, woonplaats_tz=woonplaats_tz, lat=order['lat'], lon=order['lon'], oplevering=f'{MAANDEN[vandaag.month - 1]} {vandaag.year}',
         planeten=planeten, asc=asc, mc=mc, zuidknoop=zk, elementen=chart['elementen'], modaliteiten=chart['modaliteiten'],
         el_kaarten=el_kaarten, el_lead=el_lead, huizen_telling=chart['huizen_telling'],
         aspecten_alle=[f"{a['a']} {a['type']} {a['b']} (orb {a['orb']}°)" for a in chart['aspecten']],
@@ -206,7 +207,52 @@ def bouw(order, vandaag=None):
         retrograde=[n for n in TIEN + ['Chiron'] if pos[n]['rx']], verdieping=verdieping(chart, vandaag),
     )
     # Engels: termen in de berekende tekst vertalen; sleutels (planeten, aspecten, elementen) blijven Nederlands
-    return (nm_deep(facts) if LANG == 'en' else facts), chart, chart_out + '\n' + trans_out
+    facts = nm_deep(facts) if LANG == 'en' else facts
+    facts['tijdnoot'] = tijdnoot   # identificerend (audit leest het): altijd Nederlandse namen, ook in het Engels
+    return facts, chart, chart_out + '\n' + trans_out
+
+
+# masterprompt v4.9 B: marge in minuten (planeet van huis, Ascendant van teken) per zekerheid van de geboortetijd
+MARGE = {'exact': (10, 15), 'ongeveer': (30, 30)}
+
+
+def wissels(order, tz, chart, zoek):
+    """chart.py ongewijzigd opnieuw draaien met de geboortetijd ±1..zoek minuten verschoven (tz-offset van het
+    geboortemoment blijft staan, de datum schuift mee over middernacht). Per punt en richting de eerste wissel."""
+    t0 = datetime.strptime(f"{order['datum']} {order['tijd']}", '%Y-%m-%d %H:%M')
+    asc0 = sign(chart['asc'])
+    uit = []
+    with tempfile.TemporaryDirectory() as tmp:
+        for richting, stap in (('eerder', -1), ('later', 1)):
+            open_ = set(chart['pos']) | {'Ascendant'}
+            for k in range(1, zoek + 1):
+                t = t0 + timedelta(minutes=stap * k)
+                c, _ = run_chart(tmp, t.strftime('%Y-%m-%d'), t.strftime('%H:%M'), tz, order['lat'], order['lon'], 'schuif.json')
+                for n in sorted(open_):
+                    if n == 'Ascendant':
+                        if sign(c['asc']) != asc0:
+                            uit.append(dict(wat=n, soort='teken', van=asc0, naar=sign(c['asc']), minuten=k, richting=richting,
+                                            chartheerser_van=HEERSER[asc0], chartheerser_naar=HEERSER[sign(c['asc'])]))
+                            open_.discard(n)
+                    elif c['pos'][n]['house'] != chart['pos'][n]['house']:
+                        uit.append(dict(wat=n, soort='huis', van=chart['pos'][n]['house'], naar=c['pos'][n]['house'],
+                                        minuten=k, richting=richting))
+                        open_.discard(n)
+                if not open_:
+                    break
+    return sorted(uit, key=lambda w: (w['minuten'], w['richting'], w['wat']))
+
+
+def geboortetijdnoot(order, tz, chart):
+    """v4.9 B: noot verplicht als binnen de marge een planeet van huis of de Ascendant van teken wisselt.
+    Onbekende tijd: regel 'geboortetijd onbekend' (4.1), geen wissels."""
+    status = order.get('tijd_status') or 'exact'
+    if status == 'onbekend':
+        return dict(nodig=True, zekerheid='onbekend', marge_min=None, marge_asc_min=None, wissels=[])
+    zekerheid = 'ongeveer' if status in ('benadering', 'ongeveer') else 'exact'
+    mp, ma = MARGE[zekerheid]
+    ws = [w for w in wissels(order, tz, chart, max(mp, ma)) if w['minuten'] <= (ma if w['wat'] == 'Ascendant' else mp)]
+    return dict(nodig=bool(ws), zekerheid=zekerheid, marge_min=mp, marge_asc_min=ma, wissels=ws)
 
 
 def _wankel(chart):
