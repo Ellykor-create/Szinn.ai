@@ -988,7 +988,11 @@ async function intakeAccess(req, db, { sessionId, code } = {}) {
   // Cadeaucode eerst: ook een ingelogde koper (met eigen concept/admin) moet de
   // order aan het cadeau gekoppeld krijgen. gift = nieuwe flow (koper vult stap 1 in).
   if (code) {
-    const g = (db.giftCodes || []).find(c => c.code === String(code).trim().toUpperCase());
+    const find = d => (d.giftCodes || []).find(c => c.code === String(code).trim().toUpperCase());
+    let g = find(db);
+    // Direct na /api/gift/create opent de koper de intake; Blobs is eventually consistent,
+    // dus het verse cadeau kan nog ontbreken. Even opnieuw lezen i.p.v. naar de betaallink sturen.
+    for (let i = 0; !g && i < 4; i++) { await new Promise(r => setTimeout(r, 750)); g = find(await loadDB()); }
     if (g && !g.redeemed_at) return { ok: true, code: g.code, fresh: true, gift: g.status === 'awaiting_intake' ? { sendDate: g.send_date, lang: g.lang } : null };
   }
   // Boekbetaling ook vóór admin/concept: anders verliest een ingelogde koper de boekmodus.
