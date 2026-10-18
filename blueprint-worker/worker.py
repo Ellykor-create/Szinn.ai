@@ -295,7 +295,12 @@ def genereer(job):
     open(os.path.join(job_dir, 'audit.md'), 'w').write(rapport(f, bool(intake.strip()), uitvoer, ronde))
     # relatief t.o.v. DATA: de rugbreedte-run pakt job.tar.gz uit op een andere runner
     json.dump({'dir': os.path.relpath(job_dir, DATA), 'base': os.path.relpath(base, DATA), 'lang': writer.LANG}, open(os.path.join(DATA, 'orders', oid, 'current.json'), 'w'))
-    return dict(ok=True, lang=writer.LANG, texts=dashboard_teksten(content, f['levenspad']), mail=content['mail'], files=['digitaal', 'binnenwerk', 'omslag', 'audit'], rondes=ronde)
+    try:  # paginatal van de digitale PDF = "copies" bij Print&Bind (boekproduct); mag de oplevering niet breken
+        import fitz  # pymupdf
+        pages = fitz.open(base + '.pdf').page_count
+    except Exception as e:  # noqa: BLE001 — zonder pages meldt print-book-background het aan de admin
+        log(oid, f'paginatal niet bepaald: {e}'); pages = None
+    return dict(ok=True, lang=writer.LANG, texts=dashboard_teksten(content, f['levenspad']), mail=content['mail'], files=['digitaal', 'binnenwerk', 'omslag', 'audit'], rondes=ronde, pages=pages)
 
 
 def huidig(oid):
