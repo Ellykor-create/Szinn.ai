@@ -463,6 +463,31 @@ app.get('/portaal/journey/chart.svg', (req, res) => {
     res.status(500).end();
   }
 });
+// Het overzichtsblad (A4/A3/A2) uit de journey; lokaal gewoon direct renderen.
+app.get('/api/orders/:id/overview', async (req, res) => {
+  if (!req.session.userId) return res.status(401).send('Niet ingelogd');
+  const row = findOwnOrder(req.params.id, req.session.userId);
+  if (!row) return res.status(404).send('Aanvraag niet gevonden');
+  const { overviewHTML, SIZES } = require('./lib/overview');
+  const size = SIZES[req.query.size] ? req.query.size : 'A4';
+  const lang = req.query.lang === 'en' ? 'en' : 'nl';
+  try {
+    const { buildContext } = require('./lib/pipeline');
+    const { generatePDF } = require('./lib/pdf');
+    let texts = null;
+    for (const dir of [path.join(DATA_DIR, 'blueprints'), path.join(ROOT, 'blueprints')]) {
+      const f = path.join(dir, `${row.id}.texts.json`);
+      if (fs.existsSync(f)) { const all = JSON.parse(fs.readFileSync(f, 'utf8')); texts = all[lang] || all.nl; break; }
+    }
+    const pdf = await generatePDF(overviewHTML(buildContext(row), texts, { lang, size }), { cssPage: true });
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="SZINN-${lang === 'en' ? 'overview' : 'overzicht'}-${size}-${lang}.pdf"`);
+    res.send(pdf);
+  } catch (err) {
+    console.error('Overzichtsblad mislukt:', err.message);
+    res.status(500).send(`Het overzicht kon niet worden gemaakt: ${String(err.message).replace(/[<>&]/g, '')}`);
+  }
+});
 // Overige journey-bestanden (css, js, assets) blijven statisch.
 app.use('/portaal/journey', express.static(path.join(ROOT, 'szinn-portal', 'journey')));
 // Cadeau verzilveren → intake (met eventuele code).

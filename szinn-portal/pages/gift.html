@@ -371,7 +371,7 @@
         <div class="gocard feat" data-route="3">
           <div class="ico"><svg viewBox="0 0 32 32"><path d="M16 9c-3-2-7-3-11-3v19c4 0 8 1 11 3 3-2 7-3 11-3V6c-4 0-8 1-11 3z"/><path d="M16 9v19"/></svg></div>
           <h3 data-t="c3h">De complete reis met boek</h3>
-          <div class="pr"><s data-t="c3was">€89,90</s><span data-t="c3pr">€59,90</span><small data-t="c3ship">+ verzendkosten</small></div>
+          <div class="pr"><s data-t="c3was">€89,90</s><span data-t="c3pr">€59,90</span><small data-t="c3ship">excl. verzendkosten</small></div>
           <ul><li data-t="incBp3">Alignment Blueprint, 13 secties</li><li data-t="incInt3">11 dagen Dagelijkse Integratie</li><li data-t="incAi3">11 dagen SZINN Companion</li><li data-t="incBook">Inclusief persoonlijk gedrukt boek</li></ul>
           <p class="nt" data-t="c3nt">Een premium, persoonlijk boek van circa 60 pagina's, met naam op de cover.</p>
           <button class="gbtn" type="button" data-pick="3" data-t="pick3">Kies dit cadeau</button>
@@ -399,7 +399,7 @@
             <label class="groute" data-route="3">
               <input type="radio" name="route" value="3">
               <div class="rt"><b data-t="gR3t">De complete reis met boek</b><span data-t="gR3p">Alles van de vorige optie, plus de Blueprint als gedrukt boek, verstuurd naar het adres van de ontvanger. Het verzendadres vul je in bij het afrekenen.</span></div>
-              <div class="rp">&euro;<span data-t="pr3">59,90</span><small data-t="gR3s">+ verzendkosten</small></div>
+              <div class="rp">&euro;<span data-t="pr3">59,90</span><small data-t="gR3s">excl. verzendkosten</small></div>
             </label>
           </div>
           <div class="gprice">&euro;<span id="priceVal">39,90</span><small id="gOnce">eenmalig</small></div>
@@ -454,7 +454,7 @@
       <details><summary data-t="q3">Wat houden de 11 dagen integratie in?</summary><p data-t="a3">Elf dagen lang 's ochtends en 's avonds een kort bericht op WhatsApp, met één vraag vanuit de eigen kaart: met welke energie werk ik vandaag, wat is mijn intentie, heb ik bewust geleefd, wat wil ik morgen creëren. Zo blijven de inzichten niet op papier maar landen ze in het dagelijks leven. Daarna kan de Dagelijkse Integratie los doorlopen voor €3,69 per maand.</p></details>
       <details><summary data-t="q4">Welke geboortegegevens zijn nodig?</summary><p data-t="a4">De volledige naam zoals op de geboorteakte, de geboortedatum, de geboortetijd en de geboorteplaats. Is de tijd onbekend, dan rekent SZINN met 12:00 uur en staat in de Blueprint wat dat betekent.</p></details>
       <details><summary data-t="q6">Wanneer komt het cadeau aan?</summary><p data-t="a6">De Blueprint wordt binnen 48 uur gemaakt. Kies daarom een moment dat minstens 2 dagen vooruit ligt, zodat alles op tijd klaarstaat. Het gedrukte boek heeft een eigen bezorgtijd.</p></details>
-      <details><summary data-t="q5">Kan ik de reis met een fysiek boek geven?</summary><p data-t="a5">Ja. Met "De complete reis met boek" (€59,90 + verzendkosten) wordt de Blueprint na je bestelling gedrukt als gelijmd boek en apart naar het adres van de ontvanger gestuurd. Het verzendadres vul je in bij het afrekenen. De digitale versie komt op het moment dat jij kiest per e-mail.</p></details>
+      <details><summary data-t="q5">Kan ik de reis met een fysiek boek geven?</summary><p data-t="a5">Ja. Met "De complete reis met boek" (€59,90, exclusief verzendkosten) wordt de Blueprint na je bestelling gedrukt als gelijmd boek en apart naar het adres van de ontvanger gestuurd. Het verzendadres vul je in bij het afrekenen. De digitale versie komt op het moment dat jij kiest per e-mail.</p></details>
     </div>
   </section>
 
@@ -488,7 +488,7 @@ const ROUTES = {
 const TX = {
   nl: {
     title: 'SZINN — Geef een reis naar jezelf cadeau',
-    once: 'eenmalig', onceShip: 'eenmalig + verzendkosten',
+    once: 'eenmalig', onceShip: 'eenmalig, excl. verzendkosten',
     pay: 'Ga naar betaling →', wait: 'Even geduld…',
     send: 'Verder: gegevens van de ontvanger →', sending: 'Even geduld…',
     badge: { 2: 'Jij maakt het persoonlijk', 3: 'De complete reis met boek' },
@@ -498,7 +498,7 @@ const TX = {
   },
   en: {
     title: 'SZINN — Give a journey to yourself as a gift',
-    once: 'one-off', onceShip: 'one-off + shipping',
+    once: 'one-off', onceShip: 'one-off, excl. shipping',
     pay: 'Continue to payment →', wait: 'One moment…',
     send: "Next: the recipient's details →", sending: 'One moment…',
     badge: { 2: 'You make it personal', 3: 'The complete journey with book' },
@@ -516,7 +516,7 @@ const EN = {
   eyebrow: 'SZINN Alignment Experience', h1: 'Give a journey to yourself as a gift.',
   lead: 'A personal journey to who you are. With their own Alignment Blueprint, 11 days of Daily Integration and the SZINN Companion, an AI guide that has read the Blueprint.',
   cta: 'Give the SZINN experience →', cta2: 'Give the SZINN experience →',
-  pline: 'Digital €39.90 (normally €69.90) · With printed book €59.90 + shipping · One-off, no subscription',
+  pline: 'Digital €39.90 (normally €69.90) · With printed book €59.90 excl. shipping · One-off, no subscription',
   pillH: 'Recognise. Deepen. Live.',
   p1h: 'Your Alignment Blueprint', p1p: 'How you work, what you feel and what keeps coming back, through astrology, numerology and Tikkun. In 13 personal sections.',
   p2h: '11 days of Daily Integration', p2p: 'A short WhatsApp message every morning and evening, from your own chart.',
@@ -543,13 +543,13 @@ const EN = {
   r3: '"By allowing my emotions and making choices from my heart, big shifts happened in my life."',
   optH: 'Choose how you give the journey.',
   c2h: 'You make it personal', c2was: '€69.90', c2pr: '€39.90', c2nt: 'You fill in the birth details and choose when it is sent.',
-  c3h: 'The complete journey with book', c3was: '€89.90', c3pr: '€59.90', c3ship: '+ shipping', c3nt: 'A premium, personal book of around 60 pages, with their name on the cover.',
+  c3h: 'The complete journey with book', c3was: '€89.90', c3pr: '€59.90', c3ship: 'excl. shipping', c3nt: 'A premium, personal book of around 60 pages, with their name on the cover.',
   incBp2: 'Alignment Blueprint, 13 sections', incInt2: '11 days of Daily Integration', incAi2: '11 days of SZINN Companion', inc482: 'At the moment you choose',
   incBp3: 'Alignment Blueprint, 13 sections', incInt3: '11 days of Daily Integration', incAi3: '11 days of SZINN Companion', incBook: 'Including a personal printed book',
   pick2: 'Choose this gift', pick3: 'Choose this gift',
   gH2a: 'Choose your gift', gFormIntro: 'There are two ways to give a Blueprint. Choose what suits you and the recipient.',
   gR2t: 'You make it personal', gR2p: 'You know the date, time and place of birth. The Blueprint lands in their inbox at the moment you choose.', gR2s: 'digital', pr2: '39.90',
-  gR3t: 'The complete journey with book', gR3p: 'Everything from the previous option, plus the Blueprint as a printed book, sent to their address. You enter the shipping address at checkout.', gR3s: '+ shipping', pr3: '59.90',
+  gR3t: 'The complete journey with book', gR3p: 'Everything from the previous option, plus the Blueprint as a printed book, sent to their address. You enter the shipping address at checkout.', gR3s: 'excl. shipping', pr3: '59.90',
   gLock: "Step 1 of 3: complete the payment. Then you choose the moment and fill in the recipient's details.", gBack: 'Back',
   gH2: 'When should the gift arrive?', gP1: "Payment successful. Choose the day the recipient gets the email. Then you fill in the recipient's details.",
   gLDate: 'Delivery date', gHint: 'The Blueprint is made within 48 hours, so choose a moment at least 2 days ahead. For example Christmas Eve.', gLMsg: 'Personal message',
@@ -563,7 +563,7 @@ const EN = {
   q3: 'What do the 11 days of integration include?', a3: 'Eleven days of a short WhatsApp message every morning and evening, with one question from their own chart: which energy am I working with today, what is my intention, did I live consciously, what do I want to create tomorrow. That way the insights do not stay on paper but land in daily life. After that, Daily Integration can continue on its own for €3.69 per month.',
   q4: 'Which birth details are needed?', a4: 'The full name as on the birth certificate, the date, time and place of birth. If the time is unknown, SZINN calculates with 12:00 noon and the Blueprint explains what that means.',
   q6: 'When does the gift arrive?', a6: 'The Blueprint is made within 48 hours. So choose a moment at least 2 days ahead, so everything is ready in time. The printed book has its own delivery time.',
-  q5: 'Can I give the journey with a printed book?', a5: 'Yes. With "The complete journey with book" (€59.90 + shipping) the Blueprint is printed as a glued book after your order and sent separately to the recipient\'s address. You enter the shipping address at checkout. The digital version arrives by e-mail at the moment you choose.',
+  q5: 'Can I give the journey with a printed book?', a5: 'Yes. With "The complete journey with book" (€59.90, excl. shipping) the Blueprint is printed as a glued book after your order and sent separately to the recipient\'s address. You enter the shipping address at checkout. The digital version arrives by e-mail at the moment you choose.',
   closeH: 'A gift to remember yourself.', foot: 'SZINN.AI · Remember who you are.',
 };
 if (LANG === 'en') {

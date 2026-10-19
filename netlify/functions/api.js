@@ -1620,6 +1620,75 @@ app.get('/api/orders/:id/pdf', async (req, res) => {
   res.status(202).json({ status: 'generating' });
 });
 
+// Het overzichtsblad (A4/A3/A2) uit de journey. Zelfde opzet als de PDF hierboven:
+// klaarstaande blob serveren, anders de achtergrondjob starten. De knop opent
+// een nieuw tabblad, dus terwijl hij rendert krijgt de klant een wachtpagina die
+// zichzelf ververst tot de PDF er is.
+app.get('/api/orders/:id/overview', async (req, res) => {
+  const order = await authorizedOrder(req, req.params.id);
+  if (!order) return res.status(403).send('<h1>Geen toegang</h1><p>Log in op je dashboard om je overzicht te openen.</p>');
+  const { overviewHTML, overviewKey, SIZES } = require('../../lib/overview');
+  const size = SIZES[req.query.size] ? req.query.size : 'A4';
+  const lang = req.query.lang === 'en' ? 'en' : 'nl';
+  const en = lang === 'en';
+  const store = blueprintStore();
+  const textsAll = await store.get(`${order.id}.texts.json`, { type: 'json' }).catch(() => null);
+  const key = overviewKey(order.id, lang, size, textsAll);
+  const file = `SZINN-${en ? 'overview' : 'overzicht'}-${size}-${lang}.pdf`;
+  const sendPdf = buf => {
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `inline; filename="${file}"`);
+    res.send(Buffer.from(buf));
+  };
+  const page = (titel, tekst, refresh) => res.status(refresh ? 202 : 500).send(
+    `<!doctype html><html lang="${lang}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">` +
+    (refresh ? '<meta http-equiv="refresh" content="4">' : '') +
+    `<title>SZINN</title><style>body{font-family:Georgia,serif;background:#16120E;color:#F3EAD8;display:grid;place-items:center;min-height:100vh;margin:0;text-align:center;padding:24px}p{color:#B9AC97;font-size:17px}</style></head>` +
+    `<body><div><h1 style="font-weight:400">${titel}</h1><p>${tekst}</p></div></body></html>`);
+
+  const pregen = await store.get(key, { type: 'arrayBuffer' });
+  if (pregen) return sendPdf(pregen);
+
+  // Lokaal (netlify dev, geen site-URL): direct renderen.
+  if (!process.env.URL && !process.env.DEPLOY_URL) {
+    try {
+      const { buildContext } = require('../../lib/pipeline');
+      const { generatePDF } = require('../../lib/pdf');
+      const texts = textsAll ? (textsAll[lang] || textsAll.nl) : null;
+      const pdf = await generatePDF(overviewHTML(buildContext(order), texts, { lang, size }), { cssPage: true });
+      try { await store.set(key, pdf.buffer.slice(pdf.byteOffset, pdf.byteOffset + pdf.byteLength)); } catch {}
+      return sendPdf(pdf);
+    } catch (err) {
+      console.error('Overzichtsblad mislukt:', err.message);
+      return page(en ? 'Something went wrong' : 'Er ging iets mis', String(err.message).replace(/[<>&]/g, ''), false);
+    }
+  }
+
+  const jobKey = `${key}.job`;
+  const job = await store.get(jobKey, { type: 'json' }).catch(() => null);
+  if (job && job.error) {
+    await store.delete(jobKey).catch(() => {});
+    return page(en ? 'Something went wrong' : 'Er ging iets mis',
+      en ? 'Your overview could not be made. Try again in a moment or let us know via szinn.ai.'
+         : 'Je overzicht kon niet worden gemaakt. Probeer het zo nog eens of laat het weten via szinn.ai.', false);
+  }
+  const running = job && (Date.now() - Date.parse(job.started)) < 5 * 60 * 1000;
+  if (!running) {
+    await store.setJSON(jobKey, { started: new Date().toISOString() }).catch(() => {});
+    try {
+      const base = process.env.URL || process.env.DEPLOY_URL;
+      const r = await fetch(`${base}/.netlify/functions/blueprint-pdf-background`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId: order.id, lang, overview: size, secret: TRIGGER_SECRET }),
+      });
+      console.log(`Overzichtsblad getriggerd voor ${order.id} (${lang} ${size}): HTTP ${r.status}`);
+    } catch (err) { console.error('Overzichtsblad-trigger mislukt:', err.message); }
+  }
+  page(en ? 'Your overview is being made' : 'Je overzicht wordt gemaakt',
+    en ? `Your ${size} sheet opens here by itself in a few seconds.` : `Je ${size}-blad opent hier vanzelf, over een paar tellen.`, true);
+});
+
 // ── Admin ─────────────────────────────────────────────────────────────────────
 app.post('/api/admin/login', async (req, res) => {
   const { email, password } = req.body || {};

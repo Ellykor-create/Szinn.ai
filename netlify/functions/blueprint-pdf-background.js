@@ -6,10 +6,11 @@
 //
 // Aanroep (alleen intern, vanuit api.js):
 //   POST /.netlify/functions/blueprint-pdf-background
-//   body: { orderId, lang, secret }
+//   body: { orderId, lang, secret }            → de blueprint-PDF
+//   body: { orderId, lang, secret, overview }  → het overzichtsblad (overview = A4/A3/A2)
 
 const { connectLambda } = require('@netlify/blobs');
-const { blueprintStore } = require('../../lib/db');
+const { blueprintStore, loadDB } = require('../../lib/db');
 const { upgradeNav } = require('../../lib/blueprint-nav');
 const { generatePDF } = require('../../lib/pdf');
 
@@ -29,6 +30,7 @@ exports.handler = async (event) => {
   if (!orderId) return { statusCode: 400, body: 'orderId ontbreekt' };
 
   const store = blueprintStore();
+  if (payload.overview) return overviewJob(store, orderId, lang, payload.overview);
   const jobKey = `${orderId}.${lang}.pdf.job`;
   const started = Date.now();
   try {
@@ -52,3 +54,27 @@ exports.handler = async (event) => {
     return { statusCode: 500, body: String(err.message || err) };
   }
 };
+
+// Het overzichtsblad: uit de rekenlaag + de bewaarde blueprintteksten.
+async function overviewJob(store, orderId, lang, size) {
+  const { overviewHTML, overviewKey, SIZES } = require('../../lib/overview');
+  const { buildContext } = require('../../lib/pipeline');
+  if (!SIZES[size]) return { statusCode: 400, body: 'onbekend formaat' };
+  const textsAll = await store.get(`${orderId}.texts.json`, { type: 'json' }).catch(() => null);
+  const key = overviewKey(orderId, lang, size, textsAll);
+  const started = Date.now();
+  try {
+    const order = (await loadDB()).orders.find(o => o.id === orderId);
+    if (!order) throw new Error('order niet gevonden');
+    const texts = textsAll ? (textsAll[lang] || textsAll.nl) : null;
+    const pdf = await generatePDF(overviewHTML(buildContext(order), texts, { lang, size }), { cssPage: true });
+    await store.set(key, pdf.buffer.slice(pdf.byteOffset, pdf.byteOffset + pdf.byteLength));
+    await store.delete(`${key}.job`).catch(() => {});
+    console.log(`overzichtsblad ${orderId} ${lang} ${size}: ${Math.round(pdf.length / 1024)} kB in ${Math.round((Date.now() - started) / 1000)}s`);
+    return { statusCode: 200, body: 'ok' };
+  } catch (err) {
+    console.error(`overzichtsblad ${orderId} ${lang} ${size} mislukt:`, err);
+    try { await store.setJSON(`${key}.job`, { started: new Date(started).toISOString(), error: String(err.message || err) }); } catch {}
+    return { statusCode: 500, body: String(err.message || err) };
+  }
+}

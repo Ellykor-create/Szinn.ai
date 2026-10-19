@@ -357,7 +357,9 @@
               return '<li><i>&#10003;</i>' + veilig(t) + '</li>';
             }).join("") + '</ul>' +
             '<div class="knoppen">' +
-              (b.pdf ? '<a class="knop goud" href="' + veilig(adres(b.pdf)) + '" download>' +
+              /* nieuw tabblad i.p.v. download: het overzichtsblad toont een
+                 wachtpagina zolang de PDF nog gemaakt wordt */
+              (b.pdf ? '<a class="knop goud" href="' + veilig(adres(b.pdf)) + '" target="_blank" rel="noopener">' +
                 veilig(T("downloaden", b.pdfLabel)) + ' &darr;</a>' : "") +
               (!b.pdf && b.naarAnker ? '<button class="knop goud" data-anker="' +
                 veilig(b.naarAnker) + '">' + veilig(b.pdfLabel || "") + ' &rarr;</button>' : "") +
@@ -370,7 +372,7 @@
               ? '<div class="bdprint">' +
                   (b.printKop ? '<span class="bdprintkop">' + veilig(b.printKop) + '</span>' : "") +
                   '<div class="bdprintrij">' + b.print.map(function (x) {
-                    return '<a class="bdprintknop" href="' + veilig(adres(x.href)) + '" download>' +
+                    return '<a class="bdprintknop" href="' + veilig(adres(x.href)) + '" target="_blank" rel="noopener">' +
                       '<i aria-hidden="true">&#8595;</i><b>' + veilig(x.knop || "") + '</b>' +
                       (x.sub ? '<small>' + veilig(x.sub) + '</small>' : "") + '</a>';
                   }).join("") + '</div></div>'
