@@ -466,7 +466,7 @@ function renderOrders(orders) {
             <a href="/api/admin/order/${o.id}/file/audit" class="btn btn-ghost btn-sm">Auditrapport</a>
             <span style="display:inline-flex;gap:4px;align-items:center"><input id="rug-${o.id}" inputmode="decimal" placeholder="rug mm" style="width:64px;font-size:11px;padding:4px 6px" title="Rugbreedte die Print&amp;Bind bij het uploaden toont"><button class="btn btn-ghost btn-sm" onclick="setSpine('${o.id}')">Omslag bijwerken</button></span>` : ''}
           ${o.book ? `<span style="font-size:11px;color:var(--muted)" title="${esc(o.book.error || '')}">📖 Boek: ${o.book.pb_order_id ? `Print&amp;Bind #${o.book.pb_order_id}` : esc(o.book.status)}</span>
-            ${o.status === 'completed' && !o.book.pb_order_id ? `<button class="btn btn-ghost btn-sm" onclick="printBook('${o.id}')">Opnieuw naar drukker</button>` : ''}` : ''}
+            ${o.status === 'completed' && !o.book.file_attached ? `<button class="btn btn-ghost btn-sm" onclick="printBook('${o.id}')">${o.book.pb_order_id ? 'PDF naar drukker' : 'Opnieuw naar drukker'}</button>` : ''}` : ''}
         </div>
       </td>
     </tr>`;

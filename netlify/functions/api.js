@@ -1836,8 +1836,8 @@ app.post('/api/internal/blueprint-result', async (req, res) => {
     return res.json({ ok: true });
   }
   console.log(`${orderId}: kit-v4 opgeleverd (${rondes} ronde(s), 3× audit OK)`);
-  // Boek: eenmalig naar Print&Bind; een her-generatie drukt niet opnieuw (pb_order_id).
-  if (order.book && !order.book.pb_order_id) {
+  // Boek: eenmalig naar Print&Bind; een her-generatie drukt niet opnieuw (file_attached).
+  if (order.book && !order.book.file_attached) {
     await triggerBookPrint(order, user?.email).catch(e => console.error('boek-trigger mislukt:', e.message));
   }
   if (giftWait) console.log(`${orderId}: cadeau, klaar-mail wacht tot ${giftDate}`);
@@ -1856,7 +1856,7 @@ app.post('/api/admin/order/:id/print', async (req, res) => {
   const db = await loadDB();
   const order = db.orders.find(o => o.id === req.params.id);
   if (!order?.book || order.status !== 'completed') return res.status(400).json({ error: 'Geen klaar boek' });
-  if (order.book.pb_order_id) return res.status(409).json({ error: `Al geplaatst (Print&Bind #${order.book.pb_order_id})` });
+  if (order.book.file_attached) return res.status(409).json({ error: `Al geplaatst met PDF (Print&Bind #${order.book.pb_order_id})` });
   const u = db.users.find(u => u.id === order.user_id);
   res.json({ ok: await triggerBookPrint(order, u?.email) });
 });
