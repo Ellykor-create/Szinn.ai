@@ -1476,7 +1476,7 @@ app.post('/api/intake/submit', async (req, res) => {
   if (gift) {
     const sender = giftLib.giftSender(db, gift);
     if (sender.email) {
-      await sendGiftConfirmationEmail({ to: sender.email, senderName: sender.name, recipientEmail: user.email, sendDate: giftIsDue(gift.send_date) ? 'now' : gift.send_date, lang: gift.lang || mailLang })
+      await sendGiftConfirmationEmail({ to: sender.email, senderName: sender.name, recipientEmail: user.email, sendDate: giftIsDue(gift.send_date) ? 'now' : gift.send_date, book: !!order.book, lang: gift.lang || mailLang })
         .catch(e => console.error('cadeau-bevestiging mislukt:', e.message));
     }
   } else {
