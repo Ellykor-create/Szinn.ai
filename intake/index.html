@@ -2009,6 +2009,7 @@ function showThankYou() {
     var mail = document.getElementById('email').value.trim().replace(/[<>&]/g, '');
     var ps = document.querySelectorAll('#thank-you p');
     if (ps[0]) ps[0].textContent = en ? 'The details have been received. The Blueprint is now being composed.' : 'De gegevens zijn ontvangen. De Blueprint wordt nu samengesteld.';
+    if (ps[0] && window.GIFT.format === 'book') ps[0].textContent += en ? ' The book is then printed and is on its way to the delivery address.' : ' Daarna wordt het boek gedrukt en komt het naar het bezorgadres.';
     if (ps[1]) ps[1].innerHTML = en
       ? 'On ' + giftDateText(true) + ', <b>' + mail + '</b> receives an email with login details and a link to the Blueprint. You will receive a confirmation by email.'
       : 'Op ' + giftDateText(false) + ' krijgt <b>' + mail + '</b> een e-mail met inloggegevens en een link naar de Blueprint. Jij ontvangt nu een bevestiging per mail.';

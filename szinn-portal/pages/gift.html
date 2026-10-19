@@ -618,8 +618,8 @@ function step(n) {
   $('sendDate').value = min; $('sendDate').min = min;
 })();
 
-// Terug van Stripe (?gift_session=…&route=…) of van de login (?route=…).
-(function () {
+// Terug van Stripe (?gift_session=…&route=…) of van de annuleerknop (?route=…).
+(async function () {
   const qs = new URLSearchParams(location.search);
   let saved = qs.get('route');
   try { saved = saved || sessionStorage.getItem('szinn_gift_route'); } catch (e) {}
@@ -629,18 +629,22 @@ function step(n) {
   // Een Stripe-betaallink heeft één vaste terugkeer-URL; landt de koper in de verkeerde taal, dan door naar de juiste.
   let want = null; try { want = sessionStorage.getItem('szinn_gift_lang'); } catch (e) {}
   if (want && want !== LANG) { location.replace((want === 'nl' ? '/nl/cadeau' : '/gift') + location.search); return; }
+  // Boek voor jezelf (homepage-knop, zelfde betaallink): geen cadeau, direct naar de intake in boekmodus.
+  try {
+    const r = await fetch('/api/gift/self-book?session_id=' + encodeURIComponent(sid));
+    if ((await r.json()).self) { location.replace('/intake?session_id=' + encodeURIComponent(sid)); return; }
+  } catch (e) {}
   paidToken = sid;
   history.replaceState(null, '', location.pathname);
   step(1);
 })();
 
-// Stap 1 → betaling (inloggen vereist: het cadeau hangt aan het account van de gever).
+// Stap 1 → betaling (geen login nodig: naam en e-mail van de gever komen uit Stripe).
 $('btnPay').addEventListener('click', async () => {
   $('btnPay').disabled = true;
   $('btnPay').textContent = T.wait;
   history.replaceState(null, '', location.pathname + '?route=' + route);
   try { sessionStorage.setItem('szinn_gift_lang', LANG); } catch (e) {}
-  if (!(await SzinnAuth.requireAuth())) return; // stuurt door naar de login met ?next=
   try {
     const r = await fetch('/api/gift/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ route, lang: LANG }) });
     const data = await r.json();

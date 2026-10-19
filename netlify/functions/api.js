@@ -446,23 +446,22 @@ const GIFT_PRICE_CENTS = parseInt(process.env.GIFT_PRICE_CENTS || '3990', 10);
 const GIFT_BOOK_PRICE_CENTS = parseInt(process.env.GIFT_BOOK_PRICE_CENTS || '5990', 10);
 const GIFT_BOOK_PAY_LINK = process.env.GIFT_BOOK_PAY_LINK || '';
 
+// Zonder login: de gever hoeft geen account te hebben (naam/e-mail komen uit Stripe).
 app.post('/api/gift/checkout', async (req, res) => {
-  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
   const book = String(req.body?.route) === '3';
   const lang = req.body?.lang === 'en' ? 'en' : 'nl';
   if (stripeConfigured()) {
     const db = await loadDB();
-    const user = db.users.find(u => u.id === req.auth.userId);
+    const user = req.auth && db.users.find(u => u.id === req.auth.userId);
     if (book && GIFT_BOOK_PAY_LINK) {
-      // client_reference_id = gever; verifyGiftPayment controleert dat bij terugkomst.
       const u = new URL(GIFT_BOOK_PAY_LINK);
-      u.searchParams.set('client_reference_id', String(req.auth.userId));
+      if (req.auth) u.searchParams.set('client_reference_id', String(req.auth.userId));
       if (user?.email) u.searchParams.set('prefilled_email', user.email);
       if (lang === 'en') u.searchParams.set('locale', 'en');
       return res.json({ url: u.toString() });
     }
     try {
-      const session = await createGiftCheckout({ email: user?.email, userId: req.auth.userId, baseUrl: SITE_URL, priceCents: book ? GIFT_BOOK_PRICE_CENTS : GIFT_PRICE_CENTS, book, lang });
+      const session = await createGiftCheckout({ email: user?.email, userId: req.auth?.userId, baseUrl: SITE_URL, priceCents: book ? GIFT_BOOK_PRICE_CENTS : GIFT_PRICE_CENTS, book, lang });
       return res.json({ url: session.url });
     } catch (e) {
       console.error('cadeau-checkout mislukt:', e.message);
@@ -473,6 +472,17 @@ app.post('/api/gift/checkout', async (req, res) => {
   // betaalstap. Mock (doorlopen zonder betalen) alleen lokaal, niet op Netlify.
   if (process.env.NETLIFY) return res.status(503).json({ error: 'Betalen is tijdelijk niet beschikbaar. Stel STRIPE_SECRET_KEY in en probeer opnieuw.' });
   res.json({ mock: true, price: GIFT_PRICE_EUR, paidToken: 'mock-' + crypto.randomBytes(6).toString('hex') });
+});
+
+// De homepage-boekknop gebruikt de cadeau-boeklink met client_reference_id=self (één
+// betaallink, één terugkeer-URL). Dan is het geen cadeau: de cadeaupagina stuurt door
+// naar de intake in boekmodus (paidSession herkent 'self').
+app.get('/api/gift/self-book', async (req, res) => {
+  if (!stripeConfigured() || !req.query.session_id) return res.json({ self: false });
+  try {
+    const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(req.query.session_id)}`);
+    res.json({ self: s.client_reference_id === 'self' });
+  } catch (e) { res.json({ self: false }); }
 });
 
 // Stripe shipping_details.address → Print&Bind-adres (straat en huisnummer splitsen).
@@ -489,8 +499,9 @@ function giftIsDue(sendDate) {
   return sendDate <= new Date().toISOString().slice(0, 10);
 }
 
-// Echte betaling verifiëren: betaald, hoort bij dit account, nog niet gebruikt.
-async function verifyGiftPayment(db, sid, userId) {
+// Echte betaling verifiëren: betaald en nog niet gebruikt. Het sessie-id staat alleen
+// in de terugkeer-URL van Stripe en is onraadbaar (zelfde model als de intake-betaallink).
+async function verifyGiftPayment(db, sid) {
   if (!sid) return false;
   if ((db.usedCheckoutSessions || []).includes(sid)) return false;
   try {
@@ -498,7 +509,7 @@ async function verifyGiftPayment(db, sid, userId) {
     // 100%-kortingscode → Stripe zet no_payment_required i.p.v. paid; ook geldig (zoals intakeAccess).
     const paid = s.status === 'complete' && (s.payment_status === 'paid' || s.payment_status === 'no_payment_required');
     // Geeft de sessie terug (truthy) zodat het verzendadres van het boek bewaard kan worden.
-    return (paid && String(s.client_reference_id) === String(userId)) ? s : false;
+    return paid ? s : false;
   } catch (e) { console.error('cadeaubetaling verifiëren mislukt:', e.message); return false; }
 }
 
@@ -507,7 +518,6 @@ async function verifyGiftPayment(db, sid, userId) {
 // direct gemaakt; de klaar-mail met inloggegevens gaat pas op de datum (lib/gift.js).
 // Met recipientEmail: oude code-flow (ontvanger vult zelf de intake in).
 app.post('/api/gift/create', async (req, res) => {
-  if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
   const { recipientEmail, recipientName, message, sendDate, lang, paidToken, route } = req.body || {};
   if (recipientEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(recipientEmail))
     return res.status(400).json({ error: 'Vul een geldig e-mailadres van de ontvanger in.' });
@@ -519,20 +529,24 @@ app.post('/api/gift/create', async (req, res) => {
   // Formaat: 'book' = met gedrukt boek (route 3). Verzendadres komt uit de Stripe-sessie.
   let format = String(route) === '3' ? 'book' : 'digital';
   let shipping = null;
+  let buyer = null;
   if (stripeConfigured()) {
-    const s = await verifyGiftPayment(db, paidToken, req.auth.userId);
+    const s = await verifyGiftPayment(db, paidToken);
     if (!s) return res.status(402).json({ error: 'Betaling niet bevestigd.' });
+    buyer = s.customer_details || null;
     const sd = s.shipping_details || s.collected_information?.shipping_details || null;
     if (sd?.address) { format = 'book'; shipping = { name: sd.name || null, ...sd.address }; }
   } else if (!String(paidToken || '').startsWith('mock-')) {
     return res.status(402).json({ error: 'Betaling niet bevestigd.' });
   }
-  const sender = db.users.find(u => u.id === req.auth.userId);
+  const sender = req.auth ? db.users.find(u => u.id === req.auth.userId) : null;
   const part = crypto.randomBytes(3).toString('hex').toUpperCase();
   const code = `SZINN-${part.slice(0, 4)}-${part.slice(4)}`;
   const due = giftIsDue(sendDate);
   const entry = {
-    code, owner_user_id: req.auth.userId, recipient_email: (recipientEmail || '').trim() || null,
+    code, owner_user_id: req.auth?.userId || null,
+    sender_name: sender ? null : buyer?.name || null, sender_email: sender ? null : buyer?.email || null,
+    recipient_email: (recipientEmail || '').trim() || null,
     recipient_name: (recipientName || '').trim() || null, message: (message || '').trim() || null,
     send_date: sendDate || null, lang: language, status: !recipientEmail ? 'awaiting_intake' : due ? 'sending' : 'pending',
     format, shipping,
@@ -553,7 +567,7 @@ app.post('/api/gift/create', async (req, res) => {
 
   if (due) {
     try {
-      await sendGiftEmail({ to: entry.recipient_email, recipientName, senderName: sender?.name, giftCode: code, personalMessage: message, lang: language });
+      await sendGiftEmail({ to: entry.recipient_email, recipientName, senderName: giftLib.giftSender(db, entry).name, giftCode: code, personalMessage: message, lang: language });
       entry.status = 'sent'; entry.sent_at = new Date().toISOString();
     } catch (err) { console.error('cadeau-mail mislukt:', err.message); entry.status = 'pending'; }
   }
@@ -976,8 +990,9 @@ async function paidSession(db, sessionId) {
   if (!sessionId || !stripeConfigured() || (db.usedCheckoutSessions || []).includes(sessionId)) return null;
   try {
     const s = await stripeReq('GET', `/checkout/sessions/${encodeURIComponent(sessionId)}`);
+    // client_reference_id 'self' = boek voor jezelf via de cadeau-boeklink (homepage-knop).
     if (s.status === 'complete' && (s.payment_status === 'paid' || s.payment_status === 'no_payment_required'))
-      return { ok: true, sid: sessionId, fresh: true, book: BOOK_PAYMENT_LINK_IDS.includes(s.payment_link) };
+      return { ok: true, sid: sessionId, fresh: true, book: BOOK_PAYMENT_LINK_IDS.includes(s.payment_link) || s.client_reference_id === 'self' };
   } catch (e) { console.error('checkout-sessie verifiëren mislukt:', e.message); }
   return null;
 }
@@ -1459,8 +1474,8 @@ app.post('/api/intake/submit', async (req, res) => {
 
   const mailLang = (order.blueprint_language === 'en') ? 'en' : 'nl';
   if (gift) {
-    const sender = db.users.find(u => u.id === gift.owner_user_id);
-    if (sender?.email) {
+    const sender = giftLib.giftSender(db, gift);
+    if (sender.email) {
       await sendGiftConfirmationEmail({ to: sender.email, senderName: sender.name, recipientEmail: user.email, sendDate: giftIsDue(gift.send_date) ? 'now' : gift.send_date, lang: gift.lang || mailLang })
         .catch(e => console.error('cadeau-bevestiging mislukt:', e.message));
     }
