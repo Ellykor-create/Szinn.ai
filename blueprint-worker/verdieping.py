@@ -94,10 +94,16 @@ def patronen(pos, aspecten):
     for a, b, c in itertools.combinations(TIEN, 3):
         if heeft(a, b, 'driehoek') and heeft(b, c, 'driehoek') and heeft(a, c, 'driehoek'):
             uit.append(f'grote driehoek {a}, {b} en {c} (een gesloten kring van gemak en talent)')
+    # v5.0 #8: een groot kruis bevat vier T-kruisen; die tellen niet apart, anders heet het kruis "T-kruis" met wisselend drukpunt
+    opp = [(a, b) for a, b in itertools.combinations(TIEN, 2) if heeft(a, b, 'oppositie')]
+    kruisen = [{a, b, c, d} for (a, b), (c, d) in itertools.combinations(opp, 2)
+               if not {a, b} & {c, d} and all(heeft(x, y, 'vierkant') for x in (a, b) for y in (c, d))]
+    uit += [f'groot kruis {lijst(sorted(k, key=TIEN.index))} (vier planeten in twee opposities en vier vierkanten: spanning in alle richtingen, '
+            'die je leert dragen; er is niet één drukpunt)' for k in kruisen]
     for a, b in itertools.combinations(TIEN, 2):
         if heeft(a, b, 'oppositie'):
             uit += [f'T-kruis {a} oppositie {b}, met {c} in het midden (spanning die tot actie dwingt; {c} is het drukpunt)'
-                    for c in TIEN if heeft(a, c, 'vierkant') and heeft(b, c, 'vierkant')]
+                    for c in TIEN if heeft(a, c, 'vierkant') and heeft(b, c, 'vierkant') and not any({a, b, c} <= k for k in kruisen)]
         if heeft(a, b, 'sextiel'):
             uit += [f'yod: {a} en {b} wijzen samen naar {c} (het gevoel van een eigen opdracht, via {c})'
                     for c in TIEN if c not in (a, b) and abs(sep(a, c) - 150) <= 2.5 and abs(sep(b, c) - 150) <= 2.5]
@@ -162,6 +168,14 @@ if __name__ == '__main__':
     assert any('volle maan' in x for x in r)
     assert any(x.startswith('Levenscyclus Saturnus-return: rond je 28e (komt nog)') for x in r)
     assert not any('°' in x for x in r)
+    # groot kruis: Zon 0°, Maan 90°, Mars 180°, Venus 270° geeft één groot kruis en geen T-kruis
+    kp = {n: {'lon': 999 + i * 37, 'sign': 'Ram', 'house': 1} for i, n in enumerate(TIEN)}
+    for n, l in (('Zon', 0), ('Maan', 90), ('Mars', 180), ('Venus', 270)):
+        kp[n]['lon'] = l
+    ka = [dict(a=x, b=y, type='oppositie' if abs((kp[x]['lon'] - kp[y]['lon']) % 360 - 180) < 1 else 'vierkant')
+          for x, y in itertools.combinations(('Zon', 'Maan', 'Mars', 'Venus'), 2)]
+    kr = patronen(kp, ka)
+    assert any(x.startswith('groot kruis Zon, Maan, Venus en Mars') for x in kr) and not any('T-kruis' in x for x in kr), kr
     # progressie op 26 jaar: dag 26 na 22 jan 2000 is 17 feb 2000, de Zon staat dan in Waterman (Vissen pas op 19 feb)
     assert any(x.startswith('Progressie: Geprogresseerde Zon') and 'in Waterman' in x and 'naar Vissen' in x for x in r)
     print('verdieping ok')

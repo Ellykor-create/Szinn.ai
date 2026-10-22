@@ -37,21 +37,35 @@ class Tegenhouden(Exception):
 
 
 # ---------- invoer ----------
+LANDCODE = {'Nederland': 'NL', 'Netherlands': 'NL', 'België': 'BE', 'Belgium': 'BE', 'Duitsland': 'DE', 'Germany': 'DE',
+            'Frankrijk': 'FR', 'France': 'FR', 'Verenigd Koninkrijk': 'GB', 'United Kingdom': 'GB', 'Spanje': 'ES', 'Spain': 'ES',
+            'Italië': 'IT', 'Italy': 'IT', 'Zwitserland': 'CH', 'Switzerland': 'CH', 'Oostenrijk': 'AT', 'Austria': 'AT',
+            'Verenigde Staten': 'US', 'Canada': 'CA', 'Australië': 'AU', 'Zuid-Afrika': 'ZA'}
+
+
+def naamgenoten(plaats, land=None):
+    """Zelfde bron als het intakeformulier (Open-Meteo): alle plaatsen met de naam van de beste treffer in het geboorteland
+    (zonder land: in het land van de beste treffer), beste treffer eerst. Loenen geeft er drie."""
+    url = ('https://geocoding-api.open-meteo.com/v1/search?count=10&language=en&format=json&name=' + urllib.parse.quote(plaats)
+           + (f'&countryCode={LANDCODE[land]}' if land in LANDCODE else ''))
+    with urllib.request.urlopen(url, timeout=15) as r:
+        hits = json.load(r).get('results') or []
+    return [h for h in hits if h['name'].lower() == hits[0]['name'].lower() and h.get('country_code') == hits[0].get('country_code')]
+
+
 def geocode(plaats, land=None):
-    """Zelfde bron als het intakeformulier (Open-Meteo): (lat, lon, IANA-tijdzone). Coördinaten of tijdzone ontbreken
-    alleen als de klant een plaats intypte zonder een suggestie te kiezen; dan zoeken we hem hier alsnog op."""
-    for q in (f'{plaats} {land}'.strip() if land and land != 'Other' else None, plaats):
-        if not q:
-            continue
-        url = 'https://geocoding-api.open-meteo.com/v1/search?count=1&language=en&format=json&name=' + urllib.parse.quote(q)
-        try:
-            with urllib.request.urlopen(url, timeout=15) as r:
-                hit = (json.load(r).get('results') or [None])[0]
-        except Exception:  # noqa: BLE001
-            hit = None
-        if hit:
-            return hit['latitude'], hit['longitude']
-    raise Tegenhouden(f'geboorteplaats "{plaats}" niet gevonden (masterprompt 3.1: altijd de werkelijke stad)')
+    """Coördinaten ontbreken alleen als de klant een plaats intypte zonder een suggestie te kiezen; dan zoeken we hem hier
+    alsnog op. Bestaat de naam meer dan eens (v5.0 #2), dan kiezen we nooit zelf."""
+    try:
+        hits = naamgenoten(plaats, land)
+    except Exception:  # noqa: BLE001
+        hits = []
+    if not hits:
+        raise Tegenhouden(f'geboorteplaats "{plaats}" niet gevonden (masterprompt 3.1: altijd de werkelijke stad)')
+    if len(hits) > 1:
+        raise Tegenhouden(f'geboorteplaats "{plaats}" bestaat {len(hits)} keer ({"; ".join(str(h.get("admin1")) + ", " + str(h.get("admin2")) for h in hits)}): '
+                          'kies nooit zelf, laat de klant de plaats in de stadzoeker kiezen')
+    return hits[0]['latitude'], hits[0]['longitude']
 
 
 def tijdzone(lat, lon):
@@ -75,12 +89,22 @@ def plaatsnaam(lat, lon):
     return stad, a.get('country')
 
 
+TUSSENVOEGSELS = {'van', 'de', 'der', 'den', 'het', 'ten', 'ter', 'te', "'t", 'in', 'op', 'aan', 'bij', 'uit', 'von', 'zu',
+                  'la', 'le', 'du', 'di', 'da', 'dos', 'del'}
+
+
+def akte(naam):
+    """v5.0 #14: naam zoals op de akte. Een naamdeel dat helemaal klein getypt is ("Danillo frederik") krijgt een hoofdletter;
+    tussenvoegsels blijven klein."""
+    return ' '.join(w[0].upper() + w[1:] if w.islower() and w not in TUSSENVOEGSELS else w for w in naam.split())
+
+
 def invoer(order):
     raw = order.get('intake_data') or {}
     raw = json.loads(raw) if isinstance(raw, str) else raw
     # Leeg veld = de naam hierboven is de geboortenaam (hint in het intakeformulier: alleen invullen als hij afwijkt)
-    geboortenaam = ' '.join(str(raw.get('geboortenaam') or f"{raw.get('voornaam') or ''} {raw.get('achternaam') or ''}").split()) \
-        or str(order.get('full_birth_name') or order.get('client_name') or '').strip()
+    geboortenaam = akte(' '.join(str(raw.get('geboortenaam') or f"{raw.get('voornaam') or ''} {raw.get('achternaam') or ''}").split()) \
+        or str(order.get('full_birth_name') or order.get('client_name') or ''))
     tijd_status = str(raw.get('birth_time_status') or 'exact')
     tijd = str(order.get('birth_time') or raw.get('geboortetijd') or '').strip()
     lat = order.get('birth_lat') or raw.get('geboorte_lat')
@@ -88,6 +112,13 @@ def invoer(order):
     plaats = (order.get('birth_location') or raw.get('geboorteplaats_volledig') or raw.get('geboorteplaats') or '').split(',')[0].strip()
     if not geboortenaam:
         raise Tegenhouden('volledige geboortenaam ontbreekt (masterprompt 3.2/11: geen onbevestigde naam)')
+    # v5.0 #1: naamgetallen op de volledige naam van de akte, inclusief de achternaam bij geboorte (niet alleen de voornamen)
+    if len(geboortenaam.split()) < 2:
+        raise Tegenhouden(f'geboortenaam "{geboortenaam}" is één woord: de naamgetallen horen op de volledige naam van de akte, met achternaam')
+    achter = {w for w in re.split(r'[\s-]+', str(raw.get('achternaam') or '').lower()) if w and w not in TUSSENVOEGSELS}
+    if achter and not achter & set(re.split(r'[\s-]+', geboortenaam.lower())):
+        raise Tegenhouden(f'geboortenaam "{geboortenaam}" bevat de achternaam "{raw.get("achternaam")}" niet: alleen voornamen ingevuld? '
+                          'Naamgetallen horen op de volledige naam van de akte (bij een andere achternaam bij geboorte: navragen)')
     # Geen exacte tijd: liever opleveren met een geboortetijdnoot dan tegenhouden.
     # Benadering = midden van het gekozen dagdeelvenster ("06:00–12:00"), onbekend = 12:00.
     if not re.match(r'^\d{1,2}:\d{2}$', tijd):
@@ -104,16 +135,22 @@ def invoer(order):
         plaats, land = plaatsnaam(lat, lon)
     if not plaats:
         raise Tegenhouden('geboorteplaats ontbreekt (masterprompt 3.1: altijd de werkelijke stad)')
+    dubbel = []
     if lat in (None, '') or lon in (None, ''):
         lat, lon = geocode(plaats, land)
+    else:   # v5.0 #2: gekozen in de stadzoeker, dus die coördinaten gelden; bestaat de naam vaker, dan een "!" voor Elly
+        try:
+            dubbel = [f"{h.get('admin1')}, {h.get('admin2')}" for h in naamgenoten(plaats, land)]
+        except Exception:  # noqa: BLE001
+            pass
     if not tz:
         tz = tijdzone(lat, lon)
     datetime.strptime(order['birth_date'], '%Y-%m-%d')
-    voornaam = str(raw.get('voornaam') or order.get('client_name') or geboortenaam).split()[0]
-    naam = str(order.get('client_name') or f"{raw.get('voornaam', '')} {raw.get('achternaam', '')}").strip() or geboortenaam
+    voornaam = akte(str(raw.get('voornaam') or order.get('client_name') or geboortenaam)).split()[0]
+    naam = akte(str(order.get('client_name') or f"{raw.get('voornaam', '')} {raw.get('achternaam', '')}")) or geboortenaam
     return dict(naam=naam, voornaam=voornaam, geboortenaam=geboortenaam, datum=order['birth_date'], tijd=tijd.zfill(5),
                 plaats=plaats, lat=float(lat), lon=float(lon), tz=tz,
-                woonplaats_tz=raw.get('woonplaats_tijdzone'), tijd_status=tijd_status), raw
+                woonplaats_tz=raw.get('woonplaats_tijdzone'), tijd_status=tijd_status, plaats_dubbel=dubbel if len(dubbel) > 1 else []), raw
 
 
 # ---------- bouwen en controleren ----------
@@ -215,9 +252,16 @@ def dashboard_teksten(c, lp):
         astrology=dict(qualities=dict(sun=P['Zon'], moon=P['Maan'], mercury=P['Mercurius'], venus=P['Venus'], mars=P['Mars'], jupiter=P['Jupiter'],
                                       saturn=P['Saturnus'], uranus=P['Uranus'], neptune=P['Neptunus'], pluto=P['Pluto'], northNode=P['Noordknoop'],
                                       southNode=c['zuidknoop_kaart'], chiron=P['Chiron'], ascendant=P['Ascendant'], mc=P['Midhemel'])),
-        numerology=dict(lifePathTitle=LP_NAAM[lp], lifePathBody=pp(c['num']['lp']), pyBody=pp(c['num']['pj'])),
+        numerology=dict(lifePathTitle=LP_NAAM[lp], lifePathBody=pp(c['num']['lp']), pyBody=pp(c['num']['pj']),
+                        expressionBody=c['num']['uitdrukking'], soulUrgeBody=c['num']['zielenurge'], personalityBody=c['num']['persoonlijkheid']),
         tikkun=dict(cards=[dict(title=x['titel'], body=x['tekst']) for x in c['tikkun']]),
-        integration=dict(layers=dict(astro=c['integratie']['lagen'], focus=c['dagfocus']), shadow=c['integratie']['schaduw']),
+        integration=dict(layers=dict(astro=c['integratie']['lagen'], focus=c['dagfocus']), shadow=c['integratie']['schaduw'],
+                         gifts=c['integratie']['gaven'], practices=[dict(title=x['titel'], body=x['tekst']) for x in c['integratie']['praktijken']]),
+        # alleen voor het overzichtsblad (lib/overview.js)
+        elements=dict(distribution=c['elementen']['verdeling'], pull=c['elementen']['pull']),
+        patterns=[dict(label=x['label'], title=x['titel'], body=x['tekst']) for x in c['patroonkaarten']],
+        permissions=[dict(text=x['tekst'], note=x['uitleg']) for x in c['permissions']],
+        thoughts=[dict(text=writer._ontdaan(x['gedachte']), source=x['plaatsing']) for x in c.get('gedachten', [])],
         nodes=dict(body=pp(c['knopen']), south=c['zuidknoop_kaart'], north=c['noordknoop_kaart'], chiron=c['chiron']),
         reflection=dict(questions=c['reflectie']),
         flow=dict(questions=c['flow']['vragen']),
@@ -231,7 +275,10 @@ def rapport(f, heeft_intake, uitvoer, rondes):
         f"- Geboortegegevens: {f['geboortedatum']} · {f['geboortetijd']} ({f['tijd_status']}) · {f['geboorteplaats']}",
         f"- Tijdzone UTC{f['tz']:+g} · coördinaten {f['lat']}, {f['lon']} · geboortenaam {f['geboortenaam']}",
         f"- Ascendant wisselt van teken over {f['asc_marge_min']} min · gevoelig: {'; '.join(f['gevoelig']) or 'geen'} · wisselt bij ±2 min: {', '.join(f['wankel']) or 'geen'}",
-        f"- Intake: {'ja' if heeft_intake else 'nee (geen citaten, geen levensfeiten)'}",
+        f"- Intake: {'ja' if heeft_intake else 'nee (geen citaten, geen levensfeiten)'}"]
+        + ([f"- ! Geboorteplaats {f['geboorteplaats']} bestaat {len(f['plaats_dubbel'])} keer ({'; '.join(f['plaats_dubbel'])}): "
+            f"coördinaten uit de stadzoeker gebruikt ({f['lat']}, {f['lon']}), controleer of dat de juiste is"] if f.get('plaats_dubbel') else [])
+        + [
         f"- Vergeleken met {len(glob.glob(os.path.join(CORPUS, '*')))} eerder opgeleverde Blueprints",
         f"- Schrijf- en controlerondes: {rondes}", '', '## Laatste auditronde (3× OK op deze versie)', '```', uitvoer.strip(), '```'])
 
@@ -257,6 +304,7 @@ def genereer(job):
     o, raw = invoer(job['order'])
     o['job_dir'] = job_dir
     f, _, ruw = datalaag.bouw(o)
+    f['plaats_dubbel'] = o['plaats_dubbel']
     json.dump(f, open(os.path.join(job_dir, 'facts.json'), 'w'), ensure_ascii=False, indent=1)
     open(os.path.join(job_dir, 'datalaag.txt'), 'w').write(ruw)
     intake = writer.intake_tekst(raw)

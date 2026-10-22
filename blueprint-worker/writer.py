@@ -2,6 +2,7 @@
 """SZINN · schrijflaag. Laat Claude alle persoonlijke tekst schrijven als JSON (content.json) vanuit de datalaag en
 de intake, met masterprompt v4 als bindende standaard. Berekent niets: alle getallen staan al in de feiten."""
 import json, os, re, sys
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 import anthropic
 
@@ -103,7 +104,7 @@ def schema(groep, facts):
     return obj(ritme=obj(alinea=S, kaarten=arr(TTX)),
                integratie=obj(lagen=S, schaduw=S, gaven=arr(S), adem=S, praktijken=arr(TTX), prompts=arr(obj(onderwerp=S, tekst=S)),
                               maanden=arr(obj(titel=S, tekst=S, transits=S))),
-               permissions=arr(obj(tekst=S, uitleg=S)), zin=S, integratie_quote=S, tot_slot=arr(S), mail=S, dagfocus=S)
+               permissions=arr(obj(tekst=S, uitleg=S)), gedachten=arr(obj(gedachte=S, plaatsing=S)), zin=S, integratie_quote=S, tot_slot=arr(S), mail=S, dagfocus=S)
 
 
 # ---------- opdrachten per groep ----------
@@ -130,8 +131,8 @@ OPDRACHT = {
 - chiron: één alinea over Chiron in teken en huis, met de gave, eindigend met de bron.
 - tikkun: PRECIES 4 in deze volgorde: Kernthema, Herhalingspatroon, Groei, Zielstaak. titel = korte kop; tekst = 4 à 5 zinnen met bron tussen haakjes.
 - retrograde: één alinea over de retrograde planeten (knopen nooit als bijzonderheid). Zijn er geen, zeg dat rustig.
-- overzicht.een_zin: één zin die begint met "{voornaam} " (wordt tussen aanhalingstekens gezet).
-- overzicht.rijen: PRECIES 8 korte duidingen, in deze volgorde: Elementen, Kernidentiteit, Emotioneel kompas, Zielrichting, Levensthema, Naamgetallen, Tikkun, Schaduwthema.""",
+- overzicht.een_zin: één zin in de tweede persoon die begint met "{voornaam}, jij " (wordt tussen aanhalingstekens gezet); nooit in de derde persoon.
+- overzicht.rijen: PRECIES 8 korte duidingen, in deze volgorde: Elementen, Kernidentiteit, Emotioneel kompas, Zielrichting, Levensthema, Naamgetallen, Tikkun, Schaduwthema. Elke rij gaat alleen over zijn eigen bron: Elementen = de elementverdeling; Kernidentiteit = Zon; Emotioneel kompas = Maan; Zielrichting = Noordknoop; Levensthema = Levenspad en Persoonlijk Jaar (geen Ascendant, geen planeten); Naamgetallen = Uitdrukking, Zielenurge, Persoonlijkheid en keynote (niet het Levenspad); Tikkun = de zielstaak uit 07; Schaduwthema = Zuidknoop.""",
 'C': """GROEP C · 06 Numerologie, 03 Flow, 10 Reflectievragen
 - num.ondertoon: {ondertoon}
 - num.uitdrukking / zielenurge / persoonlijkheid: 1 à 2 zinnen per getal (wat het betekent), eventueel een meestergetal in een naamdeel benoemen.
@@ -153,8 +154,9 @@ OPDRACHT = {
 - integratie.adem: één alinea "De adem als sleutel".
 - integratie.praktijken: PRECIES 7 (titel kort, tekst 2 zinnen met bron tussen haakjes).
 - integratie.prompts: PRECIES 6; 1 t/m 3 astrologie, 4 t/m 6 schaduwwerk. onderwerp = korte naam ("Je kernidentiteit belichten"); tekst = een AI-prompt in de ik-vorm die begint met "Ik ben {voornaam}" en de relevante plaatsingen/getallen noemt, en de AI vraagt om vragen te stellen in plaats van advies te geven. Noem in de prompts geen graden en niet de geboortedatum of -tijd.
-- integratie.maanden: PRECIES 6, in de volgorde van de kalender. titel = 2 à 4 woorden bij het maandgetal; tekst = 1 à 2 zinnen over wat het maandgetal vraagt; transits = de transits en lunaties van die maand in lopende zinnen, ALLEEN uit de lijst voor die maand, met datum (zonder jaartal) en huis; "exact" alleen waar de lijst "· exact ·" zegt; bij "bijna exact" schrijf je dat de planeet tot op die afstand komt en omkeert, nooit "exact". Is er niets, schrijf alleen over de maanfasen.
+- integratie.maanden: PRECIES 6, in de volgorde van de kalender. titel = 2 à 4 woorden bij het maandgetal; tekst = 1 à 2 zinnen over wat het maandgetal vraagt; transits = de transits en lunaties van die maand in lopende zinnen, ALLEEN uit de lijst voor die maand. Per transit: de datum precies zoals in de lijst (zonder jaartal, nooit een dag eerder of later), de transitplaneet, ALTIJD het aspect (conjunct, sextiel, vierkant, driehoek of oppositie) met je natale punt, en het huis precies zoals in de lijst (dezelfde transit overal hetzelfde huis). Direct daarna één korte, voorzichtige zin in gewone taal over wat die transit kan betekenen (bv. "Dit kan een periode zijn waarin ..."); nooit een kale opsomming. "exact" alleen waar de lijst "· exact ·" zegt; bij "bijna exact" schrijf je dat de planeet in dat aspect tot op het aantal boogminuten uit de lijst komt (letterlijk overnemen, niet afronden) en dan omkeert, nooit "exact". Is er niets, schrijf alleen over de maanfasen.
 - permissions: PRECIES 8, in deze volgorde 2× vuur, 2× lucht, 2× aarde, 2× water. tekst begint met "Ik geef mezelf toestemming om"; uitleg = "Voor [plaatsing]. [één korte zin]".
+- gedachten: PRECIES 7 onbewuste gedachten voor het overzichtsblad. gedachte = een overtuiging in de ik-vorm die deze mens misschien herkent, hooguit 10 woorden, zonder aanhalingstekens (het blad zet ze zelf); plaatsing = de bron uit de FEITEN waar die gedachte vandaan komt (planeet in teken en huis, retrograde, knoop, getal of elementverdeling), hooguit 10 woorden. Elke gedachte een andere bron; samen ook iets uit de numerologie. Geen citaat uit de intake.
 - zin: "De zin om mee te nemen", 3 à 4 zinnen. integratie_quote: één zin voor de quotepagina "Integratie".
 - tot_slot: PRECIES 2 alinea's, persoonlijk vanuit kaart én intake; de eerste begint met "{voornaam}, "; de tweede eindigt op "Remember who you are."
 - mail: 2 à 3 zinnen voor de afleveringsmail: minstens één anker uit de kaart (bv. het Levenspad) en, als er een intake is, één kort letterlijk citaat tussen aanhalingstekens. Geen aanhef, geen afsluiting.
@@ -167,7 +169,7 @@ Werkregels voor deze pipeline (aanvullend op de masterprompt):
 1. Schrijf in het Nederlands, tweede persoon enkelvoud (jij/jouw). Gewone tekst, geen HTML, geen markdown, geen opsommingstekens.
 2. De schrijflaag berekent niets. Gebruik uitsluitend de posities, huizen, graden, orbs en getallen uit de FEITEN. Schrijf graden altijd precies zoals in de feiten (bv. 1°29'), zonder spatie, en huizen als "huis 9". Noem nooit een graad die niet in de feiten staat.
 3. Herkenning eerst, plaatsing als bron: begin bij gedrag en gevoel, zet de plaatsing erachter of tussen haakjes. Zinnen in de duiding beginnen niet met een planeetnaam.
-4. Aanhalingstekens (" of “ ”) gebruik je UITSLUITEND voor letterlijke citaten uit de intake, kort en woord voor woord gelijk aan de intake. Geen citaten in groep A, B en C. Zonder intake: geen enkel citaat, geen levensfeiten, geen "zoals je zelf zegt".
+4. Aanhalingstekens (" of “ ”) gebruik je UITSLUITEND voor letterlijke citaten uit de intake, kort en woord voor woord gelijk aan de intake. Geen citaten in groep A, B en C. Zonder intake: geen enkel citaat, geen levensfeiten, geen "zoals je zelf zegt". Staat een citaat in een andere taal dan de Blueprint (bv. een Engelse intake in een Nederlandse Blueprint), neem het dan letterlijk over en zet direct erachter de vertaling tussen haakjes, zonder aanhalingstekens.
 5. Verboden: em-dashes (—) in lopende tekst, de woorden zeldzaam/zeldzame/uniek, causaliteit (verklaart waarom, bewijst, zorgt ervoor dat, is de reden dat), medische woorden (diagnose, ziekte, stoornis), percentages, u/uw, Hz, "permission slips", de oude signatuur "nooit verloren", andere bedrijfsnamen. Schrijf SZINN in kapitalen.
 6. Niets overnemen: schrijf elke zin nieuw voor deze ene mens. Gebruik geen voorbeeldzinnen uit de masterprompt.
 7. Geen namen van andere mensen dan die de klant zelf in de intake noemt. Noem geen andere geboortedata dan die van de klant; schrijf data in de kalender zonder jaartal.
@@ -176,6 +178,17 @@ Werkregels voor deze pipeline (aanvullend op de masterprompt):
 10. Schrijf voor iemand zonder enige kennis van astrologie. Maak elke duiding concreet met een alledaags moment dat de lezer uit het eigen leven kent (een gesprek, een werkdag, een avond thuis, een ruzie, een keuze), zodat die denkt "dat ben ik". Heeft de intake iets over dat thema, sluit dan aan bij wat de klant daar vertelt. Geen algemeenheden die op iedereen passen ("je bent soms onzeker", "je houdt van mensen"): benoem juist wat deze kaart onderscheidt, en hoe twee plaatsingen samen iets specifieks laten zien.
 12. TONE OF VOICE (bindend, zelfde als het dashboard en de companion): je schrijft als een warme, wijze vriendin die toevallig veel weet van astrologie, numerologie en Kabbalah. Geen orakel, geen leraar op afstand, geen therapeut met een klembord; je zit naast de lezer, niet tegenover. Eerlijk tot op het bot, met liefde: je zegt wat je ziet, helder en zonder omwegen, en je oordeelt nooit. De lezer mag denken "au, dat klopt" en tegelijk glimlachen. Licht en menselijk: humor mag, een knipoog mag, af en toe een grap over hoe eigenwijs mensen zijn; diepgang en luchtigheid wisselen elkaar af, nooit zwaarder of zweveriger dan nodig. Je normaliseert: niemand is kapot of fout, schaduwkanten horen bij het ontwerp, en de eigenaardige lastige kantjes benoem je met compassie en een lach, want dat is precies wat deze mens menselijk maakt. Verliefd worden op wie je bent, ego en al, dat is de kunst. Je denkt in balans tussen de vier elementen: welk element sterk aanwezig is en welk er bijna niet is, en wat dat betekent op een gewone dinsdag (vuur wil beweging, enthousiasme en durven; aarde wil rust, ritme en iets tastbaars; lucht wil begrijpen, praten en ruimte; water wil voelen, verbinden en veiligheid). Het element dat iemand mist is geen tekort maar een uitnodiging om iets kleins van dat element te lenen. Je nodigt uit tot de waarnemerspositie: even een stap naast jezelf zetten en met mildheid naar je eigen verhaal kijken. Pijn en crisis zijn geen bewijs dat er iets mis is, maar meestal het moment waarop iemand zichzelf beter leert kennen; zeg dat nuchter. Nodig uit tot herkenning ("Herken je dit?", "Waar merk je dat in je dag?") en koppel inzicht aan iets concreets voor vandaag; waar het past een kleine lichamelijke oefening van hooguit een minuut. Nooit angst aanjagen, voorspellen of beloven; nooit medisch, financieel of juridisch advies; geen clichés als "het universum heeft een plan" of "alles gebeurt met een reden". De lezer is altijd de enige expert op zichzelf; jouw duiding is een uitnodiging om te reflecteren, geen waarheid.
 11. Gebruik de VERDIEPING als rode draad: de chartheerser, de eindheerser, waardigheden en aspectpatronen laten zien welke plaatsingen in deze kaart het zwaarst wegen. Geef die het meeste gewicht, laat ze in meerdere hoofdstukken terugkomen en leg verbanden ertussen, zodat het document als één verhaal over deze mens leest in plaats van een losse opsomming. Vertaal de techniek naar gewone taal (niet "je hebt een T-kruis", wel wat de lezer ervan merkt, met de techniek tussen haakjes). Progressies (hoe de kaart zich door de jaren ontwikkelt) en levenscycli gebruik je voor het nu: benoem ze bij het persoonlijk jaar en in de introductie of de integratie. Levenscycli schrijf je als leeftijd ("rond je 29e"), nooit als datum.
+13. Feitelijke precisie (uit de controle van eerdere Blueprints; de pipeline keurt deze fouten af):
+- Het Persoonlijk Jaar wisselt op 1 januari, nooit op je verjaardag. Zet "verjaardag" nooit in een zin over het Persoonlijk Jaar.
+- Elk teken hoort bij zijn eigen element: vuur = Ram, Leeuw, Boogschutter; aarde = Stier, Maagd, Steenbok; lucht = Tweelingen, Weegschaal, Waterman; water = Kreeft, Schorpioen, Vissen. Mars in Maagd staat in een aardeteken, niet in een vuurteken.
+- Tel per teken apart van per element: het aantal planeten in een teken staat in PLANETEN PER TEKEN, per element in ELEMENTEN. Noem nooit een ander aantal.
+- Heeft een element 0 planeten, dan ontbreekt het. Schrijf dan "ontbreekt", nooit "bijna niet", "nauwelijks" of "weinig".
+- Noem een aspectpatroon zoals de VERDIEPING het noemt, en houd één benaming in het hele document: een groot kruis heet groot kruis, nooit T-kruis, en heeft geen drukpunt.
+- Zware planeten zijn Jupiter, Saturnus, Uranus, Neptunus en Pluto. Zon, Maan, Mercurius, Venus en Mars noem je nooit zwaar.
+- "Vlak bij" of "naast elkaar" alleen als twee planeten binnen ongeveer 8° van elkaar staan; anders "in hetzelfde teken" of "in hetzelfde huis".
+- Bij "ook" of "net als" controleer je wat echt gedeeld wordt: hetzelfde teken, hetzelfde huis of een aspect. Delen ze alleen het huis, schrijf dan niet dat de planeet "ook in Stier" staat.
+- Een sextiel en een driehoek zijn harmonisch: noem ze nooit scherp, gespannen of botsend. Bij een kleine orb schrijf je "nauw".
+- Schrijf de voornaam en de geboortenaam altijd precies zoals in de FEITEN, met dezelfde hoofdletters.
 
 === MASTERPROMPT v4 ===
 """ + MASTERPROMPT
@@ -198,7 +211,7 @@ if LANG == 'en':
 # Vaste frases in de opdrachten die letterlijk in het document komen (bouwscript en vormcontrole rekenen erop).
 FRASES_EN = {
     '"Dit ben jij."': '"This is you."', '"Het recept: "': '"The recipe: "', '"Ik geef mezelf toestemming om"': '"I give myself permission to"',
-    '"Ik ben {voornaam}"': '"I am {voornaam}"',
+    '"Ik ben {voornaam}"': '"I am {voornaam}"', '"{voornaam}, jij "': '"{voornaam}, you "',
     '"De praktijken hieronder richten zich op waar de meeste beweging mogelijk is."': '"The practices below focus on where the most movement is possible."',
     '"Voor jou is dat nu vooral: ..."': '"For you, right now, that is mainly: ..."', 'Begin niet met "Geboortetijdnoot:"': 'Do not begin with "Birth time note:"',
     '"Persoonlijk Jaar N (JJJJ) en " (bv. "het jaar dat eraan komt")': '"Personal Year N (YYYY) and " (e.g. "the year that is coming")',
@@ -228,6 +241,7 @@ def feiten_tekst(f, intake):
                f"  Zuidknoop: {f['zuidknoop']['graad']} {f['zuidknoop']['teken']}, huis {f['zuidknoop']['huis']}", '',
                'ELEMENTEN (tien planeten): ' + ' · '.join(f"{k['element']} {k['aantal']} ({k['wie']})" for k in f['el_kaarten']),
                'MODALITEITEN: ' + ', '.join(f'{k} {v}' for k, v in f['modaliteiten'].items()),
+               'PLANETEN PER TEKEN (tien planeten): ' + ', '.join(f'{t} {n}' for t, n in Counter(f['planeten'][p]['teken'] for p in PLANETEN[:10]).most_common()),
                'PLANETEN PER HUIS: ' + ', '.join(f'huis {k}: {v}' for k, v in sorted(f['huizen_telling'].items(), key=lambda kv: int(kv[0]))),
                'RETROGRADE: ' + (', '.join(f['retrograde']) or 'geen'), '',
                'ASPECTEN (orb tot 5°, de nauwste eerst):'] + [f"  {a['sleutel']} · orb {a['orb']}" for a in f['aspecten_tabel']]
@@ -366,7 +380,7 @@ AANTAL = {'A': [('elementen.kaarten', 4), ('elementen.verdeling', 3), ('karakter
           'B': [('patronen', 3), ('patroonkaarten', 2), ('knopen', 2), ('tikkun', 4), ('overzicht.rijen', 8)],
           'C': [('num.lp', 2), ('num.pj', 2), ('flow.alineas', 4), ('flow.kaarten', 3), ('flow.vragen', 5), ('reflectie', 10)],
           'D': [('ritme.kaarten', 6), ('integratie.gaven', 6), ('integratie.praktijken', 7), ('integratie.prompts', 6),
-                ('integratie.maanden', 6), ('permissions', 8), ('tot_slot', 2)]}
+                ('integratie.maanden', 6), ('permissions', 8), ('gedachten', 7), ('tot_slot', 2)]}
 
 
 def _pad(d, pad):
@@ -379,6 +393,8 @@ VAKTAAL = re.compile(r'\b(manifestatie\w*|polariteit\w*|archetypisch\w*|transfor
 if LANG == 'en':
     VAKTAAL = re.compile(r'\b(manifestation\w*|polarit\w*|archetyp\w*|transformative\w*|resonat\w*|integrat(e|es|ed|ing)|paradigm\w*|essence|catalyst\w*)\b', re.I)
 PERMISSIE = 'I give myself permission' if LANG == 'en' else 'Ik geef mezelf toestemming'
+EEN_ZIN = '{}, you ' if LANG == 'en' else '{}, jij '
+PLANEET_RX = re.compile(r'\b(' + '|'.join(sorted({*PLANETEN, 'Ascendant', *map(nm, PLANETEN)}, key=len, reverse=True)) + r')\b')
 RITME_LABELS = ({'morning', 'work & focus', 'body & rhythm', 'heart & connection', 'evening & recovery', 'season'} if LANG == 'en'
                 else {'ochtend', 'werk & focus', 'lichaam & ritme', 'hart & verbinding', 'avond & herstel', 'seizoen'})
 MAX_ZIN = 30   # woorden, bron tussen haakjes niet meegeteld; regel 9 vraagt gemiddeld 15
@@ -449,8 +465,13 @@ def vormcontrole(groepen, f, leesbaar=True):
             if any(x['titel'].strip().lower() in RITME_LABELS for x in c['ritme']['kaarten']):
                 p.append('ritme.kaarten: titel is een eigen korte kop (bv. "Begin met bewegen"), niet het label zelf (Ochtend, Seizoen, ...)')
         if g == 'B':
-            if not c['overzicht']['een_zin'].startswith(f['voornaam']):
-                p.append(f'overzicht.een_zin moet beginnen met "{f["voornaam"]}"')
+            if not c['overzicht']['een_zin'].startswith(EEN_ZIN.format(f['voornaam'])):
+                p.append(f'overzicht.een_zin moet in de tweede persoon beginnen met "{EEN_ZIN.format(f["voornaam"])}"')
+            rij = c['overzicht']['rijen']
+            if len(rij) == 8 and PLANEET_RX.search(rij[4]):
+                p.append('overzicht.rijen[4] (Levensthema) gaat alleen over Levenspad en Persoonlijk Jaar, niet over Ascendant of planeten')
+            if len(rij) == 8 and re.search(r'Levenspad|Life Path', rij[5]):
+                p.append('overzicht.rijen[5] (Naamgetallen) gaat over Uitdrukking, Zielenurge, Persoonlijkheid en keynote, niet over het Levenspad')
             if f['tijdnoot_nodig'] and not c['geboortetijdnoot'].strip():
                 p.append('geboortetijdnoot is verplicht voor deze kaart')
         if g == 'D':

@@ -63,6 +63,10 @@ figure figcaption{ position:absolute; inset:0; display:flex; align-items:center;
               display:block; margin-top:6px; }
 .vel{ border:1px solid rgba(154,123,46,.35); padding:10px; background:#fff; }
 .vel img{ width:100%; display:block; }
+/* het eigen A2-blad: alleen vel 1, op ware grootte (420×594 mm) en via schaalVel() verkleind */
+.vel-blad{ display:block; position:relative; overflow:hidden; aspect-ratio:420/594; padding:0; }
+.vel-blad iframe{ position:absolute; top:0; left:0; width:420mm; height:594mm; border:0;
+                  transform-origin:0 0; pointer-events:none; }
 
 .index{ border-top:1px solid rgba(199,154,94,.45); }
 .index a, .index span.rij{ width:100%; display:flex; justify-content:space-between; align-items:baseline;

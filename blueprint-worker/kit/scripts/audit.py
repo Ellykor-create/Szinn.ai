@@ -11,7 +11,7 @@ Gebruik:
   --kalender  JJJJ-MM, startmaand van de kalender (zonder: afgeleid uit de eerste maandkaart)
   --tz        IANA-tijdzone van de WOONPLAATS voor de kalendercontrole (zonder: Europe/Amsterdam, met waarschuwing)
 Eindigt op 'OK, klaar voor oplevering' of op het aantal problemen. Bij problemen: niet opleveren, bron aanpassen, opnieuw bouwen."""
-import sys, os, json, re, html, argparse, glob, unicodedata, subprocess
+import sys, os, json, re, html, argparse, glob, unicodedata, subprocess, itertools
 import swisseph as swe
 from szinn_numerologie import *
 from szinn_vast import *
@@ -133,7 +133,8 @@ if kaarten:
     TR=[]; LU=[]
     for l in r.stdout.splitlines():
         mt=re.match(r"\s+(\d\d)-(\d\d)-(\d{4}) \S+\s+(\w+) (\w+) natale (\w+) · (exact|bijna exact)[^·]*· transit .*?, huis (\d+)",l)
-        if mt: dd,mo,yy,tn,asp,nn,ex,hu=mt.groups(); TR.append(((int(yy),int(mo),int(dd)),tn,asp,nn,ex=='exact',int(hu)))
+        bo=re.search(r"komt tot op (\d+)'",l)
+        if mt: dd,mo,yy,tn,asp,nn,ex,hu=mt.groups(); TR.append(((int(yy),int(mo),int(dd)),tn,asp,nn,ex=='exact',int(hu),bo and int(bo.group(1))))
         mt=re.match(r"\s+(\d\d)-(\d\d)-(\d{4}) \S+\s+(Nieuwe|Volle) maan · (\d+)°\d\d' \w+ · huis (\d+)",l)
         if mt: dd,mo,yy,k,gr,hu=mt.groups(); LU.append(((int(yy),int(mo),int(dd)),k,int(gr),int(hu)))
     if r.returncode or not (TR or LU): fail(f'kalendercontrole: transits.py faalde ({(r.stderr or r.stdout)[-300:].strip()})')
@@ -150,10 +151,14 @@ if kaarten:
     def huis_in(s):
         h=re.search(r'\b(?:huis|house) (\d{1,2})\b',s) or re.search(r'\b('+'|'.join(ORDW)+r') house\b',s)
         return None if not h else int(h.group(1)) if h.group(1).isdigit() else ORDW.index(h.group(1))+1
-    nk=0
+    # v5.0 #16: elke transit krijgt een voorzichtige betekenis-zin; #17: nooit "nadert" zonder aspect
+    HEDGE=r'\b(can|could|may|might|perhaps|possibly|invites?)\b' if EN else r'\b(kan|kun|kunt|kunnen|mag|mogen|misschien|mogelijk|wellicht|zou|zouden|nodigt)\b'
+    NADERT=r'\b(nadert|naderen|komt tot op|tot op|approaches|comes within|within)\b'
+    BOOGMIN=r"(?<![°\d])(\d{1,2})(?:\s*(?:boogminuten|boogminuut|arcminutes?|arc minutes?|minutes of arc)\b|')"
+    nk=0; huizen={}
     for _,tekst in kaarten:
-        d=None
-        for z in zinsdelen(plain(tekst)):
+        d=None; zs=zinsdelen(plain(tekst))
+        for i,z in enumerate(zs):
             zl=z.lower(); dm=re.search(DATUM,zl)
             if dm:
                 dag,mn=(dm.group(1),dm.group(2)) if dm.group(1) else (dm.group(4),dm.group(3)); mo=MND.index(mn)+1; d=(jaar(mo),mo,int(dag))
@@ -176,6 +181,10 @@ if kaarten:
             if not tps or not nat: continue
             tn,nn=TP[tps[0].group(1)],NP[nat.group(1)]; nk+=1
             aw=re.search(r'\b('+'|'.join(ASPW)+r')\b',zl); asp=ASPW[aw.group(1)] if aw else None
+            if asp is None and (dm or re.search(NADERT,zl)): fail(f'kalender: transit {vertaal(tn)} → {vertaal(nn)} zonder aspect (conjunct, sextiel, vierkant, driehoek of oppositie) in {q}')
+            volgende=zs[i+1].lower() if i+1<len(zs) else ''
+            if dm and not re.search(HEDGE,zl) and not (volgende and not re.search(DATUM,volgende) and re.search(HEDGE,volgende)):
+                fail(f'kalender: transit {vertaal(tn)} → {vertaal(nn)} {nl_d(d)} zonder korte betekenis-zin erbij in {q}')
             kand=[x for x in TR if x[1]==tn and x[3]==nn and (asp is None or x[2]==asp)]
             naam=f'{vertaal(tn)} {vertaal(asp) if asp else "→"} {vertaal(nn)}'
             if not kand: fail(f'kalender: {naam} staat niet in de uitvoer van transits.py in {q}'); continue
@@ -186,6 +195,11 @@ if kaarten:
             if re.search(r'exact',zl) and not re.search(r'\b(bijna|nearly|almost)\b',zl) and not x[4]:
                 fail(f'kalender: {naam} {nl_d(d)} heet "exact", maar transits.py zegt bijna exact in {q}')
             if hu and hu!=x[5]: fail(f'kalender: {naam} {nl_d(d)} vanuit huis {hu}, transits.py zegt huis {x[5]} in {q}')
+            if hu: huizen.setdefault((x[1],x[2],x[3]),set()).add(hu)
+            bm=re.search(BOOGMIN,z)
+            if bm and x[6] is not None and int(bm.group(1))!=x[6]: fail(f"kalender: {naam} {nl_d(d)} tot op {bm.group(1)}', transits.py zegt {x[6]}' (letterlijk overnemen, afgekapt) in {q}")
+    for (tn,asp,nn),hs in huizen.items():   # v5.0 #19: één huis per transit, overal hetzelfde
+        len(hs)>1 and fail(f'kalender: {vertaal(tn)} {vertaal(asp)} {vertaal(nn)} staat in de ene maand in huis {min(hs)} en in de andere in huis {max(hs)}')
     print(f'   kalendervermeldingen gecontroleerd: {nk}')
 else:
     print('   ! geen maandkaarten gevonden: kalendercontrole niet uitgevoerd')
@@ -302,6 +316,13 @@ if a.intake:
     for c in eigen_cit:
         if c.strip(' .') not in it: fail(f'citaat staat niet letterlijk in de intake: "{c[:90]}"')
     print(f'   citaten gecontroleerd tegen de intake: {len(eigen_cit)}')
+    # v5.0 #3: citaat in een andere taal dan de Blueprint: letterlijk, met de vertaling tussen haakjes erachter
+    SW={'nl':{'de','het','een','ik','je','niet','van','dat','met','voor','op','mijn','maar','wat','zijn','naar','ook','wil','heel'},
+        'en':{'the','and','i','you','not','of','that','with','for','on','my','but','what','are','to','it','me','want','really'}}
+    for c in eigen_cit:
+        w=re.findall(r"[a-zà-ÿ']+",c.lower()); sc={k:sum(x in v for x in w) for k,v in SW.items()}; ander='nl' if LANG=='en' else 'en'
+        if sc[ander]>=2 and sc[ander]>sc[LANG] and not re.search(re.escape(c)+r'["”]\s*\(',T):
+            print(f'   ! citaat in een andere taal dan de Blueprint zonder vertaling tussen haakjes erachter: "{c[:90]}"')
 else:
     print(f'   geen intake: citaten buiten de vaste teksten horen er niet in · gevonden: {len(eigen_cit)}')
     for c in eigen_cit:
@@ -347,6 +368,43 @@ if EN: KL=r"\b(?:(?:your|natal)\s+(sun|moon|mars|mercury)|(venus|jupiter|saturn|
 else:  KL=r"\b(?:(?:je|jouw|natale|eigen|geprogresseerde)\s+(zon|maan|mars)|(mercurius|venus|jupiter|saturnus|uranus|neptunus|pluto|chiron|ascendant|midhemel|noordknoop|zuidknoop))\b"
 kl=[m.group(0) for blok in bron for m in re.finditer(KL,blok)]   # hoofdlettergevoelig: "Venus" telt niet, "venus" wel; "volle maan" en "zonlicht" niet
 print(f'   planeetnamen met kleine letter: {len(kl)}' + (f' · ! waarschuwing, schrijf met hoofdletter: {sorted(set(kl))}' if kl else ''))
+# feiten in de geschreven tekst (controle van 19 okt 2026): alleen in wat de schrijflaag schreef, citaten tellen niet
+EL_VAN={s:e for e,ts in (('vuur',S[0::4]),('aarde',S[1::4]),('lucht',S[2::4]),('water',S[3::4])) for s in ts}
+TKL={vertaal(s).lower():s for s in S}; TK_RX='|'.join(map(re.escape,sorted(TKL,key=len,reverse=True)))
+ELW={'fire':'vuur','earth':'aarde','air':'lucht','water':'water'} if EN else {e:e for e in EL_VAN.values()}
+TELW={w:i for i,w in enumerate(('zero','one','two','three','four','five','six','seven','eight','nine','ten') if EN else ('nul','één','twee','drie','vier','vijf','zes','zeven','acht','negen','tien'))}; TELW['een']=1
+ZWAK=r'almost|barely|hardly|little|scarcely' if EN else r'bijna|nauwelijks|weinig'
+NUL=[vertaal(e) for e,v in ch.get('elementen',{}).items() if v==0]
+KRUIS=any(re.search(r'groot kruis|grand cross',v) for v in (FACTS or {}).get('verdieping',[]))
+nf=0
+for z in (z for b in bron for z in zinsdelen(re.sub(r'["“][^"”]*["”]','',b))):
+    zl=z.lower(); q=f'"{z[:110]}"'; nf+=1
+    if re.search(r'verjaardag|birthday',zl) and re.search(r'persoonlijke? jaar|personal year',zl):   # v5.0 #4
+        fail(f'Persoonlijk Jaar gekoppeld aan de verjaardag (het wisselt op 1 januari) in {q}')
+    for m in re.finditer(r'\b(fire|earth|air|water)[- ]signs?\b' if EN else r'\b(vuur|aarde|lucht|water)-?tekens?\b',zl):   # v5.0 #5
+        tk=sorted((abs(t.start()-m.start()),TKL[t.group(1)]) for t in re.finditer(r'\b('+TK_RX+r')\b',zl))
+        if tk and tk[0][0]<=60 and EL_VAN[tk[0][1]]!=ELW[m.group(1)]: fail(f'{vertaal(tk[0][1])} hoort bij {vertaal(EL_VAN[tk[0][1]])}, niet bij {m.group(1)} in {q}')
+    for m in re.finditer(r'\b(\d+|'+'|'.join(TELW)+r') (?:planeten|planets) (?:staan |stand |are )?in ('+TK_RX+r')\b',zl):   # v5.0 #6
+        n=int(m.group(1)) if m.group(1).isdigit() else TELW[m.group(1)]; s_=TKL[m.group(2)]
+        tel={sum(ch['pos'][p]['sign']==s_ for p,_ in P[:10]),sum(v['sign']==s_ for v in ch['pos'].values())}
+        n not in tel and fail(f'"{m.group(0)}", maar de datalaag geeft {min(tel)} planeten in {vertaal(s_)} in {q}')
+    for w in NUL:   # v5.0 #7
+        if re.search(rf'\b{w}\w*\b[^.;:,]{{0,40}}\b({ZWAK})\b|\b({ZWAK})\b[^.;:,]{{0,40}}\b{w}\b',zl): fail(f'{w} heeft 0 planeten: schrijf "ontbreekt", niet "bijna/nauwelijks/weinig" in {q}')
+    if KRUIS and re.search(r't-kruis|t-square',zl): fail(f'de datalaag geeft een groot kruis, de tekst noemt het T-kruis in {q}')   # v5.0 #8
+    if re.search(r'zware plane(et|ten)|heavy planets?',zl) and re.search(r'\b(Mars|Venus|Mercurius|Mercury|Zon|Sun|Maan|Moon)\b',z):   # v5.0 #9
+        print(f'   ! "zware planeet" in een zin met een persoonlijke planeet (zwaar = Jupiter t/m Pluto): {q}')
+    if re.search(r'vlak ?bij|dicht ?bij|naast elkaar|close to|close together|right next to|side by side',zl) and not re.search(r'maan valt|volle maan|nieuwe maan|full moon|new moon|transit|natale|natal',zl):   # v5.0 #10 (alleen de geboortekaart)
+        ns=list(dict.fromkeys(m.group(1) for m in re.finditer(r'\b('+PT_RX+r')\b',z)))
+        af=[abs((pts[x]-pts[y]+180)%360-180) for x,y in itertools.combinations(ns,2)]
+        af and min(af)>8 and print(f'   ! "vlak bij" bij {min(af):.0f}° afstand (alleen binnen ongeveer 8°): {q}')
+    if re.search(r'\b(sextiel|driehoek|sextile|trine)\b',zl) and re.search(r'\b(scherp\w*|gespannen|spanning|botsing|botst|wrijving|sharp|tense|tension|clash\w*|friction)\b',zl):   # v5.0 #15
+        print(f'   ! sextiel/driehoek is harmonisch, niet scherp of gespannen: {q}')
+print(f'   feitencontrole geschreven tekst (verjaardag/PJ, element, telling, ontbrekend element, groot kruis): {nf} zinnen')
+# naam zoals op de akte (v5.0 #1 en #14): volledige naam met achternaam, overal met dezelfde hoofdletters
+nw=a.naam.split()
+len(nw)<2 and fail(f'geboortenaam "{a.naam}" is één woord: naamgetallen horen op de volledige naam van de akte, met achternaam')
+for x in [a.naam]+[' '.join(nw[i:i+2]) for i in range(len(nw)-1) if nw[i][:1].isupper() and nw[i+1][:1].isupper()]:
+    for v in sorted({m.group(0) for m in re.finditer(r'\b'+re.escape(x)+r'\b',T,flags=re.I)}-{x}): fail(f'naam wijkt af van de geboortenaam: "{v}" in plaats van "{x}"')
 # geboortegegevens overal gelijk
 inv=ch.get('invoer',{})
 if inv:

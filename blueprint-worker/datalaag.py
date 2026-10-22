@@ -52,7 +52,9 @@ def run_transits(chart_path, jaar, maand, n=6, tz='Europe/Amsterdam'):
         if not m or line.startswith('=='):
             continue
         d, mo, y = map(int, m.groups())
-        tekst = line.strip().replace(m.group(0), f'{d} {MAANDEN[mo - 1]}', 1)
+        # v5.0 #20: datum = lokale datum van het exacte moment; het tijdstip zelf laten we weg, zodat 00:45 op de 16e
+        # niet als "de avond van de 15e" gelezen wordt
+        tekst = re.sub(r'^\S+ \d\d:\d\d\s+', f'{d} {MAANDEN[mo - 1]} · ', line.strip())
         soort = 'maanfasen' if ('Nieuwe maan' in line or 'Volle maan' in line) else 'transits'
         per.setdefault((y, mo), {'transits': [], 'maanfasen': []})[soort].append(tekst)
     return per, r.stdout

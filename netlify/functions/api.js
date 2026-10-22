@@ -1633,6 +1633,11 @@ app.get('/api/orders/:id/overview', async (req, res) => {
   const en = lang === 'en';
   const store = blueprintStore();
   const textsAll = await store.get(`${order.id}.texts.json`, { type: 'json' }).catch(() => null);
+  // format=html: het blad zelf, voor het voorbeeldvel in de journey (geen PDF nodig)
+  if (req.query.format === 'html') {
+    const { buildContext } = require('../../lib/pipeline');
+    return res.type('html').send(overviewHTML(buildContext(order), textsAll ? (textsAll[lang] || textsAll.nl) : null, { lang, size }));
+  }
   const key = overviewKey(order.id, lang, size, textsAll);
   const file = `SZINN-${en ? 'overview' : 'overzicht'}-${size}-${lang}.pdf`;
   const sendPdf = buf => {

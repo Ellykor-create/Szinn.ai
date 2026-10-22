@@ -31,7 +31,7 @@ GLOSSARIUM = {
     'Geprogresseerde': 'Progressed', 'Levenscyclus': 'Life cycle', 'Chartheerser': 'Chart ruler', 'eindheerser': 'final dispositor',
     'Waardigheid': 'Dignity', 'Heerschap': 'Rulership', 'Aspectpatroon': 'Aspect pattern', 'Halfronden': 'Hemispheres',
     'Maanfase bij geboorte': 'Moon phase at birth', 'Progressie': 'Progression', 'in eigen teken': 'in its own sign',
-    'grote driehoek': 'grand trine', 'T-kruis': 'T-square', 'stellium in': 'stellium in', 'wederzijdse receptie': 'mutual reception',
+    'grote driehoek': 'grand trine', 'T-kruis': 'T-square', 'groot kruis': 'grand cross', 'stellium in': 'stellium in', 'wederzijdse receptie': 'mutual reception',
     'retrograde': 'retrograde', 'exact': 'exact', 'transit': 'transit', 'orb': 'orb',
 }
 for _m_nl, _m_en in zip(MAANDEN['nl'], MAANDEN['en']):

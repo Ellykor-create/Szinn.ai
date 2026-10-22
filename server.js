@@ -479,6 +479,7 @@ app.get('/api/orders/:id/overview', async (req, res) => {
       const f = path.join(dir, `${row.id}.texts.json`);
       if (fs.existsSync(f)) { const all = JSON.parse(fs.readFileSync(f, 'utf8')); texts = all[lang] || all.nl; break; }
     }
+    if (req.query.format === 'html') return res.type('html').send(overviewHTML(buildContext(row), texts, { lang, size }));
     const pdf = await generatePDF(overviewHTML(buildContext(row), texts, { lang, size }), { cssPage: true });
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `inline; filename="SZINN-${lang === 'en' ? 'overview' : 'overzicht'}-${size}-${lang}.pdf"`);

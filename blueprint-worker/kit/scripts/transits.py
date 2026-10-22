@@ -92,6 +92,9 @@ def main():
             for ang, nm in A.items():
                 doelen = [nl + ang] if ang in (0, 180) else [nl + ang, nl - ang]
                 for doel in doelen:
+                    # v5.0 #19: één huis per transit, het huis van de geraakte graad. Staat die vlak op een cusp, dan gaf
+                    # house(L) per passage (direct/retrograde) een ander huis; zo is het overal hetzelfde.
+                    hd = house(doel % 360)
                     g = lambda jd: wrap(lon(tp, jd) - doel)
                     t = j0 - STAP; gp = g(t); prev_abs = [abs(gp)]
                     hist = []
@@ -102,7 +105,7 @@ def main():
                             te = bisect(g, t, t2)
                             if j0 <= te < j1:
                                 L = lon(tp, te)
-                                regels.append((te, f"{tn} {nm} natale {nn} · exact · transit {fmt(L)}, huis {house(L)}"))
+                                regels.append((te, f"{tn} {nm} natale {nn} · exact · transit {fmt(L)}, huis {hd}"))
                         hist.append((t, abs(gp)))
                         t, gp = t2, g2
                     hist.append((t, abs(gp)))
@@ -114,7 +117,7 @@ def main():
                             om = abs(g(tm))
                             if om > 1 / 60 and j0 <= tm < j1:   # boven 1 boogminuut: niet exact
                                 L = lon(tp, tm)
-                                regels.append((tm, f"{tn} {nm} natale {nn} · bijna exact, komt tot op {int(om * 60)}' en keert om · transit {fmt(L)}, huis {house(L)}"))
+                                regels.append((tm, f"{tn} {nm} natale {nn} · bijna exact, komt tot op {int(om * 60)}' en keert om · transit {fmt(L)}, huis {hd}"))
 
     print(f"== Transits (tijdzone {tzarg}; 'exact' = de planeet bereikt de exacte graad) ==")
     for te, txt in sorted(regels):

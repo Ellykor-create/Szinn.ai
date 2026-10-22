@@ -64,6 +64,13 @@
   };
 
   function el(id) { return document.getElementById(id); }
+  /* het eigen blad (vel-blad) staat op A2-ware grootte in een iframe; schaal het naar het vak */
+  window.schaalVel = function (f) {
+    f.style.transform = "scale(" + f.parentNode.clientWidth / f.offsetWidth + ")";
+  };
+  window.addEventListener("resize", function () {
+    [].forEach.call(document.querySelectorAll(".vel-blad iframe"), window.schaalVel);
+  });
   function veilig(t) {
     return String(t == null ? "" : t)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -172,8 +179,12 @@
           (b.tekst ? '<div class="t">' + b.tekst + '</div>' : "");
 
       case "vel":
-        return kop(b) +
-          '<div class="vel"><img src="' + veilig(b.src) + '" alt="' + veilig(b.alt || "") + '"></div>' +
+        /* b.blad: het eigen blad als live HTML, op ware grootte gerenderd en
+           geschaald naar de breedte van het vak; klikken opent de PDF */
+        return kop(b) + (b.blad
+          ? '<a class="vel vel-blad" href="' + veilig(b.href || b.blad) + '" target="_blank" rel="noopener">' +
+            '<iframe src="' + veilig(b.blad) + '" title="' + veilig(b.alt || "") + '" tabindex="-1" scrolling="no" onload="schaalVel(this)"></iframe></a>'
+          : '<div class="vel"><img src="' + veilig(b.src) + '" alt="' + veilig(b.alt || "") + '"></div>') +
           (b.tekst ? '<div class="t">' + b.tekst + '</div>' : "");
 
       case "html":
