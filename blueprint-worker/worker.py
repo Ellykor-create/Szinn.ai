@@ -112,13 +112,16 @@ def invoer(order):
     plaats = (order.get('birth_location') or raw.get('geboorteplaats_volledig') or raw.get('geboorteplaats') or '').split(',')[0].strip()
     if not geboortenaam:
         raise Tegenhouden('volledige geboortenaam ontbreekt (masterprompt 3.2/11: geen onbevestigde naam)')
-    # v5.0 #1: naamgetallen op de volledige naam van de akte, inclusief de achternaam bij geboorte (niet alleen de voornamen)
-    if len(geboortenaam.split()) < 2:
-        raise Tegenhouden(f'geboortenaam "{geboortenaam}" is één woord: de naamgetallen horen op de volledige naam van de akte, met achternaam')
-    achter = {w for w in re.split(r'[\s-]+', str(raw.get('achternaam') or '').lower()) if w and w not in TUSSENVOEGSELS}
+    # v5.0 #1: naamgetallen op de volledige naam van de akte, inclusief de achternaam bij geboorte (niet alleen de voornamen).
+    # Alleen voornamen ingevuld (komt vaak voor): achternaam erachter en opleveren met een "!" voor Elly, niet tegenhouden.
+    achternaam = ' '.join(str(raw.get('achternaam') or '').split())
+    achter = {w for w in re.split(r'[\s-]+', achternaam.lower()) if w and w not in TUSSENVOEGSELS}
+    naam_aangevuld = ''
     if achter and not achter & set(re.split(r'[\s-]+', geboortenaam.lower())):
-        raise Tegenhouden(f'geboortenaam "{geboortenaam}" bevat de achternaam "{raw.get("achternaam")}" niet: alleen voornamen ingevuld? '
-                          'Naamgetallen horen op de volledige naam van de akte (bij een andere achternaam bij geboorte: navragen)')
+        naam_aangevuld = geboortenaam
+        geboortenaam = akte(f'{geboortenaam} {achternaam}')
+    if len(geboortenaam.split()) < 2:
+        raise Tegenhouden(f'geboortenaam "{geboortenaam}" is één woord en er is geen achternaam: de naamgetallen horen op de volledige naam van de akte')
     # Geen exacte tijd: liever opleveren met een geboortetijdnoot dan tegenhouden.
     # Benadering = midden van het gekozen dagdeelvenster ("06:00–12:00"), onbekend = 12:00.
     if not re.match(r'^\d{1,2}:\d{2}$', tijd):
@@ -150,7 +153,8 @@ def invoer(order):
     naam = akte(str(order.get('client_name') or f"{raw.get('voornaam', '')} {raw.get('achternaam', '')}")) or geboortenaam
     return dict(naam=naam, voornaam=voornaam, geboortenaam=geboortenaam, datum=order['birth_date'], tijd=tijd.zfill(5),
                 plaats=plaats, lat=float(lat), lon=float(lon), tz=tz,
-                woonplaats_tz=raw.get('woonplaats_tijdzone'), tijd_status=tijd_status, plaats_dubbel=dubbel if len(dubbel) > 1 else []), raw
+                woonplaats_tz=raw.get('woonplaats_tijdzone'), tijd_status=tijd_status, plaats_dubbel=dubbel if len(dubbel) > 1 else [],
+                naam_aangevuld=naam_aangevuld), raw
 
 
 # ---------- bouwen en controleren ----------
@@ -278,6 +282,8 @@ def rapport(f, heeft_intake, uitvoer, rondes):
         f"- Intake: {'ja' if heeft_intake else 'nee (geen citaten, geen levensfeiten)'}"]
         + ([f"- ! Geboorteplaats {f['geboorteplaats']} bestaat {len(f['plaats_dubbel'])} keer ({'; '.join(f['plaats_dubbel'])}): "
             f"coördinaten uit de stadzoeker gebruikt ({f['lat']}, {f['lon']}), controleer of dat de juiste is"] if f.get('plaats_dubbel') else [])
+        + ([f"- ! Klant vulde als geboortenaam alleen \"{f['naam_aangevuld']}\" in: achternaam aangevuld tot \"{f['geboortenaam']}\". "
+            f"Was de achternaam bij geboorte anders (meisjesnaam)? Navragen en opnieuw genereren"] if f.get('naam_aangevuld') else [])
         + [
         f"- Vergeleken met {len(glob.glob(os.path.join(CORPUS, '*')))} eerder opgeleverde Blueprints",
         f"- Schrijf- en controlerondes: {rondes}", '', '## Laatste auditronde (3× OK op deze versie)', '```', uitvoer.strip(), '```'])
@@ -305,6 +311,7 @@ def genereer(job):
     o['job_dir'] = job_dir
     f, _, ruw = datalaag.bouw(o)
     f['plaats_dubbel'] = o['plaats_dubbel']
+    f['naam_aangevuld'] = o['naam_aangevuld']
     json.dump(f, open(os.path.join(job_dir, 'facts.json'), 'w'), ensure_ascii=False, indent=1)
     open(os.path.join(job_dir, 'datalaag.txt'), 'w').write(ruw)
     intake = writer.intake_tekst(raw)
