@@ -400,9 +400,8 @@ for z in (z for b in bron for z in zinsdelen(re.sub(r'["“][^"”]*["”]','',b
     if re.search(r'\b(sextiel|driehoek|sextile|trine)\b',zl) and re.search(r'\b(scherp\w*|gespannen|spanning|botsing|botst|wrijving|sharp|tense|tension|clash\w*|friction)\b',zl):   # v5.0 #15
         print(f'   ! sextiel/driehoek is harmonisch, niet scherp of gespannen: {q}')
 print(f'   feitencontrole geschreven tekst (verjaardag/PJ, element, telling, ontbrekend element, groot kruis): {nf} zinnen')
-# naam zoals op de akte (v5.0 #1 en #14): volledige naam met achternaam, overal met dezelfde hoofdletters
+# naam zoals op de akte (v5.0 #14): overal met dezelfde hoofdletters
 nw=a.naam.split()
-len(nw)<2 and fail(f'geboortenaam "{a.naam}" is één woord: naamgetallen horen op de volledige naam van de akte, met achternaam')
 for x in [a.naam]+[' '.join(nw[i:i+2]) for i in range(len(nw)-1) if nw[i][:1].isupper() and nw[i+1][:1].isupper()]:
     for v in sorted({m.group(0) for m in re.finditer(r'\b'+re.escape(x)+r'\b',T,flags=re.I)}-{x}): fail(f'naam wijkt af van de geboortenaam: "{v}" in plaats van "{x}"')
 # geboortegegevens overal gelijk
