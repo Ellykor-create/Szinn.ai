@@ -138,8 +138,8 @@ def invoer(order):
         tz = tijdzone(lat, lon)
     datetime.strptime(order['birth_date'], '%Y-%m-%d')
     voornaam = akte(str(raw.get('voornaam') or order.get('client_name') or geboortenaam)).split()[0]
-    naam = akte(str(order.get('client_name') or f"{raw.get('voornaam', '')} {raw.get('achternaam', '')}")) or geboortenaam
-    return dict(naam=naam, voornaam=voornaam, geboortenaam=geboortenaam, datum=order['birth_date'], tijd=tijd.zfill(5),
+    # Geboortenaam = de echte naam (achternaam op het account is vaak die van de partner): ook op omslag, rug en koppen
+    return dict(naam=geboortenaam, voornaam=voornaam, geboortenaam=geboortenaam, datum=order['birth_date'], tijd=tijd.zfill(5),
                 plaats=plaats, lat=float(lat), lon=float(lon), tz=tz,
                 woonplaats_tz=raw.get('woonplaats_tijdzone'), tijd_status=tijd_status, plaats_dubbel=dubbel if len(dubbel) > 1 else []), raw
 
