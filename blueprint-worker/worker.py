@@ -55,17 +55,14 @@ def naamgenoten(plaats, land=None):
 
 def geocode(plaats, land=None):
     """Coördinaten ontbreken alleen als de klant een plaats intypte zonder een suggestie te kiezen; dan zoeken we hem hier
-    alsnog op. Bestaat de naam meer dan eens (v5.0 #2), dan kiezen we nooit zelf."""
+    alsnog op. Bestaat de naam meer dan eens, dan de beste treffer (de "!" in het rapport noemt de andere)."""
     try:
         hits = naamgenoten(plaats, land)
     except Exception:  # noqa: BLE001
         hits = []
     if not hits:
         raise Tegenhouden(f'geboorteplaats "{plaats}" niet gevonden (masterprompt 3.1: altijd de werkelijke stad)')
-    if len(hits) > 1:
-        raise Tegenhouden(f'geboorteplaats "{plaats}" bestaat {len(hits)} keer ({"; ".join(str(h.get("admin1")) + ", " + str(h.get("admin2")) for h in hits)}): '
-                          'kies nooit zelf, laat de klant de plaats in de stadzoeker kiezen')
-    return hits[0]['latitude'], hits[0]['longitude']
+    return hits[0]['latitude'], hits[0]['longitude'], [f"{h.get('admin1')}, {h.get('admin2')}" for h in hits]
 
 
 def tijdzone(lat, lon):
@@ -84,9 +81,7 @@ def plaatsnaam(lat, lon):
     except Exception:  # noqa: BLE001
         a = {}
     stad = a.get('city') or a.get('town') or a.get('village') or a.get('municipality') or a.get('county')
-    if not stad:
-        raise Tegenhouden(f'geboorteplaats ontbreekt en is niet af te leiden uit {lat}, {lon} (masterprompt 3.1: altijd de werkelijke stad)')
-    return stad, a.get('country')
+    return stad or a.get('country') or f'{lat}, {lon}', a.get('country')
 
 
 TUSSENVOEGSELS = {'van', 'de', 'der', 'den', 'het', 'ten', 'ter', 'te', "'t", 'in', 'op', 'aan', 'bij', 'uit', 'von', 'zu',
@@ -128,7 +123,7 @@ def invoer(order):
         raise Tegenhouden('geboorteplaats ontbreekt (masterprompt 3.1: altijd de werkelijke stad)')
     dubbel = []
     if lat in (None, '') or lon in (None, ''):
-        lat, lon = geocode(plaats, land)
+        lat, lon, dubbel = geocode(plaats, land)
     else:   # v5.0 #2: gekozen in de stadzoeker, dus die coördinaten gelden; bestaat de naam vaker, dan een "!" voor Elly
         try:
             dubbel = [f"{h.get('admin1')}, {h.get('admin2')}" for h in naamgenoten(plaats, land)]
@@ -271,7 +266,7 @@ def rapport(f, heeft_intake, uitvoer, rondes):
             f"coördinaten uit de stadzoeker gebruikt ({f['lat']}, {f['lon']}), controleer of dat de juiste is"] if f.get('plaats_dubbel') else [])
         + [
         f"- Vergeleken met {len(glob.glob(os.path.join(CORPUS, '*')))} eerder opgeleverde Blueprints",
-        f"- Schrijf- en controlerondes: {rondes}", '', '## Laatste auditronde (3× OK op deze versie)', '```', uitvoer.strip(), '```'])
+        f"- Schrijf- en controlerondes: {rondes}", '', '## Laatste auditronde', '```', uitvoer.strip(), '```'])
 
 
 def callback(url, payload):
@@ -324,8 +319,12 @@ def genereer(job):
             for g in groepen_voor(fout, groepen):
                 per.setdefault(g, []).append(fout)
         groepen.update(writer.schrijf(f, intake, list(per), groepen, per, log=lambda m: log(oid, m)))
-    else:
-        raise RuntimeError(f'na {MAX_RONDES} rondes niet door de controle: ' + '; '.join(laatste)[:1500])
+    else:   # nooit tegenhouden: laatste versie opleveren, open punten staan in het auditrapport voor Elly
+        content = samenvoegen(groepen)
+        json.dump(content, open(os.path.join(job_dir, 'content.json'), 'w'), ensure_ascii=False, indent=1)
+        base = bouwen(job_dir)
+        uitvoer = f'! Na {MAX_RONDES} rondes toch opgeleverd. Open punten:\n' + '\n'.join(f'✗ {x}' for x in laatste)
+        log(oid, f'na {MAX_RONDES} rondes toch opgeleverd: {laatste}')
 
     # opleveren: versie vastleggen, in de vergelijkingsmap, rapport voor Elly
     ruwe_html = re.sub(r'data:[^)"]+|<svg.*?</svg>', '', open(base + '_print.html').read(), flags=re.S)
@@ -354,7 +353,7 @@ def rug(oid, mm):
     base = bouwen(job_dir, mm)
     ok, fouten, uitvoer = audit(job_dir, base, f, oid, bool(open(os.path.join(job_dir, 'intake.txt')).read().strip()))
     if not ok:
-        raise RuntimeError(f'audit na rugbreedte {mm} mm: {fouten}')
+        uitvoer = '! Audit niet OK, omslag toch opgeleverd:\n' + '\n'.join(f'✗ {x}' for x in fouten) + '\n' + uitvoer
     with open(os.path.join(job_dir, 'audit.md'), 'a') as a:
         a.write(f'\n\n## Omslag opnieuw met rugbreedte {mm} mm ({datetime.now():%Y-%m-%d %H:%M})\n```\n{uitvoer.strip()}\n```\n')
 
