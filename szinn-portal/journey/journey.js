@@ -1921,6 +1921,16 @@
         '</div>';
     }).join('<span class="dpijltje">&rarr;</span>');
 
+    /* zonder voltooide blueprint is er nog niets om te openen: boven de fases
+       (meteen in beeld) staat wat er gebeurt en dat er een mail komt, plus een
+       knop die de pagina herlaadt om te kijken of hij al klaar is */
+    var wacht = data && data.blueprintKlaar === false;
+    var wachtblok = wacht ? '<div class="dslotwacht"><i>&#10022;</i>' +
+      (data.slotKop ? '<b>' + veilig(data.slotKop) + '</b>' : "") +
+      '<span>' + veilig(data.slotKlaar || "").replace(/\n/g, "<br>") + '</span>' +
+      (data.slotKnop ? '<button class="knop dknop" data-ververs>' +
+        veilig(data.slotKnop) + ' <i>&#8635;</i></button>' : "") + '</div>' : "";
+
     return '<div class="dbinnen dlicht dreis">' +
       '<div class="dmerk licht"><img src="assets/logo_goud.png" alt=""><b>SZINN</b></div>' +
       (r.rechts ? '<em class="dreisrechts">' + veilig(r.rechts) + '</em>' : "") +
@@ -1928,17 +1938,9 @@
       (r.sub ? '<div class="dreissub">' + veilig(r.sub) + '</div>' : "") +
       (r.uitleg ? '<p class="dreisuitleg">' + veilig(r.uitleg).replace(/\n/g, "<br>") + '</p>' : "") +
       mediaHTML(r.audio) +
+      wachtblok +
       '<div class="dfasen">' + fases + '</div>' +
-      /* zonder voltooide blueprint is er nog niets om te openen: in plaats
-         van de startknop staat er wat er gebeurt en dat er een mail komt,
-         plus een knop die de pagina herlaadt om te kijken of hij al klaar is */
-      (data && data.blueprintKlaar === false
-        ? '<div class="dslotwacht"><i>&#10022;</i>' +
-            (data.slotKop ? '<b>' + veilig(data.slotKop) + '</b>' : "") +
-            '<span>' + veilig(data.slotKlaar || "").replace(/\n/g, "<br>") + '</span>' +
-            (data.slotKnop ? '<button class="knop dknop" data-ververs>' +
-              veilig(data.slotKnop) + ' <i>&#8635;</i></button>' : "") + '</div>'
-        : '<button class="knop dknop groot" data-start>' +
+      (wacht ? "" : '<button class="knop dknop groot" data-start>' +
             veilig(r.knop || T("welkomKnop")) + ' <i>&#8594;</i></button>') +
       (r.voet ? '<div class="dreisvoet">' + r.voet.map(function (t) {
           return '<span>' + veilig(t).replace(/\n/g, "<br>") + '</span>';
