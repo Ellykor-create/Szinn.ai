@@ -381,6 +381,44 @@ function ensureTokens(db) {
   return changed;
 }
 
+// Bezig zonder lopende worker-run (dispatch mislukt, callback kwijt, status teruggezet) bleef
+// eeuwig op "generating" staan. Na 10 min zonder run op GitHub: herstellen als de teksten er
+// zijn, anders failed + admin-mail, zodat de admin opnieuw kan starten.
+const BUSY = ['processing', 'generating'];
+async function failStuckOrders(orders) {
+  const kit = require('../../lib/kit-worker');
+  // Alleen recente kit-v4-orders: oudere hangers (aug 2026, oude pipeline) laten we aan de admin, anders krijgen
+  // die klanten alsnog een klaar-mail met nieuw wachtwoord.
+  const age = o => Date.now() - Date.parse(o.generation_started_at || o.created_at);
+  const stuck = orders.filter(o => BUSY.includes(o.status) && o.pipeline === 'kit-v4' && age(o) > 10 * 60 * 1000 && age(o) < 2 * 86400 * 1000);
+  if (!stuck.length || !kit.kitEnabledFor()) return;
+  let active;
+  try { active = await kit.activeRunOrders(); } catch (e) { return console.error('run-check mislukt:', e.message); }
+  const ids = new Set();
+  for (const o of stuck.filter(o => !active.has(o.id))) {
+    // Netlify Blobs dwingt onlyIfMatch niet af (getest 26 okt 2026): een gelijktijdige schrijver kan de
+    // 'completed' van de callback wegpoetsen. De teksten staan dan wel in de eigen blob van de order.
+    const t = await blueprintStore().get(`${o.id}.texts.json`, { type: 'json' }).catch(() => null);
+    const at = Date.parse(t?.generatedAt);
+    if (!(at > Date.parse(o.generation_started_at || o.created_at))) { ids.add(o.id); continue; }
+    if (Date.now() - at < 5 * 60 * 1000) continue; // net klaar: de db-lezing kan nog achterlopen (tot 60 s)
+    console.error(`${o.id}: completed ging verloren, hersteld uit texts.json`);
+    await completeKitOrder({ orderId: o.id, lang: t.en ? 'en' : 'nl', mail: t.mail, pages: t.pages }, { print: false });
+    o.status = 'completed';
+  }
+  if (!ids.size) return;
+  const error = 'Vastgelopen: de order stond op bezig, maar er loopt geen generatie op de worker. Start opnieuw.';
+  const failed = await updateDB(db => db.orders
+    .filter(o => ids.has(o.id) && BUSY.includes(o.status))
+    .map(o => { o.status = 'failed'; o.generation_error = error; return o.id; }));
+  for (const o of orders) if (failed.includes(o.id)) { o.status = 'failed'; o.generation_error = error; }
+  const { sendAdminAlert } = require('../../lib/email');
+  for (const orderId of failed) {
+    console.error(`${orderId}: vastgelopen, op failed gezet`);
+    await sendAdminAlert({ orderId, error, attempts: 'geen lopende worker-run' }).catch(e => console.error('admin-alert mislukt:', e.message));
+  }
+}
+
 function toOrder(o) {
   return {
     id: o.id, type: o.type, status: o.status,
@@ -405,8 +443,9 @@ app.get('/api/orders', async (req, res) => {
   if (!req.auth) return res.status(401).json({ error: 'Niet ingelogd' });
   const db = await loadDB();
   if (ensureTokens(db)) await saveDB(db);
-  const orders = db.orders.filter(o => o.user_id === req.auth.userId)
-    .sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+  const orders = db.orders.filter(o => o.user_id === req.auth.userId);
+  await failStuckOrders(orders);
+  orders.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
   res.json(orders.map(toOrder));
 });
 
@@ -443,7 +482,7 @@ const GIFT_PRICE_CENTS = parseInt(process.env.GIFT_PRICE_CENTS || '3990', 10);
 // Route 3: met gedrukt boek. Is GIFT_BOOK_PAY_LINK gezet (Stripe-betaallink uit het
 // dashboard, met "Na de betaling" → /nl/cadeau?gift_session={CHECKOUT_SESSION_ID}&route=3
 // en verzendadres aan), dan gaat de koper daarheen; anders een checkout-sessie via de API.
-const GIFT_BOOK_PRICE_CENTS = parseInt(process.env.GIFT_BOOK_PRICE_CENTS || '5990', 10);
+const GIFT_BOOK_PRICE_CENTS = parseInt(process.env.GIFT_BOOK_PRICE_CENTS || '4990', 10);
 const GIFT_BOOK_PAY_LINK = process.env.GIFT_BOOK_PAY_LINK || '';
 
 // Zonder login: de gever hoeft geen account te hebben (naam/e-mail komen uit Stripe).
@@ -1738,6 +1777,7 @@ app.post('/api/admin/logout', (req, res) => {
 app.get('/api/admin/orders', async (req, res) => {
   if (!req.auth?.isAdmin) return res.status(401).json({ error: 'Geen toegang' });
   const db = await loadDB();
+  await failStuckOrders(db.orders);
   const orders = db.orders.map(o => {
     const user = db.users.find(u => u.id === o.user_id);
     const g = giftLib.giftFor(db, o);
@@ -1785,6 +1825,7 @@ app.post('/api/admin/regenerate/:orderId', async (req, res) => {
   const order = db.orders.find(o => o.id === req.params.orderId);
   if (!order) return res.status(404).json({ error: 'Aanvraag niet gevonden' });
   order.status = 'processing';
+  order.generation_started_at = new Date().toISOString();
   order.generation_error = null;
   await saveDB(db);
   const ok = await triggerGeneration(order.id, order);
@@ -1799,59 +1840,67 @@ app.post('/api/internal/blueprint-result', async (req, res) => {
   const { orderId, ok, error, hold, texts, mail, rondes, pages, secret } = req.body || {};
   if (!kit.validCallbackSecret(secret)) return res.status(403).json({ error: 'forbidden' });
   const lang = req.body?.lang === 'en' ? 'en' : 'nl';
-  const { sendReadyEmail, sendAdminAlert } = require('../../lib/email');
   if (ok) {
+    // Eigen blob per order: gaat de statuswijziging hieronder toch verloren, dan herstelt failStuckOrders hieruit.
     await blueprintStore().setJSON(`${orderId}.texts.json`, {
-      orderId, generatedAt: new Date().toISOString(), model: 'kit-v4', [lang]: texts,
+      orderId, generatedAt: new Date().toISOString(), model: 'kit-v4', [lang]: texts, mail: mail || '', pages: pages || null,
     });
+    if (!await completeKitOrder({ orderId, lang, mail, pages })) return res.status(404).json({ error: 'order niet gevonden' });
+    console.log(`${orderId}: kit-v4 opgeleverd (${rondes} ronde(s), 3× audit OK)`);
+    return res.json({ ok: true });
   }
-  // Meerdere workers kunnen tegelijk terugmelden: via updateDB gaat geen statuswijziging verloren.
   const found = await updateDB(db => {
     const order = db.orders.find(o => o.id === orderId);
     if (!order) return null;
-    if (!ok) {
-      order.status = 'failed';
-      order.generation_error = String(error || 'onbekende fout').slice(0, 2000);
-    } else {
-      order.status = 'completed';
-      order.completed_at = new Date().toISOString();
-      order.blueprint_url = `/szinn-portal/blueprints/${orderId}.html`;
-      order.blueprint_languages = [lang];
-      order.pdf_available = true;
-      order.generation_error = null;
-      order.pipeline = 'kit-v4';
-      order.ready_mail_personal = mail || '';
-      if (order.book && pages) order.book.pages = pages;
-    }
+    order.status = 'failed';
+    order.generation_error = String(error || 'onbekende fout').slice(0, 2000);
+    return { ...order };
+  });
+  if (!found) return res.status(404).json({ error: 'order niet gevonden' });
+  const { sendAdminAlert } = require('../../lib/email');
+  await sendAdminAlert({ orderId, error: found.generation_error, attempts: hold ? 'tegengehouden vóór generatie' : 'kit v4, 4 rondes' })
+    .catch(e => console.error('admin-alert mislukt:', e.message));
+  res.json({ ok: true });
+});
+
+// Order op 'completed' + boek naar Print&Bind + klaar-mail (met vers wachtwoord).
+// print=false bij herstel: de oorspronkelijke callback heeft het boek al geplaatst.
+async function completeKitOrder({ orderId, lang, mail, pages }, { print = true } = {}) {
+  const found = await updateDB(db => {
+    const order = db.orders.find(o => o.id === orderId);
+    if (!order) return null;
+    order.status = 'completed';
+    order.completed_at = new Date().toISOString();
+    order.blueprint_url = `/szinn-portal/blueprints/${orderId}.html`;
+    order.blueprint_languages = [lang];
+    order.pdf_available = true;
+    order.generation_error = null;
+    order.pipeline = 'kit-v4';
+    order.ready_mail_personal = mail || '';
+    if (order.book && pages) order.book.pages = pages;
     const u = db.users.find(u => u.id === order.user_id);
     // Cadeau: klaar-mail (met inloggegevens) pas op de verzenddatum (process-gifts).
     const g = giftLib.giftFor(db, order);
     const giftWait = !!(g && !giftLib.isDue(g.send_date));
     // Vers wachtwoord in de klaar-mail (zelfde als "wachtwoord vergeten"); admin via ADMIN_PASSWORD.
-    const password = (ok && !giftWait) ? giftLib.freshPassword(u) : '';
-    if (ok && g && !giftWait) { g.status = 'sent'; g.sent_at = new Date().toISOString(); }
+    const password = giftWait ? '' : giftLib.freshPassword(u);
+    if (g && !giftWait) { g.status = 'sent'; g.sent_at = new Date().toISOString(); }
     return { order: { ...order }, user: u, password, giftWait, giftDate: g?.send_date, gift: giftLib.giftInfo(db, g) };
   });
-  if (!found) return res.status(404).json({ error: 'order niet gevonden' });
+  if (!found) return false;
   const { order, user, password, giftWait, giftDate, gift } = found;
-
-  if (!ok) {
-    await sendAdminAlert({ orderId, error: order.generation_error, attempts: hold ? 'tegengehouden vóór generatie' : 'kit v4, 4 rondes' })
-      .catch(e => console.error('admin-alert mislukt:', e.message));
-    return res.json({ ok: true });
-  }
-  console.log(`${orderId}: kit-v4 opgeleverd (${rondes} ronde(s), 3× audit OK)`);
   // Boek: eenmalig naar Print&Bind; een her-generatie drukt niet opnieuw (file_attached).
-  if (order.book && !order.book.file_attached) {
+  if (print && order.book && !order.book.file_attached) {
     await triggerBookPrint(order, user?.email).catch(e => console.error('boek-trigger mislukt:', e.message));
   }
   if (giftWait) console.log(`${orderId}: cadeau, klaar-mail wacht tot ${giftDate}`);
   else if (user) {
+    const { sendReadyEmail } = require('../../lib/email');
     await sendReadyEmail({ to: user.email, name: order.client_name || user.name, orderId, lang, personal: mail, password, gift })
       .catch(e => console.error('klaar-mail mislukt:', e.message));
   }
-  res.json({ ok: true });
-});
+  return true;
+}
 
 // Klaar-mail opnieuw sturen (bv. nadat Resend faalde). Zet een vers wachtwoord,
 // want het vorige stond alleen in de mail die niet aankwam. Fout gaat terug naar admin.

@@ -725,7 +725,7 @@ app.post('/api/gift/checkout', async (req, res) => {
     const baseUrl = process.env.SITE_URL || `${req.protocol}://${req.get('host')}`;
     try {
       const book = String(req.body?.route) === '3';
-      const session = await createGiftCheckout({ email: user?.email, userId: req.session.userId, baseUrl, priceCents: book ? parseInt(process.env.GIFT_BOOK_PRICE_CENTS || '5990', 10) : GIFT_PRICE_CENTS, book, lang: req.body?.lang === 'en' ? 'en' : 'nl' });
+      const session = await createGiftCheckout({ email: user?.email, userId: req.session.userId, baseUrl, priceCents: book ? parseInt(process.env.GIFT_BOOK_PRICE_CENTS || '4990', 10) : GIFT_PRICE_CENTS, book, lang: req.body?.lang === 'en' ? 'en' : 'nl' });
       return res.json({ url: session.url });
     } catch (e) {
       console.error('cadeau-checkout mislukt:', e.message);

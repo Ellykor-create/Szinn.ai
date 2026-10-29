@@ -1930,10 +1930,14 @@
       mediaHTML(r.audio) +
       '<div class="dfasen">' + fases + '</div>' +
       /* zonder voltooide blueprint is er nog niets om te openen: in plaats
-         van de startknop staat er wat er gebeurt en dat er een mail komt */
+         van de startknop staat er wat er gebeurt en dat er een mail komt,
+         plus een knop die de pagina herlaadt om te kijken of hij al klaar is */
       (data && data.blueprintKlaar === false
-        ? '<div class="dslotwacht"><i>&#10022;</i><span>' +
-            veilig(data.slotKlaar || "").replace(/\n/g, "<br>") + '</span></div>'
+        ? '<div class="dslotwacht"><i>&#10022;</i>' +
+            (data.slotKop ? '<b>' + veilig(data.slotKop) + '</b>' : "") +
+            '<span>' + veilig(data.slotKlaar || "").replace(/\n/g, "<br>") + '</span>' +
+            (data.slotKnop ? '<button class="knop dknop" data-ververs>' +
+              veilig(data.slotKnop) + ' <i>&#8635;</i></button>' : "") + '</div>'
         : '<button class="knop dknop groot" data-start>' +
             veilig(r.knop || T("welkomKnop")) + ' <i>&#8594;</i></button>') +
       (r.voet ? '<div class="dreisvoet">' + r.voet.map(function (t) {
@@ -2030,6 +2034,7 @@
 
     el("drempel").addEventListener("click", function (e) {
       if (e.target.closest("[data-start]") || e.target.closest("#d-start")) { sluitDrempel(); return; }
+      if (e.target.closest("[data-ververs]")) { location.reload(); return; }
       /* stap 2 van pagina 1: 'start nu' verbergt het welkomstscherm en laat
          de video schermvullend afspelen op zacht volume; na afloop schuift
          het vanzelf door naar het reis-paneel */
